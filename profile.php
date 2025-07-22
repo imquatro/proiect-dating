@@ -19,6 +19,9 @@ if (!empty($user['gallery'])) {
     $poze = explode(',', $user['gallery']);
 }
 
+// Verificăm dacă userul este admin
+$isAdmin = !empty($user['is_admin']) && $user['is_admin'] == 1;
+
 // 2. Procesare update descriere
 if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['save_desc'])) {
     $desc = trim($_POST['description']);
@@ -26,6 +29,10 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['save_desc'])) {
     $stmt->execute([$desc, $user_id]);
     header("Location: profile.php?desc-updated=1");
     exit;
+}
+
+if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
+    echo '<p style="color:red; font-weight:bold; text-align:center;">Ai atins limita maximă de 10 poze.</p>';
 }
 ?>
 <!DOCTYPE html>
@@ -39,6 +46,11 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['save_desc'])) {
 </head>
 <body>
     <div class="main-header">
+        <?php if ($isAdmin): ?>
+            <a href="admin_panel.php" class="admin-btn" title="Panou Admin" style="margin-right:10px; color:#ffd700; font-size:1.5rem;">
+                <i class="fas fa-user-shield"></i>
+            </a>
+        <?php endif; ?>
         <a href="logout.php" class="logout-btn" title="Deconectare">
             <i class="fas fa-sign-out-alt"></i>
         </a>
@@ -70,38 +82,39 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['save_desc'])) {
             <div class="info-row"><span class="profile-label">Oraș:</span><span class="profile-value"><?=htmlspecialchars($user['city'])?></span></div>
         </div>
 
-<!-- Descriere editabilă -->
-<div class="desc-edit-wrap">
-  <div class="desc-title-row">
-      <span style="font-weight:600;color:#7c4dff;">Descriere</span>
-      <button type="button" class="desc-action-btn edit" onclick="toggleDescEdit()" id="descEditBtn">
-        <i class="fas fa-edit"></i> Editează
-      </button>
-  </div>
-  <div id="desc-view-div" style="display:<?=!empty($user['description']) ? 'block':'none'?>;">
-      <div class="desc-field"><?=!empty($user['description']) ? htmlspecialchars($user['description']) : '<span style=\'color:#aaa\'>Fără descriere</span>'?></div>
-  </div>
-  <form method="POST" style="margin:0;display:<?=empty($user['description']) ? 'block':'none'?>;" id="desc-edit-div">
-    <textarea name="description" class="desc-field" maxlength="500"><?=htmlspecialchars($user['description'])?></textarea>
-    <button type="submit" class="desc-action-btn" name="save_desc"><i class="fas fa-save"></i> Salvează</button>
-  </form>
-</div>
+        <!-- Descriere editabilă -->
+        <div class="desc-edit-wrap">
+          <div class="desc-title-row">
+              <span style="font-weight:600;color:#7c4dff;">Descriere</span>
+              <button type="button" class="desc-action-btn edit" onclick="toggleDescEdit()" id="descEditBtn">
+                <i class="fas fa-edit"></i> Editează
+              </button>
+          </div>
+          <div id="desc-view-div" style="display:<?=!empty($user['description']) ? 'block':'none'?>;">
+              <div class="desc-field"><?=!empty($user['description']) ? htmlspecialchars($user['description']) : '<span style=\'color:#aaa\'>Fără descriere</span>'?></div>
+          </div>
+          <form method="POST" style="margin:0;display:<?=empty($user['description']) ? 'block':'none'?>;" id="desc-edit-div">
+            <textarea name="description" class="desc-field" maxlength="500"><?=htmlspecialchars($user['description'])?></textarea>
+            <button type="submit" class="desc-action-btn" name="save_desc"><i class="fas fa-save"></i> Salvează</button>
+          </form>
+        </div>
 
-<!-- Card upload poza -->
-<div class="profile-upload-card">
-    <form action="upload_photo.php" method="POST" enctype="multipart/form-data" id="upload-photo-form">
-        <input type="hidden" name="user_id" value="<?=$user_id?>">
-        <!-- Buton 1: Selectează poză -->
-        <button type="button" class="profile-upload-btn" id="select-btn">
-            <i class="fas fa-plus-circle"></i> Adauga poză
-        </button>
-        <input type="file" name="profile_photo" accept="image/*" required id="profile-photo-input" style="display:none;">
-        <!-- Buton 2: Încarcă poză -->
-        <button type="submit" class="profile-upload-btn" id="upload-btn" style="display:none; margin-left: 16px;">
-            <i class="fas fa-upload"></i> Încarcă poză
-        </button>
-    </form>
-</div>
+        <!-- Card upload poza -->
+        <div class="profile-upload-card">
+            <form action="upload_photo.php" method="POST" enctype="multipart/form-data" id="upload-photo-form">
+                <input type="hidden" name="user_id" value="<?=$user_id?>">
+                <!-- Buton 1: Selectează poză -->
+                <button type="button" class="profile-upload-btn" id="select-btn">
+                    <i class="fas fa-plus-circle"></i> Adaugă poză
+                </button>
+                <input type="file" name="profile_photo" accept="image/*" required id="profile-photo-input" style="display:none;">
+                <!-- Buton 2: Încarcă poză -->
+                <button type="submit" class="profile-upload-btn" id="upload-btn" style="display:none; margin-left: 16px;">
+                    <i class="fas fa-upload"></i> Încarcă poză
+                </button>
+            </form>
+        </div>
+    </div>
 
     <div class="navbar">
         <a class="icon" href="index.php"><i class="fas fa-home"></i></a>
