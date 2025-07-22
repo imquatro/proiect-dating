@@ -25,22 +25,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     $targetUserId = (int)$_POST['user_id'];
     $photoIndex = (int)$_POST['photo_index'];
 
-    // Preluare galeria utilizatorului țintă
+    $stmt = $db->prepare("SELECT gallery FROM users WHERE id = ?");
+    $stmt->execute([$targetUserId]);
+    $gallery = $stmt->fetchColumn();
+    $photos = $gallery ? explode(',', $gallery) : [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'], $_POST['photo_index'])) {
+    $action = $_POST['action'];
+    $targetUserId = (int)$_POST['user_id'];
+    $photoIndex = (int)$_POST['photo_index'];
+
     $stmt = $db->prepare("SELECT gallery FROM users WHERE id = ?");
     $stmt->execute([$targetUserId]);
     $gallery = $stmt->fetchColumn();
     $photos = $gallery ? explode(',', $gallery) : [];
 
     if (isset($photos[$photoIndex])) {
-        unset($photos[$photoIndex]);
-        $photos = array_values($photos);
-        $newGallery = implode(',', $photos);
-
         if ($action === 'approve') {
-            $newStatus = count($photos) === 0 ? 'approved' : 'pending';
-            $stmt = $db->prepare("UPDATE users SET gallery = ?, gallery_status = ? WHERE id = ?");
-            $stmt->execute([$newGallery, $newStatus, $targetUserId]);
+            // NU MAI ȘTERGE poza, doar setează statusul ca "approved"
+            $newStatus = 'approved';
+            $stmt = $db->prepare("UPDATE users SET gallery_status = ? WHERE id = ?");
+            $stmt->execute([$newStatus, $targetUserId]);
         } elseif ($action === 'reject') {
+            // DOAR LA REJECT SE ȘTERGE poza
+            unset($photos[$photoIndex]);
+            $photos = array_values($photos);
+            $newGallery = implode(',', $photos);
             $newStatus = count($photos) === 0 ? 'none' : 'pending';
             $stmt = $db->prepare("UPDATE users SET gallery = ?, gallery_status = ? WHERE id = ?");
             $stmt->execute([$newGallery, $newStatus, $targetUserId]);
@@ -51,7 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     exit;
 }
 
-// Preluare utilizatori cu galerii în status pending
+
+    header("Location: admin_panel.php?msg=Acțiune efectuată cu succes!");
+    exit;
+}
+
 $stmt = $db->prepare("SELECT id, username, gallery, gallery_status FROM users WHERE gallery IS NOT NULL AND gallery <> '' AND gallery_status = 'pending'");
 $stmt->execute();
 $usersWithPhotos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -66,52 +80,50 @@ function explodePhotos($gallery) {
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Panou Admin - Proiect Dating</title>
-<link rel="stylesheet" href="assets_css/profile.css" />
-<link rel="stylesheet" href="assets_css/photo-validate.css" />
+<link rel="stylesheet" href="assets_css/admin.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 </head>
 <body>
-<div class="main-header">
-    <a href="logout.php" class="logout-btn" title="Deconectare"><i class="fas fa-sign-out-alt"></i></a>
-    <span class="header-title">Panou Admin</span>
+<div class="admin-header">
+    <a href="logout.php" class="admin-logout-btn" title="Deconectare"><i class="fas fa-sign-out-alt"></i></a>
+    <span class="admin-header-title">Panou Admin</span>
 </div>
-<div class="profile-container">
-    <h1 style="text-align:center; margin-bottom:24px; color:#7c4dff;">Validare Poze Utilizatori</h1>
+<div class="admin-container">
+    <h1 class="admin-title">Validare Poze Utilizatori</h1>
     <?php
     if (!empty($usersWithPhotos)) {
         $user = $usersWithPhotos[0];
         $photos = explodePhotos($user['gallery']);
     ?>
-    <div class="photo-validate-container" id="photoValidateBox">
-        <button class="nav-btn" id="prevBtn" title="Poza anterioară">&#8592;</button>
-        <div class="photo-validate-inner">
-            <img src="<?= htmlspecialchars($photos[0] ?? '') ?>" alt="poza de validat" class="photo-preview" id="photoPreview" onclick="openLightbox()" />
-            <form method="POST" id="validateForm">
+    <div class="admin-photo-validate-box">
+        <button class="admin-nav-btn" id="adminPrevBtn" title="Poza anterioară">&#8592;</button>
+        <div class="admin-photo-inner">
+            <img src="<?= htmlspecialchars($photos[0] ?? '') ?>" alt="poza de validat" class="admin-photo-img" id="adminPhotoPreview" onclick="openAdminLightbox()" />
+            <form method="POST" id="adminValidateForm">
                 <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-                <input type="hidden" name="photo_index" id="photoIndexInput" value="0">
-                <div class="validate-actions">
-                    <button type="submit" name="action" value="approve" class="validate-btn">Aprobă</button>
-                    <button type="submit" name="action" value="reject" class="reject-btn">Respinge</button>
+                <input type="hidden" name="photo_index" id="adminPhotoIndexInput" value="0">
+                <div class="admin-validate-actions">
+                    <button type="submit" name="action" value="approve" class="admin-validate-btn">Aprobă</button>
+                    <button type="submit" name="action" value="reject" class="admin-reject-btn">Respinge</button>
                 </div>
             </form>
         </div>
-        <button class="nav-btn" id="nextBtn" title="Poza următoare">&#8594;</button>
+        <button class="admin-nav-btn" id="adminNextBtn" title="Poza următoare">&#8594;</button>
     </div>
-    <!-- Lightbox pentru poza mare și butoane pe poză -->
-    <div class="lightbox" id="lightbox">
-        <button class="lb-nav" id="lbPrevBtn">&#8592;</button>
-        <div class="lightbox-img-wrap">
-            <img src="<?= htmlspecialchars($photos[0] ?? '') ?>" alt="poza mărită" class="lightbox-img" id="lightboxImg" />
-            <div class="lightbox-actions-on-img">
-                <button type="button" class="validate-btn" id="lbApproveBtn"><i class="fas fa-check"></i></button>
-                <button type="button" class="reject-btn" id="lbRejectBtn"><i class="fas fa-times"></i></button>
+    <div class="admin-lightbox" id="adminLightbox">
+        <button class="admin-lb-nav" id="adminLbPrevBtn">&#8592;</button>
+        <div class="admin-lightbox-img-wrap">
+            <img src="<?= htmlspecialchars($photos[0] ?? '') ?>" alt="poza mărită" class="admin-lightbox-img" id="adminLightboxImg" />
+            <div class="admin-lightbox-actions-on-img">
+                <button type="button" class="admin-validate-btn" id="adminLbApproveBtn"><i class="fas fa-check"></i></button>
+                <button type="button" class="admin-reject-btn" id="adminLbRejectBtn"><i class="fas fa-times"></i></button>
             </div>
         </div>
-        <button class="lb-nav" id="lbNextBtn">&#8594;</button>
-        <button class="close-lightbox" onclick="closeLightbox()">&times;</button>
+        <button class="admin-lb-nav" id="adminLbNextBtn">&#8594;</button>
+        <button class="admin-close-lightbox" onclick="closeAdminLightbox()">&times;</button>
     </div>
     <script>
-        const photos = <?php echo json_encode($photos); ?>;
+        const adminPhotos = <?php echo json_encode($photos); ?>;
     </script>
     <script src="assets_js/admin_photos.js"></script>
     <?php
@@ -120,11 +132,11 @@ function explodePhotos($gallery) {
     }
     ?>
 </div>
-<div class="navbar">
-    <a class="icon" href="index.php"><i class="fas fa-home"></i></a>
-    <a class="icon" href="matches.php"><i class="fas fa-heart"></i></a>
-    <a class="icon" href="messages.php"><i class="fas fa-comments"></i></a>
-    <a class="icon active" href="profile.php"><i class="fas fa-user"></i></a>
+<div class="admin-navbar">
+    <a class="admin-icon" href="index.php"><i class="fas fa-home"></i></a>
+    <a class="admin-icon" href="matches.php"><i class="fas fa-heart"></i></a>
+    <a class="admin-icon" href="messages.php"><i class="fas fa-comments"></i></a>
+    <a class="admin-icon active" href="profile.php"><i class="fas fa-user"></i></a>
 </div>
 </body>
 </html>

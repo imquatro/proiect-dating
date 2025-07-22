@@ -43,6 +43,15 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
     <title>Profilul Meu</title>
     <link rel="stylesheet" href="assets_css/profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+      /* Extra ca să faci săgețile inactive vizibile ca “fade” */
+      .gallery-arrow:disabled {
+          opacity: 0.28 !important;
+          cursor: default !important;
+          pointer-events: none;
+          filter: grayscale(1) blur(0.5px);
+      }
+    </style>
 </head>
 <body>
     <div class="main-header">
@@ -57,12 +66,22 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
         <span class="header-title">Profilul meu</span>
     </div>
     <div class="profile-container">
+
         <!-- Galerie poze cu săgeți -->
+        <?php
+        $gallery_status = $user['gallery_status'];
+        $poze = $user['gallery'] ? explode(',', $user['gallery']) : [];
+        ?>
         <?php if ($poze && count($poze)>0): ?>
         <div class="profile-gallery">
             <button class="gallery-arrow left" id="arrow-left" onclick="prevImg(<?=count($poze)?>)" type="button"><i class="fas fa-chevron-left"></i></button>
             <?php foreach ($poze as $idx=>$src): ?>
-                <img src="<?=htmlspecialchars($src)?>" id="gallery-img-<?=$idx?>" style="display:none;">
+                <div class="photo-wrap<?= $gallery_status === 'pending' ? ' photo-pending' : '' ?>" id="photo-wrap-<?=$idx?>" style="display:none;">
+                    <img src="<?=htmlspecialchars($src)?>" class="profile-img">
+                    <?php if($gallery_status === 'pending'): ?>
+                        <span class="photo-badge">NEVALIDATĂ</span>
+                    <?php endif; ?>
+                </div>
             <?php endforeach; ?>
             <button class="gallery-arrow right" id="arrow-right" onclick="nextImg(<?=count($poze)?>)" type="button"><i class="fas fa-chevron-right"></i></button>
         </div>
@@ -74,8 +93,8 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
 
         <!-- Info user -->
         <div class="profile-info-list">
-            <div class="info-row"><span class="profile-label">Nume:</span><span class="profile-value"><?=$user['username']?></span></div>
-            <div class="info-row"><span class="profile-label">Email:</span><span class="profile-value"><?=$user['email']?></span></div>
+            <div class="info-row"><span class="profile-label">Nume:</span><span class="profile-value"><?=htmlspecialchars($user['username'])?></span></div>
+            <div class="info-row"><span class="profile-label">Email:</span><span class="profile-value"><?=htmlspecialchars($user['email'])?></span></div>
             <div class="info-row"><span class="profile-label">Vârstă:</span><span class="profile-value"><?=htmlspecialchars($user['age'])?></span></div>
             <div class="info-row"><span class="profile-label">Sex:</span><span class="profile-value"><?=htmlspecialchars($user['gender'])?></span></div>
             <div class="info-row"><span class="profile-label">Țară:</span><span class="profile-value"><?=htmlspecialchars($user['country'])?></span></div>
@@ -126,10 +145,12 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
       let currentImg = 0;
       function showImg(idx, total) {
         for(let i=0; i<total; i++) {
-          document.getElementById('gallery-img-'+i).style.display = (i===idx) ? 'block' : 'none';
+          let wrap = document.getElementById('photo-wrap-'+i);
+          if(wrap) wrap.style.display = (i===idx) ? 'flex' : 'none';
         }
-        document.getElementById('arrow-left').disabled = idx===0;
-        document.getElementById('arrow-right').disabled = idx===total-1;
+        // Disabling buttons if at start/end or only 1 photo
+        document.getElementById('arrow-left').disabled = (idx===0 || total<=1);
+        document.getElementById('arrow-right').disabled = (idx===total-1 || total<=1);
         window.currentImg = idx;
       }
       function prevImg(total) {
@@ -140,7 +161,7 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
       }
       document.addEventListener("DOMContentLoaded", function(){
         window.currentImg = 0;
-        let total = document.querySelectorAll('.profile-gallery img').length;
+        let total = document.querySelectorAll('.photo-wrap').length;
         if(total>0) showImg(0, total);
       });
       function toggleDescEdit() {
