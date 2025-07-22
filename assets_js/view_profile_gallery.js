@@ -23,52 +23,80 @@ document.addEventListener("DOMContentLoaded", function () {
     let total = document.querySelectorAll('.vp-photo-wrap').length;
     if (total > 0) showVpImg(0, total);
 });
+// JS pentru panoul lightbox cu imagine sus și comentarii jos
+const superPanelImages = <?=json_encode($view_poze)?>;
+const superPanelStatus = <?=json_encode($view_gallery_status)?>;
+const superPanelComments = <?=json_encode($comments)?>;
+const superPanelDate = "<?=htmlspecialchars($data_pozei)?>";
+const superPanelLikes = <?=$likes?>;
 
-// LIGHTBOX LOGIC
-window.openVpLightbox = function(idx) {
-    const allPhotos = document.querySelectorAll('.vp-profile-img');
-    if (!allPhotos[idx]) return;
-    document.getElementById('vpLightboxImg').src = allPhotos[idx].src;
-    document.getElementById('vpLightbox').classList.add('active');
-    window.vpLbCurrent = idx;
-};
-window.closeVpLightbox = function() {
-    document.getElementById('vpLightbox').classList.remove('active');
-};
+let superPanelIdx = 0;
 
-// Butoane st/dr lightbox
-document.addEventListener("DOMContentLoaded", function() {
-    let allPhotos = document.querySelectorAll('.vp-profile-img');
-    window.vpLbCurrent = 0;
-    document.getElementById('vpLbPrevBtn').onclick = function() {
-        if (window.vpLbCurrent > 0) {
-            window.vpLbCurrent--;
-            document.getElementById('vpLightboxImg').src = allPhotos[window.vpLbCurrent].src;
-        }
-    };
-    document.getElementById('vpLbNextBtn').onclick = function() {
-        if (window.vpLbCurrent < allPhotos.length - 1) {
-            window.vpLbCurrent++;
-            document.getElementById('vpLightboxImg').src = allPhotos[window.vpLbCurrent].src;
-        }
-    };
-});
-window.closeVpLightbox = closeVpLightbox;
-function openVpLightbox(idx) {
-    // Ia toate pozele din galerie
-    const imgs = document.querySelectorAll('.vp-profile-img');
-    const wraps = document.querySelectorAll('.vp-photo-wrap');
-    const lightbox = document.getElementById('vpLightbox');
-    const lightboxImg = document.getElementById('vpLightboxImg');
-    if (!imgs.length || !lightbox || !lightboxImg) return;
-    // Pune poza selectată în lightbox
-    lightboxImg.src = imgs[idx].src;
-    lightbox.classList.add('active');
-    // Dacă vrei să reții indexul actual pt navigare stânga-dreapta
-    window.vpLightboxIndex = idx;
+// Deschide panou la poza selectată
+function openSuperPanel(idx) {
+  superPanelIdx = idx;
+  updateSuperPanel();
+  document.getElementById('vpComboPanelOverlay').style.display = 'flex';
 }
+
+// Închide panoul
+function vpCloseComboPanel() {
+  document.getElementById('vpComboPanelOverlay').style.display = 'none';
+}
+
+// Navigare poze în panou
+function vpLightboxPrev() {
+  if (superPanelIdx > 0) {
+    superPanelIdx--;
+    updateSuperPanel();
+  }
+}
+function vpLightboxNext() {
+  if (superPanelIdx < superPanelImages.length - 1) {
+    superPanelIdx++;
+    updateSuperPanel();
+  }
+}
+
+// Actualizare conținut panou la fiecare poză
+function updateSuperPanel() {
+  // Imagine sus
+  document.getElementById('vpPanelPhoto').src = superPanelImages[superPanelIdx] ?? 'default-avatar.jpg';
+  // Metadate (data/like)
+  document.getElementById('vpMetaDate').textContent = superPanelDate;
+  document.getElementById('vpMetaLikes').textContent = superPanelLikes;
+  document.getElementById('vpMetaComments').textContent = superPanelComments.length;
+
+  // Comentarii jos
+  let cdiv = document.getElementById('vpCommentsWrap');
+  cdiv.innerHTML = '';
+  for (let c of superPanelComments) {
+    cdiv.innerHTML += `<div class="vp-comment-row"><span class="vp-comment-username">${c.username}:</span><span class="vp-comment-text">${c.text}</span></div>`;
+  }
+}
+
+// Închidere la click pe overlay (optional)
+document.getElementById('vpComboPanelOverlay').addEventListener('click', function(e){
+  if(e.target === this) vpCloseComboPanel();
+});
+
 window.openVpLightbox = openVpLightbox; // FOARTE IMPORTANT!
 function closeVpLightbox() {
     document.getElementById('vpLightbox').classList.remove('active');
 }
 window.closeVpLightbox = closeVpLightbox;
+let currentIdx = 0;
+function vpPrevImg(total) {
+  if (currentIdx > 0) {
+    document.getElementById('vp-photo-wrap-' + currentIdx).style.display = 'none';
+    currentIdx--;
+    document.getElementById('vp-photo-wrap-' + currentIdx).style.display = 'flex';
+  }
+}
+function vpNextImg(total) {
+  if (currentIdx < total - 1) {
+    document.getElementById('vp-photo-wrap-' + currentIdx).style.display = 'none';
+    currentIdx++;
+    document.getElementById('vp-photo-wrap-' + currentIdx).style.display = 'flex';
+  }
+}

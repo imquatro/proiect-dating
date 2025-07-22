@@ -1,74 +1,42 @@
-// Array de poze, array de comentarii, etc.
-const galleryPhotos = <?= json_encode($poze) ?>;
-const galleryDates = <?= json_encode(array_map(function($src){ return date('Y-m-d H:i', filemtime(__DIR__.'/'.$src)); }, $poze)) ?>;
-// Exemplu: like/comment info: (în real life, preiei din DB)
-const likesArr = Array(galleryPhotos.length).fill(0); // sau preiei din DB
+const superPanelImages = <?=json_encode($view_poze)?>;
+const superPanelComments = <?=json_encode($comments)?>;
+const superPanelDate = "<?=htmlspecialchars($data_pozei)?>";
+const superPanelLikes = <?=$likes?>;
+let superPanelIdx = 0;
 
-let vpIdx = 0;
-const vpLightbox = document.getElementById('vpLightbox');
-const vpLightboxImg = document.getElementById('vpLightboxImg');
-const vpLbPrevBtn = document.getElementById('vpLbPrevBtn');
-const vpLbNextBtn = document.getElementById('vpLbNextBtn');
-const vpPhotoDate = document.getElementById('vpPhotoDate');
-const vpPhotoLikes = document.getElementById('vpPhotoLikes');
-const vpPhotoCommentsCount = document.getElementById('vpPhotoCommentsCount');
-const vpPhotoComments = document.getElementById('vpPhotoComments');
-const vpCommentForm = document.getElementById('vpCommentForm');
-
-const fakeComments = [
-  // Exemplu: în real life, fetch din DB AJAX
-  [{user:"Marius",avatar:"default-avatar.jpg",text:"Salut! Foarte tare poza."}],
-  [{user:"Andreea",avatar:"default-avatar.jpg",text:"Super!"}]
-];
-
-function openLightbox(idx=0) {
-  vpIdx = idx;
-  updateVpLightbox();
-  vpLightbox.classList.add('active');
+function openSuperPanel(idx) {
+  superPanelIdx = idx;
+  updateSuperPanel();
+  document.getElementById('vpComboPanelOverlay').style.display = 'flex';
 }
-function closeVpLightbox() {
-  vpLightbox.classList.remove('active');
+function vpCloseComboPanel() {
+  document.getElementById('vpComboPanelOverlay').style.display = 'none';
 }
-function updateVpLightbox() {
-  vpLightboxImg.src = galleryPhotos[vpIdx] ?? '';
-  vpPhotoDate.textContent = galleryDates[vpIdx] ?? '';
-  vpPhotoLikes.textContent = likesArr[vpIdx] ?? 0;
-  // Comentarii fake demo
-  let coms = fakeComments[vpIdx] ?? [];
-  vpPhotoComments.innerHTML = coms.map(c =>
-    `<div class="vp-comment-row">
-      <img src="${c.avatar}" class="vp-comment-avatar" />
-      <div class="vp-comment-content">
-        <span class="vp-comment-username">${c.user}</span>
-        ${c.text}
-      </div>
-    </div>`
-  ).join('');
-  vpPhotoCommentsCount.textContent = coms.length;
-}
-vpLbPrevBtn.onclick = function() {
-  if(vpIdx>0) { openLightbox(vpIdx-1); }
-}
-vpLbNextBtn.onclick = function() {
-  if(vpIdx<galleryPhotos.length-1) { openLightbox(vpIdx+1); }
-}
-window.closeVpLightbox = closeVpLightbox;
-document.addEventListener('keydown', function(e){
-  if (!vpLightbox.classList.contains('active')) return;
-  if (e.key==='Escape') closeVpLightbox();
-  if (e.key==='ArrowLeft') vpLbPrevBtn.click();
-  if (e.key==='ArrowRight') vpLbNextBtn.click();
-});
-if (vpCommentForm) {
-  vpCommentForm.onsubmit = function(e){
-    e.preventDefault();
-    let val = this.comment.value.trim();
-    if(val) {
-      // În real life: POST AJAX!
-      if(!fakeComments[vpIdx]) fakeComments[vpIdx]=[];
-      fakeComments[vpIdx].push({user:'Eu',avatar:'default-avatar.jpg',text:val});
-      this.comment.value = '';
-      updateVpLightbox();
-    }
+function vpLightboxPrev() {
+  if (superPanelIdx > 0) {
+    superPanelIdx--;
+    updateSuperPanel();
   }
 }
+function vpLightboxNext() {
+  if (superPanelIdx < superPanelImages.length - 1) {
+    superPanelIdx++;
+    updateSuperPanel();
+  }
+}
+function updateSuperPanel() {
+  document.getElementById('vpPanelPhoto').src = superPanelImages[superPanelIdx] ?? 'default-avatar.jpg';
+  document.getElementById('vpMetaDate').textContent = superPanelDate;
+  document.getElementById('vpMetaLikes').textContent = superPanelLikes;
+  document.getElementById('vpMetaComments').textContent = superPanelComments.length;
+  let cdiv = document.getElementById('vpCommentsWrap');
+  cdiv.innerHTML = '';
+  for (let c of superPanelComments) {
+    cdiv.innerHTML += `<div class="vp-comment-row"><span class="vp-comment-username">${c.username}:</span><span class="vp-comment-text">${c.text}</span></div>`;
+  }
+}
+
+// Închidere la click pe fundal overlay (opțional)
+document.getElementById('vpComboPanelOverlay').addEventListener('click', function(e){
+  if(e.target === this) vpCloseComboPanel();
+});

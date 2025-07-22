@@ -225,179 +225,211 @@ body, html {
 }
 
 /* ------ Lightbox/Panou comentarii ------ */
-.vp-lightbox {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0; top: 0; width: 100vw; height: 100vh;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(ellipse at center, #7c4dff70 0%, #1a0939e6 100%);
+/* Panou universal dark cu neon */
+.vp-combo-panel-overlay {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: rgba(24,9,40,0.82);
 }
-.vp-lightbox .vp-combo-panel {
-    display: flex;
-    gap: 38px;
-    align-items: flex-start;
-    justify-content: center;
-    max-width: 950px;
-    width: 96vw;
-    margin: 0 auto;
+.vp-combo-panel-overlay[style*="flex"] { display: flex !important; }
+
+/* MODIFICAT PENTRU VERTICAL, IMAGINEA SUS, EGAL LATIME */
+.vp-combo-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 420px;
+  width: 100%;
+  margin: auto;
+  background: none;
+  border-radius: 26px;
+  box-shadow: 0 0 60px 0 #ae7cffcc;
+  position: relative;
+  padding: 0;
 }
+
+/* IMAGINEA MARE SUS PE TOATA LATIMEA */
 .vp-img-side {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;         /* AICI! */
+  min-width: 0;        /* AICI! */
+  position: relative;
+  margin: 0;
+  padding: 0;
 }
 .vp-img-contour {
-    background: #110036;
-    border-radius: 22px;
-    box-shadow:
-      0 0 0 8px #a18fff,
-      0 0 32px 6px #7c4dffb2,
-      0 0 60px #a18fff99;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 0 18px 0;
+  width: 100%;
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 0 60px 8px #b88aff80, 0 0 0 8px #cdafff50;
+  background: #140f22;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
 }
+
+/* POZA MARE: MAI ÎNALTĂ DECÂT LATĂ, SUS */
 .vp-panel-photo {
-    width: 230px; height: 230px;
-    border-radius: 18px;
-    object-fit: cover;
-    box-shadow: 0 2px 18px #8e2de2aa;
-    background: #2a0b60;
-    display: block;
+  width: 100%;
+  max-width: 420px;
+  min-height: 330px;
+  max-height: 420px;
+  aspect-ratio: 1/1.1;  /* ca să fie un pic mai înaltă decât lată */
+  border-radius: 26px 26px 0 0;
+  object-fit: cover;
+  display: block;
+  background: #2a0b60;
+  box-shadow: 0 0 42px 7px #b682ff99;
+  margin: 0;
 }
+
+/* Săgețile perfect pe poză, pe centru */
 .vp-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: linear-gradient(135deg, #ffd700, #7c4dff 80%);
-    border: none;
-    border-radius: 50%;
-    box-shadow: 0 0 18px #fff200a5, 0 0 0 6px #7c4dff55;
-    color: #2a004a;
-    font-size: 2.2rem;
-    width: 48px;
-    height: 48px;
-    z-index: 3;
-    cursor: pointer;
-    transition: box-shadow .17s, background .12s, transform .12s;
-    border: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #ffd700, #7c4dff 80%);
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 18px #fff200a5, 0 0 0 6px #7c4dff55;
+  color: #2a004a;
+  font-size: 2.2rem;
+  width: 48px;
+  height: 48px;
+  z-index: 3;
+  cursor: pointer;
+  opacity: 0.93;
+  transition: box-shadow .17s, background .12s, transform .12s;
 }
-.vp-arrow-left { left: -44px; }
-.vp-arrow-right { right: -44px; }
-.vp-arrow:active, .vp-arrow:focus { transform: scale(1.14) translateY(-50%);}
+.vp-arrow-left { left: 16px; }
+.vp-arrow-right { right: 16px; }
+
 .vp-comments-side {
-    background: #1a0035;
-    min-height: 240px;
-    min-width: 315px;
-    border-radius: 24px;
-    box-shadow: 0 0 0 8px #a18fffcc, 0 0 36px 8px #7c4dff99;
-    padding: 22px 18px 18px 18px;
-    display: flex;
-    flex-direction: column;
-    width: 340px;
-    position: relative;
-    justify-content: flex-start;
+  width: 100%;
+  max-width: 403px;
+  background: #1a0035;
+  border-radius: 0 0 26px 26px;
+  box-shadow: 0 0 36px 6px #a18fff55 inset;
+  padding: 18px 18px 14px 18px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  justify-content: flex-start;
+  margin: 0;
 }
+
 .vp-meta-bar {
-    display: flex;
-    gap: 22px;
-    align-items: center;
-    font-size: 1.13rem;
-    color: #ffd700;
-    font-weight: 500;
-    margin-bottom: 18px;
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  font-size: 2.12rem;
+  color: #ffd700;
+  font-weight: 500;
+  margin-bottom: 16px;
 }
-.vp-meta-bar i { margin-right: 5px; color: #ffd700; }
+
 .vp-comments-wrap {
-    flex: 1;
-    max-height: 120px;
-    overflow-y: auto;
-    margin-bottom: 12px;
+  flex: 1;
+  max-height: 410px;
+  overflow-y: auto;
+  margin-bottom: 9px;
 }
 .vp-comment-row {
-    padding: 5px 0 4px 0;
-    border-bottom: 1px solid #391b68;
-    font-size: 1.01rem;
-    display: flex;
-    align-items: baseline;
-    gap: 7px;
+  padding: 5px 0 4px 0;
+  border-bottom: 1px solid #391b68;
+  font-size: 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
 }
 .vp-comment-row:last-child { border-bottom: none; }
 .vp-comment-username {
-    color: #eebaff;
-    font-weight: 600;
-    margin-right: 3px;
+  color: #eebaff;
+  font-weight: 600;
+  margin-right: 3px;
 }
 .vp-comment-text { color: #fff; }
 .vp-comment-form {
-    margin-top: 8px;
+  margin-top: 8px;
 }
 .vp-comment-input-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 .vp-comment-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2.5px solid #b682ff;
-    background: #f3f3f9;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid #b682ff;
+  background: #f3f3f9;
 }
 .vp-comment-form input[type="text"] {
-    flex: 1;
-    background: #230652;
-    border: 2px solid #b682ff;
-    border-radius: 18px;
-    padding: 7px 15px;
-    color: #f9dfff;
-    font-size: 1.03rem;
-    margin-right: 6px;
-    outline: none;
-    transition: border 0.15s;
+  flex: 1;
+  background: #230652;
+  border: 2px solid #b682ff;
+  border-radius: 18px;
+  padding: 7px 15px;
+  color: #f9dfff;
+  font-size: 1.03rem;
+  margin-right: 6px;
+  outline: none;
+  transition: border 0.15s;
 }
 .vp-comment-form input[type="text"]:focus { border: 2px solid #ffd700; }
 .vp-comment-form button {
-    background: linear-gradient(135deg, #ffd700, #7c4dff 80%);
-    color: #380066;
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.12rem;
-    box-shadow: 0 0 12px #ffd70044;
-    cursor: pointer;
-    transition: transform .13s, box-shadow .13s;
+  background: linear-gradient(135deg, #ffd700, #7c4dff 80%);
+  color: #380066;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.12rem;
+  box-shadow: 0 0 12px #ffd70044;
+  cursor: pointer;
+  transition: transform .13s, box-shadow .13s;
 }
 .vp-comment-form button:active, .vp-comment-form button:focus { transform: scale(1.09);}
-.vp-lightbox-close {
-    position: absolute;
-    top: 22px; right: 26px;
-    font-size: 2.3rem;
-    background: none;
-    border: none;
-    color: #ffd700;
-    opacity: 0.94;
-    cursor: pointer;
-    z-index: 999;
-    transition: color .18s, opacity .14s, transform .12s;
+.vp-close-btn {
+  position: absolute;
+  top: 9px; right: 12px;
+  font-size: 2.3rem;
+  color: #ffd700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 11;
+  opacity: 0.75;
+  transition: opacity 0.18s;
 }
-.vp-lightbox-close:hover { color: #fff; opacity: 1; transform: scale(1.2);}
-@media (max-width: 850px) {
-    .vp-lightbox .vp-combo-panel { flex-direction: column; gap: 10px; align-items: center; }
-    .vp-comments-side { width: 96vw; min-width: unset; margin-top: 14px; }
-    .vp-img-side { min-width: unset; }
-    .vp-img-contour { margin-bottom: 0; }
-    .vp-arrow-left { left: 4px; }
-    .vp-arrow-right { right: 4px; }
-    .vp-panel-photo { width: 85vw; height: 85vw; max-width: 320px; max-height: 320px;}
+.vp-close-btn:hover { opacity: 1; }
+
+/* Responsive */
+@media (max-width: 520px) {
+  .vp-combo-panel,
+  .vp-comments-side,
+  .vp-img-contour {
+    max-width: 98vw !important;
+    width: 98vw !important;
+  }
+  .vp-panel-photo {
+    max-width: 98vw !important;
+    aspect-ratio: 1/1.05;
+    min-height: 40vw;
+    max-height: 75vw;
+  }
 }
+
