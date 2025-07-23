@@ -1,11 +1,79 @@
 <?php
 session_start();
+require_once __DIR__ . '/includes/db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+$user_id = $_SESSION['user_id'];
+
+// Preluare lista useri cu care s-a conversat
+// Ordonăm după ultimul mesaj
+$stmt = $db->prepare("
+    SELECT u.id, u.username, u.age, u.city, u.country, u.gender, u.gallery,
+           MAX(m.created_at) as last_msg, m.message
+    FROM users u
+    JOIN (
+        SELECT 
+            IF(sender_id = :uid, receiver_id, sender_id) as other_id,
+            message,
+            created_at
+        FROM messages
+        WHERE sender_id = :uid OR receiver_id = :uid
+    ) m ON u.id = m.other_id
+    WHERE u.id != :uid
+    GROUP BY u.id
+    ORDER BY last_msg DESC
+");
+$stmt->execute(['uid' => $user_id]);
+$contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Selectează cu cine vorbim (dacă există în GET, altfel prima conversație)
+$selected_user_id = null;
+if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
+    $selected_user_id = (int)$_GET['user_id'];
+} elseif (count($contacts)) {
+    $selected_user_id = $contacts[0]['id'];
+}
+
+// Preluare user selectat (doar dacă avem conversație)
+$selected_user = null;
+if ($selected_user_id) {
+    $stmt = $db->prepare("SELECT id, username, age, city, country, gender, gallery FROM users WHERE id = ?");
+    $stmt->execute([$selected_user_id]);
+    $selected_user = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Inserare mesaj nou
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'], $_POST['message']) && $selected_user_id) {
+    $msg = trim($_POST['message']);
+    if ($msg !== '' && $selected_user_id != $user_id) {
+        $stmt = $db->prepare("INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)");
+        $stmt->execute([$user_id, $selected_user_id, $msg]);
+        header("Location: messages.php?user_id=" . $selected_user_id);
+        exit;
+    }
+}
+
+// Preluare mesaje între user curent și cel selectat
+$messages = [];
+if ($selected_user_id) {
+    $stmt = $db->prepare("
+        SELECT m.*, u.username, u.gallery
+        FROM messages m
+        JOIN users u ON m.sender_id = u.id
+        WHERE (sender_id = :uid AND receiver_id = :sid) OR (sender_id = :sid AND receiver_id = :uid)
+        ORDER BY m.created_at ASC
+    ");
+    $stmt->execute(['uid' => $user_id, 'sid' => $selected_user_id]);
+    $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 <!DOCTYPE html>
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mesaje</title>
     <link rel="stylesheet" href="assets_css/messages.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -13,86 +81,72 @@ session_start();
 <body>
     <!-- HEADER CENTRALIZAT -->
     <div class="main-header">
-        <span class="header-title"><i class="fas fa-comments"></i> Mesaje</span>
+        <span class="header-title">MESAGERIE</span>
     </div>
-
-    <!-- CONTAINER CENTRAL MARE -->
+    <!-- CONTAINER MESAGERIE -->
     <div class="messages-main-container">
-      <div class="messages-wrapper">
-        <!-- Lista persoane (stânga) -->
-        <div class="messages-list" id="messagesList">
-          <!-- Aici apar persoane cu care ai vorbit -->
-          <div class="message-user active" onclick="selectConversation(0)">
-            <img class="message-user-avatar" src="default-avatar.jpg" alt="Avatar">
-            <div class="message-user-info">
-              <div class="message-user-name">Kate, <span class="user-age">32</span> <span class="msg-dot"></span></div>
-              <div class="message-user-preview">Hey! Ce faci?</div>
+        <div class="messages-wrapper">
+            <!-- LISTA CONTACTE -->
+            <div class="messages-list">
+                <?php if ($contacts): ?>
+                    <?php foreach ($contacts as $contact): 
+                        // Imagine: prima din galerie sau default-avatar
+                        $avatar = 'default-avatar.jpg';
+                        if (!empty($contact['gallery'])) {
+                            $gal = explode(',', $contact['gallery']);
+                            $avatar = trim($gal[0]);
+                        }
+                        ?>
+                        <div class="message-user<?= $contact['id'] == $selected_user_id ? ' active' : '' ?>" onclick="window.location='messages.php?user_id=<?=$contact['id']?>'">
+                            <img src="<?=htmlspecialchars($avatar)?>" alt="" class="message-user-avatar">
+                            <div class="message-user-info">
+                                <div class="message-user-name"><?=htmlspecialchars($contact['username'])?></div>
+                                <div class="message-user-preview"><?=htmlspecialchars($contact['message'])?></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div style="padding:28px;color:#bb87ff;">Nicio conversație încă. Trimite un mesaj!</div>
+                <?php endif; ?>
             </div>
-            <div class="message-user-meta">
-              <span class="msg-unread">2</span>
+            <!-- ZONA CONVERSAȚIE -->
+            <div class="messages-conversation">
+                <?php if ($selected_user): ?>
+                    <div class="messages-conv-header">
+                        <?php 
+                        $avatar2 = 'default-avatar.jpg';
+                        if (!empty($selected_user['gallery'])) {
+                            $gal2 = explode(',', $selected_user['gallery']);
+                            $avatar2 = trim($gal2[0]);
+                        }
+                        ?>
+                        <img src="<?=htmlspecialchars($avatar2)?>" alt="" class="conv-avatar">
+                        <span class="conv-username"><?=htmlspecialchars($selected_user['username'])?></span>
+                        <span class="conv-status">online</span>
+                    </div>
+                    <div class="messages-conv-body" id="messagesConvBody">
+                        <?php foreach ($messages as $msg): ?>
+                            <div class="msg-row<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
+                                <div class="msg-bubble<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
+                                    <?=htmlspecialchars($msg['message'])?>
+                                </div>
+                                <span class="msg-time"><?=date('H:i', strtotime($msg['created_at']))?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <!-- FORM MESAJ -->
+                    <form class="messages-conv-footer" method="post" autocomplete="off" style="margin-top:2px;">
+                        <input type="text" name="message" placeholder="Scrie un mesaj..." required maxlength="512" autocomplete="off" style="font-size:1.16em;">
+                        <button type="submit" name="send_message" class="conv-send-btn"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                <?php else: ?>
+                    <div class="messages-conv-header" style="min-height:200px;justify-content:center;align-items:center;">
+                        <span style="color:#bbb;font-size:1.13em;">Selectează sau trimite un mesaj cuiva!</span>
+                    </div>
+                <?php endif; ?>
             </div>
-          </div>
-          <div class="message-user" onclick="selectConversation(1)">
-            <img class="message-user-avatar" src="default-avatar.jpg" alt="Avatar">
-            <div class="message-user-info">
-              <div class="message-user-name">Eve, <span class="user-age">27</span></div>
-              <div class="message-user-preview">Vii la party?</div>
-            </div>
-          </div>
-          <div class="message-user" onclick="selectConversation(2)">
-            <img class="message-user-avatar" src="default-avatar.jpg" alt="Avatar">
-            <div class="message-user-info">
-              <div class="message-user-name">Suzane, <span class="user-age">33</span> <span class="msg-dot"></span></div>
-              <div class="message-user-preview">Salut, salut!</div>
-            </div>
-            <div class="message-user-meta">
-              <span class="msg-unread">1</span>
-            </div>
-          </div>
-          <div class="message-user" onclick="selectConversation(3)">
-            <img class="message-user-avatar" src="default-avatar.jpg" alt="Avatar">
-            <div class="message-user-info">
-              <div class="message-user-name">John, <span class="user-age">28</span></div>
-              <div class="message-user-preview">Ok, mersi!</div>
-            </div>
-          </div>
         </div>
-
-        <!-- Conversație (dreapta) -->
-        <div class="messages-conversation" id="messagesConversation">
-          <div class="messages-conv-header">
-            <img class="conv-avatar" src="default-avatar.jpg" alt="Avatar">
-            <div>
-              <span class="conv-username">Kate, 32</span>
-              <span class="conv-status">Online</span>
-            </div>
-            <div class="conv-menu">
-              <i class="fas fa-ellipsis-v"></i>
-            </div>
-          </div>
-          <div class="messages-conv-body" id="messagesConvBody">
-            <!-- Mesaje de conversație (dummy) -->
-            <div class="msg-row">
-              <div class="msg-bubble">Hey! Ce faci? <span class="msg-time">14:18</span></div>
-            </div>
-            <div class="msg-row own">
-              <div class="msg-bubble own">Bine, tu? <span class="msg-time">14:19</span></div>
-            </div>
-            <div class="msg-row">
-              <div class="msg-bubble">Tot bine! 😊 <span class="msg-time">14:19</span></div>
-            </div>
-            <div class="msg-row own">
-              <div class="msg-bubble own">Ce planuri ai diseară? <span class="msg-time">14:20</span></div>
-            </div>
-          </div>
-          <div class="messages-conv-footer">
-            <input type="text" placeholder="Mesaj..." id="convInput" autocomplete="off" />
-            <button class="conv-send-btn"><i class="fas fa-paper-plane"></i></button>
-          </div>
-        </div>
-      </div>
     </div>
-
     <!-- NAVBAR CENTRALIZAT -->
     <div class="navbar">
         <a class="icon" href="index.php"><i class="fas fa-home"></i></a>
@@ -100,6 +154,12 @@ session_start();
         <a class="icon active" href="messages.php"><i class="fas fa-comments"></i></a>
         <a class="icon" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
-    <script src="assets_js/messages.js"></script>
+    <script>
+    // Scroll la ultimul mesaj
+    window.onload = function() {
+        var msgBody = document.getElementById('messagesConvBody');
+        if(msgBody) msgBody.scrollTop = msgBody.scrollHeight;
+    };
+    </script>
 </body>
 </html>
