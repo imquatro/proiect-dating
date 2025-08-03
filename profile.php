@@ -10,15 +10,14 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // 1. Extragere date user + poze
+// 1. Extragere date user
 $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-$poze = [];
-if (!empty($user['gallery'])) {
-    $poze = explode(',', $user['gallery']);
-}
-
+$profile_photo = !empty($user['profile_photo'])
+    ? $user['profile_photo']
+    : 'img/user_default.png';
+	
 // Verificăm dacă userul este admin
 $isAdmin = !empty($user['is_admin']) && $user['is_admin'] == 1;
 
@@ -41,17 +40,8 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profilul Meu</title>
-    <link rel="stylesheet" href="assets_css/profile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-      /* Extra ca să faci săgețile inactive vizibile ca “fade” */
-      .gallery-arrow:disabled {
-          opacity: 0.28 !important;
-          cursor: default !important;
-          pointer-events: none;
-          filter: grayscale(1) blur(0.5px);
-      }
-    </style>
+        <link rel="stylesheet" href="assets_css/profile.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
     <div class="main-header">
@@ -67,29 +57,10 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
     </div>
     <div class="profile-container">
 
-        <!-- Galerie poze cu săgeți -->
-        <?php
-        $gallery_status = $user['gallery_status'];
-        $poze = $user['gallery'] ? explode(',', $user['gallery']) : [];
-        ?>
-        <?php if ($poze && count($poze)>0): ?>
+          <!-- Poză de profil -->
         <div class="profile-gallery">
-            <button class="gallery-arrow left" id="arrow-left" onclick="prevImg(<?=count($poze)?>)" type="button"><i class="fas fa-chevron-left"></i></button>
-            <?php foreach ($poze as $idx=>$src): ?>
-                <div class="photo-wrap<?= $gallery_status === 'pending' ? ' photo-pending' : '' ?>" id="photo-wrap-<?=$idx?>" style="display:none;">
-                    <img src="<?=htmlspecialchars($src)?>" class="profile-img">
-                    <?php if($gallery_status === 'pending'): ?>
-                        <span class="photo-badge">NEVALIDATĂ</span>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
-            <button class="gallery-arrow right" id="arrow-right" onclick="nextImg(<?=count($poze)?>)" type="button"><i class="fas fa-chevron-right"></i></button>
+            <img src="<?= htmlspecialchars($profile_photo) ?>" class="profile-img" alt="Poza de profil">
         </div>
-        <?php else: ?>
-            <div class="profile-gallery">
-                <img src="default-avatar.jpg" alt="Profil" style="display:block;">
-            </div>
-        <?php endif; ?>
 
         <!-- Info user -->
         <div class="profile-info-list">
@@ -119,19 +90,23 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
         </div>
 
         <!-- Card upload poza -->
-        <div class="profile-upload-card">
+       <div class="profile-upload-card">
             <form action="upload_photo.php" method="POST" enctype="multipart/form-data" id="upload-photo-form">
                 <input type="hidden" name="user_id" value="<?=$user_id?>">
                 <!-- Buton 1: Selectează poză -->
                 <button type="button" class="profile-upload-btn" id="select-btn">
                     <i class="fas fa-plus-circle"></i> Adaugă poză
                 </button>
-                <input type="file" name="profile_photo" accept="image/*" required id="profile-photo-input" style="display:none;">
+                <input type="file" name="file" accept="image/*" required id="profile-photo-input" style="display:none;">
                 <!-- Buton 2: Încarcă poză -->
                 <button type="submit" class="profile-upload-btn" id="upload-btn" style="display:none; margin-left: 16px;">
                     <i class="fas fa-upload"></i> Încarcă poză
                 </button>
             </form>
+        </div>
+
+        <div class="profile-upload-card">
+            <a href="gallery.php" class="profile-upload-btn"><i class="fas fa-images"></i> Vezi galeria</a>
         </div>
     </div>
 
@@ -141,29 +116,7 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
         <a class="icon" href="messages.php"><i class="fas fa-comments"></i></a>
         <a class="icon active" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
-    <script>
-      let currentImg = 0;
-      function showImg(idx, total) {
-        for(let i=0; i<total; i++) {
-          let wrap = document.getElementById('photo-wrap-'+i);
-          if(wrap) wrap.style.display = (i===idx) ? 'flex' : 'none';
-        }
-        // Disabling buttons if at start/end or only 1 photo
-        document.getElementById('arrow-left').disabled = (idx===0 || total<=1);
-        document.getElementById('arrow-right').disabled = (idx===total-1 || total<=1);
-        window.currentImg = idx;
-      }
-      function prevImg(total) {
-        if(window.currentImg>0) showImg(window.currentImg-1, total);
-      }
-      function nextImg(total) {
-        if(window.currentImg<total-1) showImg(window.currentImg+1, total);
-      }
-      document.addEventListener("DOMContentLoaded", function(){
-        window.currentImg = 0;
-        let total = document.querySelectorAll('.photo-wrap').length;
-        if(total>0) showImg(0, total);
-      });
+        <script>
       function toggleDescEdit() {
         let editDiv = document.getElementById('desc-edit-div');
         let viewDiv = document.getElementById('desc-view-div');

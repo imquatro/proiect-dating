@@ -1,12 +1,25 @@
 <?php
 session_start();
+require_once __DIR__ . '/includes/db.php';
 
-// Folosește exact logica din profile.php pentru avatar (dacă ai acolo altă metodă, adaptează linia de mai jos!)
-$user_avatar = isset($_SESSION['profile_picture']) && $_SESSION['profile_picture'] != '' 
-    ? $_SESSION['profile_picture'] 
+// Redirecționează la login dacă nu există sesiune activă
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+
+// Preluare informații utilizator și poza de profil
+$stmt = $db->prepare('SELECT username, profile_photo FROM users WHERE id = ?');
+$stmt->execute([$user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$mini_avatar = !empty($user['profile_photo'])
+    ? $user['profile_photo']
     : 'img/user_default.png';
 
-$user_name = isset($_SESSION['username']) ? $_SESSION['username'] : 'UserName';
+$user_name = $user['username'] ?? ($_SESSION['username'] ?? 'UserName');
 ?>
 <!DOCTYPE html>
 <html lang="ro">
@@ -31,10 +44,10 @@ $user_name = isset($_SESSION['username']) ? $_SESSION['username'] : 'UserName';
     <div class="profile-container">
         <!-- MINI PROFIL DINAMIC -->
         <div class="mini-profile">
-           <img src="<?= htmlspecialchars($photos[0] ?? '') ?>" alt="poza mărită" class="admin-lightbox-img" id="adminLightboxImg" />
+            <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
             <div class="mini-profile-info">
                 <div class="mini-profile-username"><?= htmlspecialchars($user_name) ?></div>
-                <div class="mini-profile-stats">
+                <div class="mini-profile-stats">␊
                     <span>Level: 10</span> | <span>XP: 1500</span>
                 </div>
             </div>

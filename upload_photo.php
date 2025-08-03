@@ -8,12 +8,14 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_photo'])) {
+    $file = $_FILES['profile_photo'];
+
     // Setări upload
     $upload_dir = 'uploads/' . $user_id . '/';
     if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
-    $filename = basename($_FILES["file"]["name"]);
+    $filename = basename($file["name"]);
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     $timestamp = date("Ymd_His") . '_' . rand(10, 99);
     $db_filename = "photo_" . $timestamp . "." . $ext;
@@ -23,10 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
     // Validări minime
-    if ($_FILES["file"]["size"] > 10 * 1024 * 1024) $uploadOk = 0; // max 10MB
+    if ($file["size"] > 10 * 1024 * 1024) $uploadOk = 0; // max 10MB
     if (!in_array($ext, $allowed)) $uploadOk = 0;
 
-    if ($uploadOk && move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
+    if ($uploadOk && move_uploaded_file($file["tmp_name"], $target_file)) {
         // --- ACTUALIZARE GALLERY & GALLERY_STATUS CORECT ---
         $stmt = $db->prepare("SELECT gallery, gallery_status FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
