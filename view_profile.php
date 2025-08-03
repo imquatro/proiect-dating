@@ -7,6 +7,13 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+$user_id = $_SESSION['user_id'];
+
+// Verificăm dacă utilizatorul curent este admin
+$stmtAdmin = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
+$stmtAdmin->execute([$user_id]);
+$isAdmin = $stmtAdmin->fetchColumn();
+
 if (!isset($_GET['user_id'])) {
     header("Location: index.php");
     exit;
@@ -42,16 +49,20 @@ $data_pozei = '2025-06-03'; // Exemplu
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Utilizator</title>
+    <link rel="stylesheet" href="assets_css/profile.css">
     <link rel="stylesheet" href="assets_css/view_profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-    <div class="vp-header">
+        <div class="vp-header">
+        <?php if ($isAdmin): ?>
+            <a href="admin_panel.php" class="admin-btn" title="Panou Admin"><i class="fas fa-user-shield"></i></a>
+        <?php endif; ?>
         <a href="index.php" class="vp-btn-back" title="Înapoi la Home">
             <i class="fas fa-arrow-left"></i>
         </a>
         <span class="vp-header-title">Profil Utilizator</span>
-    </div>
+		</div>
     <div class="vp-container">
 
         <!-- Galerie poze cu săgeți -->

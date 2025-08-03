@@ -10,10 +10,11 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Preluare informații utilizator și galerie
-$stmt = $db->prepare('SELECT username, gallery FROM users WHERE id = ?');
+// Preluare informații utilizator și galerie + status admin
+$stmt = $db->prepare('SELECT username, gallery, is_admin FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+$isAdmin = !empty($user['is_admin']) && $user['is_admin'] == 1;
 
 // Prima imagine din galerie este folosită ca avatar
 $gallery = !empty($user['gallery']) ? explode(',', $user['gallery']) : [];
@@ -36,11 +37,18 @@ $user_name = $user['username'] ?? ($_SESSION['username'] ?? 'UserName');
 </head>
 <body>
     <!-- HEADER -->
-    <div class="main-header">
+        <div class="main-header">
+        <?php if ($isAdmin): ?>
+            <a href="admin_panel.php" class="admin-btn" title="Panou Admin">
+                <i class="fas fa-user-shield"></i>
+            </a>
+        <?php else: ?>
+            <span style="width:38px;"></span>
+        <?php endif; ?>
+        <span class="header-title">HOME PAGE</span>
         <a href="logout.php" class="logout-btn" title="Deconectare">
             <i class="fas fa-sign-out-alt"></i>
         </a>
-        <span class="header-title">HOME PAGE</span>
     </div>
     <!-- CONTAINER ALB CENTRAT -->
     <div class="profile-container">

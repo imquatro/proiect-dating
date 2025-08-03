@@ -8,6 +8,11 @@ if (!isset($_SESSION['user_id'])) {
 }
 $user_id = $_SESSION['user_id'];
 
+// Verificăm dacă userul este admin
+$stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
+$stmt->execute([$user_id]);
+$isAdmin = $stmt->fetchColumn();
+
 // Preluare lista useri cu care s-a conversat
 // Ordonăm după ultimul mesaj
 $stmt = $db->prepare("
@@ -29,12 +34,10 @@ $stmt = $db->prepare("
 $stmt->execute(['uid' => $user_id]);
 $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Selectează cu cine vorbim (dacă există în GET, altfel prima conversație)
+// Selectează cu cine vorbim doar dacă este specificat în GET
 $selected_user_id = null;
 if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
     $selected_user_id = (int)$_GET['user_id'];
-} elseif (count($contacts)) {
-    $selected_user_id = $contacts[0]['id'];
 }
 
 // Preluare user selectat (doar dacă avem conversație)
@@ -97,7 +100,9 @@ if ($selected_user_id) {
                             $avatar = trim($gal[0]);
                         }
                         ?>
-                        <div class="message-user<?= $contact['id'] == $selected_user_id ? ' active' : '' ?>" onclick="window.location='messages.php?user_id=<?=$contact['id']?>'">
+                        <div class="message-user<?= $contact['id'] == $selected_user_id ? ' active' : '' ?>"
+                             data-user-id="<?=$contact['id']?>"
+                             data-username="<?=htmlspecialchars($contact['username'])?>">
                             <img src="<?=htmlspecialchars($avatar)?>" alt="" class="message-user-avatar">
                             <div class="message-user-info">
                                 <div class="message-user-name"><?=htmlspecialchars($contact['username'])?></div>
@@ -125,12 +130,24 @@ if ($selected_user_id) {
                         <span class="conv-status">online</span>
                     </div>
                     <div class="messages-conv-body" id="messagesConvBody">
-                        <?php foreach ($messages as $msg): ?>
+                        <?php foreach ($messages as $msg):
+                            $msg_avatar = 'default-avatar.jpg';
+                            if (!empty($msg['gallery'])) {
+                                $galm = explode(',', $msg['gallery']);
+                                $msg_avatar = trim($galm[0]);
+                            }
+                        ?>
                             <div class="msg-row<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
+                                <?php if ($msg['sender_id'] != $user_id): ?>
+                                    <img src="<?=htmlspecialchars($msg_avatar)?>" alt="" class="msg-avatar">
+                                <?php endif; ?>
                                 <div class="msg-bubble<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
                                     <?=htmlspecialchars($msg['message'])?>
                                 </div>
                                 <span class="msg-time"><?=date('H:i', strtotime($msg['created_at']))?></span>
+                                <?php if ($msg['sender_id'] == $user_id): ?>
+                                    <img src="<?=htmlspecialchars($msg_avatar)?>" alt="" class="msg-avatar">
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -144,6 +161,16 @@ if ($selected_user_id) {
                         <span style="color:#bbb;font-size:1.13em;">Selectează sau trimite un mesaj cuiva!</span>
                     </div>
                 <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL ȘTERGERE CONVERSAȚIE -->
+    <div id="deleteModal" class="modal-overlay" style="display:none;">
+        <div class="modal">
+            <p id="deleteModalText">Ștergi conversația?</p>
+            <div class="modal-actions">
+                <button id="deleteConfirm">Șterge</button>
+                <button id="deleteCancel">Anulează</button>
             </div>
         </div>
     </div>

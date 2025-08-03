@@ -9,49 +9,45 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// Preluăm datele userului inclusiv statusul de admin
+$stmt = $db->prepare('SELECT gallery, gallery_status, is_admin FROM users WHERE id = ?');
+$stmt->execute([$user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$poze = $user['gallery'] ? explode(',', $user['gallery']) : [];
+$statuses = $user['gallery_status'] ? explode(',', $user['gallery_status']) : [];
+$isAdmin = !empty($user['is_admin']) && $user['is_admin'] == 1;
+
 // Procesează acțiunile de setare sau ștergere
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['photo'], $_POST['action'])) {
     $photo = basename($_POST['photo']);
-    $stmt = $db->prepare('SELECT gallery, gallery_status FROM users WHERE id = ?');
-    $stmt->execute([$user_id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    $gallery = $user['gallery'] ? explode(',', $user['gallery']) : [];
-    $statuses = $user['gallery_status'] ? explode(',', $user['gallery_status']) : [];
-    $index = array_search($photo, $gallery);
+    $index = array_search($photo, $poze);
     if ($index !== false) {
         if ($_POST['action'] === 'set_profile') {
             // mută fotografia selectată pe prima poziție
-            $chosenPhoto = $gallery[$index];
+            $chosenPhoto = $poze[$index];
             $chosenStatus = $statuses[$index] ?? '';
-            array_splice($gallery, $index, 1);
+            array_splice($poze, $index, 1);
             if (isset($statuses[$index])) array_splice($statuses, $index, 1);
-            array_unshift($gallery, $chosenPhoto);
+            array_unshift($poze, $chosenPhoto);
             array_unshift($statuses, $chosenStatus);
             $stmtUpd = $db->prepare('UPDATE users SET gallery = ?, gallery_status = ? WHERE id = ?');
-            $stmtUpd->execute([implode(',', $gallery), implode(',', $statuses), $user_id]);
+            $stmtUpd->execute([implode(',', $poze), implode(',', $statuses), $user_id]);
         } elseif ($_POST['action'] === 'delete') {
             $filePath = 'uploads/' . $user_id . '/' . $photo;
             if (is_file($filePath)) {
                 unlink($filePath);
             }
-            unset($gallery[$index]);
+            unset($poze[$index]);
             if (isset($statuses[$index])) unset($statuses[$index]);
-            $gallery = array_values($gallery);
+            $poze = array_values($poze);
             $statuses = array_values($statuses);
             $stmtUpd = $db->prepare('UPDATE users SET gallery = ?, gallery_status = ? WHERE id = ?');
-            $stmtUpd->execute([implode(',', $gallery), implode(',', $statuses), $user_id]);
+            $stmtUpd->execute([implode(',', $poze), implode(',', $statuses), $user_id]);
         }
     }
     header('Location: gallery.php');
     exit;
 }
-
-// Reîncarcă datele pentru afișare
-$stmt = $db->prepare('SELECT gallery, gallery_status FROM users WHERE id = ?');
-$stmt->execute([$user_id]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-$poze = $user['gallery'] ? explode(',', $user['gallery']) : [];
-$statuses = $user['gallery_status'] ? explode(',', $user['gallery_status']) : [];
 ?>
 <!DOCTYPE html>
 <html lang="ro">
@@ -67,8 +63,15 @@ $statuses = $user['gallery_status'] ? explode(',', $user['gallery_status']) : []
 </head>
 <body>
     <div class="main-header">
-        <a href="profile.php" class="logout-btn" title="Înapoi"><i class="fas fa-arrow-left"></i></a>
+        <?php if ($isAdmin): ?>
+            <a href="admin_panel.php" class="admin-btn" title="Panou Admin">
+                <i class="fas fa-user-shield"></i>
+            </a>
+        <?php else: ?>
+            <span style="width:38px;"></span>
+        <?php endif; ?>
         <span class="header-title">Galeria mea</span>
+        <a href="profile.php" class="logout-btn" title="Înapoi"><i class="fas fa-arrow-left"></i></a>
     </div>
     <div class="profile-container">
         <?php if ($poze && count($poze) > 0): ?>
