@@ -9,6 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 $user_id = $_SESSION['user_id'];
 
+require_once __DIR__ . '/includes/update_last_active.php';
+
 // 1. Extragere date user
 $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);

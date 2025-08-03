@@ -8,6 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 $user_id = $_SESSION['user_id'];
 
+require_once __DIR__ . '/includes/update_last_active.php';
+
 // Verificăm dacă userul este admin
 $stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
@@ -44,8 +46,22 @@ if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
 $selected_user = null;
 if ($selected_user_id) {
     $stmt = $db->prepare("SELECT id, username, age, city, country, gender, gallery FROM users WHERE id = ?");
-    $stmt->execute([$selected_user_id]);
-    $selected_user = $stmt->fetch(PDO::FETCH_ASSOC);
+		$stmt->execute(['uid' => $user_id]);
+		$contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+if ($selected_user && !in_array($selected_user_id, array_column($contacts, 'id'))) {
+    $contacts[] = [
+        'id' => $selected_user['id'],
+        'username' => $selected_user['username'],
+        'age' => $selected_user['age'],
+        'city' => $selected_user['city'],
+        'country' => $selected_user['country'],
+        'gender' => $selected_user['gender'],
+        'gallery' => $selected_user['gallery'],
+        'last_msg' => null,
+        'message' => ''
+    ];
 }
 
 // Inserare mesaj nou

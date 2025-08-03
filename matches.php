@@ -9,6 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+require_once __DIR__ . '/includes/update_last_active.php';
+
 function build_card($u) {
     $avatar = 'img/user_default.png';
     if (!empty($u['gallery'])) {
@@ -32,7 +34,8 @@ function build_card($u) {
     ];
 }
 
-$pendingIds = [];
+$pendingSent = [];
+$pendingReceived = [];
 $friendIds = [];
 try {
     $stmt = $db->prepare('SELECT sender_id, receiver_id, status FROM friend_requests WHERE sender_id = ? OR receiver_id = ?');
@@ -40,14 +43,18 @@ try {
     while ($fr = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $other = ($fr['sender_id'] == $user_id) ? $fr['receiver_id'] : $fr['sender_id'];
         if ($fr['status'] === 'pending') {
-            $pendingIds[] = $other;
+            if ($fr['sender_id'] == $user_id) {
+                $pendingSent[] = $other;
+            } else {
+                $pendingReceived[] = $other;
+            }
         } elseif ($fr['status'] === 'accepted') {
             $friendIds[] = $other;
         }
     }
 } catch (PDOException $e) {
 }
-$excludeIds = array_unique(array_merge($pendingIds, $friendIds));
+$excludeIds = array_unique(array_merge($pendingReceived, $friendIds));
 
 $rawUsers = [];
 try {
@@ -73,7 +80,11 @@ foreach ($rawUsers as $u) {
     if ($now - $last > 1200) {
         continue;
     }
-    $onlineUsers[] = build_card($u);
+    $card = build_card($u);
+    if (in_array($u['id'], $pendingSent)) {
+        $card['requestSent'] = true;
+    }
+    $onlineUsers[] = $card;
 }
 
 $friendRequests = [];

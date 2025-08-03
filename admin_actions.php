@@ -9,6 +9,8 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+require_once __DIR__ . '/includes/update_last_active.php';
+
 // Verifică dacă userul curent e admin
 $stmt = $db->prepare("SELECT is_admin FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);

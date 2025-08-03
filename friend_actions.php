@@ -12,6 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 $action = $_POST['action'] ?? '';
 $currentId = $_SESSION['user_id'];
 
+require_once __DIR__ . '/includes/update_last_active.php';
+
 function build_user($row) {
     $avatar = 'img/user_default.png';
     if (!empty($row['gallery'])) {
@@ -92,7 +94,14 @@ if ($action === 'decline_request') {
     try {
         $stmt = $db->prepare('DELETE FROM friend_requests WHERE sender_id = ? AND receiver_id = ? AND status = "pending"');
         $stmt->execute([$sender, $currentId]);
-        echo json_encode(['success' => true]);
+        if ($stmt->rowCount()) {
+            $stmt = $db->prepare('SELECT id, username, gallery, last_active FROM users WHERE id = ?');
+            $stmt->execute([$sender]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            echo json_encode(['success' => true, 'user' => build_user($user)]);
+            exit;
+        }
+        echo json_encode(['success' => false, 'message' => 'Cerere inexistentă']);
         exit;
     } catch (PDOException $e) {
         echo json_encode(['success' => false, 'message' => 'Eroare DB']);

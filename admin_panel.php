@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+require_once __DIR__ . '/includes/update_last_active.php';
 // Verificare admin
 $stmt = $db->prepare("SELECT is_admin FROM users WHERE id = ?");
 $stmt->execute([$user_id]);

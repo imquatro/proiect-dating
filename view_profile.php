@@ -6,18 +6,20 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
-
-$user_id = $_SESSION['user_id'];
+ $user_id = $_SESSION['user_id'];
 
 // Verificăm dacă utilizatorul curent este admin
 $stmtAdmin = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
 $stmtAdmin->execute([$user_id]);
 $isAdmin = $stmtAdmin->fetchColumn();
 
+require_once __DIR__ . '/includes/update_last_active.php';
+
 if (!isset($_GET['user_id'])) {
     header("Location: index.php");
     exit;
 }
+
 $view_id = (int)$_GET['user_id'];
 
 $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");

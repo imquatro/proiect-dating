@@ -9,6 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+require_once __DIR__ . '/includes/update_last_active.php';
+
 // Preluăm datele userului inclusiv statusul de admin
 $stmt = $db->prepare('SELECT gallery, gallery_status, is_admin FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
