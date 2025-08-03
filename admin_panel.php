@@ -20,58 +20,62 @@ if (!$isAdmin) {
 }
 
 // Procesare aprobare/respinge poza
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'], $_POST['photo_index'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'], $_POST['photo_name'])) {
     $action = $_POST['action'];
     $targetUserId = (int)$_POST['user_id'];
-    $photoIndex = (int)$_POST['photo_index'];
+    $photoName = $_POST['photo_name'];
 
-    $stmt = $db->prepare("SELECT gallery FROM users WHERE id = ?");
+    // Ia galeria și statusul real pentru user
+    $stmt = $db->prepare("SELECT gallery, gallery_status FROM users WHERE id = ?");
     $stmt->execute([$targetUserId]);
-    $gallery = $stmt->fetchColumn();
-    $photos = $gallery ? explode(',', $gallery) : [];
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'], $_POST['photo_index'])) {
-    $action = $_POST['action'];
-    $targetUserId = (int)$_POST['user_id'];
-    $photoIndex = (int)$_POST['photo_index'];
+    $photos = $user['gallery'] ? explode(',', $user['gallery']) : [];
+    $statuses = $user['gallery_status'] ? explode(',', $user['gallery_status']) : [];
 
-    $stmt = $db->prepare("SELECT gallery FROM users WHERE id = ?");
-    $stmt->execute([$targetUserId]);
-    $gallery = $stmt->fetchColumn();
-    $photos = $gallery ? explode(',', $gallery) : [];
+    // CAUTĂ INDEXUL în galeria actuală (nu din pending!)
+    $foundIndex = array_search($photoName, $photos);
 
-    if (isset($photos[$photoIndex])) {
+    if ($foundIndex !== false) {
         if ($action === 'approve') {
-            // NU MAI ȘTERGE poza, doar setează statusul ca "approved"
-            $newStatus = 'approved';
-            $stmt = $db->prepare("UPDATE users SET gallery_status = ? WHERE id = ?");
-            $stmt->execute([$newStatus, $targetUserId]);
+            $statuses[$foundIndex] = 'approved';
         } elseif ($action === 'reject') {
-            // DOAR LA REJECT SE ȘTERGE poza
-            unset($photos[$photoIndex]);
+            unset($photos[$foundIndex]);
+            unset($statuses[$foundIndex]);
             $photos = array_values($photos);
-            $newGallery = implode(',', $photos);
-            $newStatus = count($photos) === 0 ? 'none' : 'pending';
-            $stmt = $db->prepare("UPDATE users SET gallery = ?, gallery_status = ? WHERE id = ?");
-            $stmt->execute([$newGallery, $newStatus, $targetUserId]);
+            $statuses = array_values($statuses);
         }
+        $newGallery = implode(',', $photos);
+        $newStatus = implode(',', $statuses);
+        $stmt = $db->prepare("UPDATE users SET gallery = ?, gallery_status = ? WHERE id = ?");
+        $stmt->execute([$newGallery, $newStatus, $targetUserId]);
     }
 
     header("Location: admin_panel.php?msg=Acțiune efectuată cu succes!");
     exit;
 }
 
-
-    header("Location: admin_panel.php?msg=Acțiune efectuată cu succes!");
-    exit;
-}
-
-$stmt = $db->prepare("SELECT id, username, gallery, gallery_status FROM users WHERE gallery IS NOT NULL AND gallery <> '' AND gallery_status = 'pending'");
-$stmt->execute();
+// Ia toți userii cu poze
+$stmt = $db->query("SELECT id, username, gallery, gallery_status FROM users WHERE gallery IS NOT NULL AND gallery <> ''");
 $usersWithPhotos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-function explodePhotos($gallery) {
-    return $gallery ? explode(',', $gallery) : [];
+// Construiește array-ul cu DOAR pozele pending de validat
+$pendingPhotos = [];
+foreach ($usersWithPhotos as $user) {
+    $photos = $user['gallery'] ? explode(',', $user['gallery']) : [];
+    $statuses = $user['gallery_status'] ? explode(',', $user['gallery_status']) : [];
+    foreach ($photos as $idx => $photo) {
+        if (($statuses[$idx] ?? null) === 'pending') {
+            // Calea corectă
+            $src = (strpos($photo, '/') === false ? 'uploads/' . $user['id'] . '/' . $photo : $photo);
+            $pendingPhotos[] = [
+                'user_id' => $user['id'],
+                'username' => $user['username'],
+                'photo' => $photo,
+                'src' => $src
+            ];
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -90,47 +94,50 @@ function explodePhotos($gallery) {
 </div>
 <div class="admin-container">
     <h1 class="admin-title">Validare Poze Utilizatori</h1>
-    <?php
-    if (!empty($usersWithPhotos)) {
-        $user = $usersWithPhotos[0];
-        $photos = explodePhotos($user['gallery']);
-    ?>
-    <div class="admin-photo-validate-box">
-        <button class="admin-nav-btn" id="adminPrevBtn" title="Poza anterioară">&#8592;</button>
-        <div class="admin-photo-inner">
-            <img src="<?= htmlspecialchars($photos[0] ?? '') ?>" alt="poza de validat" class="admin-photo-img" id="adminPhotoPreview" onclick="openAdminLightbox()" />
-            <form method="POST" id="adminValidateForm">
-                <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-                <input type="hidden" name="photo_index" id="adminPhotoIndexInput" value="0">
-                <div class="admin-validate-actions">
-                    <button type="submit" name="action" value="approve" class="admin-validate-btn">Aprobă</button>
-                    <button type="submit" name="action" value="reject" class="admin-reject-btn">Respinge</button>
-                </div>
-            </form>
-        </div>
-        <button class="admin-nav-btn" id="adminNextBtn" title="Poza următoare">&#8594;</button>
-    </div>
-    <div class="admin-lightbox" id="adminLightbox">
-        <button class="admin-lb-nav" id="adminLbPrevBtn">&#8592;</button>
-        <div class="admin-lightbox-img-wrap">
-            <img src="<?= htmlspecialchars($photos[0] ?? '') ?>" alt="poza mărită" class="admin-lightbox-img" id="adminLightboxImg" />
-            <div class="admin-lightbox-actions-on-img">
-                <button type="button" class="admin-validate-btn" id="adminLbApproveBtn"><i class="fas fa-check"></i></button>
-                <button type="button" class="admin-reject-btn" id="adminLbRejectBtn"><i class="fas fa-times"></i></button>
+    <?php if (!empty($pendingPhotos)) : ?>
+        <div class="admin-photo-validate-box">
+            <button class="admin-nav-btn" id="adminPrevBtn">&#8592;</button>
+            <div class="admin-photo-inner">
+                <img src="<?= htmlspecialchars($pendingPhotos[0]['src']) ?>" class="admin-photo-img" id="adminPhotoPreview" />
+                <form method="POST" id="adminValidateForm">
+                    <input type="hidden" name="user_id" id="adminPhotoUserId" value="<?= $pendingPhotos[0]['user_id'] ?>">
+                    <input type="hidden" name="photo_name" id="adminPhotoNameInput" value="<?= htmlspecialchars($pendingPhotos[0]['photo']) ?>">
+                    <div class="admin-validate-actions">
+                        <button type="submit" name="action" value="approve" class="admin-validate-btn">Aprobă</button>
+                        <button type="submit" name="action" value="reject" class="admin-reject-btn">Respinge</button>
+                    </div>
+                </form>
+                <div class="admin-photo-username"><i class="fa fa-user"></i> <span id="adminPhotoUsername"><?= htmlspecialchars($pendingPhotos[0]['username']) ?></span></div>
             </div>
+            <button class="admin-nav-btn" id="adminNextBtn">&#8594;</button>
         </div>
-        <button class="admin-lb-nav" id="adminLbNextBtn">&#8594;</button>
-        <button class="admin-close-lightbox" onclick="closeAdminLightbox()">&times;</button>
-    </div>
-    <script>
-        const adminPhotos = <?php echo json_encode($photos); ?>;
-    </script>
-    <script src="assets_js/admin_photos.js"></script>
-    <?php
-    } else {
-        echo "<div style='text-align:center; margin-top:32px;'>Nu există poze de validat în acest moment.</div>";
-    }
-    ?>
+        <script>
+        const adminPhotos = <?= json_encode(array_column($pendingPhotos, 'src')); ?>;
+        const adminUsers = <?= json_encode(array_column($pendingPhotos, 'user_id')); ?>;
+        const adminPhotoNames = <?= json_encode(array_column($pendingPhotos, 'photo')); ?>;
+        const adminUsernames = <?= json_encode(array_column($pendingPhotos, 'username')); ?>;
+        let currentPhoto = 0;
+
+        function updatePhotoDisplay() {
+            document.getElementById('adminPhotoPreview').src = adminPhotos[currentPhoto];
+            document.getElementById('adminPhotoUserId').value = adminUsers[currentPhoto];
+            document.getElementById('adminPhotoNameInput').value = adminPhotoNames[currentPhoto];
+            document.getElementById('adminPhotoUsername').textContent = adminUsernames[currentPhoto];
+        }
+        document.getElementById('adminPrevBtn').onclick = function() {
+            if (adminPhotos.length === 0) return;
+            currentPhoto = (currentPhoto - 1 + adminPhotos.length) % adminPhotos.length;
+            updatePhotoDisplay();
+        };
+        document.getElementById('adminNextBtn').onclick = function() {
+            if (adminPhotos.length === 0) return;
+            currentPhoto = (currentPhoto + 1) % adminPhotos.length;
+            updatePhotoDisplay();
+        };
+        </script>
+    <?php else: ?>
+        <div style='text-align:center; margin-top:32px;'>Nu există poze de validat în acest moment.</div>
+    <?php endif; ?>
 </div>
 <div class="admin-navbar">
     <a class="admin-icon" href="index.php"><i class="fas fa-home"></i></a>

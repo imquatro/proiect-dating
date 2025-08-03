@@ -1,0 +1,43 @@
+.mini-profile {
+    display: flex;
+    align-items: center;
+    background: #ffe9a3;
+    padding: 14px 18px;
+    margin: 0 auto 22px auto;
+    box-shadow: 0 2px 8px #0001;
+    width: 375px;
+    max-width: 98vw;
+}
+.mini-profile-avatar, .profile-avatar {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    margin-right: 14px;
+    border: 2px solid #f6cf49;
+    background: #ffe9a3;
+}
+.mini-profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.mini-profile-username {
+    font-size: 1.15em;
+    font-weight: bold;
+    color: #6c4e09;
+    margin-bottom: 5px;
+}
+.mini-profile-stats {
+    font-size: 1em;
+    color: #947e3e;
+}
+
+@media (max-width: 480px) {
+    .mini-profile { 
+        width: 99vw; 
+        min-width: 0; 
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+}
