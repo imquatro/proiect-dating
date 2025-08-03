@@ -37,10 +37,10 @@ body, html {
     font-weight: 600;
     letter-spacing: 1px;
 }
-.vp-container {
+.vp-container {␊
     max-width: 450px;
     margin: 0 auto;
-    background: #fff;
+    background: url('../img/bg.png') center/cover no-repeat;
     border-radius: 0;
     box-shadow: 0 4px 24px rgba(155,92,255,0.13);
     padding: 20px 12px 80px 12px;
@@ -48,7 +48,7 @@ body, html {
     flex-direction: column;
     align-items: center;
     margin-top: 22px;
-}
+}␊
 .vp-gallery {
     width: 100%;
     position: relative;

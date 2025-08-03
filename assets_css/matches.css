@@ -65,6 +65,9 @@
 .user-card-buttons {
     display: flex;
 }
+.user-card-buttons {
+    display: flex;
+}
 .user-card-buttons button {
     width: 32px;
     height: 32px;
@@ -73,6 +76,11 @@
     background: #f6cf49;
     color: #6c4e09;
     cursor: pointer;
+}
+.user-card-buttons .btn-msg.not-friend{
+    width: auto;
+    padding: 0 6px;
+    cursor: default;
 }
 .status-dot {
     position: absolute;

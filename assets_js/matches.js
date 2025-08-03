@@ -14,18 +14,24 @@
         return 'status-offline';
     }
 
-    function buttonsHtml(tab, id){
+    function buttonsHtml(tab, id, requested){
         if(tab === 'online'){
-            return '<button class="btn-add" data-id="'+id+'" title="Adauga prieten"><i class="fas fa-user-plus"></i></button>'+
-                   '<button class="btn-msg" data-id="'+id+'" title="Trimite mesaj"><i class="fas fa-envelope"></i></button>'+
-                   '<button class="btn-block" data-id="'+id+'" title="Blocheaza"><i class="fas fa-ban"></i></button>';
+            let html = '<button class="btn-view" data-id="'+id+'" title="Vezi profil"><i class="fas fa-eye"></i></button>';
+            if(!requested){
+                html += '<button class="btn-add" data-id="'+id+'" title="Adauga prieten"><i class="fas fa-user-plus"></i></button>';
+            }
+            html += '<button class="btn-block" data-id="'+id+'" title="Blocheaza"><i class="fas fa-ban"></i></button>';
+            return html;
         }
         if(tab === 'requests'){
-            return '<button class="btn-accept" data-id="'+id+'" title="Accepta"><i class="fas fa-check"></i></button>'+
-                   '<button class="btn-refuse" data-id="'+id+'" title="Refuza"><i class="fas fa-times"></i></button>';
+            return '<button class="btn-view" data-id="'+id+'" title="Vezi profil"><i class="fas fa-eye"></i></button>'+
+                   '<button class="btn-accept" data-id="'+id+'" title="Accepta"><i class="fas fa-check"></i></button>'+
+                   '<button class="btn-refuse" data-id="'+id+'" title="Refuza"><i class="fas fa-times"></i></button>'+
+                   '<button class="btn-block" data-id="'+id+'" title="Blocheaza"><i class="fas fa-ban"></i></button>';
         }
         if(tab === 'friends'){
-            return '<button class="btn-msg" data-id="'+id+'" title="Mesaj"><i class="fas fa-envelope"></i></button>'+
+            return '<button class="btn-view" data-id="'+id+'" title="Vezi profil"><i class="fas fa-eye"></i></button>'+
+                   '<button class="btn-msg" data-id="'+id+'" title="Mesaj"><i class="fas fa-envelope"></i></button>'+
                    '<button class="btn-del" data-id="'+id+'" title="Sterge"><i class="fas fa-trash"></i></button>'+
                    '<button class="btn-block" data-id="'+id+'" title="Blocheaza"><i class="fas fa-ban"></i></button>';
         }
@@ -41,7 +47,7 @@
             div.innerHTML = '<span class="status-dot '+statusClass(u.status)+'"></span>'+
                 '<img src="'+u.avatar+'" class="user-card-avatar" alt="">'+
                 '<div class="user-card-name">'+u.username+'</div>'+
-                '<div class="user-card-buttons">'+buttonsHtml(currentTab, u.id)+'</div>';
+                '<div class="user-card-buttons">'+buttonsHtml(currentTab, u.id, u.requestSent)+'</div>';
             cardContainer.appendChild(div);
         });
     }
@@ -114,6 +120,12 @@
             acceptRequest(id);
         } else if(btn.classList.contains('btn-refuse')){
             declineRequest(id);
+        } else if(btn.classList.contains('btn-view')){
+            window.location.href = 'view_profile.php?user_id=' + id;
+        } else if(btn.classList.contains('btn-msg')){
+            window.location.href = 'messages.php?user_id=' + id;
+        } else if(btn.classList.contains('btn-del') || btn.classList.contains('btn-block')){
+            alert('Funcție indisponibilă');
         }
     });
 
@@ -124,9 +136,14 @@
             body: new URLSearchParams({action:'send_request', user_id:id})
         }).then(r=>r.json()).then(d=>{
             if(d.success){
-                onlineUsers = onlineUsers.filter(u => u.id != id);
+                onlineUsers = onlineUsers.map(u => {
+                    if(u.id == id){
+                        u.requestSent = true;
+                    }
+                    return u;
+                });
                 if(currentTab === 'online'){
-                    currentList = currentList.filter(u => u.id != id);
+                    currentList = onlineUsers.slice();
                     render();
                 }
             } else {
@@ -164,6 +181,9 @@
         }).then(r=>r.json()).then(d=>{
             if(d.success){
                 friendRequests = friendRequests.filter(u => u.id != id);
+                if(d.user){
+                    onlineUsers.push(d.user);
+                }
                 if(currentTab === 'requests'){
                     currentList = friendRequests.slice();
                     render();
