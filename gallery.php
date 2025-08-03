@@ -12,7 +12,7 @@ $user_id = $_SESSION['user_id'];
 // Procesează acțiunile de setare sau ștergere
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['photo'], $_POST['action'])) {
     $photo = basename($_POST['photo']);
-    $stmt = $db->prepare('SELECT gallery, gallery_status, profile_photo FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT gallery, gallery_status FROM users WHERE id = ?');
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     $gallery = $user['gallery'] ? explode(',', $user['gallery']) : [];
@@ -20,8 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['photo'], $_POST['acti
     $index = array_search($photo, $gallery);
     if ($index !== false) {
         if ($_POST['action'] === 'set_profile') {
-            $profilePath = 'uploads/' . $user_id . '/' . $photo;
-            $db->prepare('UPDATE users SET profile_photo = ? WHERE id = ?')->execute([$profilePath, $user_id]);
+            // mută fotografia selectată pe prima poziție
+            $chosenPhoto = $gallery[$index];
+            $chosenStatus = $statuses[$index] ?? '';
+            array_splice($gallery, $index, 1);
+            if (isset($statuses[$index])) array_splice($statuses, $index, 1);
+            array_unshift($gallery, $chosenPhoto);
+            array_unshift($statuses, $chosenStatus);
+            $stmtUpd = $db->prepare('UPDATE users SET gallery = ?, gallery_status = ? WHERE id = ?');
+            $stmtUpd->execute([implode(',', $gallery), implode(',', $statuses), $user_id]);
         } elseif ($_POST['action'] === 'delete') {
             $filePath = 'uploads/' . $user_id . '/' . $photo;
             if (is_file($filePath)) {
@@ -31,9 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['photo'], $_POST['acti
             if (isset($statuses[$index])) unset($statuses[$index]);
             $gallery = array_values($gallery);
             $statuses = array_values($statuses);
-            if (!empty($user['profile_photo']) && $user['profile_photo'] === $filePath) {
-                $db->prepare('UPDATE users SET profile_photo = NULL WHERE id = ?')->execute([$user_id]);
-            }
             $stmtUpd = $db->prepare('UPDATE users SET gallery = ?, gallery_status = ? WHERE id = ?');
             $stmtUpd->execute([implode(',', $gallery), implode(',', $statuses), $user_id]);
         }

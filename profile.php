@@ -9,14 +9,20 @@ if (!isset($_SESSION['user_id'])) {
 }
 $user_id = $_SESSION['user_id'];
 
-// 1. Extragere date user + poze
 // 1. Extragere date user
 $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-$profile_photo = !empty($user['profile_photo'])
-    ? $user['profile_photo']
-    : 'img/user_default.png';
+
+// Prima fotografie din galerie servește drept poză de profil
+$gallery = !empty($user['gallery']) ? array_filter(explode(',', $user['gallery'])) : [];
+$profile_photo = 'img/user_default.png';
+if (!empty($gallery)) {
+    $candidate = 'uploads/' . $user_id . '/' . $gallery[0];
+    if (is_file($candidate)) {
+        $profile_photo = $candidate;
+    }
+}
 	
 // Verificăm dacă userul este admin
 $isAdmin = !empty($user['is_admin']) && $user['is_admin'] == 1;
@@ -56,12 +62,10 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
         <span class="header-title">Profilul meu</span>
     </div>
     <div class="profile-container">
-
-          <!-- Poză de profil -->
+        <!-- Poză de profil -->
         <div class="profile-gallery">
             <img src="<?= htmlspecialchars($profile_photo) ?>" class="profile-img" alt="Poza de profil">
         </div>
-
         <!-- Info user -->
         <div class="profile-info-list">
             <div class="info-row"><span class="profile-label">Nume:</span><span class="profile-value"><?=htmlspecialchars($user['username'])?></span></div>
@@ -90,7 +94,7 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
         </div>
 
         <!-- Card upload poza -->
-       <div class="profile-upload-card">
+		<div class="profile-upload-card">
             <form action="upload_photo.php" method="POST" enctype="multipart/form-data" id="upload-photo-form">
                 <input type="hidden" name="user_id" value="<?=$user_id?>">
                 <!-- Buton 1: Selectează poză -->
@@ -116,7 +120,7 @@ if (isset($_GET['error']) && $_GET['error'] == 'max_photos') {
         <a class="icon" href="messages.php"><i class="fas fa-comments"></i></a>
         <a class="icon active" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
-        <script>
+    <script>
       function toggleDescEdit() {
         let editDiv = document.getElementById('desc-edit-div');
         let viewDiv = document.getElementById('desc-view-div');

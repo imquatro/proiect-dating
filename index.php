@@ -10,13 +10,15 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Preluare informații utilizator și poza de profil
-$stmt = $db->prepare('SELECT username, profile_photo FROM users WHERE id = ?');
+// Preluare informații utilizator și galerie
+$stmt = $db->prepare('SELECT username, gallery FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$mini_avatar = !empty($user['profile_photo'])
-    ? $user['profile_photo']
+// Prima imagine din galerie este folosită ca avatar
+$gallery = !empty($user['gallery']) ? explode(',', $user['gallery']) : [];
+$mini_avatar = !empty($gallery)
+    ? 'uploads/' . $user_id . '/' . $gallery[0]
     : 'img/user_default.png';
 
 $user_name = $user['username'] ?? ($_SESSION['username'] ?? 'UserName');
@@ -42,12 +44,12 @@ $user_name = $user['username'] ?? ($_SESSION['username'] ?? 'UserName');
     </div>
     <!-- CONTAINER ALB CENTRAT -->
     <div class="profile-container">
-        <!-- MINI PROFIL DINAMIC -->
+                <!-- MINI PROFIL DINAMIC -->
         <div class="mini-profile">
             <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
             <div class="mini-profile-info">
                 <div class="mini-profile-username"><?= htmlspecialchars($user_name) ?></div>
-                <div class="mini-profile-stats">␊
+                <div class="mini-profile-stats">
                     <span>Level: 10</span> | <span>XP: 1500</span>
                 </div>
             </div>
