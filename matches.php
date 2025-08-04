@@ -159,9 +159,9 @@ try {
         <a class="icon" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
     <script>
-        let onlineUsers = <?=json_encode($onlineUsers, JSON_UNESCAPED_UNICODE)?>;
-        let friendRequests = <?=json_encode($friendRequests, JSON_UNESCAPED_UNICODE)?>;
-        let friends = <?=json_encode($friends, JSON_UNESCAPED_UNICODE)?>;
+        var onlineUsers = <?=json_encode($onlineUsers, JSON_UNESCAPED_UNICODE)?>;
+        var friendRequests = <?=json_encode($friendRequests, JSON_UNESCAPED_UNICODE)?>;
+        var friends = <?=json_encode($friends, JSON_UNESCAPED_UNICODE)?>;
     </script>
     <script src="assets_js/matches.js"></script>
 </body>

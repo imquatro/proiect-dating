@@ -42,12 +42,12 @@ if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
     $selected_user_id = (int)$_GET['user_id'];
 }
 
-// Preluare user selectat (doar dacă avem conversație)
+// Preluare user selectat (doar dacă avem conversație)␊
 $selected_user = null;
 if ($selected_user_id) {
     $stmt = $db->prepare("SELECT id, username, age, city, country, gender, gallery FROM users WHERE id = ?");
-		$stmt->execute(['uid' => $user_id]);
-		$contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->execute([$selected_user_id]);
+    $selected_user = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 if ($selected_user && !in_array($selected_user_id, array_column($contacts, 'id'))) {
@@ -110,10 +110,12 @@ if ($selected_user_id) {
                 <?php if ($contacts): ?>
                     <?php foreach ($contacts as $contact): 
                         // Imagine: prima din galerie sau default-avatar
-                        $avatar = 'default-avatar.jpg';
+                        $avatar = 'default-avatar.png';
                         if (!empty($contact['gallery'])) {
-                            $gal = explode(',', $contact['gallery']);
-                            $avatar = trim($gal[0]);
+                            $gal = array_filter(explode(',', $contact['gallery']));
+                            if ($gal) {
+                                $avatar = 'uploads/' . $contact['id'] . '/' . trim($gal[0]);
+                            }
                         }
                         ?>
                         <div class="message-user<?= $contact['id'] == $selected_user_id ? ' active' : '' ?>"
@@ -135,10 +137,12 @@ if ($selected_user_id) {
                 <?php if ($selected_user): ?>
                     <div class="messages-conv-header">
                         <?php 
-                        $avatar2 = 'default-avatar.jpg';
+                        $avatar2 = 'default-avatar.png';
                         if (!empty($selected_user['gallery'])) {
-                            $gal2 = explode(',', $selected_user['gallery']);
-                            $avatar2 = trim($gal2[0]);
+                            $gal2 = array_filter(explode(',', $selected_user['gallery']));
+                            if ($gal2) {
+                                $avatar2 = 'uploads/' . $selected_user['id'] . '/' . trim($gal2[0]);
+                            }
                         }
                         ?>
                         <img src="<?=htmlspecialchars($avatar2)?>" alt="" class="conv-avatar">
@@ -147,10 +151,12 @@ if ($selected_user_id) {
                     </div>
                     <div class="messages-conv-body" id="messagesConvBody">
                         <?php foreach ($messages as $msg):
-                            $msg_avatar = 'default-avatar.jpg';
+                            $msg_avatar = 'default-avatar.png';
                             if (!empty($msg['gallery'])) {
-                                $galm = explode(',', $msg['gallery']);
-                                $msg_avatar = trim($galm[0]);
+                                $galm = array_filter(explode(',', $msg['gallery']));
+                                if ($galm) {
+                                    $msg_avatar = 'uploads/' . $msg['sender_id'] . '/' . trim($galm[0]);
+                                }
                             }
                         ?>
                             <div class="msg-row<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
@@ -197,12 +203,6 @@ if ($selected_user_id) {
         <a class="icon active" href="messages.php"><i class="fas fa-comments"></i></a>
         <a class="icon" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
-    <script>
-    // Scroll la ultimul mesaj
-    window.onload = function() {
-        var msgBody = document.getElementById('messagesConvBody');
-        if(msgBody) msgBody.scrollTop = msgBody.scrollHeight;
-    };
-    </script>
+    <script src="assets_js/messages.js"></script>
 </body>
 </html>
