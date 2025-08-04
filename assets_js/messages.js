@@ -1,20 +1,19 @@
-// Dummy: simulare selectare conversație
-document.querySelectorAll('.message-user').forEach((el, idx) => {
+// Deschide conversația pentru utilizatorul selectat
+document.querySelectorAll('.message-user').forEach(el => {
     el.addEventListener('click', function() {
-        document.querySelectorAll('.message-user').forEach(e => e.classList.remove('active'));
-        this.classList.add('active');
-        // În viitor, aici poți face update cu mesaje, avatar, status etc.
-        // Acum lasă doar highlight vizual.
+        const uid = this.dataset.userId;
+        if (uid) {
+            window.location.href = 'messages.php?user_id=' + uid;
+        }
     });
 });
-//scoll la mesajjele limita vizuale din mesagerie
+// Scroll la ultimul mesaj din conversație
 function scrollToLastMessage() {
-    var convBody = document.querySelector('.messages-conv-body');
+    const convBody = document.querySelector('.messages-conv-body');
     if (convBody) {
         convBody.scrollTop = convBody.scrollHeight;
     }
 }
-// Apelezi această funcție DUPĂ ce încarci/adaugi mesaje noi în .messages-conv-body
-// De exemplu: după ce inserezi HTML-ul mesajelor
+
+// Apelează după ce încarci sau adaugi mesaje noi
 scrollToLastMessage();
-//scoll la mesajjele limita vizuale din mesagerie

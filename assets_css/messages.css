@@ -37,6 +37,40 @@ body, html {
     margin: 0;
 }
 
+/* notificare top */
+.notify-bar {
+    max-width: 470px;
+    width: 100%;
+    margin: 0 auto;
+    background: linear-gradient(90deg,#8e2de2 0%,#4a00e0 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    box-shadow: 0 4px 16px rgba(155,92,255,0.25);
+    font-size: 0.95em;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s ease;
+}
+.notify-bar.show {
+    max-height: 60px;
+}
+.notify-actions button {
+    margin-left: 8px;
+    background: #fff;
+    border: none;
+    color: #4a00e0;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+.notify-actions button:hover {
+    background: #f0e8ff;
+}
+
 /* 3. Mesageria coboară mai jos, spațiu redus sub ea */
 /* Wrapper principal, maxim până în navbar */
 .messages-main-container {
