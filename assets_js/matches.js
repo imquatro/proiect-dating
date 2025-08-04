@@ -14,12 +14,16 @@
         return 'status-offline';
     }
 
-    function buttonsHtml(tab, id, requested){
+    function buttonsHtml(tab, id, requested, isFriend){
         if(tab === 'online'){
-            let html = '<button class="btn-view" data-id="'+id+'" title="Vezi profil"><i class="fas fa-eye"></i></button>';
-            if(!requested){
-                html += '<button class="btn-add" data-id="'+id+'" title="Adauga prieten"><i class="fas fa-user-plus"></i></button>';
+            if(isFriend){
+                return '<button class="btn-view" data-id="'+id+'" title="Vezi profil"><i class="fas fa-eye"></i></button>'+
+                       '<button class="btn-msg" data-id="'+id+'" title="Mesaj"><i class="fas fa-envelope"></i></button>'+
+                       '<button class="btn-del" data-id="'+id+'" title="Sterge"><i class="fas fa-trash"></i></button>'+
+                       '<button class="btn-block" data-id="'+id+'" title="Blocheaza"><i class="fas fa-ban"></i></button>';
             }
+            let html = '<button class="btn-add" data-id="'+id+'" title="'+(requested?'Cerere trimisa':'Adauga prieten')+'"'+(requested?' disabled':'')+'><i class="fas fa-user-plus"></i></button>';
+            html += '<button class="btn-view" data-id="'+id+'" title="Vezi profil"><i class="fas fa-eye"></i></button>';
             html += '<button class="btn-block" data-id="'+id+'" title="Blocheaza"><i class="fas fa-ban"></i></button>';
             return html;
         }
@@ -47,7 +51,7 @@
             div.innerHTML = '<span class="status-dot '+statusClass(u.status)+'"></span>'+
                 '<img src="'+u.avatar+'" class="user-card-avatar" alt="">'+
                 '<div class="user-card-name">'+u.username+'</div>'+
-                '<div class="user-card-buttons">'+buttonsHtml(currentTab, u.id, u.requestSent)+'</div>';
+                '<div class="user-card-buttons">'+buttonsHtml(currentTab, u.id, u.requestSent, u.isFriend)+'</div>';
             cardContainer.appendChild(div);
         });
     }
@@ -112,7 +116,7 @@
 
     cardContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('button');
-        if(!btn) return;
+        if(!btn || btn.disabled) return;
         const id = btn.dataset.id;
         if(btn.classList.contains('btn-add')){
             sendFriendRequest(id);
@@ -160,11 +164,17 @@
         }).then(r=>r.json()).then(d=>{
             if(d.success){
                 friendRequests = friendRequests.filter(u => u.id != id);
+                d.user.isFriend = true;
                 friends.push(d.user);
+                if(d.user.status !== 'offline'){
+                    onlineUsers.push(d.user);
+                }
                 if(currentTab === 'requests'){
                     currentList = friendRequests.slice();
                 } else if(currentTab === 'friends'){
                     currentList = friends.slice();
+                } else if(currentTab === 'online'){
+                    currentList = onlineUsers.slice();
                 }
                 render();
             } else {
@@ -181,13 +191,19 @@
         }).then(r=>r.json()).then(d=>{
             if(d.success){
                 friendRequests = friendRequests.filter(u => u.id != id);
-                if(d.user){
+                d.user.isFriend = true;
+                friends.push(d.user);
+                if(d.user.status !== 'offline'){
                     onlineUsers.push(d.user);
                 }
                 if(currentTab === 'requests'){
                     currentList = friendRequests.slice();
-                    render();
+                } else if(currentTab === 'friends'){
+                    currentList = friends.slice();
+                } else if(currentTab === 'online'){
+                    currentList = onlineUsers.slice();
                 }
+                render();
             } else {
                 alert(d.message || 'Eroare');
             }
