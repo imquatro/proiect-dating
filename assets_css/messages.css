@@ -11,11 +11,11 @@ body, html {
 
 /* HEADER centrat, fără colțuri rotunde */
 .main-header {
-    width: 450px;
+    width: 470px;
     margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     background: linear-gradient(90deg, #8e2de2 0%, #4a00e0 100%);
     color: #fff;
     font-size: 1.7rem;
@@ -24,9 +24,9 @@ body, html {
     box-shadow: 0 4px 16px rgba(155,92,255,0.10);
     z-index: 20;
     padding: 0 16px;
-    margin-bottom: 16px;
+    margin-bottom: 22px;
     border-radius: 0; /* Fără colțuri! */
-}␊
+}
 
 .header-title {
     flex: 1;
@@ -35,34 +35,6 @@ body, html {
     font-weight: 600;
     letter-spacing: 1px;
     margin: 0;
-}
-
-/* Iconuri pentru admin și logout */
-.admin-btn {
-    color: #ffd700;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    outline: none;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-}
-
-.logout-btn {
-    color: #fff;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    outline: none;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    transition: color 0.13s, transform 0.12s;
-}
-.logout-btn:hover {
-    color: #ffd700;
-    transform: scale(1.11);
 }
 
 /* 3. Mesageria coboară mai jos, spațiu redus sub ea */
@@ -425,19 +397,4 @@ body, html {
     padding-bottom: 12px;
     padding-top: 18px;
     /* auto-scroll va fi JS */
-}
-.message-user .unread-dot {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 10px;
-    height: 10px;
-    background: #41e08e;
-    border-radius: 50%;
-    display: none;
-    animation: pulse 1.5s infinite;
-}
-.message-user.has-unread .unread-dot {
-    display: block;
 }

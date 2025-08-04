@@ -47,11 +47,11 @@
         const list = currentList.slice(0, visibleCount);
         list.forEach(u => {
             const div = document.createElement('div');
-            div.className = 'user-card';
-            div.innerHTML = '<span class="status-dot '+statusClass(u.status)+'"></span>'+
-                '<img src="'+u.avatar+'" class="user-card-avatar" alt="">'+
                 '<div class="user-card-name">'+u.username+'</div>'+
                 '<div class="user-card-buttons">'+buttonsHtml(currentTab, u.id, u.requestSent, u.isFriend)+'</div>';
+                '<img src="'+u.avatar+'" class="user-card-avatar" alt="">'+
+                '<div class="user-card-name">'+u.username+'</div>'+
+                '<div class="user-card-buttons">'+buttonsHtml(currentTab, u.id, u.requestSent)+'</div>';
             cardContainer.appendChild(div);
         });
     }
@@ -114,10 +114,10 @@
         }
     });
 
-    cardContainer.addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
+     cardContainer.addEventListener('click', (e) => {␊
+        const btn = e.target.closest('button');␊
         if(!btn || btn.disabled) return;
-        const id = btn.dataset.id;
+        const id = btn.dataset.id;␊
         if(btn.classList.contains('btn-add')){
             sendFriendRequest(id);
         } else if(btn.classList.contains('btn-accept')){
@@ -191,19 +191,13 @@
         }).then(r=>r.json()).then(d=>{
             if(d.success){
                 friendRequests = friendRequests.filter(u => u.id != id);
-                d.user.isFriend = true;
-                friends.push(d.user);
-                if(d.user.status !== 'offline'){
+                if(d.user){
                     onlineUsers.push(d.user);
                 }
                 if(currentTab === 'requests'){
                     currentList = friendRequests.slice();
-                } else if(currentTab === 'friends'){
-                    currentList = friends.slice();
-                } else if(currentTab === 'online'){
-                    currentList = onlineUsers.slice();
+                    render();
                 }
-                render();
             } else {
                 alert(d.message || 'Eroare');
             }
