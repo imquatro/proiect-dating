@@ -293,35 +293,32 @@ body, html {
 }
 /* 2. Input + buton trimitere mesaje, mai compact și cu spațiu */
 .messages-conv-footer {
-    padding: 13px 11px 15px 11px;   /* mai compact pe lateral și jos */
-    gap: 6px;
+    padding: 13px 11px 15px 11px;
+    display: flex;
+    align-items: center;
 }
 .messages-conv-footer input[type="text"] {
+	flex: 1;
     font-size: 1.1em;
     padding: 10px 10px 10px 18px;
-    width: 70%;            /* sau max-width: 270px dacă vrei fix */
-    max-width: 310px;
     min-width: 0;
-    margin-right: 4px;
 }
 .messages-conv-footer input[type="text"]:focus {
     border: 2px solid #7c4dff;
 }
-.conv-send-btn {
-    background: linear-gradient(135deg, #ffd700, #7c4dff 80%);
-    color: #380066;
+.conv-action-btn {
+    width: 32px;
+    height: 32px;
     border: none;
-    border-radius: 20%;
-    width: 35px;
-    height: 35px;
+    margin-left: 4px;
+    background: #f6cf49;
+    color: #6c4e09;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.23em;
-	margin-left: 89px; /* spațiu față de input */
-    box-shadow: 0 0 10px #ffd70035;
     cursor: pointer;
-    transition: transform .10s, box-shadow .10s;
+
 }
 
 /* Modal stergere conversatie */
@@ -364,6 +361,29 @@ body, html {
     color: #333;
 }
 .conv-send-btn:active, .conv-send-btn:focus { transform: scale(1.09);}
+
+.conv-delete-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 12px 8px 0;
+}
+
+.conv-delete-btn {
+    background: #ff1744;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.conv-delete-btn:hover {
+    background: #e0143a;
+}
 
 /* NAVBAR centralizat și cu aceeași lățime */
 .navbar {
