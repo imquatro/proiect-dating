@@ -161,10 +161,12 @@ if ($selected_user_id) {
                     <div class="messages-conv-body" id="messagesConvBody">
                         <?php if (!empty($messages)): ?>
                             <?php foreach ($messages as $msg):
-                                $msg_avatar = 'default-avatar.jpg';
+                                $msg_avatar = 'default-avatar.png';
                                 if (!empty($msg['gallery'])) {
-                                    $galm = explode(',', $msg['gallery']);
-                                    $msg_avatar = trim($galm[0]);
+                                    $galm = array_filter(explode(',', $msg['gallery']));
+                                    if ($galm) {
+                                        $msg_avatar = 'uploads/' . $msg['sender_id'] . '/' . trim($galm[0]);
+                                    }
                                 }
                             ?>
                                 <div class="msg-row<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
@@ -187,6 +189,8 @@ if ($selected_user_id) {
                     <!-- FORM MESAJ -->
                     <form class="messages-conv-footer" method="post" autocomplete="off" style="margin-top:2px;">
                         <input type="hidden" name="user_id" value="<?= $selected_user_id ?>">
+                        <button type="button" class="conv-tool-btn"><i class="fas fa-smile"></i></button>
+                        <button type="button" class="conv-tool-btn"><i class="fas fa-paperclip"></i></button>
                         <input type="text" name="message" placeholder="Scrie un mesaj..." required maxlength="512" autocomplete="off" style="font-size:1.16em;">
                         <button type="submit" class="conv-send-btn"><i class="fas fa-paper-plane"></i></button>
                     </form>

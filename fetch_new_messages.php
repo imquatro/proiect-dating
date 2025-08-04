@@ -19,7 +19,7 @@ $stmt->execute(['uid' => $user_id, 'oid' => $other_id, 'last_id' => $last_id]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $messages = [];
 foreach ($rows as $row) {
-    $avatar = 'default-avatar.jpg';
+    $avatar = 'default-avatar.png';
     if (!empty($row['gallery'])) {
         $gal = explode(',', $row['gallery']);
         $avatar = 'uploads/' . $row['sender_id'] . '/' . trim($gal[0]);
