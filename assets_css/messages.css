@@ -298,27 +298,32 @@ body, html {
     align-items: center;
 }
 .messages-conv-footer input[type="text"] {
-	flex: 1;
+    flex: 1;
     font-size: 1.1em;
     padding: 10px 10px 10px 18px;
     min-width: 0;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
 }
 .messages-conv-footer input[type="text"]:focus {
     border: 2px solid #7c4dff;
 }
-.conv-action-btn {
-    width: 32px;
-    height: 32px;
-    border: none;
+.conv-send-btn {
+    width: 40px;
+    height: 40px;
     margin-left: 4px;
-    background: #f6cf49;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
     color: #6c4e09;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.23em;
     cursor: pointer;
-
+}
+.conv-send-btn:hover {
+    background: #f6cf49;
 }
 
 /* Modal stergere conversatie */
@@ -347,18 +352,19 @@ body, html {
 }
 .modal-actions button {
     padding: 8px 16px;
-    border: none;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
     cursor: pointer;
-    border-radius: 4px;
     font-size: 1em;
+}
+.modal-actions button:hover {
+    background: #f6cf49;
 }
 #deleteConfirm {
     background: #ff1744;
+    border: none;
     color: #fff;
-}
-#deleteCancel {
-    background: #ccc;
-    color: #333;
 }
 .conv-send-btn:active, .conv-send-btn:focus { transform: scale(1.09);}
 
