@@ -64,15 +64,24 @@ if ($selected_user && !in_array($selected_user_id, array_column($contacts, 'id')
     ];
 }
 
-// Inserare mesaj nou
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'], $_POST['message']) && $selected_user_id) {
+/// Inserare mesaj nou
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message'], $_POST['user_id'])) {
+    $selected_user_id = (int)$_POST['user_id'];
     $msg = trim($_POST['message']);
-    if ($msg !== '' && $selected_user_id != $user_id) {
+    if ($msg !== '' && $selected_user_id && $selected_user_id != $user_id) {
         $stmt = $db->prepare("INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)");
         $stmt->execute([$user_id, $selected_user_id, $msg]);
         header("Location: messages.php?user_id=" . $selected_user_id);
         exit;
     }
+}
+
+// Preluare user selectat (doar dacă avem conversație)
+$selected_user = null;
+if ($selected_user_id) {
+    $stmt = $db->prepare("SELECT id, username, age, city, country, gender, gallery FROM users WHERE id = ?");
+    $stmt->execute([$selected_user_id]);
+    $selected_user = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 // Preluare mesaje între user curent și cel selectat
@@ -150,33 +159,36 @@ if ($selected_user_id) {
                         <span class="conv-status">online</span>
                     </div>
                     <div class="messages-conv-body" id="messagesConvBody">
-                        <?php foreach ($messages as $msg):
-                            $msg_avatar = 'default-avatar.png';
-                            if (!empty($msg['gallery'])) {
-                                $galm = array_filter(explode(',', $msg['gallery']));
-                                if ($galm) {
-                                    $msg_avatar = 'uploads/' . $msg['sender_id'] . '/' . trim($galm[0]);
+                        <?php if (!empty($messages)): ?>
+                            <?php foreach ($messages as $msg):
+                                $msg_avatar = 'default-avatar.jpg';
+                                if (!empty($msg['gallery'])) {
+                                    $galm = explode(',', $msg['gallery']);
+                                    $msg_avatar = trim($galm[0]);
                                 }
-                            }
-                        ?>
-                            <div class="msg-row<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
-                                <?php if ($msg['sender_id'] != $user_id): ?>
-                                    <img src="<?=htmlspecialchars($msg_avatar)?>" alt="" class="msg-avatar">
-                                <?php endif; ?>
-                                <div class="msg-bubble<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
-                                    <?=htmlspecialchars($msg['message'])?>
+                            ?>
+                                <div class="msg-row<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
+                                    <?php if ($msg['sender_id'] != $user_id): ?>
+                                        <img src="<?=htmlspecialchars($msg_avatar)?>" alt="" class="msg-avatar">
+                                    <?php endif; ?>
+                                    <div class="msg-bubble<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
+                                        <?=htmlspecialchars($msg['message'])?>
+                                    </div>
+                                    <span class="msg-time"><?=date('H:i', strtotime($msg['created_at']))?></span>
+                                    <?php if ($msg['sender_id'] == $user_id): ?>
+                                        <img src="<?=htmlspecialchars($msg_avatar)?>" alt="" class="msg-avatar">
+                                    <?php endif; ?>
                                 </div>
-                                <span class="msg-time"><?=date('H:i', strtotime($msg['created_at']))?></span>
-                                <?php if ($msg['sender_id'] == $user_id): ?>
-                                    <img src="<?=htmlspecialchars($msg_avatar)?>" alt="" class="msg-avatar">
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div style="padding:28px;color:#bb87ff;">Niciun mesaj încă. Trimite unul!</div>
+                        <?php endif; ?>
                     </div>
                     <!-- FORM MESAJ -->
                     <form class="messages-conv-footer" method="post" autocomplete="off" style="margin-top:2px;">
+                        <input type="hidden" name="user_id" value="<?= $selected_user_id ?>">
                         <input type="text" name="message" placeholder="Scrie un mesaj..." required maxlength="512" autocomplete="off" style="font-size:1.16em;">
-                        <button type="submit" name="send_message" class="conv-send-btn"><i class="fas fa-paper-plane"></i></button>
+                        <button type="submit" class="conv-send-btn"><i class="fas fa-paper-plane"></i></button>
                     </form>
                 <?php else: ?>
                     <div class="messages-conv-header" style="min-height:200px;justify-content:center;align-items:center;">
