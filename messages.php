@@ -42,12 +42,12 @@ if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
     $selected_user_id = (int)$_GET['user_id'];
 }
 
-// Preluare user selectat (doar dacă avem conversație)
+// Preluare utilizator selectat dacă există
 $selected_user = null;
 if ($selected_user_id) {
     $stmt = $db->prepare("SELECT id, username, age, city, country, gender, gallery FROM users WHERE id = ?");
-		$stmt->execute(['uid' => $user_id]);
-		$contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->execute([$selected_user_id]);
+    $selected_user = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 if ($selected_user && !in_array($selected_user_id, array_column($contacts, 'id'))) {
@@ -100,7 +100,17 @@ if ($selected_user_id) {
 <body>
     <!-- HEADER CENTRALIZAT -->
     <div class="main-header">
+        <?php if ($isAdmin): ?>
+            <a href="admin_panel.php" class="admin-btn" title="Panou Admin">
+                <i class="fas fa-user-shield"></i>
+            </a>
+        <?php else: ?>
+            <span style="width:38px;"></span>
+        <?php endif; ?>
         <span class="header-title">MESAGERIE</span>
+        <a href="logout.php" class="logout-btn" title="Deconectare">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
     </div>
     <!-- CONTAINER MESAGERIE -->
     <div class="messages-main-container">
@@ -197,12 +207,6 @@ if ($selected_user_id) {
         <a class="icon active" href="messages.php"><i class="fas fa-comments"></i></a>
         <a class="icon" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
-    <script>
-    // Scroll la ultimul mesaj
-    window.onload = function() {
-        var msgBody = document.getElementById('messagesConvBody');
-        if(msgBody) msgBody.scrollTop = msgBody.scrollHeight;
-    };
-    </script>
+    <script src="assets_js/messages.js"></script>
 </body>
 </html>

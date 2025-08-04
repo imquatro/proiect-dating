@@ -54,7 +54,7 @@ try {
     }
 } catch (PDOException $e) {
 }
-$excludeIds = array_unique(array_merge($pendingReceived, $friendIds));
+$excludeIds = array_unique($pendingReceived);
 
 $rawUsers = [];
 try {
@@ -83,6 +83,9 @@ foreach ($rawUsers as $u) {
     $card = build_card($u);
     if (in_array($u['id'], $pendingSent)) {
         $card['requestSent'] = true;
+    }
+    if (in_array($u['id'], $friendIds)) {
+        $card['isFriend'] = true;
     }
     $onlineUsers[] = $card;
 }
