@@ -10,6 +10,15 @@ $user_id = $_SESSION['user_id'];
 
 require_once __DIR__ . '/includes/update_last_active.php';
 
+// Detect if messages table has an is_read column
+$hasIsRead = false;
+try {
+    $colCheck = $db->query("SHOW COLUMNS FROM messages LIKE 'is_read'");
+    $hasIsRead = $colCheck && $colCheck->rowCount() > 0;
+} catch (PDOException $e) {
+    $hasIsRead = false;
+}
+
 // Verificăm dacă userul este admin
 $stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
@@ -22,7 +31,7 @@ $stmt = $db->prepare("
            MAX(m.created_at) as last_msg, m.message
     FROM users u
     JOIN (
-        SELECT 
+        SELECT
             IF(sender_id = :uid, receiver_id, sender_id) as other_id,
             message,
             created_at
@@ -35,6 +44,16 @@ $stmt = $db->prepare("
 ");
 $stmt->execute(['uid' => $user_id]);
 $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+foreach ($contacts as &$c) {
+    if ($hasIsRead) {
+        $stmtU = $db->prepare("SELECT COUNT(*) FROM messages WHERE sender_id = ? AND receiver_id = ? AND is_read = 0");
+        $stmtU->execute([$c['id'], $user_id]);
+        $c['unread'] = (int)$stmtU->fetchColumn();
+    } else {
+        $c['unread'] = 0;
+    }
+}
+unset($c);
 
 // Selectează cu cine vorbim doar dacă este specificat în GET
 $selected_user_id = null;
@@ -60,7 +79,8 @@ if ($selected_user && !in_array($selected_user_id, array_column($contacts, 'id')
         'gender' => $selected_user['gender'],
         'gallery' => $selected_user['gallery'],
         'last_msg' => null,
-        'message' => ''
+        'message' => '',
+        'unread' => 0
     ];
 }
 
@@ -68,8 +88,13 @@ if ($selected_user && !in_array($selected_user_id, array_column($contacts, 'id')
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'], $_POST['message']) && $selected_user_id) {
     $msg = trim($_POST['message']);
     if ($msg !== '' && $selected_user_id != $user_id) {
-        $stmt = $db->prepare("INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)");
-        $stmt->execute([$user_id, $selected_user_id, $msg]);
+        if ($hasIsRead) {
+            $stmt = $db->prepare("INSERT INTO messages (sender_id, receiver_id, message, is_read) VALUES (?, ?, ?, 0)");
+            $stmt->execute([$user_id, $selected_user_id, $msg]);
+        } else {
+            $stmt = $db->prepare("INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)");
+            $stmt->execute([$user_id, $selected_user_id, $msg]);
+        }
         header("Location: messages.php?user_id=" . $selected_user_id);
         exit;
     }
@@ -77,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'], $_POS
 
 // Preluare mesaje între user curent și cel selectat
 $messages = [];
+$lastMessageId = 0;
 if ($selected_user_id) {
     $stmt = $db->prepare("
         SELECT m.*, u.username, u.gallery
@@ -87,6 +113,11 @@ if ($selected_user_id) {
     ");
     $stmt->execute(['uid' => $user_id, 'sid' => $selected_user_id]);
     $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($hasIsRead) {
+        $stmt = $db->prepare("UPDATE messages SET is_read = 1 WHERE sender_id = :sid AND receiver_id = :uid AND is_read = 0");
+        $stmt->execute(['sid' => $selected_user_id, 'uid' => $user_id]);
+    }
+    $lastMessageId = !empty($messages) ? end($messages)['id'] : 0;
 }
 ?>
 <!DOCTYPE html>
@@ -95,6 +126,7 @@ if ($selected_user_id) {
     <meta charset="UTF-8">
     <title>Mesaje</title>
     <link rel="stylesheet" href="assets_css/messages.css">
+    <link rel="stylesheet" href="assets_css/nav.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
@@ -118,15 +150,16 @@ if ($selected_user_id) {
             <!-- LISTA CONTACTE -->
             <div class="messages-list">
                 <?php if ($contacts): ?>
-                    <?php foreach ($contacts as $contact): 
+                    <?php foreach ($contacts as $contact):
                         // Imagine: prima din galerie sau default-avatar
                         $avatar = 'default-avatar.jpg';
                         if (!empty($contact['gallery'])) {
                             $gal = explode(',', $contact['gallery']);
-                            $avatar = trim($gal[0]);
+                            $avatar = 'uploads/' . $contact['id'] . '/' . trim($gal[0]);
                         }
+                        $unreadClass = ($contact['unread'] > 0 && $contact['id'] != $selected_user_id) ? ' has-unread' : '';
                         ?>
-                        <div class="message-user<?= $contact['id'] == $selected_user_id ? ' active' : '' ?>"
+                        <div class="message-user<?= $contact['id'] == $selected_user_id ? ' active' : '' ?><?=$unreadClass?>"
                              data-user-id="<?=$contact['id']?>"
                              data-username="<?=htmlspecialchars($contact['username'])?>">
                             <img src="<?=htmlspecialchars($avatar)?>" alt="" class="message-user-avatar">
@@ -134,6 +167,7 @@ if ($selected_user_id) {
                                 <div class="message-user-name"><?=htmlspecialchars($contact['username'])?></div>
                                 <div class="message-user-preview"><?=htmlspecialchars($contact['message'])?></div>
                             </div>
+                            <span class="unread-dot"></span>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -144,11 +178,11 @@ if ($selected_user_id) {
             <div class="messages-conversation">
                 <?php if ($selected_user): ?>
                     <div class="messages-conv-header">
-                        <?php 
+                        <?php
                         $avatar2 = 'default-avatar.jpg';
                         if (!empty($selected_user['gallery'])) {
                             $gal2 = explode(',', $selected_user['gallery']);
-                            $avatar2 = trim($gal2[0]);
+                            $avatar2 = 'uploads/' . $selected_user['id'] . '/' . trim($gal2[0]);
                         }
                         ?>
                         <img src="<?=htmlspecialchars($avatar2)?>" alt="" class="conv-avatar">
@@ -160,7 +194,7 @@ if ($selected_user_id) {
                             $msg_avatar = 'default-avatar.jpg';
                             if (!empty($msg['gallery'])) {
                                 $galm = explode(',', $msg['gallery']);
-                                $msg_avatar = trim($galm[0]);
+                                $msg_avatar = 'uploads/' . $msg['sender_id'] . '/' . trim($galm[0]);
                             }
                         ?>
                             <div class="msg-row<?= $msg['sender_id'] == $user_id ? ' own' : '' ?>">
@@ -204,9 +238,15 @@ if ($selected_user_id) {
     <div class="navbar">
         <a class="icon" href="index.php"><i class="fas fa-home"></i></a>
         <a class="icon" href="matches.php"><i class="fas fa-heart"></i></a>
-        <a class="icon active" href="messages.php"><i class="fas fa-comments"></i></a>
+        <a class="icon active msg-icon" href="messages.php"><i class="fas fa-comments"></i><span class="nav-msg-dot" id="msgAlert"></span></a>
         <a class="icon" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
+    <script>
+    const selectedUserId = <?= $selected_user_id ? $selected_user_id : 'null'; ?>;
+    let lastMessageId = <?= $lastMessageId; ?>;
+    const currentUserId = <?= $user_id; ?>;
+    </script>
     <script src="assets_js/messages.js"></script>
+    <script src="assets_js/nav.js"></script>
 </body>
 </html>

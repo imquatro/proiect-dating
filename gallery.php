@@ -58,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['photo'], $_POST['acti
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galeria Mea</title>
     <link rel="stylesheet" href="assets_css/profile.css">
+    <link rel="stylesheet" href="assets_css/nav.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
       .gallery-btns { display:flex; gap:10px; justify-content:center; margin-top:10px; }
@@ -109,9 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['photo'], $_POST['acti
     <div class="navbar">
         <a class="icon" href="index.php"><i class="fas fa-home"></i></a>
         <a class="icon" href="matches.php"><i class="fas fa-heart"></i></a>
-        <a class="icon" href="messages.php"><i class="fas fa-comments"></i></a>
+        <a class="icon msg-icon" href="messages.php"><i class="fas fa-comments"></i><span class="nav-msg-dot" id="msgAlert"></span></a>
         <a class="icon active" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
+    <script src="assets_js/nav.js"></script>
     <script>
       let currentImg = 0;
       function showImg(idx, total) {
