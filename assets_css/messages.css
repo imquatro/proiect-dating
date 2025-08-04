@@ -426,3 +426,18 @@ body, html {
     padding-top: 18px;
     /* auto-scroll va fi JS */
 }
+.message-user .unread-dot {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background: #41e08e;
+    border-radius: 50%;
+    display: none;
+    animation: pulse 1.5s infinite;
+}
+.message-user.has-unread .unread-dot {
+    display: block;
+}
