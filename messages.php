@@ -42,7 +42,7 @@ if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
     $selected_user_id = (int)$_GET['user_id'];
 }
 
-// Preluare user selectat (doar dacă avem conversație)␊
+// Preluare user selectat (doar dacă avem conversație)
 $selected_user = null;
 if ($selected_user_id) {
     $stmt = $db->prepare("SELECT id, username, age, city, country, gender, gallery FROM users WHERE id = ?");
@@ -190,6 +190,12 @@ if ($selected_user_id) {
                         <input type="text" name="message" placeholder="Scrie un mesaj..." required maxlength="512" autocomplete="off" style="font-size:1.16em;">
                         <button type="submit" class="conv-send-btn"><i class="fas fa-paper-plane"></i></button>
                     </form>
+                    <div class="conv-delete-wrapper">
+                        <button type="button" id="deleteConvBtn" class="conv-delete-btn">
+                            <i class="fas fa-trash"></i>
+                            Șterge conversația
+                        </button>
+                    </div>
                 <?php else: ?>
                     <div class="messages-conv-header" style="min-height:200px;justify-content:center;align-items:center;">
                         <span style="color:#bbb;font-size:1.13em;">Selectează sau trimite un mesaj cuiva!</span>
