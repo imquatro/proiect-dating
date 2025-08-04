@@ -53,7 +53,6 @@ $data_pozei = '2025-06-03'; // Exemplu
     <title>Profil Utilizator</title>
     <link rel="stylesheet" href="assets_css/profile.css">
     <link rel="stylesheet" href="assets_css/view_profile.css">
-    <link rel="stylesheet" href="assets_css/nav.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
@@ -112,12 +111,9 @@ $data_pozei = '2025-06-03'; // Exemplu
     <div class="vp-navbar">
         <a class="vp-icon" href="index.php"><i class="fas fa-home"></i></a>
         <a class="vp-icon" href="matches.php"><i class="fas fa-heart"></i></a>
-        <a class="vp-icon msg-icon" href="messages.php"><i class="fas fa-comments"></i><span class="nav-msg-dot" id="msgAlert"></span></a>
+        <a class="vp-icon" href="messages.php"><i class="fas fa-comments"></i></a>
         <a class="vp-icon" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
-    <script src="assets_js/nav.js"></script>
-
-    <!-- SUPERPANEL Lightbox (initial ascuns) -->
 
     <!-- SUPERPANEL Lightbox (initial ascuns) -->
     <div class="vp-combo-panel-overlay" id="vpComboPanelOverlay" style="display:none;">

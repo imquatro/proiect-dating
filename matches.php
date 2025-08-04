@@ -129,7 +129,6 @@ try {
     <link rel="stylesheet" href="assets_css/profile.css">
     <link rel="stylesheet" href="assets_css/matches.css">
     <link rel="stylesheet" href="assets_css/mini-profile.css">
-    <link rel="stylesheet" href="assets_css/nav.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
@@ -156,14 +155,14 @@ try {
     <div class="navbar">
         <a class="icon" href="index.php"><i class="fas fa-home"></i></a>
         <a class="icon active" href="matches.php"><i class="fas fa-heart"></i></a>
-        <a class="icon msg-icon" href="messages.php"><i class="fas fa-comments"></i><span class="nav-msg-dot" id="msgAlert"></span></a>
+        <a class="icon" href="messages.php"><i class="fas fa-comments"></i></a>
         <a class="icon" href="profile.php"><i class="fas fa-user"></i></a>
     </div>
     <script>
         let onlineUsers = <?=json_encode($onlineUsers, JSON_UNESCAPED_UNICODE)?>;
         let friendRequests = <?=json_encode($friendRequests, JSON_UNESCAPED_UNICODE)?>;
         let friends = <?=json_encode($friends, JSON_UNESCAPED_UNICODE)?>;
+    </script>
     <script src="assets_js/matches.js"></script>
-    <script src="assets_js/nav.js"></script>
 </body>
 </html>
