@@ -1,0 +1,8 @@
+@import url('profile.css');
+
+.gallery-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
