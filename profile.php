@@ -106,5 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 JS;
+$profilePhoto = $profile_photo;
 include 'template.php';
 ?>

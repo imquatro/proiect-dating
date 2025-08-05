@@ -4,6 +4,27 @@ if (!isset($content)) { $content = ''; }
 if (!isset($pageTitle)) { $pageTitle = ''; }
 if (!isset($pageCss)) { $pageCss = ''; }
 if (!isset($extraJs)) { $extraJs = ''; }
+if (!isset($profilePhoto)) {
+    $profilePhoto = 'dating/default-avatar.png';
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (isset($_SESSION['user_id'])) {
+        require_once __DIR__ . '/includes/db.php';
+        $stmt = $db->prepare('SELECT gallery FROM users WHERE id = ?');
+        $stmt->execute([$_SESSION['user_id']]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            $gallery = !empty($user['gallery']) ? array_filter(explode(',', $user['gallery'])) : [];
+            if (!empty($gallery)) {
+                $candidate = 'dating/uploads/' . $_SESSION['user_id'] . '/' . $gallery[0];
+                if (is_file($candidate)) {
+                    $profilePhoto = $candidate;
+                }
+            }
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
