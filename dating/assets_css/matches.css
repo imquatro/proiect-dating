@@ -1,0 +1,95 @@
+.matches-container {
+    width: 100%;
+    padding: 10px;
+}
+.matches-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.tab-btn {
+    flex: 1;
+    padding: 10px 5px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+}
+.tab-btn + .tab-btn {
+    margin-left: 4px;
+}
+.tab-btn.active {
+    background: #f6cf49;
+}
+.matches-search {
+    display: flex;
+    margin-bottom: 10px;
+}
+.matches-search input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #f6cf49;
+}
+.matches-search button {
+    padding: 8px 12px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+}
+.card-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.user-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffe9a3;
+    padding: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px #0001;
+}
+.user-card-avatar {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 2px solid #f6cf49;
+    margin-right: 10px;
+}
+.user-card-name {
+    flex: 1;
+    font-weight: bold;
+    color: #6c4e09;
+}
+.user-card-buttons {
+    display: flex;
+}
+.user-card-buttons {
+    display: flex;
+}
+.user-card-buttons button {
+    width: 32px;
+    height: 32px;
+    border: none;
+    margin-left: 4px;
+    background: #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+}
+.user-card-buttons .btn-msg.not-friend{
+    width: auto;
+    padding: 0 6px;
+    cursor: default;
+}
+.status-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.status-online { background: #32cd32; }
+.status-idle { background: #ffd700; }
+.status-offline { background: #ff4500; }

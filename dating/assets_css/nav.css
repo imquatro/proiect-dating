@@ -1,0 +1,22 @@
+.navbar .msg-icon, .admin-navbar .msg-icon, .vp-navbar .msg-icon {
+    position: relative;
+}
+.navbar .nav-msg-dot, .admin-navbar .nav-msg-dot, .vp-navbar .nav-msg-dot {
+    position: absolute;
+    top: -6px;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background: #41e08e;
+    border-radius: 50%;
+    display: none;
+    animation: pulse 1.5s infinite;
+}
+.navbar .nav-msg-dot.show, .admin-navbar .nav-msg-dot.show, .vp-navbar .nav-msg-dot.show {
+    display: block;
+}
+@keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.7; }
+}
