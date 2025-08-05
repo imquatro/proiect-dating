@@ -1,3 +1,4 @@
+/* assets_css/farm-slots.css */
 .farm-slots {
     display: flex;
     flex-direction: column;
@@ -7,7 +8,7 @@
     background: transparent;
     box-shadow: none;
     border: none;
-    width: 400px;
+    width: 580px;
     max-width: 98vw;
     margin: 0 auto;
 }
@@ -17,8 +18,8 @@
     justify-content: center;
 }
 .farm-slot {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 120px;
     background: #f3e5b7;
     border: 3px solid #bfa56e;
     box-shadow: 0 2px 4px #baa56433;
@@ -42,6 +43,6 @@
 }
 @media (max-width: 480px) {
     .farm-slots, .mini-profile { width: 99vw; min-width: 0; }
-    .farm-slot { width: 60px; height: 60px; }
+    .farm-slot { width: 60px; height: 80px; }
     .farm-row { gap: 10px; }
 }
