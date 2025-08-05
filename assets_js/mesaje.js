@@ -45,11 +45,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     messageInput.addEventListener('input', () => {
         clearTimeout(typingTimeout);
-        fetch('messages_api.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `action=typing&friend_id=${friendId}`
-        });
+        const text = messageInput.value.trim();
+        if (text !== '') {
+            fetch('messages_api.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=typing&friend_id=${friendId}`
+            });
+        } else {
+            fetch('messages_api.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=stop_typing&friend_id=${friendId}`
+            });
+        }
         typingTimeout = setTimeout(() => {}, 3000);
     });
 });
