@@ -70,14 +70,14 @@ body, html {
     width: 100%;
     max-width: 620px;
     margin: 0 auto;
-    background: url('../img/fundal.png') center/cover no-repeat;
+    background: url('../img/bg2.png') center/cover no-repeat;
     border-radius: 0px;
     box-shadow: 0 4px 24px rgba(155,92,255,0.13);
     padding: 20px 12px 80px 12px; /* spațiu mare jos */
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 22px;
+    margin-top: 0;
     /* ATENȚIE: fără min-height, fără height! */
     /* Fără overflow-y: auto pe profile-container! */
 }
@@ -129,7 +129,7 @@ body, html {
 }
 .profile-info-list .info-row:last-child { border-bottom: none; }
 .profile-label {
-    color: #a18fff;
+    color: #2e2151;
     font-weight: 500;
 }
 .profile-value {
@@ -149,25 +149,32 @@ body, html {
     margin-bottom: 7px;
 }
 
-.desc-action-btn {
-    background: linear-gradient(135deg, #7c4dff, #e040fb);
-    color: #fff;
-    border: none;
-    border-radius: 22px;
-    padding: 6px 18px;
+.desc-action-btn,
+.profile-upload-btn {
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    border-radius: 4px;
+    padding: 8px 12px;
     font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: background 0.13s;
-    margin-left: 8px;
-    max-width: 100%;
-    white-space: nowrap;
-    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
 }
 
 .desc-action-btn.edit {
-    background: #FFD700;
-    color: #612abb;
+    background: #f6cf49;
 }
+
+.desc-action-btn:hover,
+.profile-upload-btn:hover {
+    background: #f6cf49;
+}
+
 
 .desc-field {
     min-height: 36px;
@@ -261,66 +268,24 @@ body::-webkit-scrollbar-thumb, .profile-container::-webkit-scrollbar-thumb {
 .profile-upload-card {
     width: 100%;
     margin-top: 18px;
-    background: #f3f3f9;
-    border-radius: 15px;
-    box-shadow: 0 1px 6px rgba(124,77,255,0.07);
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 14px 0;
-}
-.profile-upload-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #a18fff 0%, #7c4dff 100%);
-    color: #fff;
-    font-weight: 600;
-    font-size: 1.08rem;
-    border-radius: 30px;
-    padding: 11px 32px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px 0 rgba(124,77,255,0.10);
-    transition: background 0.14s;
-}
-.profile-upload-label:hover {
-    background: linear-gradient(135deg, #7c4dff 0%, #e040fb 100%);
-}
-.profile-upload-label i {
-    font-size: 1.32rem;
-}
-.profile-upload-card {
-    width: 100%;
-    margin-top: 8px;
-    background: none;
-    border-radius: 0;
-    box-shadow: none;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 0;
     gap: 12px;
 }
 
-.profile-upload-btn {
-    background: linear-gradient(135deg, #7c4dff, #e040fb);
-    color: #fff;
-    border: none;
-    border-radius: 30px;
-    padding: 10px 26px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 2px 8px 0 rgba(124,77,255,0.09);
-    transition: background 0.16s, transform 0.12s;
-    outline: none;
+.profile-upload-card form {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    width: 100%;
 }
-.profile-upload-btn:hover {
-    background: linear-gradient(135deg, #a18fff, #7c4dff);
-    transform: scale(1.06);
+
+.profile-upload-card a.profile-upload-btn {
+    display: inline-flex;
+    align-items: center;
 }
 /* --- EFECT POZA NEVALIDATĂ / PENDING --- */
 .photo-wrap {

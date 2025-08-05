@@ -57,8 +57,8 @@ ob_start();
             </button>
         </div>
         <div id="desc-view-div" style="display:<?=!empty($user['description']) ? 'block':'none'?>;">
-            <div class="desc-field"><?=!empty($user['description']) ? htmlspecialchars($user['description']) : '<span style="color:#aaa">No description</span>'?>
-			</div>
+            <div class="desc-field"><?=!empty($user['description']) ? htmlspecialchars($user['description']) : '<span style="color:#aaa">No description</span>'?></div>
+        </div>
         <form method="POST" style="margin:0;display:<?=empty($user['description']) ? 'block':'none'?>;" id="desc-edit-div">
             <textarea name="description" class="desc-field" maxlength="500"><?=htmlspecialchars($user['description'])?></textarea>
             <button type="submit" class="desc-action-btn" name="save_desc"><i class="fas fa-save"></i> Save</button>
@@ -71,7 +71,7 @@ ob_start();
                 <i class="fas fa-plus-circle"></i> Add photo
             </button>
             <input type="file" name="file" accept="image/*" required id="profile-photo-input" style="display:none;">
-            <button type="submit" class="profile-upload-btn" id="upload-btn" style="display:none; margin-left: 16px;">
+            <button type="submit" class="profile-upload-btn" id="upload-btn" style="display:none;">
                 <i class="fas fa-upload"></i> Upload photo
             </button>
         </form>
