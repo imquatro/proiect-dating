@@ -1,16 +1,31 @@
+html,
 body {
-    margin: 0 auto;
-    width: 620px;
     height: 100vh;
-    background: url('../img/weolcome.png') no-repeat center center fixed;
-    background-size: cover;
+    margin: 0;
+}
+
+body {
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-frame {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    height: 100%;
+    margin: 0 auto;
+    background: url('../img/weolcome.png') center/contain no-repeat;
+    box-shadow: 0 4px 24px rgba(155, 92, 255, 0.13);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 #welcome-frame {
-    width: 620px;
+    width: 100%;
     text-align: center;
     background: rgba(255, 255, 255, 0.8);
     padding: 20px;
@@ -18,22 +33,6 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     transform: translateY(-200%);
     opacity: 0;
-}
-
-#start-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-#start-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
 }
 
 #welcome-frame.drop {

@@ -6,9 +6,11 @@
     <link rel="stylesheet" href="assets_css/index.css">
 </head>
 <body>
-    <div id="welcome-frame">
-        <p>Bun venit la joc!</p>
-        <button id="start-button">Start</button>
+    <div class="app-frame">
+        <div id="welcome-frame">
+            <p>WELCOME TO FARMING COMMUNITY!</p>
+            <button id="start-button">Start</button>
+        </div>
     </div>
     <script src="assets_js/index.js"></script>
 </body>
