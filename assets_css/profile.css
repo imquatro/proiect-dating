@@ -1,0 +1,14 @@
+.profile {
+    padding: 20px;
+    text-align: center;
+}
+
+.profile h2 {
+    margin-top: 20px;
+    color: #2e7d32;
+}
+
+.profile p {
+    margin: 6px 0;
+    font-weight: 500;
+}
