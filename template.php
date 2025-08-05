@@ -1,7 +1,7 @@
 <?php
 if (!isset($activePage)) { $activePage = ''; }
 if (!isset($content)) { $content = ''; }
-if (!isset($content)) { $content = ''; }
+if (!isset($pageTitle)) { $pageTitle = ''; }
 if (!isset($pageCss)) { $pageCss = ''; }
 if (!isset($extraJs)) { $extraJs = ''; }
 ?>
