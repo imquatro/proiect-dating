@@ -65,13 +65,12 @@
     display: none;
     height: 20px;
     margin-bottom: 6px;
-    display: flex;
     align-items: center;
 }
 
 .typing-indicator img {
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     margin-right: 4px;
 }

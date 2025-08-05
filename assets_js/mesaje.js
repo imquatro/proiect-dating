@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     }
                 }
-                typingIndicator.style.display = data.typing ? 'block' : 'none';
+                typingIndicator.style.display = data.typing ? 'flex' : 'none';
             })
             .catch(() => {});
     }
@@ -40,6 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
             body: `action=send&friend_id=${friendId}&message=${encodeURIComponent(text)}`
         }).then(() => {
             messageInput.value = '';
+            fetch('messages_api.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=stop_typing&friend_id=${friendId}`
+            });
         });
     });
 
