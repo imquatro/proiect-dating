@@ -67,9 +67,10 @@ body, html {
 }
 
 .profile-container {
-    max-width: 450px;
+    width: 100%;
+    max-width: 620px;
     margin: 0 auto;
-    background: url('../img/bg.png') center/cover no-repeat; 
+    background: url('../img/fundal.png') center/cover no-repeat;
     border-radius: 0px;
     box-shadow: 0 4px 24px rgba(155,92,255,0.13);
     padding: 20px 12px 80px 12px; /* spațiu mare jos */
@@ -398,4 +399,8 @@ body::-webkit-scrollbar-thumb, .profile-container::-webkit-scrollbar-thumb {
     object-fit: cover;
     box-shadow: 0 2px 18px rgba(124,77,255,0.11);
     display: block;
+}
+
+.content {
+    padding: 0;
 }

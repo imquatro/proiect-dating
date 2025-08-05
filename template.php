@@ -6,7 +6,7 @@ if (!isset($pageCss)) { $pageCss = ''; }
 if (!isset($extraJs)) { $extraJs = ''; }
 ?>
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -35,6 +35,47 @@ if (!isset($extraJs)) { $extraJs = ''; }
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const content = document.querySelector('.content');
+    let isDown = false;
+    let startY;
+    let scrollTop;
+
+    content.addEventListener('mousedown', function(e) {
+        isDown = true;
+        startY = e.pageY - content.offsetTop;
+        scrollTop = content.scrollTop;
+    });
+
+    content.addEventListener('mouseleave', function() {
+        isDown = false;
+    });
+
+    content.addEventListener('mouseup', function() {
+        isDown = false;
+    });
+
+    content.addEventListener('mousemove', function(e) {
+        if (!isDown) return;
+        e.preventDefault();
+        const y = e.pageY - content.offsetTop;
+        const walk = y - startY;
+        content.scrollTop = scrollTop - walk;
+    });
+
+    content.addEventListener('touchstart', function(e) {
+        startY = e.touches[0].pageY - content.offsetTop;
+        scrollTop = content.scrollTop;
+    }, { passive: true });
+
+    content.addEventListener('touchmove', function(e) {
+        const y = e.touches[0].pageY - content.offsetTop;
+        const walk = y - startY;
+        content.scrollTop = scrollTop - walk;
+    }, { passive: true });
+});
+</script>
 <?= $extraJs ?>
 </body>
 </html>

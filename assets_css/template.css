@@ -62,8 +62,13 @@ html, body {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 12px;
+    scrollbar-width: none; /* hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* hide scrollbar for IE and Edge */
 }
 
+.content::-webkit-scrollbar {
+    display: none; /* hide scrollbar for Chrome, Safari, and Opera */
+}
 .nav-btn {
     color: #fff;
     font-size: 1.7rem;

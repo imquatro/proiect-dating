@@ -32,57 +32,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_desc'])) {
 }
 
 if (isset($_GET['error']) && $_GET['error'] === 'max_photos') {
-    echo '<p style="color:red; font-weight:bold; text-align:center;">Ai atins limita maximă de 10 poze.</p>';
+    echo '<p style="color:red; font-weight:bold; text-align:center;">You have reached the maximum limit of 10 photos.</p>';
 }
 
 ob_start();
 ?>
 <div class="profile-container">
     <div class="profile-gallery">
-        <img src="<?= htmlspecialchars($profile_photo) ?>" class="profile-img" alt="Poza de profil">
+        <img src="<?= htmlspecialchars($profile_photo) ?>" class="profile-img" alt="Profile photo">
     </div>
     <div class="profile-info-list">
-        <div class="info-row"><span class="profile-label">Nume:</span><span class="profile-value"><?=htmlspecialchars($user['username'])?></span></div>
+        <div class="info-row"><span class="profile-label">Name:</span><span class="profile-value"><?=htmlspecialchars($user['username'])?></span></div>
         <div class="info-row"><span class="profile-label">Email:</span><span class="profile-value"><?=htmlspecialchars($user['email'])?></span></div>
-        <div class="info-row"><span class="profile-label">Vârstă:</span><span class="profile-value"><?=htmlspecialchars($user['age'])?></span></div>
-        <div class="info-row"><span class="profile-label">Sex:</span><span class="profile-value"><?=htmlspecialchars($user['gender'])?></span></div>
-        <div class="info-row"><span class="profile-label">Țară:</span><span class="profile-value"><?=htmlspecialchars($user['country'])?></span></div>
-        <div class="info-row"><span class="profile-label">Oraș:</span><span class="profile-value"><?=htmlspecialchars($user['city'])?></span></div>
+        <div class="info-row"><span class="profile-label">Age:</span><span class="profile-value"><?=htmlspecialchars($user['age'])?></span></div>
+        <div class="info-row"><span class="profile-label">Gender:</span><span class="profile-value"><?=htmlspecialchars($user['gender'])?></span></div>
+        <div class="info-row"><span class="profile-label">Country:</span><span class="profile-value"><?=htmlspecialchars($user['country'])?></span></div>
+        <div class="info-row"><span class="profile-label">City:</span><span class="profile-value"><?=htmlspecialchars($user['city'])?></span></div>
     </div>
     <div class="desc-edit-wrap">
         <div class="desc-title-row">
-            <span style="font-weight:600;color:#7c4dff;">Descriere</span>
+            <span style="font-weight:600;color:#7c4dff;">Description</span>
             <button type="button" class="desc-action-btn edit" onclick="toggleDescEdit()" id="descEditBtn">
-                <i class="fas fa-edit"></i> Editează
+                <i class="fas fa-edit"></i> Edit
             </button>
         </div>
         <div id="desc-view-div" style="display:<?=!empty($user['description']) ? 'block':'none'?>;">
-            <div class="desc-field"><?=!empty($user['description']) ? htmlspecialchars($user['description']) : '<span style="color:#aaa">Fără descriere</span>'?></div>
-        </div>
+            <div class="desc-field"><?=!empty($user['description']) ? htmlspecialchars($user['description']) : '<span style="color:#aaa">No description</span>'?>
+			</div>
         <form method="POST" style="margin:0;display:<?=empty($user['description']) ? 'block':'none'?>;" id="desc-edit-div">
             <textarea name="description" class="desc-field" maxlength="500"><?=htmlspecialchars($user['description'])?></textarea>
-            <button type="submit" class="desc-action-btn" name="save_desc"><i class="fas fa-save"></i> Salvează</button>
+            <button type="submit" class="desc-action-btn" name="save_desc"><i class="fas fa-save"></i> Save</button>
         </form>
     </div>
     <div class="profile-upload-card">
         <form action="upload_photo.php" method="POST" enctype="multipart/form-data" id="upload-photo-form">
             <input type="hidden" name="user_id" value="<?=$user_id?>">
             <button type="button" class="profile-upload-btn" id="select-btn">
-                <i class="fas fa-plus-circle"></i> Adaugă poză
+                <i class="fas fa-plus-circle"></i> Add photo
             </button>
             <input type="file" name="file" accept="image/*" required id="profile-photo-input" style="display:none;">
             <button type="submit" class="profile-upload-btn" id="upload-btn" style="display:none; margin-left: 16px;">
-                <i class="fas fa-upload"></i> Încarcă poză
+                <i class="fas fa-upload"></i> Upload photo
             </button>
         </form>
     </div>
     <div class="profile-upload-card">
-        <a href="gallery.php" class="profile-upload-btn"><i class="fas fa-images"></i> Vezi galeria</a>
+        <a href="gallery.php" class="profile-upload-btn"><i class="fas fa-images"></i> View gallery</a>
     </div>
 </div>
 <?php
 $content = ob_get_clean();
-$activePage = '';
+$activePage = 'profile';
 $pageCss = 'assets_css/profile.css';
 $extraJs = <<<'JS'
 <script>
