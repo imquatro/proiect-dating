@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Setări';
 $activePage = 'settings';
-$content = '<h2>Setările jocului</h2>';
+$content = '<p>Setările jocului</p>';
+$pageCss = 'assets_css/settings.css';
 include 'template.php';

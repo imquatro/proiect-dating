@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Hambaru';
 $activePage = 'barn';
-$content = '<h2>Resursele din hambar</h2>';
+$content = '<p>Resursele din hambar</p>';
+$pageCss = 'assets_css/barn.css';
 include 'template.php';

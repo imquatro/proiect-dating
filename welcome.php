@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Bine ai venit';
 $activePage = 'welcome';
-$content = '<h2>Bun venit la fermă!</h2>';
+$content = '<p>Bun venit la fermă!</p>';
+$pageCss = 'assets_css/welcome.css';
 include 'template.php';
