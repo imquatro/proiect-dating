@@ -22,7 +22,7 @@ if (!isset($extraJs)) { $extraJs = ''; }
         <a href="diverse.php" class="nav-btn top-btn"><i class="fas fa-ellipsis-h"></i></a>
         <div class="page-title"><?= htmlspecialchars($pageTitle) ?></div>
         <div class="top-right">
-            <a href="messages.php" class="nav-btn top-btn"><i class="fas fa-envelope"></i></a>
+            <a href="mesaje.php" class="nav-btn top-btn"><i class="fas fa-envelope"></i></a>
             <div class="profile-box"></div>
         </div>
     </div>
@@ -32,8 +32,8 @@ if (!isset($extraJs)) { $extraJs = ''; }
     <nav class="bottom-nav">
         <a href="welcome.php" class="nav-btn <?php if($activePage==='welcome') echo 'active';?>"><i class="fas fa-seedling"></i></a>
         <a href="barn.php" class="nav-btn <?php if($activePage==='barn') echo 'active';?>"><i class="fas fa-warehouse"></i></a>
+        <a href="mesaje.php" class="nav-btn <?php if($activePage==='mesaje') echo 'active';?>"><i class="fas fa-envelope"></i></a>
         <a href="friends.php" class="nav-btn <?php if($activePage==='friends') echo 'active';?>"><i class="fas fa-user-friends"></i></a>
-        <a href="shop.php" class="nav-btn <?php if($activePage==='shop') echo 'active';?>"><i class="fas fa-store"></i></a>
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>
 </div>
