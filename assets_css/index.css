@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background: url('../img/weolcome.png') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#welcome-frame {
+    width: 620px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transform: translateY(-200%);
+    opacity: 0;
+}
+
+#welcome-frame.drop {
+    animation: drop 1s ease-out forwards;
+}
+
+@keyframes drop {
+    0% {
+        transform: translateY(-200%);
+        opacity: 0;
+    }
+    80% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    90% {
+        transform: translateY(20px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
