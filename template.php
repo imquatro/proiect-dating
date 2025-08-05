@@ -20,11 +20,8 @@ if (!isset($extraJs)) { $extraJs = ''; }
 <div class="app-frame">
     <div class="top-bar">
         <a href="diverse.php" class="nav-btn top-btn"><i class="fas fa-ellipsis-h"></i></a>
-        <div class="page-title"><?= htmlspecialchars($pageTitle) ?></div>
-        <div class="top-right">
-            <a href="mesaje.php" class="nav-btn top-btn"><i class="fas fa-envelope"></i></a>
-            <div class="profile-box"></div>
-        </div>
+        <a href="mesaje.php" class="nav-btn top-btn center-btn"><i class="fas fa-envelope"></i></a>
+        <div class="profile-box"></div>
     </div>
     <div class="content">
         <?= $content ?>
