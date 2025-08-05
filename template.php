@@ -21,7 +21,7 @@ if (!isset($extraJs)) { $extraJs = ''; }
     <div class="top-bar">
         <a href="diverse.php" class="nav-btn top-btn"><i class="fas fa-ellipsis-h"></i></a>
         <a href="mesaje.php" class="nav-btn top-btn center-btn"><i class="fas fa-envelope"></i></a>
-        <div class="profile-box"></div>
+        <div class="profile-box"><img src="<?= htmlspecialchars($profilePhoto) ?>" alt="Profile"></div>
     </div>
     <div class="content">
         <?= $content ?>
