@@ -75,6 +75,18 @@ switch ($action) {
         echo json_encode(['status' => 'ok']);
         break;
 
+    case 'stop_typing':
+        $db->exec('CREATE TABLE IF NOT EXISTS typing_status (
+            sender_id INT NOT NULL,
+            receiver_id INT NOT NULL,
+            last_typing DATETIME NOT NULL,
+            PRIMARY KEY(sender_id, receiver_id)
+        )');
+        $stmt = $db->prepare('DELETE FROM typing_status WHERE sender_id = ? AND receiver_id = ?');
+        $stmt->execute([$user_id, $friend_id]);
+        echo json_encode(['status' => 'ok']);
+        break;
+
     default:
         echo json_encode(['error' => 'unknown_action']);
 }
