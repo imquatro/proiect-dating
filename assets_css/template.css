@@ -15,7 +15,7 @@ html, body {
     max-width: 620px;
     height: 100vh;
     margin: 0 auto;
-    background: url('../img/fundal.png') top center/cover no-repeat;
+    background: url('../img/bg.png') top center/cover no-repeat;
     box-shadow: 0 4px 24px rgba(155,92,255,0.13);
 }
 
