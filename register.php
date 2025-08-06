@@ -16,19 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($age < 18 || $age > 99) {
             $mesaj = 'Vârsta trebuie să fie între 18 și 99 de ani.';
         } else {
-            // Criptare parolă
             $hash = password_hash($password, PASSWORD_DEFAULT);
-
-            // Verifică dacă email sau username există deja
             $stmt = $db->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
             $stmt->execute([$email, $username]);
             if ($stmt->fetch()) {
                 $mesaj = 'Există deja un cont cu acest email sau nume!';
             } else {
-                // Inserare user nou cu câmpuri suplimentare
                 $stmt = $db->prepare("INSERT INTO users (email, username, password, age, country, city, gender) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 if ($stmt->execute([$email, $username, $hash, $age, $country, $city, $gender])) {
-                    header('Location: login.php?register=success');
+                    header('Location: index.php?register=success');
                     exit;
                 } else {
                     $mesaj = 'Eroare la înregistrare!';
@@ -45,11 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Înregistrare - Proiect Dating</title>
-    <link rel="stylesheet" href="assets_css/style.css">
+    <title>Înregistrare</title>
+    <link rel="stylesheet" href="assets_css/auth.css">
 </head>
 <body>
-    <div class="login-container">
+    <div class="register-container">
         <form action="register.php" method="POST" class="login-form">
             <h2>Înregistrare</h2>
             <input type="email" name="email" placeholder="Email" required>
@@ -63,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <option value="masculin">Masculin</option>
                 <option value="feminin">Feminin</option>
             </select>
-            <button type="submit" class="btn-login">Înregistrează-te</button>
+            <button type="submit">Înregistrează-te</button>
             <p>Ai deja cont? <a href="login.php">Loghează-te</a></p>
             <?php if ($mesaj): ?>
                 <p style="color:#b40b2c; margin-top:10px;"><?= htmlspecialchars($mesaj) ?></p>

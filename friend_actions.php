@@ -5,7 +5,7 @@ require_once __DIR__ . '/includes/db.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Nu ești autentificat']);
+    echo json_encode(['success' => false, 'message' => 'You are not authenticated']);
     exit;
 }
 
@@ -15,7 +15,7 @@ $currentId = $_SESSION['user_id'];
 require_once __DIR__ . '/includes/update_last_active.php';
 
 function build_user($row) {
-    $avatar = 'img/user_default.png';
+    $avatar = 'default-avatar.png';
     if (!empty($row['gallery'])) {
         $gal = explode(',', $row['gallery']);
         $avatar = 'uploads/' . $row['id'] . '/' . trim($gal[0]);
@@ -40,7 +40,7 @@ function build_user($row) {
 if ($action === 'send_request') {
     $receiver = (int)($_POST['user_id'] ?? 0);
     if (!$receiver || $receiver == $currentId) {
-        echo json_encode(['success' => false, 'message' => 'Utilizator invalid']);
+        echo json_encode(['success' => false, 'message' => 'Invalid user']);
         exit;
     }
     try {
@@ -48,7 +48,7 @@ if ($action === 'send_request') {
         $stmt->execute([$currentId, $receiver, $receiver, $currentId]);
         $existing = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($existing) {
-            echo json_encode(['success' => false, 'message' => 'Cerere existentă']);
+            echo json_encode(['success' => false, 'message' => 'Request already exists']);
             exit;
         }
         $stmt = $db->prepare('INSERT INTO friend_requests (sender_id, receiver_id, status, created_at) VALUES (?, ?, "pending", NOW())');
@@ -56,7 +56,10 @@ if ($action === 'send_request') {
         echo json_encode(['success' => true]);
         exit;
     } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'message' => 'Eroare DB']);
+        echo json_encode(['success' => true]);
+        exit;
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Database error']);
         exit;
     }
 }
@@ -64,14 +67,14 @@ if ($action === 'send_request') {
 if ($action === 'accept_request') {
     $sender = (int)($_POST['user_id'] ?? 0);
     if (!$sender || $sender == $currentId) {
-        echo json_encode(['success' => false, 'message' => 'Utilizator invalid']);
+        echo json_encode(['success' => false, 'message' => 'Invalid user']);
         exit;
     }
     try {
         $stmt = $db->prepare('UPDATE friend_requests SET status = "accepted", responded_at = NOW() WHERE sender_id = ? AND receiver_id = ? AND status = "pending"');
         $stmt->execute([$sender, $currentId]);
         if (!$stmt->rowCount()) {
-            echo json_encode(['success' => false, 'message' => 'Cerere inexistentă']);
+            echo json_encode(['success' => false, 'message' => 'Request not found']);
             exit;
         }
         $stmt = $db->prepare('SELECT id, username, gallery, last_active FROM users WHERE id = ?');
@@ -80,7 +83,7 @@ if ($action === 'accept_request') {
         echo json_encode(['success' => true, 'user' => build_user($user)]);
         exit;
     } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'message' => 'Eroare DB']);
+        echo json_encode(['success' => false, 'message' => 'Database error']);
         exit;
     }
 }
@@ -88,7 +91,7 @@ if ($action === 'accept_request') {
 if ($action === 'decline_request') {
     $sender = (int)($_POST['user_id'] ?? 0);
     if (!$sender || $sender == $currentId) {
-        echo json_encode(['success' => false, 'message' => 'Utilizator invalid']);
+        echo json_encode(['success' => false, 'message' => 'Invalid user']);
         exit;
     }
     try {
@@ -101,12 +104,33 @@ if ($action === 'decline_request') {
             echo json_encode(['success' => true, 'user' => build_user($user)]);
             exit;
         }
-        echo json_encode(['success' => false, 'message' => 'Cerere inexistentă']);
+        echo json_encode(['success' => false, 'message' => 'Request not found']);
         exit;
     } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'message' => 'Eroare DB']);
+        echo json_encode(['success' => false, 'message' => 'Database error']);
         exit;
     }
 }
 
-echo json_encode(['success' => false, 'message' => 'Acțiune necunoscută']);
+if ($action === 'remove_friend') {
+    $friendId = (int)($_POST['user_id'] ?? 0);
+    if (!$friendId || $friendId == $currentId) {
+        echo json_encode(['success' => false, 'message' => 'Invalid user']);
+        exit;
+    }
+    try {
+        $stmt = $db->prepare('DELETE FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = "accepted"');
+        $stmt->execute([$currentId, $friendId, $friendId, $currentId]);
+        if ($stmt->rowCount()) {
+            echo json_encode(['success' => true]);
+            exit;
+        }
+        echo json_encode(['success' => false, 'message' => 'Friendship not found']);
+        exit;
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Database error']);
+        exit;
+    }
+}
+
+echo json_encode(['success' => false, 'message' => 'Unknown action']);
