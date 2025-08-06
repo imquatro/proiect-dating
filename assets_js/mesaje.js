@@ -11,6 +11,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let typingTimeout;
     let initialFetch = true;
 
+    function formatRelativeTime(dateString) {
+        const date = new Date(dateString.replace(' ', 'T'));
+        const diffSeconds = Math.floor((Date.now() - date.getTime()) / 1000);
+        if (diffSeconds < 60) return 'sent just now';
+        const diffMinutes = Math.floor(diffSeconds / 60);
+        if (diffMinutes < 60) {
+            return `sent ${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+        }
+        const diffHours = Math.floor(diffMinutes / 60);
+        if (diffHours < 24) {
+            return `sent ${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        }
+        const diffDays = Math.floor(diffHours / 24);
+        return `sent ${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+    }
+
     function fetchMessages() {
         fetch(`messages_api.php?action=fetch&friend_id=${friendId}&last_id=${lastId}`)
             .then(r => r.json())
@@ -21,7 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     data.messages.forEach(m => {
                         const div = document.createElement('div');
                         div.className = 'chat-bubble' + (m.sender_id == currentUserId ? ' me' : '');
-                        div.textContent = m.message;
+                        const msgSpan = document.createElement('span');
+                        msgSpan.className = 'message-text';
+                        msgSpan.textContent = m.message;
+                        const timeSpan = document.createElement('span');
+                        timeSpan.className = 'timestamp';
+                        timeSpan.textContent = formatRelativeTime(m.created_at);
+                        div.appendChild(msgSpan);
+                        div.appendChild(timeSpan);
                         chatMessages.appendChild(div);
                         lastId = m.id;
                         newMessages = true;
