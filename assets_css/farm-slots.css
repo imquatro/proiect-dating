@@ -1,27 +1,33 @@
 /* Grid of farm slots */
+:root {
+    /* default values will be updated via JavaScript */
+    --slot-size: 50px;
+    --slot-gap: 9px;
+}
+
 .farm-slots {
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: var(--slot-gap);
     align-items: center;
-    padding: 5px 0;
+    padding: var(--slot-gap) 0;
     background: transparent;
     box-shadow: none;
     border: none;
-    width: calc(6 * 50px + 5 * 4px);
-    max-width: 98vw;
+    width: calc(6 * var(--slot-size) + 5 * var(--slot-gap));
+    max-width: 100%;
     margin: 0 auto;
 }
 
 .farm-row {
     display: flex;
-    gap: 9px;
+    gap: var(--slot-gap);
     justify-content: center;
 }
 
 .farm-slot {
-    width: 85px;
-    height: 90px;
+    width: var(--slot-size);
+    height: var(--slot-size);
     background: #f3e5b7;
     border: 2px solid #bfa56e;
     box-shadow: 0 2px 4px #baa56433;
@@ -44,10 +50,4 @@
     border: none;
     border-top: 3px solid #ffd900;
     margin: 6px 0;
-}
-
-@media (max-width: 480px) {
-    .farm-slots, .mini-profile { width: 99vw; min-width: 0; }
-    .farm-slot { width: 40px; height: 40px; }
-    .farm-row { gap: 4px; }
 }
