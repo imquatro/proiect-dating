@@ -83,6 +83,7 @@ else {
     </form>
 </div>
 <?php
+}
 $content = ob_get_clean();
 $pageTitle = 'Mesaje';
 $pageCss = 'assets_css/mesaje.css';
