@@ -107,6 +107,8 @@
     align-items: center;
     text-decoration: none;
     color: #6c4e09;
+    position: relative;
+    padding-right: 20px;
 }
 
 .conv-avatar {
@@ -137,8 +139,8 @@
     cursor: pointer;
 }
 
-.conversation-list li.selected {
-    background: #ffe9a3;
-    border: 1px solid #f6cf49;
-    border-radius: 8px;
+.conversation-list li.selected {␊
+    background: #ffe9a3;␊
+    border: 1px solid #f6cf49;␊
+    border-radius: 8px;␊
 }
