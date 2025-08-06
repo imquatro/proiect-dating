@@ -2,7 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const indicator = document.getElementById('messageIndicator');
     if (!indicator) return;
 
-    const sound = new Audio('sounds/water-drop-plop.mp3');
+    const params = new URLSearchParams(window.location.search);
+    const inConversation = window.location.pathname.includes('mesaje.php') && (params.has('id') || params.has('user_id'));
+    if (inConversation) {
+        indicator.style.display = 'none';
+        return;
+    }
+
+    const sound = new Audio('sounds/applepay.mp3');
     let lastCount = 0;
     let firstCheck = true;
 
