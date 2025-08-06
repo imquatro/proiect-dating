@@ -60,7 +60,9 @@ ob_start();
         <?php if (!empty($gallery)): ?>
             <?php foreach ($gallery as $i => $photo): ?>
                 <div class="slide <?= $i === 0 ? 'active' : '' ?>">
-                    <img src="uploads/<?= $user_id ?>/<?= htmlspecialchars($photo) ?>" class="profile-img" alt="Photo">
+                    <div class="photo-frame gallery-photo-frame">
+                        <img src="uploads/<?= $user_id ?>/<?= htmlspecialchars($photo) ?>" class="profile-img" alt="Photo">
+                    </div>
                     <div class="gallery-btns">
                         <form method="POST">
                             <input type="hidden" name="filename" value="<?= htmlspecialchars($photo) ?>">

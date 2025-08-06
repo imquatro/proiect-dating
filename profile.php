@@ -39,7 +39,9 @@ ob_start();
 ?>
 <div class="profile-container">
     <div class="profile-gallery">
-        <img src="<?= htmlspecialchars($profile_photo) ?>" class="profile-img" alt="Profile photo">
+        <div class="photo-frame profile-photo-frame">
+            <img src="<?= htmlspecialchars($profile_photo) ?>" class="profile-img" alt="Profile photo">
+        </div>
     </div>
     <div class="profile-info-list">
         <div class="info-row"><span class="profile-label">Name:</span><span class="profile-value"><?=htmlspecialchars($user['username'])?></span></div>
