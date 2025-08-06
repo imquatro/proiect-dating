@@ -2,9 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const indicator = document.getElementById('messageIndicator');
     if (!indicator) return;
 
-    const params = new URLSearchParams(window.location.search);
-    const inConversation = window.location.pathname.includes('mesaje.php') && (params.has('id') || params.has('user_id'));
-    if (inConversation) {
+    const onMessagesPage = window.location.pathname.includes('mesaje.php');
+    if (onMessagesPage) {
         indicator.style.display = 'none';
         return;
     }
