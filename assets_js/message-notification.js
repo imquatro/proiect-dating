@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const sound = new Audio('sounds/applepay.mp3');
+    const sound = new Audio('sounds/water-drop-plop.mp3');
     let lastCount = 0;
     let firstCheck = true;
 

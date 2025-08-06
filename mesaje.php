@@ -41,13 +41,14 @@ if (!$friend) {
     } catch (PDOException $e) {
         // Column may already exist
     }
-    $stmt = $db->prepare('SELECT u.id, u.username, u.gallery
+    $stmt = $db->prepare('SELECT u.id, u.username, u.gallery,
+        SUM(CASE WHEN m.sender_id = u.id AND m.receiver_id = ? AND m.is_read = 0 THEN 1 ELSE 0 END) AS unread
         FROM users u
         JOIN messages m ON (m.sender_id = u.id OR m.receiver_id = u.id)
         WHERE (m.sender_id = ? OR m.receiver_id = ?) AND u.id != ?
         GROUP BY u.id, u.username, u.gallery
         ORDER BY MAX(m.created_at) DESC');
-    $stmt->execute([$user_id, $user_id, $user_id]);
+    $stmt->execute([$user_id, $user_id, $user_id, $user_id]);
     $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
     if ($conversations) {
         echo '<ul class="conversation-list" id="conversationList">';
@@ -62,7 +63,11 @@ if (!$friend) {
                     }
                 }
             }
-            echo '<li data-id="' . (int)$c['id'] . '"><a href="mesaje.php?id=' . (int)$c['id'] . '"><img src="' . htmlspecialchars($avatar) . '" class="conv-avatar" alt="">' . htmlspecialchars($c['username']) . '</a></li>';
+            echo '<li data-id="' . (int)$c['id'] . '"><a href="mesaje.php?id=' . (int)$c['id'] . '"><img src="' . htmlspecialchars($avatar) . '" class="conv-avatar" alt="">' . htmlspecialchars($c['username']);
+            if ((int)$c['unread'] > 0) {
+                echo '<span class="message-indicator conversation-indicator"></span>';
+            }
+            echo '</a></li>';
         }
         echo '</ul>';
         echo '<button id="deleteConversationBtn" class="delete-conv-btn">Delete conversation</button>';
@@ -89,6 +94,6 @@ $pageCss = 'assets_css/mesaje.css';
 if ($friend) {
     $extraJs = "<script>var friendId = $friend_id; var currentUserId = $user_id;</script>\n<script src=\"assets_js/mesaje.js\"></script>";
 } else {
-    $extraJs = "<script src=\"assets_js/mesaje_list.js\"></script>";
+$extraJs = "<script src=\"assets_js/mesaje_list.js\"></script>";
 }
 include 'template.php';
