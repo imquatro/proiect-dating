@@ -34,8 +34,14 @@ if (!$friend) {
         sender_id INT NOT NULL,
         receiver_id INT NOT NULL,
         message TEXT NOT NULL,
-        created_at DATETIME NOT NULL
+        created_at DATETIME NOT NULL,
+        is_read TINYINT(1) NOT NULL DEFAULT 0
     )');
+    try {
+        $db->exec('ALTER TABLE messages ADD COLUMN is_read TINYINT(1) NOT NULL DEFAULT 0');
+    } catch (PDOException $e) {
+        // Column may already exist
+    }
     $stmt = $db->prepare('SELECT u.id, u.username, u.gallery
         FROM users u
         JOIN messages m ON (m.sender_id = u.id OR m.receiver_id = u.id)

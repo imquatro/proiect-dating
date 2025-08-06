@@ -32,6 +32,7 @@ if (!isset($profilePhoto)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="assets_css/template.css">
+    <link rel="stylesheet" href="assets_css/message-notification.css">
     <?php if ($pageCss): ?>
     <link rel="stylesheet" href="<?= htmlspecialchars($pageCss) ?>">
     <?php endif; ?>
@@ -41,8 +42,9 @@ if (!isset($profilePhoto)) {
 <div class="app-frame">
     <div class="top-bar">
         <a href="diverse.php" class="nav-btn top-btn"><i class="fas fa-ellipsis-h"></i></a>
-        <a href="mesaje.php" class="nav-btn top-btn center-btn"><i class="fas fa-envelope"></i></a>
+        <a href="mesaje.php" class="nav-btn top-btn center-btn"><i class="fas fa-envelope"></i><span id="messageIndicator" class="message-indicator"></span></a>
         <div class="profile-box"><img src="<?= htmlspecialchars($profilePhoto) ?>" alt="Profile"></div>
+    </div>
     </div>
     <div class="content">
         <?= $content ?>
@@ -99,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
+<script src="assets_js/message-notification.js"></script>
 <?= $extraJs ?>
 </body>
 </html>
