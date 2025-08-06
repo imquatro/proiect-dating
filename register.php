@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $stmt = $db->prepare("INSERT INTO users (email, username, password, age, country, city, gender) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 if ($stmt->execute([$email, $username, $hash, $age, $country, $city, $gender])) {
-                    header('Location: login.php?register=success');
+                    header('Location: index.php?register=success');
                     exit;
                 } else {
                     $mesaj = 'Eroare la înregistrare!';

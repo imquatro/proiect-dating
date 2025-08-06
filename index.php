@@ -1,3 +1,6 @@
+<?php
+$registered = isset($_GET['register']) && $_GET['register'] === 'success';
+?>
 <!DOCTYPE html>
 <html lang="ro">
 <head>
@@ -8,20 +11,25 @@
 </head>
 <body>
     <div class="app-frame">
+        <?php if (!$registered): ?>
         <div id="welcome-frame">
             <p>WELCOME TO FARMING COMMUNITY!</p>
             <button id="start-button">Start</button>
         </div>
-        <div id="auth-container" class="hidden">
+        <?php endif; ?>
+        <div id="auth-container" class="<?= $registered ? '' : 'hidden' ?>">
             <div class="login-container">
-                 <form id="login-form" class="login-form" action="login.php" method="POST">
+                <?php if ($registered): ?>
+                <div id="register-msg" class="register-msg">Cont creat cu succes!</div>
+                <?php endif; ?>
+                <form id="login-form" class="login-form" action="login.php" method="POST">
                     <h2>Logare</h2>
                     <input type="text" name="user_or_email" placeholder="Utilizator sau email" required />
                     <input type="password" name="password" placeholder="Parolă" required />
                     <button type="submit" class="btn-login">Logare</button>
                     <p>Nu ai cont? <a href="#" id="show-register">Înregistrează-te</a></p>
                 </form>
-                 <form id="register-form" class="login-form hidden" action="register.php" method="POST">
+                <form id="register-form" class="login-form hidden" action="register.php" method="POST">
                     <h2>Înregistrare</h2>
                     <input type="email" name="email" placeholder="Email" required>
                     <input type="text" name="username" placeholder="Nume utilizator" required>

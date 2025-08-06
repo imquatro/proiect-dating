@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');
     const showRegister = document.getElementById('show-register');
     const showLogin = document.getElementById('show-login');
+    const registerMsg = document.getElementById('register-msg');
 
     if (frame) {
         frame.classList.add('drop');
@@ -32,5 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
             registerForm.classList.add('hidden');
             loginForm.classList.remove('hidden');
         });
+    }
+
+    if (registerMsg) {
+        setTimeout(() => {
+            registerMsg.style.transition = 'opacity 0.5s';
+            registerMsg.style.opacity = '0';
+            setTimeout(() => registerMsg.remove(), 500);
+        }, 3000);
     }
 });
