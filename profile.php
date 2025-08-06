@@ -19,12 +19,12 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 // Prima fotografie din galerie servește drept poză de profil
 $gallery = !empty($user['gallery']) ? array_filter(explode(',', $user['gallery'])) : [];
 $profile_photo = 'default-avatar.png';
-if (!is_file($profile_photo)) {
+if (!is_file(__DIR__ . '/' . $profile_photo)) {
     $profile_photo = 'dating/default-avatar.png';
 }
 if (!empty($gallery)) {
     $candidate = 'dating/uploads/' . $user_id . '/' . $gallery[0];
-    if (is_file($candidate)) {
+    if (is_file(__DIR__ . '/' . $candidate)) {
         $profile_photo = $candidate;
     }
 }
