@@ -8,8 +8,8 @@
 .wallet-display .currency {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 14px;
+    gap: 6px;
+    font-size: 16px;
     line-height: 1;
 }
 
@@ -18,8 +18,8 @@
 }
 
 .wallet-display img {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
 }
 
 .top-right {
