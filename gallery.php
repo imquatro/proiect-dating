@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filename'])) {
     if ($index !== false) {
         if (isset($_POST['delete'])) {
             // Remove file from filesystem
-            $filePath = 'dating/uploads/' . $user_id . '/' . $filename;
+            $filePath = 'uploads/' . $user_id . '/' . $filename;
             if (is_file($filePath)) {
                 unlink($filePath);
             }
@@ -60,7 +60,7 @@ ob_start();
         <?php if (!empty($gallery)): ?>
             <?php foreach ($gallery as $i => $photo): ?>
                 <div class="slide <?= $i === 0 ? 'active' : '' ?>">
-                    <img src="dating/uploads/<?= $user_id ?>/<?= htmlspecialchars($photo) ?>" class="profile-img" alt="Photo">
+                    <img src="uploads/<?= $user_id ?>/<?= htmlspecialchars($photo) ?>" class="profile-img" alt="Photo">
                     <div class="gallery-btns">
                         <form method="POST">
                             <input type="hidden" name="filename" value="<?= htmlspecialchars($photo) ?>">

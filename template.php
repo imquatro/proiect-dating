@@ -5,7 +5,7 @@ if (!isset($pageTitle)) { $pageTitle = ''; }
 if (!isset($pageCss)) { $pageCss = ''; }
 if (!isset($extraJs)) { $extraJs = ''; }
 if (!isset($profilePhoto)) {
-    $profilePhoto = 'dating/default-avatar.png';
+    $profilePhoto = 'default-avatar.png';
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -17,7 +17,7 @@ if (!isset($profilePhoto)) {
         if ($user) {
             $gallery = !empty($user['gallery']) ? array_filter(explode(',', $user['gallery'])) : [];
             if (!empty($gallery)) {
-                $candidate = 'dating/uploads/' . $_SESSION['user_id'] . '/' . $gallery[0];
+                $candidate = 'uploads/' . $_SESSION['user_id'] . '/' . $gallery[0];
                 if (is_file($candidate)) {
                     $profilePhoto = $candidate;
                 }

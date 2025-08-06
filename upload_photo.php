@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['file']) || $_FILES[
     exit;
 }
 
-$upload_dir = 'dating/uploads/' . $user_id . '/';
+$upload_dir = 'uploads/' . $user_id . '/';
 if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
 $filename = basename($_FILES["file"]["name"]);

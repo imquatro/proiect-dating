@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/includes/db.php';
-$mini_avatar = 'dating/default-avatar.png';
+$mini_avatar = 'default-avatar.png';
 $user_name = 'Vizitator';
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
@@ -13,7 +13,7 @@ if (isset($_SESSION['user_id'])) {
     if ($user) {
         $gallery = !empty($user['gallery']) ? array_filter(explode(',', $user['gallery'])) : [];
         if (!empty($gallery)) {
-            $candidate = 'dating/uploads/' . $user_id . '/' . $gallery[0];
+            $candidate = 'uploads/' . $user_id . '/' . $gallery[0];
             if (is_file($candidate)) {
                 $mini_avatar = $candidate;
             }

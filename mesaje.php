@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/update_last_active.php';
 $friend_id = isset($_GET['id']) ? (int)$_GET['id'] : (isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0);
 $friend_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $friend = null;
-$friend_avatar = 'dating/default-avatar.png';
+$friend_avatar = 'default-avatar.png';
 if ($friend_id > 0) {
     $stmt = $db->prepare('SELECT id, username, gallery FROM users WHERE id = ?');
     $stmt->execute([$friend_id]);
@@ -20,7 +20,7 @@ if ($friend_id > 0) {
     if ($friend && !empty($friend['gallery'])) {
         $gal = array_filter(explode(',', $friend['gallery']));
         if (!empty($gal)) {
-            $candidate = 'dating/uploads/' . $friend['id'] . '/' . trim($gal[0]);
+            $candidate = 'uploads/' . $friend['id'] . '/' . trim($gal[0]);
             if (is_file($candidate)) {
                 $friend_avatar = $candidate;
             }
@@ -47,11 +47,11 @@ if (!$friend) {
     if ($conversations) {
         echo '<ul class="conversation-list">';
         foreach ($conversations as $c) {
-            $avatar = 'dating/default-avatar.png';
+            $avatar = 'default-avatar.png';
             if (!empty($c['gallery'])) {
                 $gal = array_filter(explode(',', $c['gallery']));
                 if (!empty($gal)) {
-                    $candidate = 'dating/uploads/' . $c['id'] . '/' . trim($gal[0]);
+                    $candidate = 'uploads/' . $c['id'] . '/' . trim($gal[0]);
                     if (is_file($candidate)) {
                         $avatar = $candidate;
                     }

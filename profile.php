@@ -15,9 +15,9 @@ $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $gallery = !empty($user['gallery']) ? array_filter(explode(',', $user['gallery'])) : [];
-    $avatar = 'default-avatar.png';
+$profile_photo = 'default-avatar.png';
 if (!empty($gallery)) {
-    $candidate = 'dating/uploads/' . $user_id . '/' . $gallery[0];
+    $candidate = 'uploads/' . $user_id . '/' . $gallery[0];
     if (is_file($candidate)) {
         $profile_photo = $candidate;
     }
