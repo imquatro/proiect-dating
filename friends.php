@@ -131,10 +131,6 @@ ob_start();
         <input type="text" id="searchInput" placeholder="Search by name">
         <button id="searchBtn">Search</button>
     </div>
-    <div class="matches-search">
-        <input type="text" id="searchInput" placeholder="Caută după nume">
-        <button id="searchBtn">Caută</button>
-    </div>
     <div id="cardContainer" class="card-container"></div>
 </div>
 <?php
