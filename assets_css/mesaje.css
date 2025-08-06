@@ -118,6 +118,15 @@
     margin-right: 8px;
 }
 
+.conversation-indicator {
+    display: inline-block;
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin-left: 6px;
+}
+
 @keyframes blink {
     0%, 80%, 100% { opacity: 0; }
     40% { opacity: 1; }
