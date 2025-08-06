@@ -116,3 +116,25 @@
     0%, 80%, 100% { opacity: 0; }
     40% { opacity: 1; }
 }
+
+.delete-conv-btn {
+    max-width: 80%;
+    padding: 8px;
+    margin: 10px auto 0;
+    background: #f6cf49;
+    border: 1px solid #f6cf49;
+    border-radius: 8px;
+    color: #6c4e09;
+    cursor: pointer;
+    display: block;
+}
+
+.conversation-list.select-mode li {
+    cursor: pointer;
+}
+
+.conversation-list li.selected {
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    border-radius: 8px;
+}
