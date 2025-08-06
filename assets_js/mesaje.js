@@ -3,8 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const typingIndicator = document.getElementById('typingIndicator');
     const messageForm = document.getElementById('messageForm');
     const messageInput = document.getElementById('messageInput');
+    const messageSound = new Audio('sounds/water-drop-plop.mp3');
     let lastId = 0;
     let typingTimeout;
+    let initialFetch = true;
 
     function fetchMessages() {
         fetch(`messages_api.php?action=fetch&friend_id=${friendId}&last_id=${lastId}`)
