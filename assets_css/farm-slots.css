@@ -1,48 +1,48 @@
-/* assets_css/farm-slots.css */
-.farm-slots {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-    padding: 30px 0;
-    background: transparent;
-    box-shadow: none;
-    border: none;
-    width: 580px;
-    max-width: 98vw;
-    margin: 0 auto;
-}
-.farm-row {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-}
-.farm-slot {
-    width: 100px;
-    height: 120px;
-    background: #f3e5b7;
-    border: 3px solid #bfa56e;
-    box-shadow: 0 2px 4px #baa56433;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.2em;
-    color: #948039;
-    cursor: pointer;
-    transition: box-shadow 0.2s, background 0.2s;
-}
-.farm-slot:hover {
-    box-shadow: 0 0 10px #f5c754aa;
-    background: #f7e7ad;
-}
-.farm-divider {
-    border: none;
-    border-top: 3px solid #ffd900;
-    margin: 25px 0 18px 0;
-}
-@media (max-width: 480px) {
-    .farm-slots, .mini-profile { width: 99vw; min-width: 0; }
-    .farm-slot { width: 60px; height: 80px; }
-    .farm-row { gap: 10px; }
-}
+/* assets_css/mini-profile.css */
+.farm-slots {␊
+    display: flex;␊
+    flex-direction: column;␊
+    gap: 10px;
+    align-items: center;␊
+    padding: 10px 0;
+    background: transparent;␊
+    box-shadow: none;␊
+    border: none;␊
+    width: 580px;␊
+    max-width: 98vw;␊
+    margin: 0 auto;␊
+}␊
+.farm-row {␊
+    display: flex;␊
+    gap: 10px;
+    justify-content: center;␊
+}␊
+.farm-slot {␊
+    width: 70px;
+    height: 70px;
+    background: #f3e5b7;␊
+    border: 2px solid #bfa56e;
+    box-shadow: 0 2px 4px #baa56433;␊
+    display: flex;␊
+    align-items: center;␊
+    justify-content: center;␊
+    font-weight: bold;␊
+    font-size: 1em;
+    color: #948039;␊
+    cursor: pointer;␊
+    transition: box-shadow 0.2s, background 0.2s;␊
+}␊
+.farm-slot:hover {␊
+    box-shadow: 0 0 10px #f5c754aa;␊
+    background: #f7e7ad;␊
+}␊
+.farm-divider {␊
+    border: none;␊
+    border-top: 3px solid #ffd900;␊
+    margin: 10px 0;
+}␊
+@media (max-width: 480px) {␊
+    .farm-slots, .mini-profile { width: 99vw; min-width: 0; }␊
+    .farm-slot { width: 45px; height: 45px; }
+    .farm-row { gap: 8px; }
+}␊

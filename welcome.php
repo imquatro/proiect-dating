@@ -6,7 +6,7 @@ include 'mini_profile.php';
 <hr class="farm-divider">
 <div class="farm-slots">
     <?php
-    $total_slots = 30;
+    $total_slots = 35;
     $slots_per_row = 5;
     for ($i = 0; $i < $total_slots; $i++) {
         if ($i % $slots_per_row === 0) echo '<div class="farm-row">';

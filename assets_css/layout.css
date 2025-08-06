@@ -96,3 +96,7 @@ html, body {
 .content::-webkit-scrollbar {
     display: none;
 }
+
+.content.no-scroll {
+    overflow: hidden;
+}
