@@ -3,17 +3,17 @@
     display: flex;
     align-items: center;
     background: #ffe9a3;
-    padding: 14px 18px;
-    margin: 0 auto 10px auto;
+    padding: 8px 12px;
+    margin: 0 auto 6px auto;
     box-shadow: 0 2px 8px #0001;
-    width: 580px;
+    width: calc(6 * 74px + 5 * 4px);
     max-width: 98vw;
 }
 .mini-profile-avatar, .profile-avatar {
-    width: 64px;
-    height: 64px;
+    width: 70px;
+    height: 70px;
     object-fit: cover;
-    margin-right: 14px;
+    margin-right: 10px;
     border: 2px solid #f6cf49;
     background: #ffe9a3;
 }
@@ -24,13 +24,13 @@
     justify-content: center;
 }
 .mini-profile-username {
-    font-size: 1.15em;
+    font-size: 1em;
     font-weight: bold;
     color: #6c4e09;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 .mini-profile-stats {
-    font-size: 1em;
+    font-size: 0.9em;
     color: #947e3e;
 }
 @media (max-width: 480px) {
