@@ -5,6 +5,7 @@ $registered = isset($_GET['register']) && $_GET['register'] === 'success';
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bun venit</title>
     <link rel="stylesheet" href="assets_css/index.css">
     <link rel="stylesheet" href="assets_css/auth.css">

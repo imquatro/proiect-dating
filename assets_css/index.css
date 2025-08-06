@@ -16,20 +16,30 @@ body {
     width: 100vw;
     height: 100vh;
     margin: 0;
-    background: url('../img/weolcome.png') center/cover no-repeat;
+    background-image: url('../img/weolcome.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     box-shadow: 0 4px 24px rgba(155, 92, 255, 0.13);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+
 @media (min-width: 621px) {
     .app-frame {
         max-width: 620px;
         margin: 0 auto;
+		max-height: 100%;
     }
 }
 
+@media (max-width: 620px) {
+    .app-frame {
+        background-size: contain;
+    }
+}
 #welcome-frame {
     width: 100%;
     text-align: center;
