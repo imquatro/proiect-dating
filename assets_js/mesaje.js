@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         div.className = 'chat-bubble' + (m.sender_id == currentUserId ? ' me' : '');
                         div.textContent = m.message;
                         chatMessages.appendChild(div);
-                        if (!initialFetch) {
+                        if (!initialFetch && m.sender_id != currentUserId) {
                             messageSound.currentTime = 0;
                             messageSound.play();
                         }

@@ -7,6 +7,7 @@
     flex-direction: column;
     height: 100%;
     padding: 10px;
+    padding-bottom: 70px;
     color: #6c4e09;
 }
 
@@ -45,6 +46,9 @@
 .chat-input {
     display: flex;
     margin-top: 8px;
+    position: sticky;
+    bottom: 0;
+    background: #ffe9a3;
 }
 
 .chat-input input {
