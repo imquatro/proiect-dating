@@ -10,7 +10,6 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = (int)$_SESSION['user_id'];
 require_once __DIR__ . '/includes/update_last_active.php';
 $friend_id = isset($_GET['id']) ? (int)$_GET['id'] : (isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0);
-$friend_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $friend = null;
 $friend_avatar = 'default-avatar.png';
 if ($friend_id > 0) {

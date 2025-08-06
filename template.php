@@ -45,7 +45,6 @@ if (!isset($profilePhoto)) {
         <a href="mesaje.php" class="nav-btn top-btn center-btn"><i class="fas fa-envelope"></i><span id="messageIndicator" class="message-indicator"></span></a>
         <div class="profile-box"><img src="<?= htmlspecialchars($profilePhoto) ?>" alt="Profile"></div>
     </div>
-    </div>
     <div class="content">
         <?= $content ?>
     </div>

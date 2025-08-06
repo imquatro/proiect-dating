@@ -26,7 +26,10 @@
                     '<button class="btn-del" data-id="' + id + '" title="Delete"><i class="fas fa-trash"></i></button>' +
                     '<button class="btn-block" data-id="' + id + '" title="Block"><i class="fas fa-ban"></i></button>';
             }
-            var html = '<button class="btn-add" data-id="' + id + '" title="' + (requested ? 'Request sent' : 'Add friend') + '"' + (requested ? ' disabled' : '') + '><i class="fas fa-user-plus"></i></button>';
+            var html = '';
+            if (!requested) {
+                html += '<button class="btn-add" data-id="' + id + '" title="Add friend"><i class="fas fa-user-plus"></i></button>';
+            }
             html += '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>';
             html += '<button class="btn-block" data-id="' + id + '" title="Block"><i class="fas fa-ban"></i></button>';
             return html;
@@ -145,7 +148,7 @@
         } else if (target.classList.contains('btn-view')) {
             window.location.href = 'view_profile.php?user_id=' + id;
         } else if (target.classList.contains('btn-msg')) {
-            window.location.href = 'mesaje.php?user_id=' + id;
+            window.location.href = 'mesaje.php?id=' + id;
         } else if (target.classList.contains('btn-del')) {
             removeFriend(id);
         } else if (target.classList.contains('btn-block')) {
