@@ -29,6 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 typingIndicator.style.display = data.typing ? 'flex' : 'none';
+                if (data.typing) {
+                    if (!typingSoundPlaying) {
+                        typingSound.currentTime = 0;
+                        typingSound.play();
+                        typingSoundPlaying = true;
+                    }
+                } else if (typingSoundPlaying) {
+                    typingSound.pause();
+                    typingSound.currentTime = 0;
+                    typingSoundPlaying = false;
+                }
                 if (initialFetch) {
                     initialFetch = false;
                 }
@@ -48,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `action=send&friend_id=${friendId}&message=${encodeURIComponent(text)}`
         }).then(() => {
+            messageSound.currentTime = 0;
+            messageSound.play();
             messageInput.value = '';
             fetch('messages_api.php', {
                 method: 'POST',
