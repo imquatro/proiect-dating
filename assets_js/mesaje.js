@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         div.className = 'chat-bubble' + (m.sender_id == currentUserId ? ' me' : '');
                         div.textContent = m.message;
                         chatMessages.appendChild(div);
+                        if (!initialFetch) {
+                            messageSound.currentTime = 0;
+                            messageSound.play();
+                        }
                         lastId = m.id;
                     });
                     if (data.messages.length) {
@@ -23,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 typingIndicator.style.display = data.typing ? 'flex' : 'none';
+                if (initialFetch) {
+                    initialFetch = false;
+                }
             })
             .catch(() => {});
     }
