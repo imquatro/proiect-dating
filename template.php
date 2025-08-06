@@ -56,6 +56,7 @@ if (!isset($profilePhoto)) {
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>
 </div>
+<?php if (!$noScroll): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const content = document.querySelector('.content');
@@ -97,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, { passive: true });
 });
 </script>
+<?php endif; ?>
 <?= $extraJs ?>
 </body>
 </html>
