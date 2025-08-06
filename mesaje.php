@@ -45,7 +45,7 @@ if (!$friend) {
     $stmt->execute([$user_id, $user_id, $user_id]);
     $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
     if ($conversations) {
-        echo '<ul class="conversation-list">';
+        echo '<ul class="conversation-list" id="conversationList">';
         foreach ($conversations as $c) {
             $avatar = 'default-avatar.png';
             if (!empty($c['gallery'])) {
@@ -57,13 +57,15 @@ if (!$friend) {
                     }
                 }
             }
-            echo '<li><a href="mesaje.php?id=' . (int)$c['id'] . '"><img src="' . htmlspecialchars($avatar) . '" class="conv-avatar" alt="">' . htmlspecialchars($c['username']) . '</a></li>';
+            echo '<li data-id="' . (int)$c['id'] . '"><a href="mesaje.php?id=' . (int)$c['id'] . '"><img src="' . htmlspecialchars($avatar) . '" class="conv-avatar" alt="">' . htmlspecialchars($c['username']) . '</a></li>';
         }
         echo '</ul>';
+        echo '<button id="deleteConversationBtn" class="delete-conv-btn">Delete conversation</button>';
     } else {
-        echo '<p>Nu ai conversații.</p>';
+        echo '<p>No conversations.</p>';
     }
-} else {
+} 
+else {
 ?>
 <div class="chat-container">
     <div class="chat-header"><?= htmlspecialchars($friend['username']) ?></div>
@@ -75,9 +77,12 @@ if (!$friend) {
     </form>
 </div>
 <?php
-}
 $content = ob_get_clean();
 $pageTitle = 'Mesaje';
 $pageCss = 'assets_css/mesaje.css';
-$extraJs = $friend ? "<script>var friendId = $friend_id; var currentUserId = $user_id;</script>\n<script src=\"assets_js/mesaje.js\"></script>" : '';
+if ($friend) {
+    $extraJs = "<script>var friendId = $friend_id; var currentUserId = $user_id;</script>\n<script src=\"assets_js/mesaje.js\"></script>";
+} else {
+    $extraJs = "<script src=\"assets_js/mesaje_list.js\"></script>";
+}
 include 'template.php';

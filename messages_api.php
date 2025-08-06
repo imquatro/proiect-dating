@@ -87,6 +87,12 @@ switch ($action) {
         echo json_encode(['status' => 'ok']);
         break;
 
+    case 'delete_conversation':
+        $stmt = $db->prepare('DELETE FROM messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)');
+        $stmt->execute([$user_id, $friend_id, $friend_id, $user_id]);
+        echo json_encode(['status' => 'deleted']);
+        break;
+
     default:
         echo json_encode(['error' => 'unknown_action']);
 }
