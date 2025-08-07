@@ -2,7 +2,7 @@
 $activePage = 'welcome';
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
 $bgImagePath = 'img/bg2.png';
-$bgImage = '../' . $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
+$bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
 ob_start();
 ?>
