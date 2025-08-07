@@ -31,9 +31,13 @@ ob_start();
         <div class="<?php echo $classes; ?>" data-slot="<?php echo $i; ?>">
             <img src="img/unlocked.png" class="slot-img" alt="slot">
             <?php if (empty($data['unlocked'])): ?>
-            <div class="ds-overlay">Nivel <?php echo htmlspecialchars($data['required_level']); ?></div>
+                <?php if ($i >= 6): ?>
+                    <div class="ds-overlay"><img src="img/gold.png" alt="Gold"></div>
+                <?php else: ?>
+                    <div class="ds-overlay">Level <?php echo htmlspecialchars($data['required_level']); ?></div>
+                <?php endif; ?>
             <?php else: ?>
-            <img src="img/sale.png" class="ds-sale" alt="unlocked">
+                <img src="img/sale.png" class="ds-sale" alt="unlocked">
             <?php endif; ?>
         </div>
         <?php endfor; ?>

@@ -37,6 +37,12 @@
     font-weight: bold;
 }
 
+.ds-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
 .ds-sale {
     position: absolute;
     top: 50%;

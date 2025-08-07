@@ -30,7 +30,7 @@ if (isset($_SESSION['user_id'])) {
         echo '<div class="' . $classes . '" id="slot-' . $slot_id . '"><img src="img/default.png" alt="slot">';
         if (!$isUnlocked) {
             $required = htmlspecialchars($data['required_level'] ?? $slot_id);
-            echo '<div class="slot-overlay">Nivel ' . $required . '</div>';
+            echo '<div class="slot-overlay">Level ' . $required . '</div>';
         }
         echo '</div>';
         if ($i % $slots_per_row === $slots_per_row - 1) echo '</div>';
