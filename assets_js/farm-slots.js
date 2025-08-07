@@ -28,14 +28,14 @@ function updateSlotSize() {
     root.style.setProperty('--slot-size', `${slotSize}px`);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    updateSlotSize();
-    window.requestAnimationFrame(updateSlotSize);
+    updateFarmSlotSize();
+    window.requestAnimationFrame(updateFarmSlotSize);
     document.querySelectorAll('.farm-slot').forEach((slot) => {
         slot.addEventListener('click', () => {
-            alert('Slot neconfigurat');
+            window.location.href = 'changeslots/slot-panel.php';
         });
     });
 });
+
 
 window.addEventListener('resize', updateSlotSize);
