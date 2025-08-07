@@ -20,5 +20,8 @@ include 'mini_profile.php';
 <?php
 $content = ob_get_clean();
 $pageCss = 'assets_css/welcome.css';
-$extraJs = '<script src="assets_js/mini-profile.js"></script><script src="assets_js/farm-slots.js"></script><script src="changeslots/slot-panel.js"></script>';
+$extraJs = '<script src="assets_js/mini-profile.js"></script>'
+         . '<script src="assets_js/farm-slots.js"></script>'
+         . '<script src="changeslots/slot-panel.js"></script>'
+         . '<script src="slotstype/slotstype.js"></script>';
 include 'template.php';
