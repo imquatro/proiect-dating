@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSlotSize();
     window.addEventListener('resize', () => updateSlotSize());
 
-    document.querySelectorAll('.farm-slot').forEach(slot => {
+    document.querySelectorAll('.farm-slot:not(.locked)').forEach(slot => {
         slot.addEventListener('click', () => {
             const slotId = slot.id.replace('slot-', '');
             fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
