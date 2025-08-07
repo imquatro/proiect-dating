@@ -22,7 +22,7 @@ function updateSlotSize() {
     const slotSizeByHeight = availableHeight / 7;
 
     const containerWidth = content ? content.clientWidth : window.innerWidth;
-    const slotSizeByWidth = (containerWidth - gap * 5) / 6;
+    const slotSizeByWidth = (containerWidth - gap * 2) / 3;
 
     const slotSize = Math.min(slotSizeByHeight, slotSizeByWidth);
     root.style.setProperty('--slot-size', `${slotSize}px`);

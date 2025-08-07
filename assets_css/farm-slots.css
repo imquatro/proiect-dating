@@ -1,8 +1,8 @@
 /* Grid of farm slots */
 :root {
     /* default values will be updated via JavaScript */
-    --slot-size: 50px;
-    --slot-gap: 9px;
+    --slot-size: 60px;
+    --slot-gap: 1px;
 }
 
 .farm-slots {
@@ -10,11 +10,11 @@
     flex-direction: column;
     gap: var(--slot-gap);
     align-items: center;
-    padding: var(--slot-gap) 0;
+    padding: 0;
     background: transparent;
     box-shadow: none;
     border: none;
-    width: calc(6 * var(--slot-size) + 5 * var(--slot-gap));
+    width: calc(3 * var(--slot-size) + 2 * var(--slot-gap));
     max-width: 100%;
     margin: 0 auto;
 }
@@ -28,26 +28,22 @@
 .farm-slot {
     width: var(--slot-size);
     height: var(--slot-size);
-    background: #f3e5b7;
-    border: 2px solid #bfa56e;
-    box-shadow: 0 2px 4px #baa56433;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 1em;
-    color: #948039;
     cursor: pointer;
-    transition: box-shadow 0.2s, background 0.2s;
+    overflow: hidden; /* Keep images within square bounds */
 }
 
-.farm-slot:hover {
-    box-shadow: 0 0 10px #f5c754aa;
-    background: #f7e7ad;
+.farm-slot img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover; /* Preserve aspect ratio while filling the slot */
 }
 
 .farm-divider {
     border: none;
     border-top: 3px solid #ffd900;
-    margin: 6px 0;
+    margin: 2px 0;
 }
