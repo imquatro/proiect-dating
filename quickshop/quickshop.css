@@ -7,10 +7,7 @@
     padding: 20px;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
 
-    background-image: url("../img/bg2.png");
-    background-size: cover;      /* acoperă complet panoul */
-    background-position: center; /* centrează imaginea */
-    background-repeat: no-repeat;/* nu repeta imaginea */
+    background: url("../img/bg2.png") center/cover no-repeat;
 }
 
 .quickshop-grid {

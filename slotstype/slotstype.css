@@ -24,10 +24,7 @@
     align-items: center;
     padding: 20px;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-    background-image: url("../img/bg2.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: url("../img/bg2.png") center/cover no-repeat;
 }
 
 #st-slotstype-list {

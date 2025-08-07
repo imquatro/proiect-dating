@@ -5,7 +5,6 @@ include_once '../includes/slot_helpers.php';
 $slotImage = get_slot_image($slotId);
 $bgImagePath = 'img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
-$bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
 ob_start();
 ?>

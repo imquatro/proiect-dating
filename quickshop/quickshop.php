@@ -6,7 +6,7 @@ $bgImage = '../' . $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImageP
 $ajax = isset($_GET['ajax']);
 ob_start();
 ?>
-<div id="quickshop-panel" style="background-image: url('<?php echo $bgImage; ?>');">
+<div id="quickshop-panel" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div class="quickshop-grid">
         <div class="quickshop-item"><img src="../img/default.png" alt="Plant 1"></div>
         <div class="quickshop-item"><img src="../img/default2.png" alt="Plant 2"></div>
