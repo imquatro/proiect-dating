@@ -20,8 +20,10 @@
     height: 670px;
     position: relative;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
+    padding-top: 20px;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
 
     background-image: url("../img/bg2.png");
