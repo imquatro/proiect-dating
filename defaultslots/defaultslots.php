@@ -15,8 +15,8 @@ $slotData = [];
 foreach ($slots as $slot) {
     $slotData[(int)$slot['slot_number']] = $slot;
 }
-$bgImagePath = 'img/bg2.png';
-$bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
+$bgImagePath = '../img/bg2.png';
+$bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../img/bg2.png');
 $ajax = isset($_GET['ajax']);
 ob_start();
 ?>
@@ -29,15 +29,15 @@ ob_start();
             if (!empty($data['unlocked'])) { $classes .= ' open'; } else { $classes .= ' locked'; }
         ?>
         <div class="<?php echo $classes; ?>" data-slot="<?php echo $i; ?>">
-            <img src="img/unlocked.png" class="slot-img" alt="slot">
+            <img src="../img/unlocked.png" class="slot-img" alt="slot">
             <?php if (empty($data['unlocked'])): ?>
                 <?php if ($i >= 6): ?>
-                    <div class="ds-overlay"><img src="img/gold.png" alt="Gold"></div>
+                    <div class="ds-overlay"><img src="../img/gold.png" alt="Gold"></div>
                 <?php else: ?>
                     <div class="ds-overlay">Level <?php echo htmlspecialchars($data['required_level']); ?></div>
                 <?php endif; ?>
             <?php else: ?>
-                <img src="img/sale.png" class="ds-sale" alt="unlocked">
+                <img src="../img/sale.png" class="ds-sale" alt="unlocked">
             <?php endif; ?>
         </div>
         <?php endfor; ?>
@@ -49,8 +49,8 @@ if ($ajax) {
     echo $content;
     exit;
 }
-$pageCss = 'defaultslots/defaultslots.css';
-$extraJs = '<script src="defaultslots/defaultslots.js"></script>';
+$pageCss = '../defaultslots/defaultslots.css';
+$extraJs = '<script src="../defaultslots/defaultslots.js"></script>';
 $noScroll = true;
 chdir('..');
 include 'template.php';
