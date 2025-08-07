@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gazdă: 127.0.0.1
--- Timp de generare: aug. 06, 2025 la 10:33 PM
+-- Timp de generare: aug. 07, 2025 la 10:54 PM
 -- Versiune server: 10.4.32-MariaDB
 -- Versiune PHP: 8.0.30
 
@@ -50,7 +50,8 @@ INSERT INTO `friend_requests` (`id`, `sender_id`, `receiver_id`, `status`, `crea
 (8, 6, 4, 'pending', '2025-08-06 12:06:39', NULL),
 (9, 6, 7, 'accepted', '2025-08-06 12:06:39', '2025-08-06 12:44:42'),
 (10, 2, 1, 'accepted', '2025-08-06 13:25:39', '2025-08-06 13:27:07'),
-(11, 3, 4, 'pending', '2025-08-06 14:46:50', NULL);
+(11, 3, 4, 'pending', '2025-08-06 14:46:50', NULL),
+(12, 1, 8, 'pending', '2025-08-07 17:45:19', NULL);
 
 -- --------------------------------------------------------
 
@@ -236,7 +237,7 @@ INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `created_at
 (196, 4, 1, 'chacheurle', '2025-08-06 15:41:02', 1),
 (197, 1, 4, 'esti pe browser?', '2025-08-06 15:41:16', 1),
 (198, 4, 1, 'da', '2025-08-06 15:43:16', 1),
-(199, 2, 4, 'Bau', '2025-08-06 15:47:58', 0),
+(199, 2, 4, 'Bau', '2025-08-06 15:47:58', 1),
 (200, 2, 1, 'Bai', '2025-08-06 15:48:22', 1),
 (201, 4, 1, 'sdasdad', '2025-08-06 15:48:37', 1),
 (202, 4, 1, 'asdasd', '2025-08-06 15:48:38', 1),
@@ -249,7 +250,170 @@ INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `created_at
 (209, 3, 1, 'Salut', '2025-08-06 20:04:40', 1),
 (210, 1, 3, 'salutare', '2025-08-06 20:05:01', 1),
 (211, 3, 1, 'Ce faci', '2025-08-06 20:05:22', 1),
-(212, 1, 3, 'bine uite pe acasa tu ?', '2025-08-06 20:05:33', 1);
+(212, 1, 3, 'bine uite pe acasa tu ?', '2025-08-06 20:05:33', 1),
+(213, 1, 3, 'bau', '2025-08-06 21:52:09', 1),
+(214, 3, 1, '🤭', '2025-08-06 21:52:29', 1),
+(215, 3, 1, 'Ce bau ma?', '2025-08-06 21:52:41', 1),
+(216, 3, 1, 'Bau ce nu ai auzit de bau?', '2025-08-06 21:53:04', 1),
+(217, 1, 4, 'carei viata nexus?', '2025-08-07 10:09:29', 1),
+(218, 4, 1, 'a?', '2025-08-07 10:17:47', 1),
+(219, 4, 1, 'astept sa vina mama din oras si sa merg la dentist', '2025-08-07 10:18:01', 1),
+(220, 1, 4, 'e bun', '2025-08-07 10:18:41', 1),
+(221, 4, 1, 'ce face baiatuu', '2025-08-07 12:32:38', 1),
+(222, 4, 1, '??', '2025-08-07 12:32:39', 1),
+(223, 1, 4, 'lucrez aici dar is asa de obosit ...', '2025-08-07 12:32:58', 1),
+(224, 1, 4, 'tu cf', '2025-08-07 12:33:00', 1),
+(225, 4, 1, 'am venit de la dentist', '2025-08-07 12:33:13', 1),
+(226, 1, 4, 'totu bine?', '2025-08-07 12:33:20', 1),
+(227, 4, 1, 'da', '2025-08-07 12:33:25', 1),
+(228, 4, 1, 'tu', '2025-08-07 12:33:28', 1),
+(229, 1, 4, 'poti da click pe sloturi acuma asta am facut abia acum am terminat', '2025-08-07 12:33:39', 1),
+(230, 1, 4, 'da inafara ca sunt rupt de obosit degeaba ,in rest da', '2025-08-07 12:33:55', 1),
+(231, 4, 1, 'inainte cand dadeam click', '2025-08-07 12:34:41', 1),
+(232, 4, 1, 'se deschidea', '2025-08-07 12:34:44', 1),
+(233, 4, 1, 'acuma nu se intampla nmc', '2025-08-07 12:34:49', 1),
+(234, 1, 4, 'da ctrl+F5', '2025-08-07 12:35:03', 1),
+(235, 1, 4, 'si dai iar', '2025-08-07 12:35:11', 1),
+(236, 1, 4, 'zimi daca merge', '2025-08-07 12:35:25', 1),
+(237, 4, 1, 'OU DA', '2025-08-07 12:36:27', 1),
+(238, 4, 1, 'merge', '2025-08-07 12:36:28', 1),
+(239, 1, 4, 'am verificat pt telefon nu apare', '2025-08-07 12:36:49', 1),
+(240, 1, 4, 'bagameas , credeam c am scapat cu panoul asta', '2025-08-07 12:37:01', 1),
+(241, 4, 1, 'nu apare?', '2025-08-07 12:37:16', 1),
+(242, 4, 1, 'ia stai sa vad eu', '2025-08-07 12:37:19', 1),
+(243, 1, 4, 'nu deschide cand dau nu', '2025-08-07 12:37:29', 1),
+(244, 1, 4, 'ba da a mers am dat de 2 orii stergere de istoric si de date', '2025-08-07 12:38:27', 1),
+(245, 1, 4, 'bun numai ca e prea mare si nu are buton de back pentru telefon', '2025-08-07 12:38:59', 1),
+(246, 4, 1, 'merge pe tel', '2025-08-07 12:39:32', 1),
+(247, 4, 1, 'sa stii', '2025-08-07 12:39:33', 1),
+(248, 1, 4, 'da merge , am vazut', '2025-08-07 12:39:40', 1),
+(249, 1, 4, 'trebuie sa il fac mai mic ca nu poti da click pe langa daca vrei sa te razganesti', '2025-08-07 12:40:01', 1),
+(250, 4, 1, 'ala din lemn de pe background', '2025-08-07 12:40:21', 1),
+(251, 4, 1, 'poti', '2025-08-07 12:40:22', 1),
+(252, 1, 4, 'acuma il fac manual', '2025-08-07 12:40:33', 1),
+(253, 1, 4, 'ia vezi cum pare?', '2025-08-07 12:40:52', 1),
+(254, 4, 1, 'bines', '2025-08-07 12:41:18', 1),
+(255, 1, 4, 'mie imi pare ok', '2025-08-07 12:41:23', 1),
+(256, 4, 1, 'acuma am vazut ca am money', '2025-08-07 12:41:35', 1),
+(257, 1, 4, 'ca poti da tap pe ecran pe langa si dispare', '2025-08-07 12:41:37', 1),
+(258, 1, 4, 'stai sa vezi ca iti adaug din baza de date sa vezi cum urca, sau scade , ca cred ca ti-am dat maxim fii atent si imi zici daca vezi efectul', '2025-08-07 12:42:13', 1),
+(259, 1, 4, 'aveai mazim bani si am modificat , ai vazut efectul live cum scadeau banii?', '2025-08-07 12:43:28', 1),
+(260, 4, 1, 'nu eram pe faza', '2025-08-07 12:43:57', 1),
+(261, 4, 1, ':(', '2025-08-07 12:43:58', 1),
+(262, 1, 4, 'vreau ca banii verzi sa faca parte din joc si banii gold sa ii poata cumpara online cu bani reali', '2025-08-07 12:44:04', 1),
+(263, 1, 4, 'mai fac o data fii atent', '2025-08-07 12:44:10', 1),
+(264, 4, 1, 'daaa', '2025-08-07 12:44:34', 1),
+(265, 4, 1, 'ce smechera animatia', '2025-08-07 12:44:38', 1),
+(266, 1, 4, 'asa o sa se vada cand cumperi cand vinzi', '2025-08-07 12:44:46', 1),
+(267, 1, 4, ':)', '2025-08-07 12:44:52', 1),
+(268, 4, 1, '=D', '2025-08-07 12:44:56', 1),
+(269, 1, 4, 'numai ca o sa am nevoie de un site bun', '2025-08-07 12:45:09', 1),
+(270, 1, 4, 'sa cumpar o luna sa fac poze noi profesionale', '2025-08-07 12:45:26', 1),
+(271, 4, 1, 'vezi pe filelist', '2025-08-07 12:45:35', 1),
+(272, 1, 4, 'astea sunt doar asa sa ma ajute sa il fac', '2025-08-07 12:45:39', 1),
+(273, 4, 1, 'poate e photoshop crack', '2025-08-07 12:45:42', 1),
+(274, 1, 4, 'nu ca nu am voie sa iau poze', '2025-08-07 12:45:53', 1),
+(275, 4, 1, 'sa editezi', '2025-08-07 12:46:06', 1),
+(276, 1, 4, 'trebuie sa am grija la drepturi de autor', '2025-08-07 12:46:07', 1),
+(277, 1, 4, 'aaaa', '2025-08-07 12:46:09', 1),
+(278, 1, 4, 'nu e prea greu', '2025-08-07 12:46:14', 1),
+(279, 1, 4, 'eu vreau cu ai sa generez', '2025-08-07 12:46:21', 1),
+(280, 4, 1, 'aaa', '2025-08-07 12:46:27', 1),
+(281, 1, 4, 'o sa caut subscritie de o luna sa le fac cu promturi adica sa ii zic cum vreau imaginea', '2025-08-07 12:46:45', 1),
+(282, 4, 1, 'dupa ce termini jocu', '2025-08-07 12:47:00', 1),
+(283, 1, 4, 'da na sa fac intai tot ce trebuie si la urma', '2025-08-07 12:47:03', 1),
+(284, 4, 1, 'bagi niste add-uri', '2025-08-07 12:47:13', 1),
+(285, 1, 4, 'dupa ce il termin vreau sa ii cumpar host', '2025-08-07 12:47:14', 1),
+(286, 1, 4, 'si sa ii fac reclama platita', '2025-08-07 12:47:24', 1),
+(287, 1, 4, 'dar mai e mult pana atunci desii pare ca e ca si gata', '2025-08-07 12:47:35', 1),
+(288, 4, 1, 'oare il termini intr-un an?', '2025-08-07 12:47:38', 1),
+(289, 1, 4, 'am treaba multa inca', '2025-08-07 12:47:42', 1),
+(290, 1, 4, 'daaaa', '2025-08-07 12:47:47', 1),
+(291, 1, 4, 'ma gandesc ca in 2 luni e gata', '2025-08-07 12:47:56', 1),
+(292, 4, 1, 'meama', '2025-08-07 12:48:00', 1),
+(293, 1, 4, 'ca e bun tare codex asta', '2025-08-07 12:48:07', 1),
+(294, 1, 4, 'e codex direct din chat gbt', '2025-08-07 12:48:20', 1),
+(295, 1, 4, 'cu acelas cont', '2025-08-07 12:48:27', 1),
+(296, 1, 4, 'acuma depinde si cat lucrez dar codex e foarte puternic', '2025-08-07 12:48:43', 1),
+(297, 4, 1, 'poti sa faci in hambar rafturi de alea nu?', '2025-08-07 12:48:47', 1),
+(298, 1, 4, 'da clar', '2025-08-07 12:48:52', 1),
+(299, 4, 1, 'poate vad eu si fac', '2025-08-07 12:48:58', 1),
+(300, 4, 1, ':))', '2025-08-07 12:48:59', 1),
+(301, 4, 1, 'o incercare', '2025-08-07 12:49:03', 1),
+(302, 1, 4, 'numai ca le fac cu logica ca sa nu incep sa editez', '2025-08-07 12:49:03', 1),
+(303, 1, 4, 'ca e foarte rau pe editat', '2025-08-07 12:49:09', 1),
+(304, 1, 4, 'daca faci din prima iti face traba buna daca faci editari stai foarte mult', '2025-08-07 12:49:35', 1),
+(305, 1, 4, 'si trebuie sa stii si tu multe chestii ca daca nu e foarte greu', '2025-08-07 12:49:51', 1),
+(306, 1, 4, 'tu ce vrei sa faci?', '2025-08-07 12:49:59', 1),
+(307, 4, 1, 'fac rafturile alea', '2025-08-07 12:50:08', 1),
+(308, 4, 1, 'ma uit si eu', '2025-08-07 12:50:11', 1),
+(309, 1, 4, 'adica te uiti? :))', '2025-08-07 12:50:30', 1),
+(310, 1, 4, 'nu cred ca ma apuc azi de ele', '2025-08-07 12:50:35', 1),
+(311, 1, 4, 'ca vreau sa fac tipuri de sloturi', '2025-08-07 12:50:45', 1),
+(312, 1, 4, 'din panoul care se dechide', '2025-08-07 12:50:56', 1),
+(313, 1, 4, 'si de acolo sa le poti schimba cu bani si sa le afiseze pe profil', '2025-08-07 12:51:12', 1),
+(314, 4, 1, 'meama', '2025-08-07 12:51:30', 1),
+(315, 1, 4, 'si trebuie sa fac si un start default de sloturi ,', '2025-08-07 12:51:46', 1),
+(316, 1, 4, 'adica fiecare cont nou sa aibe un start de sloturi apoi sa poti debloca sloturile cand faci level , le trebuie anumite imagini anumite conditii e greu', '2025-08-07 12:52:32', 1),
+(317, 1, 4, 'e multa treaba dar invizibila', '2025-08-07 12:52:41', 1),
+(318, 1, 4, 'trebuie dupa ce fac sloturile default pentru conturile noi', '2025-08-07 12:53:02', 1),
+(319, 1, 4, 'sa fac si o pagina similara cum e ferma noastra doar ca de vizita la alti fermieri', '2025-08-07 12:53:26', 1),
+(320, 4, 1, 'ai multa treaba', '2025-08-07 12:53:51', 1),
+(321, 1, 4, 'apoi daca esti prieten sa ii poti ajuta daca nu il vizitezi doar', '2025-08-07 12:53:53', 1),
+(322, 1, 4, 'dah', '2025-08-07 12:53:55', 1),
+(323, 1, 4, 'mai ales pe tipurile de sloturi', '2025-08-07 12:54:08', 1),
+(324, 1, 4, 'ca acolo trebuie facute tipul  de slot , ce fel de plantare se poate pune pe acel slot', '2025-08-07 12:54:30', 1),
+(325, 1, 4, 'cat costa , la cat timp uzi sau hranesti', '2025-08-07 12:54:45', 1),
+(326, 1, 4, 'is multe chestii orcum', '2025-08-07 12:54:55', 1),
+(327, 4, 1, 'da', '2025-08-07 12:55:09', 1),
+(328, 1, 4, 'dar nu stiu daca mai fac azi ca is rupt', '2025-08-07 12:55:09', 1),
+(329, 4, 1, 'tragi un somn', '2025-08-07 12:55:27', 1),
+(330, 4, 1, 'si dupa', '2025-08-07 12:55:29', 1),
+(331, 4, 1, 'mai faci', '2025-08-07 12:55:33', 1),
+(332, 1, 4, 'nici nu stiu doar ca is rupt , as face ca vad tot ca avansez', '2025-08-07 12:56:17', 1),
+(333, 1, 4, 'aseara am facut sistemul de bani', '2025-08-07 12:56:30', 1),
+(334, 1, 4, 'si azi m-am chinui enorm doar sa pot afisa pe toata imaginea sloturile sa le vada pe toata pagina fara scroling', '2025-08-07 12:57:07', 1),
+(335, 1, 4, 'ca eu verifica sa fie bun si pentru telefon', '2025-08-07 12:57:34', 1),
+(336, 4, 1, 'daa', '2025-08-07 12:57:39', 1),
+(337, 1, 4, 'ca daca nu dupa aia e foarte greu de facut', '2025-08-07 12:57:42', 1),
+(338, 1, 4, 'mai ales caeu as vrea sa il pun si in store play', '2025-08-07 12:58:06', 1),
+(339, 1, 4, 'ii fac o aplicatie doar sa tina loc de browser', '2025-08-07 12:58:19', 1),
+(340, 1, 4, 'si daca imi accepta astia de la steam , dar deja gandesc prea departe', '2025-08-07 12:58:38', 1),
+(341, 1, 4, 'pe rand toate', '2025-08-07 12:58:55', 1),
+(342, 1, 4, 'dar orcum cand e gata jocu vreau sa ii fac reclama platita', '2025-08-07 12:59:10', 1),
+(343, 1, 4, 'ca sa pot castiga bani din ce cumpara astia', '2025-08-07 12:59:27', 1),
+(344, 4, 1, ';)', '2025-08-07 12:59:33', 1),
+(345, 1, 4, 'vip si gold', '2025-08-07 12:59:34', 1),
+(346, 1, 4, 'cacatu ala de big barn world face bani de aproape 15 ani de zile', '2025-08-07 12:59:56', 1),
+(347, 1, 4, 'au aia vip luna de luna si e cam scump', '2025-08-07 13:00:09', 1),
+(348, 1, 4, 'e cam 100 si ceva de lei pe luna', '2025-08-07 13:00:23', 1),
+(349, 4, 1, 'mama', '2025-08-07 13:01:01', 1),
+(350, 1, 4, 'dah imagineazati 20 de persoane sa isi ia vip pe luna doar', '2025-08-07 13:01:22', 1),
+(351, 1, 4, 'dar asta e un minim pus asa', '2025-08-07 13:01:31', 1),
+(352, 1, 4, 'daca jocu e popular si frumos faci bani', '2025-08-07 13:01:43', 1),
+(353, 4, 1, 'is peste 10.000 de persoane pe  big barn world', '2025-08-07 13:01:51', 1),
+(354, 1, 4, 'cred ca da', '2025-08-07 13:01:58', 1),
+(355, 1, 4, 'o sa le fac si eu beneficii vip atragatoare si fac vipul iestin', '2025-08-07 13:02:23', 1),
+(356, 1, 4, 'ieftin', '2025-08-07 13:02:29', 1),
+(357, 1, 4, 'ultimele 5 sloturi de jos sa poata fi folosite doar cu vip sau gold', '2025-08-07 13:02:53', 1),
+(358, 4, 1, '100.000 de instalări are big barn world', '2025-08-07 13:02:55', 1),
+(359, 1, 4, 'nah are si 15 ani de zile aproape', '2025-08-07 13:03:09', 1),
+(360, 4, 1, 'daa', '2025-08-07 13:03:17', 1),
+(361, 1, 4, 'dar ei nu au facut reclame masiv', '2025-08-07 13:03:19', 1),
+(362, 1, 4, 'de aia se merita daca faci reclama ca se castiga', '2025-08-07 13:03:30', 1),
+(363, 1, 4, 'numai ca na e mult de munca pana e gata', '2025-08-07 13:03:37', 1),
+(364, 1, 4, 'vreau mai la final sa fac un panou admin', '2025-08-07 13:03:56', 1),
+(365, 1, 4, 'care sa poata adauga direct tipuri de sloturi si setarile doar selectatnd la cat timp se uda ce poza are cum arata plantat cum arata semi crescut cum arta full crescut gata de recoltat', '2025-08-07 13:04:50', 1),
+(366, 1, 4, 'etc s ce produce , aste as fie setari si eu sa bag dor imaginile', '2025-08-07 13:05:06', 1),
+(367, 1, 4, 'ca sa imi fie usor pe viitor ca sa fac magazinul mare', '2025-08-07 13:05:20', 1),
+(368, 4, 1, 'e bines', '2025-08-07 13:05:41', 1),
+(369, 1, 4, 'ideea e top', '2025-08-07 13:05:47', 1),
+(370, 1, 4, 'doar ca e greu', '2025-08-07 13:05:52', 1),
+(371, 1, 4, 'si trebuie sa fiu atent in ce oride fac si ce fac', '2025-08-07 13:06:07', 1),
+(372, 1, 4, 'ordine', '2025-08-07 13:06:13', 1),
+(373, 4, 1, 'uita te olc whatsapp', '2025-08-07 13:07:07', 1),
+(374, 1, 4, 'nus unde e tel stai', '2025-08-07 13:07:36', 1),
+(375, 1, 4, 'ma apuc de panoul de la shop si cel de la schimbare slot poate le pot face', '2025-08-07 16:44:55', 0);
 
 -- --------------------------------------------------------
 
@@ -293,13 +457,27 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `country`, `city`, `age`, `gender`, `description`, `gallery`, `created_at`, `gallery_status`, `is_admin`, `last_active`, `money`, `gold`) VALUES
-(1, 'quatro', 'serverboost93@gmail.com', '$2y$10$XUP9QK9AU/EgETee1NVvKemxG2xpWWKWzCbg1.AkRIWjmKLbdeLDW', 'Romania', 'Suceava', 31, 'masculin', 'descrieea mea se fura asa ca :)))', 'photo_20250806_144906_20.jpg', '2025-07-21 21:56:14', 'pending', 1, '2025-08-06 23:25:02', 0, 0),
-(2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-06 19:11:14', 0, 0),
-(3, 'Catalina', 'albacazapada@gmail.com', '$2y$10$oSYlVjpRUK3.cEJRMinID.DkjFTAzxSVykk0V88SefTegqkIeHsy.', 'Romania', 'suceava', 23, 'feminin', '', 'photo_20250806_164731_41.jpeg,photo_20250806_144758_94.jpeg', '2025-08-04 08:42:45', 'pending,pending', 0, '2025-08-06 23:06:01', 0, 0),
-(4, 'Nexus', 'ionut.fidirovici2@gmail.com', '$2y$10$KuZ/MTsqYGSjN9ebtmsfa.6C/ROwsTEcUcWBSpWCGib8p9pjp31t2', 'Romania', 'Radauti', 18, 'masculin', 'Sunt smecher', 'photo_20250806_172705_30.png,photo_20250805_212441_56.png', '2025-08-05 19:24:00', 'pending,pending,pend', 0, '2025-08-06 18:48:34', 0, 0),
+(1, 'quatro', 'serverboost93@gmail.com', '$2y$10$XUP9QK9AU/EgETee1NVvKemxG2xpWWKWzCbg1.AkRIWjmKLbdeLDW', 'Romania', 'Suceava', 31, 'masculin', 'descrieea mea se fura asa ca :)))', 'photo_20250806_144906_20.jpg', '2025-07-21 21:56:14', 'pending', 1, '2025-08-07 23:42:20', 1000000, 100),
+(2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-07 20:58:54', 0, 0),
+(3, 'Catalina', 'albacazapada@gmail.com', '$2y$10$oSYlVjpRUK3.cEJRMinID.DkjFTAzxSVykk0V88SefTegqkIeHsy.', 'Romania', 'suceava', 23, 'feminin', '', 'photo_20250806_144758_94.jpeg,photo_20250806_164731_41.jpeg', '2025-08-04 08:42:45', 'pending,pending', 0, '2025-08-07 16:05:42', 1000000000, 100),
+(4, 'Nexus', 'ionut.fidirovici2@gmail.com', '$2y$10$KuZ/MTsqYGSjN9ebtmsfa.6C/ROwsTEcUcWBSpWCGib8p9pjp31t2', 'Romania', 'Radauti', 18, 'masculin', 'Sunt smecher', 'photo_20250806_172705_30.png,photo_20250805_212441_56.png', '2025-08-05 19:24:00', 'pending,pending,pend', 0, '2025-08-07 19:42:01', 1000000000, 200),
 (5, 'test', 'test@gmail.com', '$2y$10$VblPlxQqXNqXsbHtHL/Qd.6oIVy8ZcICXbXyl/zWVi4c7uBafmmTW', 'Romania', 'suceava', 31, 'masculin', NULL, NULL, '2025-08-06 09:19:36', 'pending', 0, NULL, 0, 0),
 (6, 'test2', 'test2@gmail.com', '$2y$10$UEnt3nQ4YTUCLBXQqd9N1.EBh0qsWtiE9oHyMpU5BBLpwknjyOwR6', 'Romania', 'suceava', 33, 'masculin', NULL, NULL, '2025-08-06 10:08:10', 'pending', 0, '2025-08-06 15:43:54', 0, 0),
-(7, 'Test3', 'teat3@gmail.com', '$2y$10$J5YGNEPj1eQ1bu3LRKNTY.JoUa5RrhYuJIOOYqJFxJ0x6XdwHz8fG', 'Romania', 'România', 33, 'masculin', NULL, NULL, '2025-08-06 10:35:38', 'pending', 0, '2025-08-06 15:45:23', 0, 0);
+(7, 'Test3', 'teat3@gmail.com', '$2y$10$J5YGNEPj1eQ1bu3LRKNTY.JoUa5RrhYuJIOOYqJFxJ0x6XdwHz8fG', 'Romania', 'România', 33, 'masculin', NULL, NULL, '2025-08-06 10:35:38', 'pending', 0, '2025-08-06 15:45:23', 0, 0),
+(8, 'Olena', 'frecja@spoko.pl', '$2y$10$aHKKJu9sFIjhWNLQTz80xetYaccbZRjVO3SLCDy0uKjzhFvp9um9.', 'Polska', 'Gdańsk', 25, 'feminin', NULL, NULL, '2025-08-07 17:41:08', 'pending', 0, '2025-08-07 20:43:23', 1000000000, 5000);
+
+-- --------------------------------------------------------
+
+--
+-- Structură tabel pentru tabel `user_slots`
+--
+
+CREATE TABLE `user_slots` (
+  `user_id` int(11) NOT NULL,
+  `slot_number` int(11) NOT NULL,
+  `unlocked` tinyint(1) NOT NULL DEFAULT 0,
+  `required_level` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexuri pentru tabele eliminate
@@ -334,6 +512,12 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexuri pentru tabele `user_slots`
+--
+ALTER TABLE `user_slots`
+  ADD PRIMARY KEY (`user_id`,`slot_number`);
+
+--
 -- AUTO_INCREMENT pentru tabele eliminate
 --
 
@@ -341,19 +525,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pentru tabele `friend_requests`
 --
 ALTER TABLE `friend_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT pentru tabele `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=213;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=376;
 
 --
 -- AUTO_INCREMENT pentru tabele `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constrângeri pentru tabele eliminate
@@ -365,6 +549,12 @@ ALTER TABLE `users`
 ALTER TABLE `friend_requests`
   ADD CONSTRAINT `fr_receiver_fk` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fr_sender_fk` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constrângeri pentru tabele `user_slots`
+--
+ALTER TABLE `user_slots`
+  ADD CONSTRAINT `user_slots_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
