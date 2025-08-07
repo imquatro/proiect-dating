@@ -7,7 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const divider = document.querySelector('.farm-divider');
     const farmSlots = document.querySelector('.farm-slots');
 
-    function updateSlotSize() {
+    if (content) {
+        content.classList.add('no-scroll');
+    }
+
+    function updateSlotSize(iter = 0) {
         if (!farmSlots) return;
 
         const styles = getComputedStyle(root);
@@ -41,10 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const slotSize = Math.min(slotSizeByHeight, slotSizeByWidth);
         root.style.setProperty('--slot-size', `${slotSize}px`);
+
+        if (iter < 2) {
+            requestAnimationFrame(() => updateSlotSize(iter + 1));
+        }
     }
 
     updateSlotSize();
-    window.addEventListener('resize', updateSlotSize);
+    window.addEventListener('resize', () => updateSlotSize());
 
     document.querySelectorAll('.farm-slot').forEach(slot => {
         slot.addEventListener('click', () => {

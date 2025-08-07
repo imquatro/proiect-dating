@@ -1,5 +1,6 @@
 <?php
 $activePage = 'welcome';
+$noScroll = true;
 ob_start();
 include 'mini_profile.php';
 ?>
