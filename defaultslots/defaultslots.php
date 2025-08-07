@@ -1,0 +1,51 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../login.php');
+    exit;
+}
+$activePage = 'welcome';
+require_once '../includes/db.php';
+
+$userId = $_SESSION['user_id'];
+$stmt = $db->prepare("SELECT slot_number, unlocked, required_level FROM user_slots WHERE user_id = ? ORDER BY slot_number");
+$stmt->execute([$userId]);
+$slots = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$slotData = [];
+foreach ($slots as $slot) {
+    $slotData[(int)$slot['slot_number']] = $slot;
+}
+$bgImagePath = 'img/bg2.png';
+$bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
+$ajax = isset($_GET['ajax']);
+ob_start();
+?>
+<div id="ds-slot-panel" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
+    <div id="ds-slot-menu">
+        <?php for ($i = 1; $i <= 10; $i++): 
+            $data = $slotData[$i] ?? ['unlocked' => 0, 'required_level' => 0];
+            $classes = 'ds-slot';
+            if ($i === 1) { $classes .= ' active'; }
+            if (!empty($data['unlocked'])) { $classes .= ' open'; } else { $classes .= ' locked'; }
+        ?>
+        <div class="<?php echo $classes; ?>" data-slot="<?php echo $i; ?>">
+            Slot <?php echo $i; ?>
+            <?php if (empty($data['unlocked'])): ?>
+            <div class="ds-overlay">Nivel <?php echo htmlspecialchars($data['required_level']); ?></div>
+            <?php endif; ?>
+        </div>
+        <?php endfor; ?>
+    </div>
+</div>
+<?php
+$content = ob_get_clean();
+if ($ajax) {
+    echo $content;
+    exit;
+}
+$pageCss = 'defaultslots/defaultslots.css';
+$extraJs = '<script src="defaultslots/defaultslots.js"></script>';
+$noScroll = true;
+chdir('..');
+include 'template.php';
+?>
