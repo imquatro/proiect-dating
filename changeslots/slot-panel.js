@@ -5,6 +5,7 @@ function initSlotPanel(container) {
     }
 
     const changeBtn = container.querySelector('#cs-slot-change');
+    const shopBtn = container.querySelector('#cs-slot-shop');
     const slotImage = container.querySelector('#cs-slot-image');
     const slotId = slotImage ? slotImage.alt.replace(/\D/g, '') : '';
 
@@ -21,8 +22,21 @@ function initSlotPanel(container) {
         });
     }
 
+    if (shopBtn) {
+        shopBtn.addEventListener('click', () => {
+            fetch(`quickshop/quickshop.php?slot=${slotId}&ajax=1`)
+                .then(res => res.text())
+                .then(html => {
+                    container.innerHTML = html;
+                    if (window.initQuickShop) {
+                        window.initQuickShop(container);
+                    }
+                });
+        });
+    }
+
     container.querySelectorAll('.cs-slot-btn').forEach(btn => {
-        if (btn !== changeBtn) {
+        if (btn !== changeBtn && btn !== shopBtn) {
             btn.addEventListener('click', () => {
                 alert('Functionality coming soon');
             });
