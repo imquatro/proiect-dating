@@ -1,10 +1,13 @@
 <?php
 $activePage = 'welcome';
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
+include_once '../includes/slot_helpers.php';
+$slotImage = '../' . get_slot_image($slotId);
+$ajax = isset($_GET['ajax']);
 ob_start();
 ?>
 <div id="cs-slot-panel">
-    <img src="../img/default.png" alt="Slot <?php echo $slotId; ?>" id="cs-slot-image">
+    <img src="<?php echo $slotImage; ?>" alt="Slot <?php echo $slotId; ?>" id="cs-slot-image">
     <div id="cs-slot-actions">
         <button class="cs-slot-btn" id="cs-slot-shop"><i class="fas fa-store"></i><span>SHOP</span></button>
         <button class="cs-slot-btn" id="cs-slot-change"><i class="fas fa-random"></i><span>Change Plot Type</span></button>
@@ -13,6 +16,10 @@ ob_start();
 </div>
 <?php
 $content = ob_get_clean();
+if ($ajax) {
+    echo $content;
+    exit;
+}
 $pageCss = 'changeslots/slot-panel.css';
 $extraJs = '<script src="changeslots/slot-panel.js"></script>';
 $noScroll = true;
