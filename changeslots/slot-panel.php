@@ -2,8 +2,9 @@
 $activePage = 'welcome';
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
 include_once '../includes/slot_helpers.php';
-$slotImage = '../' . get_slot_image($slotId);
-$bgImage = '../img/bg2.png?v=' . filemtime('../img/bg2.png');
+$slotImage = get_slot_image($slotId);
+$bgImagePath = 'img/bg2.png';
+$bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
 ob_start();
 ?>
