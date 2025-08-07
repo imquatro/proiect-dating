@@ -3,10 +3,11 @@ $activePage = 'welcome';
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
 include_once '../includes/slot_helpers.php';
 $slotImage = '../' . get_slot_image($slotId);
+$bgImage = '../img/bg2.png?v=' . filemtime('../img/bg2.png');
 $ajax = isset($_GET['ajax']);
 ob_start();
 ?>
-<div id="cs-slot-panel">
+<div id="cs-slot-panel" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <img src="<?php echo $slotImage; ?>" alt="Slot <?php echo $slotId; ?>" id="cs-slot-image">
     <div id="cs-slot-actions">
         <button class="cs-slot-btn" id="cs-slot-shop"><i class="fas fa-store"></i><span>SHOP</span></button>
