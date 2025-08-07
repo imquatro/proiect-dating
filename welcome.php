@@ -21,5 +21,4 @@ include 'mini_profile.php';
 $content = ob_get_clean();
 $pageCss = 'assets_css/welcome.css';
 $extraJs = '<script src="assets_js/mini-profile.js"></script><script src="assets_js/farm-slots.js"></script>';
-$noScroll = true;
 include 'template.php';

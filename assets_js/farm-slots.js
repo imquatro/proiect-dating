@@ -1,4 +1,4 @@
-function updateSlotSize() {
+document.addEventListener('DOMContentLoaded', () => {
     const root = document.documentElement;
     const miniProfile = document.querySelector('.mini-profile');
     const topNav = document.querySelector('.top-bar');
@@ -7,35 +7,49 @@ function updateSlotSize() {
     const divider = document.querySelector('.farm-divider');
     const farmSlots = document.querySelector('.farm-slots');
 
-    const styles = getComputedStyle(root);
-    const gap = parseFloat(styles.getPropertyValue('--slot-gap')) || 0;
+    function updateSlotSize() {
+        if (!farmSlots) return;
 
-    const topNavHeight = topNav ? topNav.offsetHeight : 0;
-    const bottomNavHeight = bottomNav ? bottomNav.offsetHeight : 0;
-    const miniProfileHeight = miniProfile ? miniProfile.offsetHeight : 0;
-    const miniProfileMargin = miniProfile ? parseFloat(getComputedStyle(miniProfile).marginBottom) : 0;
-    const dividerMargin = divider ? parseFloat(getComputedStyle(divider).marginTop) + parseFloat(getComputedStyle(divider).marginBottom) : 0;
-    const farmPadding = farmSlots ? parseFloat(getComputedStyle(farmSlots).paddingTop) + parseFloat(getComputedStyle(farmSlots).paddingBottom) : 0;
+        const styles = getComputedStyle(root);
+        const gap = parseFloat(styles.getPropertyValue('--slot-gap')) || 0;
 
-    const verticalGaps = gap * 6; // gaps between 7 rows
-    const availableHeight = window.innerHeight - topNavHeight - bottomNavHeight - miniProfileHeight - miniProfileMargin - dividerMargin - farmPadding - verticalGaps;
-    const slotSizeByHeight = availableHeight / 7;
+        const topNavHeight = topNav ? topNav.offsetHeight : 0;
+        const bottomNavHeight = bottomNav ? bottomNav.offsetHeight : 0;
+        const miniProfileHeight = miniProfile ? miniProfile.offsetHeight : 0;
+        const miniProfileMargin = miniProfile ? parseFloat(getComputedStyle(miniProfile).marginBottom) : 0;
 
-    const containerWidth = content ? content.clientWidth : window.innerWidth;
-    const slotSizeByWidth = (containerWidth - gap * 2) / 3;
+        const dividerHeight = divider ? divider.offsetHeight : 0;
+        const dividerMargin = divider ? parseFloat(getComputedStyle(divider).marginTop) + parseFloat(getComputedStyle(divider).marginBottom) : 0;
 
-    const slotSize = Math.min(slotSizeByHeight, slotSizeByWidth);
-    root.style.setProperty('--slot-size', `${slotSize}px`);
-}
+        const farmStyles = getComputedStyle(farmSlots);
+        const farmPaddingV = parseFloat(farmStyles.paddingTop) + parseFloat(farmStyles.paddingBottom);
+        const farmPaddingH = parseFloat(farmStyles.paddingLeft) + parseFloat(farmStyles.paddingRight);
 
-    updateFarmSlotSize();
-    window.requestAnimationFrame(updateFarmSlotSize);
-    document.querySelectorAll('.farm-slot').forEach((slot) => {
+        const rows = farmSlots.querySelectorAll('.farm-row').length || 0;
+        const firstRow = farmSlots.querySelector('.farm-row');
+        const columns = firstRow ? firstRow.children.length : 0;
+
+        if (!rows || !columns) return;
+
+        const verticalGaps = gap * Math.max(rows - 1, 0);
+        const availableHeight = window.innerHeight - topNavHeight - bottomNavHeight - miniProfileHeight - miniProfileMargin - dividerHeight - dividerMargin - farmPaddingV - verticalGaps;
+        const slotSizeByHeight = availableHeight / rows;
+
+        const containerWidth = content ? content.clientWidth : window.innerWidth;
+        const horizontalGaps = gap * Math.max(columns - 1, 0);
+        const slotSizeByWidth = (containerWidth - farmPaddingH - horizontalGaps) / columns;
+
+        const slotSize = Math.min(slotSizeByHeight, slotSizeByWidth);
+        root.style.setProperty('--slot-size', `${slotSize}px`);
+    }
+
+    updateSlotSize();
+    window.addEventListener('resize', updateSlotSize);
+
+    document.querySelectorAll('.farm-slot').forEach(slot => {
         slot.addEventListener('click', () => {
-            window.location.href = 'changeslots/slot-panel.php';
+            const slotId = slot.id.replace('slot-', '');
+            window.location.href = `changeslots/slot-panel.php?slot=${slotId}`;
         });
     });
 });
-
-
-window.addEventListener('resize', updateSlotSize);
