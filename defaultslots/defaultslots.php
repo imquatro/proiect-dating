@@ -22,16 +22,18 @@ ob_start();
 ?>
 <div id="ds-slot-panel" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div id="ds-slot-menu">
-        <?php for ($i = 1; $i <= 10; $i++): 
+        <?php for ($i = 1; $i <= 10; $i++):
             $data = $slotData[$i] ?? ['unlocked' => 0, 'required_level' => 0];
             $classes = 'ds-slot';
             if ($i === 1) { $classes .= ' active'; }
             if (!empty($data['unlocked'])) { $classes .= ' open'; } else { $classes .= ' locked'; }
         ?>
         <div class="<?php echo $classes; ?>" data-slot="<?php echo $i; ?>">
-            Slot <?php echo $i; ?>
+            <img src="img/unlocked.png" class="slot-img" alt="slot">
             <?php if (empty($data['unlocked'])): ?>
             <div class="ds-overlay">Nivel <?php echo htmlspecialchars($data['required_level']); ?></div>
+            <?php else: ?>
+            <img src="img/sale.png" class="ds-sale" alt="unlocked">
             <?php endif; ?>
         </div>
         <?php endfor; ?>

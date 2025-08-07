@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt = $db->prepare("INSERT INTO users (email, username, password, age, country, city, gender) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 if ($stmt->execute([$email, $username, $hash, $age, $country, $city, $gender])) {
                     $userId = $db->lastInsertId();
-                    $openSlots = [1,2,3,6,7,8];
-                    $lockedSlots = [4=>5,5=>10,9=>15,10=>20];
+                    $lockedSlots = [1=>1,2=>2,3=>3,4=>4,5=>5];
+                    $openSlots = [6,7,8,9,10];
                     foreach ($openSlots as $slot) {
                         $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, unlocked, required_level) VALUES (?, ?, 1, 0)");
                         $ins->execute([$userId, $slot]);
