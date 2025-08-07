@@ -6,10 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = document.querySelector('.content');
     const divider = document.querySelector('.farm-divider');
     const farmSlots = document.querySelector('.farm-slots');
+    const overlay = document.createElement('div');
+    overlay.id = 'slot-panel-overlay';
+    document.body.appendChild(overlay);
 
-    if (content) {
-        content.classList.add('no-scroll');
-    }
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) {
+            overlay.classList.remove('active');
+            overlay.innerHTML = '';
+            if (content) {
+                content.classList.remove('no-scroll');
+            }
+        }
+    });
 
     function updateSlotSize(iter = 0) {
         if (!farmSlots) return;
@@ -57,7 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.farm-slot').forEach(slot => {
         slot.addEventListener('click', () => {
             const slotId = slot.id.replace('slot-', '');
-            window.location.href = `changeslots/slot-panel.php?slot=${slotId}`;
+            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
+                .then(res => res.text())
+                .then(html => {
+                    overlay.innerHTML = html;
+                    overlay.classList.add('active');
+                    if (window.initSlotPanel) {
+                        window.initSlotPanel(overlay);
+                    }
+                });
         });
     });
 });
