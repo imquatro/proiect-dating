@@ -63,6 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSlotSize();
     window.addEventListener('resize', () => updateSlotSize());
 
+    document.addEventListener('slotUpdated', e => {
+        const { slotId, image } = e.detail || {};
+        if (!slotId || !image) return;
+        const slotImg = document.querySelector(`#slot-${slotId} img`);
+        if (slotImg) {
+            slotImg.src = image;
+        }
+    });
+
     document.querySelectorAll('.farm-slot:not(.locked)').forEach(slot => {
         slot.addEventListener('click', () => {
             const slotId = slot.id.replace('slot-', '');

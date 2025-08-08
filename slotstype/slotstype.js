@@ -27,6 +27,9 @@ function initSlotstype(container) {
                             if (slotImg && data.image) {
                                 slotImg.src = data.image;
                             }
+                            document.dispatchEvent(new CustomEvent('slotUpdated', {
+                                detail: { slotId, type, image: data.image }
+                            }));
                             if (overlay) {
                                 overlay.classList.remove('active');
                                 overlay.innerHTML = '';
