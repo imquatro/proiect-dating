@@ -44,6 +44,8 @@
     align-items: center;
     font-size: 14px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+    cursor: pointer;
 }
 
 .st-slotstype-item img {
@@ -52,3 +54,38 @@
     object-fit: cover;
     border-radius: 10px;
 }
+
+.st-slotstype-name {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.st-slot-apply {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.st-slotstype-item.selected .st-slot-apply {
+    display: block;
+}
+
+.st-slotstype-item.selected {
+    box-shadow: 0 0 0 3px #28a745 inset;
