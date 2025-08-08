@@ -5,6 +5,7 @@ function initSlotstype(container) {
     }
 
     const slotId = container.dataset.slot;
+    const overlay = container.parentElement;
 
     container.querySelectorAll('.st-slotstype-item').forEach(item => {
         const applyBtn = item.querySelector('.st-slot-apply');
@@ -26,8 +27,10 @@ function initSlotstype(container) {
                             if (slotImg && data.image) {
                                 slotImg.src = data.image;
                             }
-                            container.classList.remove('active');
-                            container.innerHTML = '';
+                            if (overlay) {
+                                overlay.classList.remove('active');
+                                overlay.innerHTML = '';
+                            }
                             if (content) {
                                 content.classList.remove('no-scroll');
                             }

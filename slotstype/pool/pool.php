@@ -19,14 +19,15 @@ if ($apply && $slotId && isset($_SESSION['user_id'])) {
         $stmt->execute([$userId]);
         $money = (int)$stmt->fetchColumn();
 
-        if ($money >= 10000) {
-            $db->prepare('UPDATE users SET money = money - 10000 WHERE id = ?')->execute([$userId]);
+        $cost = 10000;
+        if ($money >= $cost) {
+            $db->prepare('UPDATE users SET money = money - ? WHERE id = ?')->execute([$cost, $userId]);
             $source = __DIR__ . '/../../img/pool.png';
             $dest = __DIR__ . "/../../img/slot{$slotId}.png";
             if (file_exists($source)) {
                 copy($source, $dest);
             }
-            $response = ['success' => true];
+            $response = ['success' => true, 'image' => "img/slot{$slotId}.png?v=" . time()];
         } else {
             $response = ['success' => false, 'error' => 'Insufficient funds'];
         }

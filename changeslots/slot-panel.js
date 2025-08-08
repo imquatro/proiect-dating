@@ -15,8 +15,9 @@ function initSlotPanel(container) {
                 .then(res => res.text())
                 .then(html => {
                     container.innerHTML = html;
-                    if (window.initSlotstype) {
-                        window.initSlotstype(container);
+                    const panel = container.querySelector('#st-slotstype-panel');
+                    if (window.initSlotstype && panel) {
+                        window.initSlotstype(panel);
                     }
                 });
         });
