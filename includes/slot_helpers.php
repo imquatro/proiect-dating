@@ -4,7 +4,12 @@ require_once __DIR__ . '/db.php';
 function get_slot_type($slotId, $userId)
 {
     global $db;
-    $stmt = $db->prepare('SELECT slot_type FROM user_slots WHERE user_id = ? AND slot_number = ?');
+    $stmt = $db->prepare('
+        SELECT COALESCE(us.slot_type, ds.slot_type) AS slot_type
+        FROM default_slots ds
+        LEFT JOIN user_slots us ON us.user_id = ? AND us.slot_number = ds.slot_number
+        WHERE ds.slot_number = ?
+    ');
     $stmt->execute([$userId, $slotId]);
     $type = $stmt->fetchColumn();
     return $type ?: 'crop';

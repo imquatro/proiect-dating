@@ -18,8 +18,10 @@ if ($apply && $slotId && isset($_SESSION['user_id'])) {
         $cost = 10000;
         if ($money >= $cost) {
             $db->prepare('UPDATE users SET money = money - ? WHERE id = ?')->execute([$cost, $userId]);
-            $db->prepare('UPDATE user_slots SET slot_type = ? WHERE user_id = ? AND slot_number = ?')
-                ->execute(['crop', $userId, $slotId]);
+            $db->prepare('INSERT INTO user_slots (user_id, slot_number, slot_type, unlocked, required_level)
+                          VALUES (?, ?, ?, 1, 0)
+                          ON DUPLICATE KEY UPDATE slot_type = VALUES(slot_type)')
+                ->execute([$userId, $slotId, 'crop']);
             $image = get_slot_image($slotId, $userId) . '?v=' . time();
             $response = ['success' => true, 'image' => $image];
         } else {

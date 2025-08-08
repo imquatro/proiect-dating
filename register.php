@@ -25,15 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt = $db->prepare("INSERT INTO users (email, username, password, age, country, city, gender) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 if ($stmt->execute([$email, $username, $hash, $age, $country, $city, $gender])) {
                     $userId = $db->lastInsertId();
-                    $lockedSlots = [1=>1,2=>2,3=>3,4=>4,5=>5];
-                    $openSlots = [6,7,8,9,10];
-                    foreach ($openSlots as $slot) {
-                        $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, slot_type, unlocked, required_level) VALUES (?, ?, 'crop', 1, 0)");
-                        $ins->execute([$userId, $slot]);
-                    }
-                    foreach ($lockedSlots as $slot => $level) {
-                        $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, slot_type, unlocked, required_level) VALUES (?, ?, 'crop', 0, ?)");
-                        $ins->execute([$userId, $slot, $level]);
+                    $defaults = $db->query("SELECT slot_number, slot_type, unlocked, required_level FROM default_slots");
+                    $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, slot_type, unlocked, required_level) VALUES (?, ?, ?, ?, ?)");
+                    foreach ($defaults as $slot) {
+                        $ins->execute([$userId, $slot['slot_number'], $slot['slot_type'], $slot['unlocked'], $slot['required_level']]);
                     }
                     header('Location: index.php?register=success');
                     exit;

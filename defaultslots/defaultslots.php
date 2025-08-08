@@ -9,7 +9,7 @@ require_once '../includes/db.php';
 require_once '../includes/slot_helpers.php';
 
 $userId = $_SESSION['user_id'];
-$stmt = $db->prepare("SELECT slot_number, unlocked, required_level FROM user_slots WHERE user_id = ? ORDER BY slot_number");
+$stmt = $db->prepare("\n    SELECT ds.slot_number,\n           COALESCE(us.unlocked, ds.unlocked) AS unlocked,\n           COALESCE(us.required_level, ds.required_level) AS required_level\n    FROM default_slots ds\n    LEFT JOIN user_slots us\n        ON us.user_id = ? AND us.slot_number = ds.slot_number\n    ORDER BY ds.slot_number\n");
 $stmt->execute([$userId]);
 $slots = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $slotData = [];
