@@ -7,7 +7,7 @@ include_once 'includes/slot_helpers.php';
 $slotData = [];
 $userId = $_SESSION['user_id'] ?? null;
 if ($userId && isset($db)) {
-    $stmt = $db->prepare("\n        SELECT ds.slot_number,\n               COALESCE(us.unlocked, ds.unlocked) AS unlocked,\n               COALESCE(us.required_level, ds.required_level) AS required_level\n        FROM default_slots ds\n        LEFT JOIN user_slots us\n            ON us.user_id = ? AND us.slot_number = ds.slot_number\n    ");
+    $stmt = $db->prepare("\n        SELECT ds.slot_number,\n               COALESCE(us.unlocked, ds.unlocked) AS unlocked,\n           COALESCE(us.required_level, ds.required_level) AS required_level\n        FROM default_slots ds\n        LEFT JOIN user_slots us\n            ON us.user_id = ? AND us.slot_number = ds.slot_number\n    ");
     $stmt->execute([$userId]);
     foreach ($stmt as $row) {
         $slotData[(int)$row['slot_number']] = $row;
@@ -19,12 +19,11 @@ if ($userId && isset($db)) {
     <?php
 $total_slots = 35;
 $slots_per_row = 5;
-$unaffectedSlots = [1,2,3,6,7,8];
 for ($i = 0; $i < $total_slots; $i++) {
     if ($i % $slots_per_row === 0) echo '<div class="farm-row">';
     $slot_id = $i + 1;
     $data = $slotData[$slot_id] ?? [];
-    $isUnlocked = (!empty($data['unlocked'])) || in_array($slot_id, $unaffectedSlots);
+    $isUnlocked = !empty($data['unlocked']);
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
     $imgPath = get_slot_image($slot_id, $userId);
     $imgFullPath = __DIR__ . '/' . $imgPath;

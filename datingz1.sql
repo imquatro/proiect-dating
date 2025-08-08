@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gazdă: 127.0.0.1
--- Timp de generare: aug. 08, 2025 la 05:59 PM
+-- Timp de generare: aug. 08, 2025 la 06:20 PM
 -- Versiune server: 10.4.32-MariaDB
 -- Versiune PHP: 8.0.30
 
@@ -39,16 +39,41 @@ CREATE TABLE `default_slots` (
 --
 
 INSERT INTO `default_slots` (`slot_number`, `slot_type`, `unlocked`, `required_level`) VALUES
-(1, 'crop', 0, 1),
-(2, 'crop', 0, 2),
-(3, 'crop', 0, 3),
+(1, 'crop', 1, 0),
+(2, 'crop', 1, 0),
+(3, 'crop', 1, 0),
 (4, 'crop', 0, 4),
 (5, 'crop', 0, 5),
 (6, 'crop', 1, 0),
 (7, 'crop', 1, 0),
 (8, 'crop', 1, 0),
-(9, 'crop', 0, 0),
-(10, 'crop', 0, 0);
+(9, 'crop', 0, 9),
+(10, 'crop', 0, 10),
+(11, 'crop', 0, 11),
+(12, 'crop', 0, 12),
+(13, 'crop', 0, 13),
+(14, 'crop', 0, 14),
+(15, 'crop', 0, 15),
+(16, 'crop', 0, 16),
+(17, 'crop', 0, 17),
+(18, 'crop', 0, 18),
+(19, 'crop', 0, 19),
+(20, 'crop', 0, 20),
+(21, 'crop', 0, 21),
+(22, 'crop', 0, 22),
+(23, 'crop', 0, 23),
+(24, 'crop', 0, 24),
+(25, 'crop', 0, 25),
+(26, 'crop', 0, 26),
+(27, 'crop', 0, 27),
+(28, 'crop', 0, 28),
+(29, 'crop', 0, 29),
+(30, 'crop', 0, 30),
+(31, 'crop', 0, 0),
+(32, 'crop', 0, 0),
+(33, 'crop', 0, 0),
+(34, 'crop', 0, 0),
+(35, 'crop', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -442,7 +467,9 @@ INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `created_at
 (372, 1, 4, 'ordine', '2025-08-07 13:06:13', 1),
 (373, 4, 1, 'uita te olc whatsapp', '2025-08-07 13:07:07', 1),
 (374, 1, 4, 'nus unde e tel stai', '2025-08-07 13:07:36', 1),
-(375, 1, 4, 'ma apuc de panoul de la shop si cel de la schimbare slot poate le pot face', '2025-08-07 16:44:55', 0);
+(375, 1, 4, 'ma apuc de panoul de la shop si cel de la schimbare slot poate le pot face', '2025-08-07 16:44:55', 1),
+(376, 4, 1, 'phoa ce smecher e panou de la shop', '2025-08-08 16:00:23', 0),
+(377, 4, 1, 'si ala de la change plot', '2025-08-08 16:00:43', 0);
 
 -- --------------------------------------------------------
 
@@ -490,7 +517,7 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `country`, `city`, `
 (1, 'quatro', 'serverboost93@gmail.com', '$2y$10$XUP9QK9AU/EgETee1NVvKemxG2xpWWKWzCbg1.AkRIWjmKLbdeLDW', 'Romania', 'Suceava', 31, 'masculin', 'descrieea mea se fura asa ca :)))', 'photo_20250806_144906_20.jpg', '2025-07-21 21:56:14', 'pending', 1, '2025-08-08 17:37:12', 650000, 100, 1),
 (2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-08 18:27:51', 0, 0, 1),
 (3, 'Catalina', 'albacazapada@gmail.com', '$2y$10$oSYlVjpRUK3.cEJRMinID.DkjFTAzxSVykk0V88SefTegqkIeHsy.', 'Romania', 'suceava', 23, 'feminin', '', 'photo_20250806_144758_94.jpeg,photo_20250806_164731_41.jpeg', '2025-08-04 08:42:45', 'pending,pending', 0, '2025-08-07 16:05:42', 1000000000, 100, 1),
-(4, 'Nexus', 'ionut.fidirovici2@gmail.com', '$2y$10$KuZ/MTsqYGSjN9ebtmsfa.6C/ROwsTEcUcWBSpWCGib8p9pjp31t2', 'Romania', 'Radauti', 18, 'masculin', 'Sunt smecher', 'photo_20250806_172705_30.png,photo_20250805_212441_56.png', '2025-08-05 19:24:00', 'pending,pending,pend', 0, '2025-08-07 19:42:01', 1000000000, 200, 1),
+(4, 'Nexus', 'ionut.fidirovici2@gmail.com', '$2y$10$KuZ/MTsqYGSjN9ebtmsfa.6C/ROwsTEcUcWBSpWCGib8p9pjp31t2', 'Romania', 'Radauti', 18, 'masculin', 'Sunt smecher', 'photo_20250806_172705_30.png,photo_20250805_212441_56.png', '2025-08-05 19:24:00', 'pending,pending,pend', 0, '2025-08-08 19:00:35', 999980000, 200, 1),
 (5, 'test', 'test@gmail.com', '$2y$10$VblPlxQqXNqXsbHtHL/Qd.6oIVy8ZcICXbXyl/zWVi4c7uBafmmTW', 'Romania', 'suceava', 31, 'masculin', NULL, NULL, '2025-08-06 09:19:36', 'pending', 0, NULL, 0, 0, 1),
 (6, 'test2', 'test2@gmail.com', '$2y$10$UEnt3nQ4YTUCLBXQqd9N1.EBh0qsWtiE9oHyMpU5BBLpwknjyOwR6', 'Romania', 'suceava', 33, 'masculin', NULL, NULL, '2025-08-06 10:08:10', 'pending', 0, '2025-08-06 15:43:54', 0, 0, 1),
 (7, 'Test3', 'teat3@gmail.com', '$2y$10$J5YGNEPj1eQ1bu3LRKNTY.JoUa5RrhYuJIOOYqJFxJ0x6XdwHz8fG', 'Romania', 'România', 33, 'masculin', NULL, NULL, '2025-08-06 10:35:38', 'pending', 0, '2025-08-06 15:45:23', 0, 0, 1),
@@ -519,7 +546,9 @@ INSERT INTO `user_slots` (`user_id`, `slot_number`, `unlocked`, `required_level`
 (1, 2, 1, 0, 'tarc'),
 (1, 3, 1, 0, 'tarc'),
 (1, 8, 1, 0, 'crop'),
-(1, 9, 1, 0, 'crop');
+(1, 9, 0, 0, 'crop'),
+(4, 2, 1, 0, 'tarc'),
+(4, 3, 1, 0, 'pool');
 
 --
 -- Indexuri pentru tabele eliminate
@@ -579,7 +608,7 @@ ALTER TABLE `friend_requests`
 -- AUTO_INCREMENT pentru tabele `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=376;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=378;
 
 --
 -- AUTO_INCREMENT pentru tabele `users`
