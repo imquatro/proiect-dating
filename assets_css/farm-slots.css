@@ -62,6 +62,12 @@
     pointer-events: none;
 }
 
+.slot-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
 .farm-divider {
     border: none;
     border-top: 3px solid #ffd900;
