@@ -5,14 +5,12 @@ include 'mini_profile.php';
 include_once 'includes/slot_helpers.php';
 
 $slotData = [];
-if (isset($_SESSION['user_id'])) {
-    $userId = $_SESSION['user_id'];
-    if (isset($db)) {
-        $stmt = $db->prepare("SELECT slot_number, unlocked, required_level FROM user_slots WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        foreach ($stmt as $row) {
-            $slotData[(int)$row['slot_number']] = $row;
-        }
+$userId = $_SESSION['user_id'] ?? null;
+if ($userId && isset($db)) {
+    $stmt = $db->prepare("SELECT slot_number, unlocked, required_level FROM user_slots WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    foreach ($stmt as $row) {
+        $slotData[(int)$row['slot_number']] = $row;
     }
 }
 ?>
@@ -28,7 +26,7 @@ for ($i = 0; $i < $total_slots; $i++) {
     $data = $slotData[$slot_id] ?? [];
     $isUnlocked = (!empty($data['unlocked'])) || in_array($slot_id, $unaffectedSlots);
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
-    $imgPath = get_slot_image($slot_id);
+    $imgPath = get_slot_image($slot_id, $userId);
     $imgFullPath = __DIR__ . '/' . $imgPath;
     $imgSrc = $imgPath . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
     echo '<div class="' . $classes . '" id="slot-' . $slot_id . '"><img src="' . $imgSrc . '" alt="slot">';

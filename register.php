@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $lockedSlots = [1=>1,2=>2,3=>3,4=>4,5=>5];
                     $openSlots = [6,7,8,9,10];
                     foreach ($openSlots as $slot) {
-                        $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, unlocked, required_level) VALUES (?, ?, 1, 0)");
+                        $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, slot_type, unlocked, required_level) VALUES (?, ?, 'crop', 1, 0)");
                         $ins->execute([$userId, $slot]);
                     }
                     foreach ($lockedSlots as $slot => $level) {
-                        $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, unlocked, required_level) VALUES (?, ?, 0, ?)");
+                        $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, slot_type, unlocked, required_level) VALUES (?, ?, 'crop', 0, ?)");
                         $ins->execute([$userId, $slot, $level]);
                     }
                     header('Location: index.php?register=success');
