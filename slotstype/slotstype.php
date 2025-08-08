@@ -23,6 +23,7 @@ if (file_exists($slotImageFile)) {
 $slotTypes = [
     ['id' => 'crop', 'name' => 'Crop Plot', 'image' => 'img/default.png'],
     ['id' => 'tarc', 'name' => 'Tarc Plot', 'image' => 'img/tarc1.png'],
+    ['id' => 'pool', 'name' => 'Pool Plot', 'image' => 'img/pool.png'],
 ];
 ob_start();
 ?>

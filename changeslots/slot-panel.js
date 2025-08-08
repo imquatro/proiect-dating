@@ -11,7 +11,7 @@ function initSlotPanel(container) {
 
     if (changeBtn) {
         changeBtn.addEventListener('click', () => {
-            fetch(`slotstype/slotstype.php?slot=${slotId}&ajax=1`)
+            fetch(`../slotstype/slotstype.php?slot=${slotId}&ajax=1`)
                 .then(res => res.text())
                 .then(html => {
                     container.innerHTML = html;
@@ -24,7 +24,7 @@ function initSlotPanel(container) {
 
     if (shopBtn) {
         shopBtn.addEventListener('click', () => {
-            fetch(`quickshop/quickshop.php?slot=${slotId}&ajax=1`)
+            fetch(`../quickshop/quickshop.php?slot=${slotId}&ajax=1`)
                 .then(res => res.text())
                 .then(html => {
                     container.innerHTML = html;
