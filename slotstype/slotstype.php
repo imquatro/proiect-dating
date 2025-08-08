@@ -11,8 +11,12 @@ $currentType = 'crop';
 $slotImageFile = __DIR__ . '/../' . get_slot_image($slotId);
 if (file_exists($slotImageFile)) {
     $tarcHash = md5_file(__DIR__ . '/../img/tarc1.png');
-    if (md5_file($slotImageFile) === $tarcHash) {
+    $poolHash = md5_file(__DIR__ . '/../img/pool.png');
+    $fileHash = md5_file($slotImageFile);
+    if ($fileHash === $tarcHash) {
         $currentType = 'tarc';
+    } elseif ($fileHash === $poolHash) {
+        $currentType = 'pool';
     }
 }
 
