@@ -5,11 +5,20 @@ $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
 
-// Default plot now uses the crop image, so remove the old default type
-// and track the current type as "crop" for all slots
+include_once '../includes/slot_helpers.php';
+
 $currentType = 'crop';
+$slotImageFile = __DIR__ . '/../' . get_slot_image($slotId);
+if (file_exists($slotImageFile)) {
+    $tarcHash = md5_file(__DIR__ . '/../img/tarc1.png');
+    if (md5_file($slotImageFile) === $tarcHash) {
+        $currentType = 'tarc';
+    }
+}
+
 $slotTypes = [
     ['id' => 'crop', 'name' => 'Crop Plot', 'image' => 'img/default.png'],
+    ['id' => 'tarc', 'name' => 'Tarc Plot', 'image' => 'img/tarc1.png'],
 ];
 ob_start();
 ?>

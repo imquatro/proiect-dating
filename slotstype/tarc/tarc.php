@@ -9,18 +9,19 @@ $apply = isset($_GET['apply']);
 if ($apply && $slotId && isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
     $slotImage = __DIR__ . '/../../' . get_slot_image($slotId);
-    $isCrop = file_exists($slotImage) && md5_file($slotImage) === md5_file(__DIR__ . '/../../img/default.png');
+    $tarcHash = md5_file(__DIR__ . '/../../img/tarc1.png');
+    $isTarc = file_exists($slotImage) && md5_file($slotImage) === $tarcHash;
 
-    if ($isCrop) {
+    if ($isTarc) {
         $response = ['success' => false, 'error' => 'Slot already set'];
     } else {
         $stmt = $db->prepare('SELECT money FROM users WHERE id = ?');
         $stmt->execute([$userId]);
         $money = (int)$stmt->fetchColumn();
 
-        if ($money >= 1000) {
-            $db->prepare('UPDATE users SET money = money - 1000 WHERE id = ?')->execute([$userId]);
-            $source = __DIR__ . '/../../img/default.png';
+        if ($money >= 5000) {
+            $db->prepare('UPDATE users SET money = money - 5000 WHERE id = ?')->execute([$userId]);
+            $source = __DIR__ . '/../../img/tarc1.png';
             $dest = __DIR__ . "/../../img/slot{$slotId}.png";
             if (file_exists($source)) {
                 copy($source, $dest);
@@ -36,14 +37,9 @@ if ($apply && $slotId && isset($_SESSION['user_id'])) {
     exit;
 }
 
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
-}
-
 $bgImagePath = '../../img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 ?>
-<div id="crop-slot" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
-    <h2>Crop Slot Placeholder</h2>
+<div id="tarc-slot" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
+    <h2>Tarc Slot Placeholder</h2>
 </div>
