@@ -5,7 +5,7 @@
     padding: 8px 12px;
     margin: 0 auto var(--slot-gap) auto;
     box-shadow: 0 2px 8px #0001;
-    width: calc(6 * var(--slot-size) + 5 * var(--slot-gap));
+    width: calc(2 * var(--slot-size) + var(--slot-gap));
     max-width: 100%;
 }
 .mini-profile-avatar, .profile-avatar {
@@ -16,19 +16,31 @@
     border: 2px solid #f6cf49;
     background: #ffe9a3;
 }
-.mini-profile-info {
-    flex: 1;
+.mini-profile-card {
+    width: var(--slot-size);
+    height: var(--slot-size);
+    background: #ffe9a3;
+    border: 2px solid #f6cf49;
+    box-shadow: 0 2px 8px #0001;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
+    text-align: center;
 }
-.mini-profile-username {
-    font-size: 1em;
+.mini-profile-card .username,
+.mini-profile-card .level {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
     font-weight: bold;
     color: #6c4e09;
-    margin-bottom: 3px;
+    width: 100%;
 }
-.mini-profile-stats {
-    font-size: 0.9em;
-    color: #947e3e;
+.mini-profile-card .divider {
+    width: 100%;
+    height: 2px;
+    background: #f6cf49;
 }

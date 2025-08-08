@@ -5,9 +5,10 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/includes/db.php';
 $mini_avatar = 'default-avatar.png';
 $user_name = 'Vizitator';
+$user_level = 1;
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $stmt = $db->prepare('SELECT username, gallery FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT username, gallery, level FROM users WHERE id = ?');
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($user) {
@@ -18,16 +19,16 @@ if (isset($_SESSION['user_id'])) {
                 $mini_avatar = $candidate;
             }
         }
-        $user_name = $user['username'] ?? $user_name;
+        $user_name = $user['username'] ?? $user_name;␊
+        $user_level = isset($user['level']) ? (int)$user['level'] : $user_level;
     }
 }
 ?>
 <div class="mini-profile">
     <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
-    <div class="mini-profile-info">
-        <div class="mini-profile-username"><?= htmlspecialchars($user_name) ?></div>
-        <div class="mini-profile-stats">
-            <span>Level: 1</span> | <span>XP: 0</span>
-        </div>
-    </div>
+    <div class="mini-profile-card">
+        <div class="username"><?= htmlspecialchars($user_name) ?></div>
+        <div class="divider"></div>
+        <div class="level">LVL: <?= htmlspecialchars($user_level) ?></div>
+    </div>␊
 </div>

@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $country = trim($_POST['country'] ?? '');
     $city = trim($_POST['city'] ?? '');
     $gender = $_POST['gender'] ?? '';
+    $level = 1;
 
     if ($email && $username && $password && $age && $country && $city && $gender) {
         if ($age < 18 || $age > 99) {
