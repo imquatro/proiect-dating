@@ -8,11 +8,8 @@ $apply = isset($_GET['apply']);
 
 if ($apply && $slotId && isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
-    $slotImage = __DIR__ . '/../../' . get_slot_image($slotId);
-    $poolHash = md5_file(__DIR__ . '/../../img/pool.png');
-    $isPool = file_exists($slotImage) && md5_file($slotImage) === $poolHash;
-
-    if ($isPool) {
+    $currentType = get_slot_type($slotId, $userId);
+    if ($currentType === 'pool') {
         $response = ['success' => false, 'error' => 'Slot already set'];
     } else {
         $stmt = $db->prepare('SELECT money FROM users WHERE id = ?');
@@ -22,12 +19,10 @@ if ($apply && $slotId && isset($_SESSION['user_id'])) {
         $cost = 10000;
         if ($money >= $cost) {
             $db->prepare('UPDATE users SET money = money - ? WHERE id = ?')->execute([$cost, $userId]);
-            $source = __DIR__ . '/../../img/pool.png';
-            $dest = __DIR__ . "/../../img/slot{$slotId}.png";
-            if (file_exists($source)) {
-                copy($source, $dest);
-            }
-            $response = ['success' => true, 'image' => "img/slot{$slotId}.png?v=" . time()];
+            $db->prepare('UPDATE user_slots SET slot_type = ? WHERE user_id = ? AND slot_number = ?')
+                ->execute(['pool', $userId, $slotId]);
+            $image = get_slot_image($slotId, $userId) . '?v=' . time();
+            $response = ['success' => true, 'image' => $image];
         } else {
             $response = ['success' => false, 'error' => 'Insufficient funds'];
         }

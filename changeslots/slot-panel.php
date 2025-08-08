@@ -1,8 +1,15 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../login.php');
+    exit;
+}
 $activePage = 'welcome';
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
+require_once '../includes/db.php';
 include_once '../includes/slot_helpers.php';
-$slotImage = get_slot_image($slotId);
+$userId = $_SESSION['user_id'];
+$slotImage = get_slot_image($slotId, $userId);
 $bgImagePath = 'img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);

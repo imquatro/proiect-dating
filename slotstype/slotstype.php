@@ -1,24 +1,20 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../login.php');
+    exit;
+}
 $activePage = 'welcome';
 $bgImagePath = 'img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
 
+require_once '../includes/db.php';
 include_once '../includes/slot_helpers.php';
+$userId = $_SESSION['user_id'];
 
-$currentType = 'crop';
-$slotImageFile = __DIR__ . '/../' . get_slot_image($slotId);
-if (file_exists($slotImageFile)) {
-    $tarcHash = md5_file(__DIR__ . '/../img/tarc1.png');
-    $poolHash = md5_file(__DIR__ . '/../img/pool.png');
-    $fileHash = md5_file($slotImageFile);
-    if ($fileHash === $tarcHash) {
-        $currentType = 'tarc';
-    } elseif ($fileHash === $poolHash) {
-        $currentType = 'pool';
-    }
-}
+$currentType = get_slot_type($slotId, $userId);
 
 $slotTypes = [
     ['id' => 'crop', 'name' => 'Crop Plot', 'image' => 'img/default.png'],
