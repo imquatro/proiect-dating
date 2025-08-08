@@ -26,16 +26,16 @@ function initSlotstype(container) {
                             if (slotImg && data.image) {
                                 slotImg.src = data.image;
                             }
+                            container.classList.remove('active');
+                            container.innerHTML = '';
+                            if (content) {
+                                content.classList.remove('no-scroll');
+                            }
+                        } else if (data && data.error) {
+                            alert(data.error);
                         }
-                        return fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`);
                     })
-                    .then(res => res.text())
-                    .then(html => {
-                        container.innerHTML = html;
-                        if (window.initSlotPanel) {
-                            window.initSlotPanel(container);
-                        }
-                    });
+                    .catch(err => console.error(err));
             });
         }
     });
