@@ -2,6 +2,7 @@
 $activePage = 'welcome';
 ob_start();
 include 'mini_profile.php';
+include_once 'includes/slot_helpers.php';
 
 $slotData = [];
 if (isset($_SESSION['user_id'])) {
@@ -27,7 +28,10 @@ for ($i = 0; $i < $total_slots; $i++) {
     $data = $slotData[$slot_id] ?? [];
     $isUnlocked = (!empty($data['unlocked'])) || in_array($slot_id, $unaffectedSlots);
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
-    echo '<div class="' . $classes . '" id="slot-' . $slot_id . '"><img src="img/default.png" alt="slot">';
+    $imgPath = get_slot_image($slot_id);
+    $imgFullPath = __DIR__ . '/' . $imgPath;
+    $imgSrc = $imgPath . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
+    echo '<div class="' . $classes . '" id="slot-' . $slot_id . '"><img src="' . $imgSrc . '" alt="slot">';
     if (!$isUnlocked) {
         if ($slot_id > $total_slots - 5) {
             echo '<div class="slot-overlay"><img src="img/gold.png" alt="Gold"></div>';

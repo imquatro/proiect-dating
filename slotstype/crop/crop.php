@@ -1,4 +1,4 @@
-<?php
+?php
 session_start();
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/slot_helpers.php';
@@ -10,32 +10,25 @@ if ($apply && $slotId && isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
     $slotImage = __DIR__ . '/../../' . get_slot_image($slotId);
     $isCrop = file_exists($slotImage) && md5_file($slotImage) === md5_file(__DIR__ . '/../../img/default.png');
-
     if ($isCrop) {
         $response = ['success' => false, 'error' => 'Slot already set'];
     } else {
         $stmt = $db->prepare('SELECT money FROM users WHERE id = ?');
         $stmt->execute([$userId]);
         $money = (int)$stmt->fetchColumn();
-
-        if ($money >= 1000) {
-            $db->prepare('UPDATE users SET money = money - 1000 WHERE id = ?')->execute([$userId]);
+        $cost = 10000;
+        if ($money >= $cost) {
+            $db->prepare('UPDATE users SET money = money - ? WHERE id = ?')->execute([$cost, $userId]);
             $source = __DIR__ . '/../../img/default.png';
             $dest = __DIR__ . "/../../img/slot{$slotId}.png";
             if (file_exists($source)) {
                 copy($source, $dest);
             }
-            $response = ['success' => true];
+            $response = ['success' => true, 'image' => "img/slot{$slotId}.png?v=" . time()];
         } else {
             $response = ['success' => false, 'error' => 'Insufficient funds'];
         }
     }
-
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
-}
-
     header('Content-Type: application/json');
     echo json_encode($response);
     exit;

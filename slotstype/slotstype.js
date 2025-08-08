@@ -20,15 +20,21 @@ function initSlotstype(container) {
                 const type = item.dataset.type;
                 fetch(`slotstype/${type}/${type}.php?slot=${slotId}&apply=1`)
                     .then(res => res.json())
-                    .then(() => {
-                        fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
-                            .then(res => res.text())
-                            .then(html => {
-                                container.innerHTML = html;
-                                if (window.initSlotPanel) {
-                                    window.initSlotPanel(container);
-                                }
-                            });
+                    .then(data => {
+                        if (data && data.success) {
+                            const slotImg = document.querySelector(`#slot-${slotId} img`);
+                            if (slotImg && data.image) {
+                                slotImg.src = data.image;
+                            }
+                        }
+                        return fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`);
+                    })
+                    .then(res => res.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                        if (window.initSlotPanel) {
+                            window.initSlotPanel(container);
+                        }
                     });
             });
         }
