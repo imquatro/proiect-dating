@@ -6,6 +6,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 $activePage = 'welcome';
 require_once '../includes/db.php';
+require_once '../includes/slot_helpers.php';
 
 $userId = $_SESSION['user_id'];
 $stmt = $db->prepare("SELECT slot_number, unlocked, required_level FROM user_slots WHERE user_id = ? ORDER BY slot_number");
@@ -29,7 +30,7 @@ ob_start();
             if (!empty($data['unlocked'])) { $classes .= ' open'; } else { $classes .= ' locked'; }
         ?>
         <div class="<?php echo $classes; ?>" data-slot="<?php echo $i; ?>">
-            <img src="../img/unlocked.png" class="slot-img" alt="slot">
+            <img src="../<?php echo get_slot_image($i); ?>" class="slot-img" alt="Slot <?php echo $i; ?>">
             <?php if (empty($data['unlocked'])): ?>
                 <?php if ($i >= 6): ?>
                     <div class="ds-overlay"><img src="../img/gold.png" alt="Gold"></div>

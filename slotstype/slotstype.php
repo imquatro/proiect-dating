@@ -3,13 +3,20 @@ $activePage = 'welcome';
 $bgImagePath = 'img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
+
+$slotTypes = [
+    ['id' => 1, 'name' => 'Default Plot', 'image' => 'img/default.png'],
+];
+
 ob_start();
 ?>
 <div id="st-slotstype-panel" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div id="st-slotstype-list">
-        <?php for ($i = 1; $i <= 9; $i++): ?>
-            <div class="st-slotstype-item">Type <?php echo $i; ?></div>
-        <?php endfor; ?>
+        <?php foreach ($slotTypes as $type): ?>
+            <div class="st-slotstype-item">
+                <img src="<?php echo $type['image']; ?>" alt="<?php echo htmlspecialchars($type['name']); ?>">
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
 <?php
