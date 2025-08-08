@@ -19,7 +19,7 @@ if (isset($_SESSION['user_id'])) {
                 $mini_avatar = $candidate;
             }
         }
-        $user_name = $user['username'] ?? $user_name;␊
+        $user_name = $user['username'] ?? $user_name;
         $user_level = isset($user['level']) ? (int)$user['level'] : $user_level;
     }
 }
@@ -30,5 +30,5 @@ if (isset($_SESSION['user_id'])) {
         <div class="username"><?= htmlspecialchars($user_name) ?></div>
         <div class="divider"></div>
         <div class="level">LVL: <?= htmlspecialchars($user_level) ?></div>
-    </div>␊
+    </div>
 </div>

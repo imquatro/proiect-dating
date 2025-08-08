@@ -3,22 +3,24 @@
     align-items: center;
     background: #ffe9a3;
     padding: 8px 12px;
-    margin: 0 auto var(--slot-gap) auto;
+    margin: 0 auto var(--slot-gap, 1px) auto;
     box-shadow: 0 2px 8px #0001;
-    width: calc(2 * var(--slot-size) + var(--slot-gap));
+    width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
     max-width: 100%;
 }
 .mini-profile-avatar, .profile-avatar {
-    width: var(--slot-size);
-    height: var(--slot-size);
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
     object-fit: cover;
-    margin-right: var(--slot-gap);
+    margin-right: var(--slot-gap, 1px);
     border: 2px solid #f6cf49;
     background: #ffe9a3;
+    max-width: 120px;
+    max-height: 120px;
 }
 .mini-profile-card {
-    width: var(--slot-size);
-    height: var(--slot-size);
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
     background: #ffe9a3;
     border: 2px solid #f6cf49;
     box-shadow: 0 2px 8px #0001;
@@ -27,6 +29,8 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    max-width: 120px;
+    max-height: 120px;
 }
 .mini-profile-card .username,
 .mini-profile-card .level {
