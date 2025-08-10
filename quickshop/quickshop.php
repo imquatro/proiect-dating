@@ -1,19 +1,39 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../login.php');
+    exit;
+}
 $activePage = 'welcome';
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
 $bgImagePath = 'img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
+
+require_once '../includes/db.php';
+include_once '../includes/slot_helpers.php';
+$userId = $_SESSION['user_id'];
+$slotType = get_slot_type($slotId, $userId);
+
+$stmt = $db->prepare('SELECT id,name,image_plant,water_interval,feed_interval,water_times,feed_times,production FROM farm_items WHERE slot_type = ? AND active = 1');
+$stmt->execute([$slotType]);
+$items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ob_start();
 ?>
 <div id="quickshop-panel" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div class="quickshop-grid">
-        <div class="quickshop-item"><img src="../img/default.png" alt="Plant 1"></div>
-        <div class="quickshop-item"><img src="../img/default2.png" alt="Plant 2"></div>
-        <div class="quickshop-item"><img src="../img/tarc1.png" alt="Plant 3"></div>
-        <div class="quickshop-item"><img src="../img/sale.png" alt="Plant 4"></div>
-        <div class="quickshop-item"><img src="../img/sale2aaaaaa.png" alt="Plant 5"></div>
-        <div class="quickshop-item"><img src="../img/gold.png" alt="Plant 6"></div>
+        <?php foreach ($items as $item): ?>
+        <div class="quickshop-item"
+             data-item-id="<?= $item['id']; ?>"
+             data-water="<?= $item['water_interval']; ?>"
+             data-feed="<?= $item['feed_interval']; ?>"
+             data-water-times="<?= $item['water_times']; ?>"
+             data-feed-times="<?= $item['feed_times']; ?>"
+             data-production="<?= $item['production']; ?>">
+            <img src="../<?= htmlspecialchars($item['image_plant']); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+        </div>
+        <?php endforeach; ?>
     </div>
 </div>
 <?php

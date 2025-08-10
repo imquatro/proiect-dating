@@ -4,6 +4,7 @@ if (!isset($content)) { $content = ''; }
 if (!isset($pageTitle)) { $pageTitle = ''; }
 if (!isset($pageCss)) { $pageCss = ''; }
 if (!isset($extraJs)) { $extraJs = ''; }
+if (!isset($extraCss)) { $extraCss = []; }
 if (!isset($baseHref)) { $baseHref = ''; }
 if (!isset($profilePhoto)) {
     $profilePhoto = 'default-avatar.png';
@@ -41,6 +42,9 @@ if (!isset($profilePhoto)) {
     <?php if ($pageCss): ?>
     <link rel="stylesheet" href="<?= htmlspecialchars($pageCss) ?>">
     <?php endif; ?>
+    <?php foreach ((array)$extraCss as $css): ?>
+    <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>">
+    <?php endforeach; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
