@@ -40,6 +40,13 @@ html, body {
     text-align: center;
 }
 
+.logout-btn {
+    position: absolute;
+    top: 70px;
+    right: 12px;
+    z-index: 25;
+}
+
 .center-btn {
     position: absolute;
     left: 50%;

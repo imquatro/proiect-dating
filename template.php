@@ -49,6 +49,7 @@ if (!isset($profilePhoto)) {
             <div class="profile-box"><img src="<?= htmlspecialchars($profilePhoto) ?>" alt="Profile"></div>
         </div>
     </div>
+    <a href="logout.php" class="nav-btn top-btn logout-btn"><i class="fas fa-right-from-bracket"></i></a>
     <div class="content">
         <?= $content ?>
     </div>
