@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('progress-bar');
+    const progressTip = document.getElementById('progress-tip');
     const percentText = document.getElementById('progress-text');
     const messageElem = document.getElementById('message');
     const images = JSON.parse(document.getElementById('image-data').textContent);
@@ -22,7 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadFraction = loaded / totalImages;
         const progress = Math.min(timeFraction, loadFraction, 1);
         const percent = Math.round(progress * 100);
-        progressBar.style.width = percent + '%';
+        progressBar.style.clipPath = 'inset(0 ' + (100 - percent) + '% 0 0)';
+        progressTip.style.left = percent + '%';
+        progressTip.style.opacity = progress > 0 ? '1' : '0';
         percentText.textContent = percent + '%';
         if (progress >= 1 && loaded === totalImages) {
             clearInterval(interval);

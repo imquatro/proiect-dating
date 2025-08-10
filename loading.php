@@ -25,7 +25,10 @@ foreach (glob(__DIR__ . '/img/*.{png,jpg,jpeg,gif}', GLOB_BRACE) as $img) {
             <div id="message" class="typing"></div>
         </div>
         <div id="progress-container">
-            <div id="progress-bar"></div>
+            <div id="progress-wrap">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="progress-tip"></div>
             <div id="progress-text">0%</div>
         </div>
     </div>
