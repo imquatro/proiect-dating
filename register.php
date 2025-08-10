@@ -1,12 +1,13 @@
 <?php
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/slot_helpers.php';
 
 $mesaj = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email'] ?? '');
     $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
+       $password = $_POST['password'] ?? '';
     $age = isset($_POST['age']) ? intval($_POST['age']) : null;
     $country = trim($_POST['country'] ?? '');
     $city = trim($_POST['city'] ?? '');
@@ -26,10 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt = $db->prepare("INSERT INTO users (email, username, password, age, country, city, gender) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 if ($stmt->execute([$email, $username, $hash, $age, $country, $city, $gender])) {
                     $userId = $db->lastInsertId();
-                    $defaults = $db->query("SELECT slot_number, slot_type, unlocked, required_level FROM default_slots");
+                    $defaults = $db->query("SELECT slot_number, slot_type, unlocked FROM default_slots");
                     $ins = $db->prepare("INSERT INTO user_slots (user_id, slot_number, slot_type, unlocked, required_level) VALUES (?, ?, ?, ?, ?)");
                     foreach ($defaults as $slot) {
-                        $ins->execute([$userId, $slot['slot_number'], $slot['slot_type'], $slot['unlocked'], $slot['required_level']]);
+                        $slotNum = (int)$slot['slot_number'];
+                        $required = get_slot_required_level($slotNum);
+                        $ins->execute([$userId, $slotNum, $slot['slot_type'], $slot['unlocked'], $required]);
                     }
                     header('Location: index.php?register=success');
                     exit;
