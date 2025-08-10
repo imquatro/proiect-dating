@@ -81,6 +81,7 @@ $content = ob_get_clean();
 $pageCss = 'vizitfarm/vizitfarm.css';
 $extraJs = '<script src="vizitfarm/vizitfarm.js"></script>';
 $activePage = '';
+$baseHref = '../';
 chdir('..');
 include 'template.php';
 ?>

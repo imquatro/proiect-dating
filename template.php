@@ -4,6 +4,7 @@ if (!isset($content)) { $content = ''; }
 if (!isset($pageTitle)) { $pageTitle = ''; }
 if (!isset($pageCss)) { $pageCss = ''; }
 if (!isset($extraJs)) { $extraJs = ''; }
+if (!isset($baseHref)) { $baseHref = ''; }
 if (!isset($profilePhoto)) {
     $profilePhoto = 'default-avatar.png';
     if (session_status() === PHP_SESSION_NONE) {
@@ -31,6 +32,9 @@ if (!isset($profilePhoto)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <?php if ($baseHref): ?>
+    <base href="<?= htmlspecialchars($baseHref) ?>">
+    <?php endif; ?>
     <link rel="stylesheet" href="assets_css/template.css">
     <link rel="stylesheet" href="assets_css/message-notification.css">
     <link rel="stylesheet" href="moneysistem/money.css">

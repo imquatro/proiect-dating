@@ -19,9 +19,9 @@
     }
 
     function buttonsHtml(tab, id, requested, isFriend) {
-        if (tab === 'online') {
+         if (tab === 'online') {
             if (isFriend) {
-                return '<button class="btn-farm" data-id="' + id + '" title="Visit farm"><i class="fas fa-seedling"></i></button>' +
+                return '<a class="btn-farm" href="vizitfarm/vizitfarm.php?id=' + encodeURIComponent(id) + '" title="Visit farm"><i class="fas fa-seedling"></i></a>' +
                     '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>' +
                     '<button class="btn-msg" data-id="' + id + '" title="Message"><i class="fas fa-envelope"></i></button>' +
                     '<button class="btn-del" data-id="' + id + '" title="Delete"><i class="fas fa-trash"></i></button>' +
@@ -42,7 +42,7 @@
                 '<button class="btn-block" data-id="' + id + '" title="Block"><i class="fas fa-ban"></i></button>';
         }
         if (tab === 'friends') {
-            return '<button class="btn-farm" data-id="' + id + '" title="Visit farm"><i class="fas fa-seedling"></i></button>' +
+            return '<a class="btn-farm" href="vizitfarm/vizitfarm.php?id=' + encodeURIComponent(id) + '" title="Visit farm"><i class="fas fa-seedling"></i></a>' +
                 '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>' +
                 '<button class="btn-msg" data-id="' + id + '" title="Message"><i class="fas fa-envelope"></i></button>' +
                 '<button class="btn-del" data-id="' + id + '" title="Delete"><i class="fas fa-trash"></i></button>' +

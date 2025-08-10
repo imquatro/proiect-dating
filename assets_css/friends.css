@@ -68,7 +68,8 @@
 .user-card-buttons {
     display: flex;
 }
-.user-card-buttons button {
+.user-card-buttons button,
+.user-card-buttons a {
     width: 32px;
     height: 32px;
     border: none;
@@ -76,6 +77,10 @@
     background: #f6cf49;
     color: #6c4e09;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 .user-card-buttons .btn-msg.not-friend{
     width: auto;
