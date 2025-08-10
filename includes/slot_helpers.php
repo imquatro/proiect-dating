@@ -35,3 +35,12 @@ function get_slot_image($slotId, $userId = null)
     $type = get_slot_type($slotId, $userId);
     return slot_image_from_type($type);
 }
+
+function get_slot_required_level($slotId)
+{
+    static $levels = null;
+    if ($levels === null) {
+        $levels = include __DIR__ . '/slot_levels.php';
+       }
+    return isset($levels[$slotId]) ? $levels[$slotId] : 0;
+}
