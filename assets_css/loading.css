@@ -12,36 +12,63 @@ body {
 
 #message {
     margin-bottom: 20px;
-    font-size: 1.2em;
-    color: #fff;
-    text-shadow: 0 0 5px rgba(0,0,0,0.7);
+    font-size: 2em;
+    font-weight: bold;
+    color: orange;
+    text-shadow: -1px -1px 0 #fff,
+                 1px -1px 0 #fff,
+                 -1px 1px 0 #fff,
+                 1px 1px 0 #fff;
 }
 
+/* Progress bar container */
 #progress-container {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 8px;
+    height: 12px;
     background: rgba(255,255,255,0.3);
-    overflow: hidden;
+    overflow: visible; /* allow end pulse to extend */
+    border-radius: 6px; /* rounded edges */
 }
 
+/* Colorful bar with cylindrical look */
 #progress-bar {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    background: linear-gradient(90deg,#ff0000,#ff7f00,#ffff00,#00ff00,#00ffff,#0000ff,#8f00ff);
     position: relative;
     transition: width 0.3s ease;
+    border-radius: 6px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
 }
 
+/* Golden "ding" pulse at the loading tip */
 #progress-bar::after {
     content: '';
     position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: 12px;
-    background: rgba(255,255,255,0.8);
-    box-shadow: 0 0 10px rgba(255,255,255,0.9);
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    background: radial-gradient(circle, #ffd700, #ffa500);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255,215,0,0.8);
+    animation: pulse 1.5s infinite;
 }
+
+@keyframes pulse {
+    0% {
+        transform: translateY(-50%) scale(1);
+        box-shadow: 0 0 10px rgba(255,215,0,0.8);
+    }
+    50% {
+        transform: translateY(-50%) scale(1.4);
+        box-shadow: 0 0 20px rgba(255,215,0,1);
+    }
+    100% {
+        transform: translateY(-50%) scale(1);
+        box-shadow: 0 0 10px rgba(255,215,0,0.8);
+    }

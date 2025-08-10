@@ -3,18 +3,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageElem = document.getElementById('message');
     const images = JSON.parse(document.getElementById('image-data').textContent);
     let loaded = 0;
+    let messageInterval;
 
     function updateProgress() {
         loaded++;
-        const percent = Math.round((loaded / images.length) * 100);
-        progressBar.style.width = percent + '%';
+        let percent = Math.round((loaded / images.length) * 100);
         if (loaded === images.length) {
+            // Pause at 99% for dramatic effect
+            progressBar.style.width = '99%';
             setTimeout(() => {
-                window.location.href = 'welcome.php';
-            }, 500);
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    window.location.href = 'welcome.php';
+                }, 1000);
+            }, 5000);
+            return;
         }
+        progressBar.style.width = percent + '%';
     }
-
     images.forEach(src => {
         const img = new Image();
         img.onload = updateProgress;
@@ -32,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     messageElem.textContent = lines[idx];
                 }
                 showRandom();
-                setInterval(showRandom, 3000);
+                messageInterval = setInterval(showRandom, 3000);
             }
         });
 });
