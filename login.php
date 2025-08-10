@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $user['id'];
             $upd = $db->prepare('UPDATE users SET last_active = NOW() WHERE id = ?');
             $upd->execute([$user['id']]);
-            header('Location: welcome.php');
+            header('Location: loading.php');
             exit;
         } else {
             $mesaj = 'Utilizator sau parolă incorectă.';
