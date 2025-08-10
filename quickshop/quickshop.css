@@ -6,14 +6,14 @@
     flex-direction: column;
     padding: 20px;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-
     background: url("../img/bg2.png") center/cover no-repeat;
 }
 
 .quickshop-grid {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
     gap: 10px;
     overflow-y: auto;
     -ms-overflow-style: none;
@@ -23,7 +23,7 @@
     display: none;
 }
 
-..quickshop-item {
+.quickshop-item {
     position: relative;
     width: 100%;
     padding-top: 100%;
@@ -38,30 +38,31 @@
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
-.qs-info{
-    position:absolute;
-    bottom:0;
-    left:0;
-    width:100%;
-    background:rgba(0,0,0,0.6);
-    color:#fff;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:5px 0;
+.qs-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 0;
 }
-.qs-price{
-    font-size:12px;
-    margin-bottom:4px;
+.qs-price {
+    font-size: 12px;
+    margin-bottom: 4px;
 }
-.qs-buy{
-    padding:4px 8px;
-    background:#0066cc;
-    border:none;
-    color:#fff;
-    border-radius:4px;
-    cursor:pointer;
-    font-size:12px;
+.qs-buy {
+    padding: 4px 8px;
+    background: #0066cc;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}

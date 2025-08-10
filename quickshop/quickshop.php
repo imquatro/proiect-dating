@@ -21,7 +21,7 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ob_start();
 ?>
-<div id="quickshop-panel" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
+<div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div class="quickshop-grid">
         <?php foreach ($items as $item): ?>
         <div class="quickshop-item"
