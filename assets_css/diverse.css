@@ -32,21 +32,24 @@
     display: none;
 }
 
-.diverse-item {
+.diverse-button {
     position: relative;
     width: 100%;
     padding-top: 100%;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     overflow: hidden;
+    cursor: pointer;
 }
 
-.diverse-item img {
+.diverse-button img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    pointer-events: none;
 }
