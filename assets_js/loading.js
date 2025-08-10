@@ -3,33 +3,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const percentText = document.getElementById('progress-text');
     const messageElem = document.getElementById('message');
     const images = JSON.parse(document.getElementById('image-data').textContent);
+    const totalImages = images.length || 1;
     let loaded = 0;
+    const minDuration = 10000; // 10 seconds
+    const startTime = Date.now();
 
-    function updateProgress() {
-        loaded++;
-        let percent = Math.round((loaded / images.length) * 100);
-        if (loaded === images.length) {
-            // Pause at 99% for dramatic effect
-            progressBar.style.width = '99%';
-            percentText.textContent = '99%';
-            setTimeout(() => {
-                progressBar.style.width = '100%';
-                percentText.textContent = '100%';
-                setTimeout(() => {
-                    window.location.href = 'welcome.php';
-                }, 1000);
-            }, 5000);
-            return;
-        }
-        progressBar.style.width = percent + '%';
-        percentText.textContent = percent + '%';
-    }
     images.forEach(src => {
         const img = new Image();
-        img.onload = updateProgress;
-        img.onerror = updateProgress;
+        const onLoad = () => { loaded++; };
+        img.onload = onLoad;
+        img.onerror = onLoad;
         img.src = src;
     });
+
+    const interval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const timeFraction = elapsed / minDuration;
+        const loadFraction = loaded / totalImages;
+        const progress = Math.min(timeFraction, loadFraction, 1);
+        const percent = Math.round(progress * 100);
+        progressBar.style.width = percent + '%';
+        percentText.textContent = percent + '%';
+        if (progress >= 1 && loaded === totalImages) {
+            clearInterval(interval);
+            window.location.href = 'welcome.php';
+        }
+    }, 100);
 
     fetch('loading_messages.txt')
         .then(r => r.text())
