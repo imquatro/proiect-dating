@@ -42,17 +42,32 @@ ob_start();
             <label>Product Image
                 <input type="file" name="image_product" required>
             </label>
-            <label>Water interval (sec)
-                <input type="number" name="water_interval" min="0" value="0">
-            </label>
-            <label>Feed interval (sec)
-                <input type="number" name="feed_interval" min="0" value="0">
-            </label>
-            <label>Water times
+            <div class="water-field">
+                <label>Water interval
+                    <div class="time-input">
+                        <input type="number" name="water_hours" min="0" placeholder="h">
+                        <input type="number" name="water_minutes" min="0" max="59" placeholder="m">
+                        <input type="number" name="water_seconds" min="0" max="59" placeholder="s">
+                    </div>
+                </label>
+            </div>
+            <div class="feed-field">
+                <label>Feed interval
+                    <div class="time-input">
+                        <input type="number" name="feed_hours" min="0" placeholder="h">
+                        <input type="number" name="feed_minutes" min="0" max="59" placeholder="m">
+                        <input type="number" name="feed_seconds" min="0" max="59" placeholder="s">
+                    </div>
+                </label>
+            </div>
+            <label class="water-field">Water times
                 <input type="number" name="water_times" min="0" value="0">
             </label>
-            <label>Feed times
+            <label class="feed-field">Feed times
                 <input type="number" name="feed_times" min="0" value="0">
+            </label>
+            <label>Price
+                <input type="number" name="price" min="0" value="0">
             </label>
             <label>Production amount
                 <input type="number" name="production" min="0" value="0">

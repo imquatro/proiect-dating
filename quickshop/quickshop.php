@@ -15,7 +15,7 @@ include_once '../includes/slot_helpers.php';
 $userId = $_SESSION['user_id'];
 $slotType = get_slot_type($slotId, $userId);
 
-$stmt = $db->prepare('SELECT id,name,image_plant,water_interval,feed_interval,water_times,feed_times,production FROM farm_items WHERE slot_type = ? AND active = 1');
+$stmt = $db->prepare('SELECT id,name,image_plant,price,water_interval,feed_interval,water_times,feed_times,production FROM farm_items WHERE slot_type = ? AND active = 1');
 $stmt->execute([$slotType]);
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -32,6 +32,10 @@ ob_start();
              data-feed-times="<?= $item['feed_times']; ?>"
              data-production="<?= $item['production']; ?>">
             <img src="../<?= htmlspecialchars($item['image_plant']); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+            <div class="qs-info">
+                <span class="qs-price"><?= $item['price']; ?></span>
+                <button class="qs-buy">BUY/USE</button>
+            </div>
         </div>
         <?php endforeach; ?>
     </div>

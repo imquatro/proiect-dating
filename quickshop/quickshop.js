@@ -8,6 +8,14 @@ function initQuickShop(container) {
             const id = item.dataset.itemId;
             console.log('Selected item', id);
         });
+        const buyBtn = item.querySelector('.qs-buy');
+        if(buyBtn){
+            buyBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                const id = item.dataset.itemId;
+                console.log('Buy/Use item', id);
+            });
+        }
     });
 }
 
