@@ -17,10 +17,13 @@ foreach (glob(__DIR__ . '/img/*.{png,jpg,jpeg,gif}', GLOB_BRACE) as $img) {
     <title>Se încarcă...</title>
     <link rel="stylesheet" href="assets_css/index.css" />
     <link rel="stylesheet" href="assets_css/loading.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-frame">
-        <div id="message">Se încarcă...</div>
+        <div class="text-container">
+            <div id="message" class="typing"></div>
+        </div>
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>

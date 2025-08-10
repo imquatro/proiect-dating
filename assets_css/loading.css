@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -10,15 +12,31 @@ body {
     background-size: cover;
 }
 
+.text-container {
+    width: 500px;
+    text-align: center;
+    word-wrap: break-word;
+}
+
 #message {
     margin-bottom: 20px;
-    font-size: 2em;
-    font-weight: bold;
-    color: orange;
-    text-shadow: -1px -1px 0 #fff,
-                 1px -1px 0 #fff,
-                 -1px 1px 0 #fff,
-                 1px 1px 0 #fff;
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 48px;
+    color: #FFD43B;
+    text-shadow:
+      3px 3px 0 #000,
+      -3px 3px 0 #000,
+      3px -3px 0 #000,
+      -3px -3px 0 #000,
+      0px 3px 0 #000,
+      3px 0px 0 #000,
+      0px -3px 0 #000,
+      -3px 0px 0 #000,
+      2px 2px 4px #ff9900;
+    line-height: 1.1;
+    display: inline-block;
+    border-right: 4px solid #FFD43B;
+    white-space: pre-wrap;
 }
 
 /* Progress bar container */
@@ -27,20 +45,28 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 12px;
+    height: 20px;
     background: rgba(255,255,255,0.3);
     overflow: visible; /* allow end pulse to extend */
-    border-radius: 6px; /* rounded edges */
+    border-radius: 10px; /* rounded edges */
 }
 
 /* Colorful bar with cylindrical look */
 #progress-bar {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg,#ff0000,#ff7f00,#ffff00,#00ff00,#00ffff,#0000ff,#8f00ff);
+    background: linear-gradient(90deg,
+        rgba(0,43,127,1) 0%,
+        rgba(0,43,127,1) 32%,
+        rgba(0,43,127,0.5) 36%,
+        rgba(252,209,22,0.5) 40%,
+        rgba(252,209,22,1) 64%,
+        rgba(252,209,22,0.5) 68%,
+        rgba(206,17,38,0.5) 72%,
+        rgba(206,17,38,1) 100%);
     position: relative;
     transition: width 0.3s ease;
-    border-radius: 6px;
+    border-radius: 10px;
     box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
 }
 

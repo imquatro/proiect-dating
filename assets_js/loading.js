@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageElem = document.getElementById('message');
     const images = JSON.parse(document.getElementById('image-data').textContent);
     let loaded = 0;
-    let messageInterval;
 
     function updateProgress() {
         loaded++;
@@ -32,13 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(r => r.text())
         .then(text => {
             const lines = text.split('\n').filter(Boolean);
-            if (lines.length) {
-                function showRandom() {
-                    const idx = Math.floor(Math.random() * lines.length);
-                    messageElem.textContent = lines[idx];
+            const message = lines[0] || '';
+            let index = 0;
+            function typeChar() {
+                if (index < message.length) {
+                    messageElem.textContent += message[index];
+                    index++;
+                    setTimeout(typeChar, 80);
+                } else {
+                    messageElem.style.borderRight = 'none';
                 }
-                showRandom();
-                messageInterval = setInterval(showRandom, 3000);
             }
+            typeChar();
         });
 });
