@@ -26,6 +26,7 @@ foreach (glob(__DIR__ . '/img/*.{png,jpg,jpeg,gif}', GLOB_BRACE) as $img) {
         </div>
         <div id="progress-container">
             <div id="progress-bar"></div>
+            <div id="progress-text">0%</div>
         </div>
     </div>
     <script id="image-data" type="application/json"><?= json_encode($images) ?></script>

@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('progress-bar');
+    const percentText = document.getElementById('progress-text');
     const messageElem = document.getElementById('message');
     const images = JSON.parse(document.getElementById('image-data').textContent);
     let loaded = 0;
@@ -10,8 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loaded === images.length) {
             // Pause at 99% for dramatic effect
             progressBar.style.width = '99%';
+            percentText.textContent = '99%';
             setTimeout(() => {
                 progressBar.style.width = '100%';
+                percentText.textContent = '100%';
                 setTimeout(() => {
                     window.location.href = 'welcome.php';
                 }, 1000);
@@ -19,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         progressBar.style.width = percent + '%';
+        percentText.textContent = percent + '%';
     }
     images.forEach(src => {
         const img = new Image();
