@@ -21,13 +21,13 @@ if (!$user) {
     exit;
 }
 
-$avatar = '../default-avatar.png';
+$avatar = 'default-avatar.png';
 if (!empty($user['gallery'])) {
     $gal = array_filter(explode(',', $user['gallery']));
     if (!empty($gal)) {
         $candidatePath = __DIR__ . '/../uploads/' . $visitId . '/' . trim($gal[0]);
         if (is_file($candidatePath)) {
-            $avatar = '../uploads/' . $visitId . '/' . trim($gal[0]);
+            $avatar = 'uploads/' . $visitId . '/' . trim($gal[0]);
         }
     }
 }
@@ -64,11 +64,15 @@ for ($i = 0; $i < $total_slots; $i++) {
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
     $imgPath = get_slot_image($slot_id, $visitId);
     $imgFullPath = __DIR__ . '/../' . $imgPath;
-    $imgSrc = '../' . $imgPath . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
+    $imgSrc = $imgPath . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
     echo '<div class="' . $classes . '" id="slot-' . $slot_id . '"><img src="' . $imgSrc . '" alt="slot">';
     if (!$isUnlocked) {
-        $req = htmlspecialchars($data['required_level']);
-        echo '<div class="slot-overlay">Level ' . $req . '</div>';
+        if ($slot_id > $total_slots - 5) {
+            echo '<div class="slot-overlay"><img src="img/gold.png" alt="Gold"></div>';
+        } else {
+            $required = get_slot_required_level($slot_id);
+            echo '<div class="slot-overlay">Level ' . htmlspecialchars($required) . '</div>';
+        }
     }
     echo '</div>';
     if ($i % $slots_per_row === $slots_per_row - 1) echo '</div>';

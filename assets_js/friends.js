@@ -19,7 +19,7 @@
     }
 
     function buttonsHtml(tab, id, requested, isFriend) {
-         if (tab === 'online') {
+        if (tab === 'online') {
             if (isFriend) {
                 return '<a class="btn-farm" href="vizitfarm/vizitfarm.php?id=' + encodeURIComponent(id) + '" title="Visit farm"><i class="fas fa-seedling"></i></a>' +
                     '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>' +
