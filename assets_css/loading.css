@@ -1,23 +1,24 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: url('../img/loading.png') center center / cover no-repeat fixed;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    flex-direction: column;
+}
+
+.app-frame {
+    background-image: url('../img/loading.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 #message {
     margin-bottom: 20px;
     font-size: 1.2em;
+    color: #fff;
     text-shadow: 0 0 5px rgba(0,0,0,0.7);
 }
 
 #progress-container {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
