@@ -59,6 +59,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const timerEl = slot.querySelector('.slot-timer');
         const actionEl = slot.querySelector('.slot-action');
 
+    function checkNextAction(slotId) {
+        const state = slotStates[slotId];
+        const slot = document.getElementById(`slot-${slotId}`);
+        if (!state || !slot) return;
+        const actionEl = slot.querySelector('.slot-action');
+        if (!actionEl) return;
+        if (!state.image) {
+            actionEl.style.display = 'none';
+            updateCount(slotId);
+            return;
+        }
+
+        if (state.waterRemaining > 0) {
+            actionEl.textContent = 'WATER';
+            actionEl.classList.remove('harvest');
+            actionEl.style.display = 'flex';
+        } else if (state.feedRemaining > 0) {
+            actionEl.textContent = 'FEED';
+            actionEl.classList.remove('harvest');
+            actionEl.style.display = 'flex';
+        } else {
+            actionEl.textContent = 'HARVEST';
+            actionEl.classList.add('harvest');
+            actionEl.style.display = 'flex';
+        }
+        updateCount(slotId);
+    }
+
+    function startTimer(slotId, type, resume = false) {
+        const state = slotStates[slotId];
+        const slot = document.getElementById(`slot-${slotId}`);
+        if (!state || !slot) return;
+        const timerEl = slot.querySelector('.slot-timer');
+        const actionEl = slot.querySelector('.slot-action');
+
         state.timerType = type;
         if (!resume) {
             state.timeLeft = type === 'water' ? state.waterInterval : state.feedInterval;
@@ -99,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (action === 'WATER') {
             if (state.waterRemaining > 0) {
                 state.waterRemaining--;
+                updateCount(slotId);
                 if (state.waterInterval > 0) {
                     startTimer(slotId, 'water');
                 } else {
@@ -109,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (action === 'FEED') {
             if (state.feedRemaining > 0) {
                 state.feedRemaining--;
+                updateCount(slotId);
                 if (state.feedInterval > 0) {
                     startTimer(slotId, 'feed');
                 } else {
@@ -142,7 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     timerEl.style.display = 'none';
                 }
             }
+            }
             delete slotStates[slotId];
+            updateCount(slotId);
             saveStates();
             return;
         }
@@ -165,6 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
             feedInterval: parseInt(feedInterval) || 0,
             waterRemaining: parseInt(waterTimes) || 0,
             feedRemaining: parseInt(feedTimes) || 0,
+            waterTotal: parseInt(waterTimes) || 0,
+            feedTotal: parseInt(feedTimes) || 0,
             timer: null,
             timerType: null,
             timeLeft: 0,
@@ -178,29 +219,46 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('slot_states.php')
         .then(res => res.json())
         .then(data => {
+            Object.keys(slotStates).forEach(id => delete slotStates[id]);
             Object.assign(slotStates, data);
-            Object.keys(slotStates).forEach(slotId => {
+            document.querySelectorAll('.farm-slot').forEach(slot => {
+                const slotId = slot.id.replace('slot-', '');
                 const state = slotStates[slotId];
-                const slot = document.getElementById(`slot-${slotId}`);
-                if (!slot) return;
                 const itemImg = slot.querySelector('.slot-item');
                 const actionEl = slot.querySelector('.slot-action');
                 const timerEl = slot.querySelector('.slot-timer');
-                if (itemImg && state.image) {
-                    itemImg.src = state.image;
-                    itemImg.style.display = 'block';
-                }
-                if (actionEl) {
-                    actionEl.addEventListener('click', handleActionClick);
-                }
-                if (state.timerEnd && state.timerEnd > Date.now()) {
-                    state.timeLeft = Math.round((state.timerEnd - Date.now()) / 1000);
-                    startTimer(slotId, state.timerType, true);
+                if (state && state.image) {
+                    if (itemImg) {
+                        itemImg.src = state.image;
+                        itemImg.style.display = 'block';
+                    }
+                    if (actionEl) {
+                        actionEl.addEventListener('click', handleActionClick);
+                    }
+                    if (state.timerEnd && state.timerEnd > Date.now()) {
+                        state.timeLeft = Math.round((state.timerEnd - Date.now()) / 1000);
+                        startTimer(slotId, state.timerType, true);
+                        updateCount(slotId);
+                    } else {
+                        state.timer = null;
+                        state.timerEnd = null;
+                        state.timeLeft = 0;
+                        checkNextAction(slotId);
+                    }
                 } else {
-                    state.timer = null;
-                    state.timerEnd = null;
-                    state.timeLeft = 0;
-                    checkNextAction(slotId);
+                    if (itemImg) {
+                        itemImg.style.display = 'none';
+                        itemImg.src = '';
+                    }
+                    if (actionEl) {
+                        actionEl.style.display = 'none';
+                        actionEl.classList.remove('harvest');
+                    }
+                    if (timerEl) {
+                        timerEl.style.display = 'none';
+                    }
+                    delete slotStates[slotId];
+                    updateCount(slotId);
                 }
             });
         });

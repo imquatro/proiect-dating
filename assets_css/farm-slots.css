@@ -94,6 +94,18 @@
     display: none;
 }
 
+.farm-slot .slot-count {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 1px 3px;
+    font-size: 10px;
+    border-radius: 3px;
+    display: none;
+}
+
 .slot-overlay {
     position: absolute;
     top: 0;
