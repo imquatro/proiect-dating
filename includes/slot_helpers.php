@@ -29,9 +29,22 @@ function slot_image_from_type($type)
 
 function get_slot_image($slotId, $userId = null)
 {
+    global $db;
     if (!$userId) {
         return 'img/default.png';
     }
+
+    // Check if the user has a plant in this slot
+    $stmt = $db->prepare('SELECT f.image_plant FROM user_plants up JOIN farm_items f ON f.id = up.item_id WHERE up.user_id = ? AND up.slot_number = ?');
+    $stmt->execute([$userId, $slotId]);
+    $img = $stmt->fetchColumn();
+    if ($img) {
+        if (strpos($img, 'img/') !== 0) {
+            $img = 'img/' . ltrim($img, '/');
+        }
+        return $img;
+    }
+
     $type = get_slot_type($slotId, $userId);
     return slot_image_from_type($type);
 }
