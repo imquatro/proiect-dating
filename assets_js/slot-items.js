@@ -1,7 +1,12 @@
 // Handles planted item overlays, watering/feeding timers, and harvest prompts
 
 document.addEventListener('DOMContentLoaded', () => {
-    const slotStates = {};
+    // Persist slot states in localStorage so timers survive page reloads
+    const slotStates = JSON.parse(localStorage.getItem('slotStates') || '{}');
+
+    function saveStates() {
+        localStorage.setItem('slotStates', JSON.stringify(slotStates));
+    }
 
     function formatTime(sec) {
         const m = Math.floor(sec / 60);
@@ -37,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionEl.classList.add('harvest');
             actionEl.style.display = 'flex';
         }
+        saveStates();
     }
 
     function startTimer(slotId, type) {
@@ -48,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         state.timerType = type;
         state.timeLeft = type === 'water' ? state.waterInterval : state.feedInterval;
+        state.timerEnd = Date.now() + state.timeLeft * 1000;
+        saveStates();
         if (timerEl) {
             timerEl.style.display = 'block';
         }
@@ -57,10 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTimer(slotId);
 
         state.timer = setInterval(() => {
-            state.timeLeft--;
+            state.timeLeft = Math.max(0, Math.round((state.timerEnd - Date.now()) / 1000));
             if (state.timeLeft <= 0) {
                 clearInterval(state.timer);
                 state.timer = null;
+                state.timerEnd = null;
                 if (timerEl) timerEl.style.display = 'none';
                 checkNextAction(slotId);
             } else {
@@ -85,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     checkNextAction(slotId);
                 }
+                saveStates();
             }
         } else if (action === 'FEED') {
             if (state.feedRemaining > 0) {
@@ -94,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     checkNextAction(slotId);
                 }
+                saveStates();
             }
         }
     }
@@ -122,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             delete slotStates[slotId];
+            saveStates();
             return;
         }
 
@@ -138,14 +150,45 @@ document.addEventListener('DOMContentLoaded', () => {
             actionEl.addEventListener('click', handleActionClick);
         }
         slotStates[slotId] = {
+            image,
             waterInterval: parseInt(waterInterval) || 0,
             feedInterval: parseInt(feedInterval) || 0,
             waterRemaining: parseInt(waterTimes) || 0,
             feedRemaining: parseInt(feedTimes) || 0,
             timer: null,
             timerType: null,
-            timeLeft: 0
+            timeLeft: 0,
+            timerEnd: null
         };
+        saveStates();
         checkNextAction(slotId);
     });
+
+    // Restore existing states on load
+    Object.keys(slotStates).forEach(slotId => {
+        const state = slotStates[slotId];
+        const slot = document.getElementById(`slot-${slotId}`);
+        if (!slot) return;
+        const itemImg = slot.querySelector('.slot-item');
+        const actionEl = slot.querySelector('.slot-action');
+        const timerEl = slot.querySelector('.slot-timer');
+        if (itemImg && state.image) {
+            itemImg.src = state.image;
+            itemImg.style.display = 'block';
+        }
+        if (actionEl) {
+            actionEl.addEventListener('click', handleActionClick);
+        }
+        if (state.timerEnd && state.timerEnd > Date.now()) {
+            state.timeLeft = Math.round((state.timerEnd - Date.now()) / 1000);
+            startTimer(slotId, state.timerType);
+        } else {
+            state.timer = null;
+            state.timerEnd = null;
+            state.timeLeft = 0;
+            checkNextAction(slotId);
+        }
+    });
+
+    window.addEventListener('beforeunload', saveStates);
 });
