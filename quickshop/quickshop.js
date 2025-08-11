@@ -3,10 +3,15 @@ function initQuickShop(container) {
     if (content) {
         content.classList.add('no-scroll');
     }
-    const slotId = container.dataset.slotId;
+const slotId = container.dataset.slotId;
     const overlay = document.getElementById('slot-panel-overlay');
 
-    function plantItem(itemId, price) {
+    function plantItem(itemId, price, itemElem) {
+        const water = itemElem.dataset.water;
+        const feed = itemElem.dataset.feed;
+        const waterTimes = itemElem.dataset.waterTimes;
+        const feedTimes = itemElem.dataset.feedTimes;
+
         fetch('quickshop/plant_item.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -16,7 +21,14 @@ function initQuickShop(container) {
             .then(data => {
                 if (data.success) {
                     const evt = new CustomEvent('slotUpdated', {
-                        detail: { slotId: slotId, image: data.image }
+                        detail: {
+                            slotId: slotId,
+                            image: data.image,
+                            waterInterval: water,
+                            feedInterval: feed,
+                            waterTimes: waterTimes,
+                            feedTimes: feedTimes
+                        }
                     });
                     document.dispatchEvent(evt);
                     if (overlay) {
@@ -36,13 +48,13 @@ function initQuickShop(container) {
         const id = item.dataset.itemId;
         const price = item.dataset.price;
         item.addEventListener('click', () => {
-            plantItem(id, price);
+            plantItem(id, price, item);
         });
         const buyBtn = item.querySelector('.qs-buy');
         if (buyBtn) {
             buyBtn.addEventListener('click', e => {
                 e.stopPropagation();
-                plantItem(id, price);
+                plantItem(id, price, item);
             });
         }
     });

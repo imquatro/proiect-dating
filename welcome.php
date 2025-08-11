@@ -50,7 +50,11 @@ for ($i = 0; $i < $total_slots; $i++) {
     $imgPath = get_slot_image($slot_id, $userId);
     $imgFullPath = __DIR__ . '/' . $imgPath;
     $imgSrc = $imgPath . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
-    echo '<div class="' . $classes . '" id="slot-' . $slot_id . '"><img src="' . $imgSrc . '" alt="slot">';
+    echo '<div class="' . $classes . '" id="slot-' . $slot_id . '">';
+    echo '<img class="slot-base" src="' . $imgSrc . '" alt="slot">';
+    echo '<img class="slot-item" alt="item" style="display:none;">';
+    echo '<div class="slot-action"></div>';
+    echo '<div class="slot-timer"></div>';
     if (!$isUnlocked) {
         if ($slot_id > $total_slots - 5) {
             echo '<div class="slot-overlay"><img src="img/gold.png" alt="Gold"></div>';
@@ -70,6 +74,7 @@ $content = ob_get_clean();
 $pageCss = 'assets_css/welcome.css';
 $extraJs = '<script src="assets_js/mini-profile.js"></script>'
          . '<script src="assets_js/farm-slots.js"></script>'
+         . '<script src="assets_js/slot-items.js"></script>'
          . '<script src="changeslots/slot-panel.js"></script>'
          . '<script src="slotstype/slotstype.js"></script>';
 include 'template.php';

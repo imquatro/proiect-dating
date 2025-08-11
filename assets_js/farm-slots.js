@@ -64,11 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', () => updateSlotSize());
 
     document.addEventListener('slotUpdated', e => {
-        const { slotId, image } = e.detail || {};
-        if (!slotId || !image) return;
-        const slotImg = document.querySelector(`#slot-${slotId} img`);
-        if (slotImg) {
-            slotImg.src = image;
+        const { slotId, image, type } = e.detail || {};
+        if (!slotId || !image || !type) return;
+        const baseImg = document.querySelector(`#slot-${slotId} .slot-base`);
+        if (baseImg) {
+            baseImg.src = image;
         }
     });
 
