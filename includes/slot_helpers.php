@@ -35,7 +35,10 @@ function get_slot_image($slotId, $userId = null)
     }
 
     // Check if the user has a plant in this slot
-    $stmt = $db->prepare('SELECT f.image_plant FROM user_plants up JOIN farm_items f ON f.id = up.item_id WHERE up.user_id = ? AND up.slot_number = ?');
+    $stmt = $db->prepare(
+        'SELECT f.image_plant FROM user_plants up JOIN farm_items f ON f.id = up.item_id '
+        . 'WHERE up.user_id = ? AND up.slot_number = ?'
+    );
     $stmt->execute([$userId, $slotId]);
     $img = $stmt->fetchColumn();
     if ($img) {

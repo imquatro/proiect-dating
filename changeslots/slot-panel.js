@@ -30,8 +30,18 @@ function initSlotPanel(container) {
                 .then(html => {
                     container.innerHTML = html;
                     const panel = container.querySelector('#quickshop-panel');
-                    if (window.initQuickShop && panel) {
-                        window.initQuickShop(panel);
+                    const init = () => {
+                        if (window.initQuickShop && panel) {
+                            window.initQuickShop(panel);
+                        }
+                    };
+                    if (!window.initQuickShop) {
+                        const script = document.createElement('script');
+                        script.src = 'quickshop/quickshop.js';
+                        script.onload = init;
+                        document.head.appendChild(script);
+                    } else {
+                        init();
                     }
                 });
         });

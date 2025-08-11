@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gazdă: 127.0.0.1
--- Timp de generare: aug. 11, 2025 la 07:35 PM
+-- Timp de generare: aug. 11, 2025 la 07:46 PM
 -- Versiune server: 10.4.32-MariaDB
 -- Versiune PHP: 8.0.30
 
@@ -632,7 +632,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `country`, `city`, `age`, `gender`, `description`, `gallery`, `created_at`, `gallery_status`, `is_admin`, `last_active`, `money`, `gold`, `level`) VALUES
 (1, 'quatro', 'serverboost93@gmail.com', '$2y$10$XUP9QK9AU/EgETee1NVvKemxG2xpWWKWzCbg1.AkRIWjmKLbdeLDW', 'Romania', 'Suceava', 31, 'masculin', '╔════༺†༻✝️༺†༻════╗\r\n  JESUS CHRIST IS LORD  \r\n╚════༺†༻✝️༺†༻════╝', 'photo_20250809_230730_64.jpg,photo_20250806_144906_20.jpg', '2025-07-21 21:56:14', 'pending,pending', 1, '2025-08-11 20:33:17', 1000000000, 5000, 120),
-(2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-11 20:34:43', 999990000, 100, 20),
+(2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-11 20:34:43', 999900000, 100, 20),
 (3, 'Catalina', 'albacazapada@gmail.com', '$2y$10$oSYlVjpRUK3.cEJRMinID.DkjFTAzxSVykk0V88SefTegqkIeHsy.', 'Romania', 'suceava', 23, 'feminin', '', 'photo_20250806_144758_94.jpeg,photo_20250806_164731_41.jpeg', '2025-08-04 08:42:45', 'pending,pending', 0, '2025-08-11 20:26:29', 999890000, 100, 1),
 (4, 'Nexus', 'ionut.fidirovici2@gmail.com', '$2y$10$KuZ/MTsqYGSjN9ebtmsfa.6C/ROwsTEcUcWBSpWCGib8p9pjp31t2', 'Romania', 'Radauti', 18, 'masculin', 'Sunt smecher', 'photo_20250806_172705_30.png,photo_20250805_212441_56.png', '2025-08-05 19:24:00', 'pending,pending,pend', 0, '2025-08-10 19:32:45', 999980000, 5000, 120),
 (5, 'test', 'test@gmail.com', '$2y$10$VblPlxQqXNqXsbHtHL/Qd.6oIVy8ZcICXbXyl/zWVi4c7uBafmmTW', 'Romania', 'suceava', 31, 'masculin', NULL, NULL, '2025-08-06 09:19:36', 'pending', 0, NULL, 0, 0, 1),
@@ -685,6 +685,15 @@ INSERT INTO `user_slots` (`user_id`, `slot_number`, `unlocked`, `required_level`
 (1, 9, 1, 15, 'pool'),
 (1, 10, 1, 20, 'pool'),
 (2, 1, 1, 0, 'pool'),
+(2, 2, 1, 0, 'pool'),
+(2, 3, 1, 0, 'pool'),
+(2, 4, 1, 0, 'pool'),
+(2, 5, 1, 0, 'pool'),
+(2, 6, 1, 0, 'tarc'),
+(2, 7, 1, 0, 'tarc'),
+(2, 8, 1, 0, 'tarc'),
+(2, 9, 1, 0, 'tarc'),
+(2, 10, 1, 0, 'tarc'),
 (3, 1, 1, 0, 'pool'),
 (3, 2, 1, 0, 'tarc'),
 (3, 3, 1, 0, 'pool'),
