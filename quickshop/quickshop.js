@@ -6,11 +6,11 @@ function initQuickShop(container) {
     const slotId = container.dataset.slotId;
     const overlay = document.getElementById('slot-panel-overlay');
 
-    function plantItem(itemId) {
+    function plantItem(itemId, price) {
         fetch('quickshop/plant_item.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slot: slotId, item: itemId })
+            body: JSON.stringify({ slot: slotId, item: itemId, price: price })
         })
             .then(res => res.json())
             .then(data => {
@@ -34,14 +34,15 @@ function initQuickShop(container) {
 
     container.querySelectorAll('.quickshop-item').forEach(item => {
         const id = item.dataset.itemId;
+        const price = item.dataset.price;
         item.addEventListener('click', () => {
-            plantItem(id);
+            plantItem(id, price);
         });
         const buyBtn = item.querySelector('.qs-buy');
         if (buyBtn) {
             buyBtn.addEventListener('click', e => {
                 e.stopPropagation();
-                plantItem(id);
+                plantItem(id, price);
             });
         }
     });

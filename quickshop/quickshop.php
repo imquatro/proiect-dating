@@ -23,15 +23,21 @@ ob_start();
 ?>
 <div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div class="quickshop-grid">
-        <?php foreach ($items as $item): ?>
+        <?php foreach ($items as $item): 
+            $imagePlant = $item['image_plant'];
+            if (strpos($imagePlant, 'img/') !== 0) {
+                $imagePlant = 'img/' . ltrim($imagePlant, '/');
+            }
+        ?>
         <div class="quickshop-item"
              data-item-id="<?= $item['id']; ?>"
+             data-price="<?= $item['price']; ?>"
              data-water="<?= $item['water_interval']; ?>"
              data-feed="<?= $item['feed_interval']; ?>"
              data-water-times="<?= $item['water_times']; ?>"
              data-feed-times="<?= $item['feed_times']; ?>"
              data-production="<?= $item['production']; ?>">
-            <img src="../<?= htmlspecialchars($item['image_plant']); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+            <img src="../<?= htmlspecialchars($imagePlant); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
             <div class="qs-info">
                 <span class="qs-price"><?= $item['price']; ?></span>
                 <button class="qs-buy">BUY/USE</button>
