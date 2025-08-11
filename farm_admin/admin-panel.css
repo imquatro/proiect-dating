@@ -20,9 +20,27 @@
     display:flex;
     flex-direction:column;
 }
-#fa-item-form{
+#fa-admin-panel .fa-tab-header{
+    display:flex;
+    gap:10px;
+    margin-bottom:10px;
+}
+#fa-admin-panel .fa-tab-header button{
+    flex:1;
+    padding:8px;
+    cursor:pointer;
+}
+#fa-admin-panel .fa-tab-header button.active{
+    background:#0066cc;
+    color:#fff;
+}
+#fa-admin-panel .fa-tab-content{
+    display:none;
     flex:1;
     overflow-y:auto;
+}
+#fa-admin-panel .fa-tab-content.active{
+    display:block;
 }
 #fa-item-form label{
     display:block;

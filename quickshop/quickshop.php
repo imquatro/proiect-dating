@@ -23,11 +23,12 @@ ob_start();
 ?>
 <div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div class="quickshop-grid">
-        <?php foreach ($items as $item): 
+        <?php foreach ($items as $item):
             $imagePlant = $item['image_plant'];
             if (strpos($imagePlant, 'img/') !== 0) {
                 $imagePlant = 'img/' . ltrim($imagePlant, '/');
             }
+            $imagePrefix = $ajax ? '' : '../';
         ?>
         <div class="quickshop-item"
              data-item-id="<?= $item['id']; ?>"
@@ -37,7 +38,7 @@ ob_start();
              data-water-times="<?= $item['water_times']; ?>"
              data-feed-times="<?= $item['feed_times']; ?>"
              data-production="<?= $item['production']; ?>">
-            <img src="../<?= htmlspecialchars($imagePlant); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+            <img src="<?= $imagePrefix . htmlspecialchars($imagePlant); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
             <div class="qs-info">
                 <span class="qs-price"><?= $item['price']; ?></span>
                 <button class="qs-buy">BUY/USE</button>

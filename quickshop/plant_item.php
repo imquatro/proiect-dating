@@ -20,5 +20,5 @@ if (strpos($image, 'img/') !== 0) {
     $image = 'img/' . ltrim($image, '/');
 }
 // Planting logic would go here (e.g., update database)
-// For now we just return the image path
-echo json_encode(['success' => true, 'image' => '../' . $image]);
+// For now we just return the image path relative to the site root
+echo json_encode(['success' => true, 'image' => $image]);

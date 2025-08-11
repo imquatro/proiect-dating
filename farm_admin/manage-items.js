@@ -1,41 +1,5 @@
-function initAdminPanel(panel){
-    // tab switching
-    const tabs = panel.querySelectorAll('.fa-tab-header button');
-    const contents = panel.querySelectorAll('.fa-tab-content');
-    tabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-            tabs.forEach(b => b.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            const target = panel.querySelector(`#fa-tab-${btn.dataset.tab}`);
-            if (target) target.classList.add('active');
-        });
-    });
-
-    // add-item form behaviour
-    const typeSel = panel.querySelector('select[name="item_type"]');
-    if (typeSel) {
-        const waterFields = panel.querySelectorAll('.water-field');
-        const feedFields = panel.querySelectorAll('.feed-field');
-        const updateFields = () => {
-            if(typeSel.value === 'plant'){
-                waterFields.forEach(el => el.style.display = 'block');
-                feedFields.forEach(el => el.style.display = 'none');
-            }else{
-                waterFields.forEach(el => el.style.display = 'none');
-                feedFields.forEach(el => el.style.display = 'block');
-            }
-        };
-        typeSel.addEventListener('change', updateFields);
-        updateFields();
-    }
-
-    initManageItems(panel);
-}
-
 function initManageItems(panel){
     const select = panel.querySelector('#fa-item-select');
-    if (!select) return;
     const img = panel.querySelector('#fa-item-image');
     const delBtn = panel.querySelector('#fa-delete-item');
 
@@ -71,10 +35,10 @@ function initManageItems(panel){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('open-admin-panel');
+    const btn = document.getElementById('open-manage-items');
     if (!btn) return;
     btn.addEventListener('click', () => {
-        fetch('farm_admin/panel.php?ajax=1')
+        fetch('farm_admin/manage_items.php?ajax=1')
             .then(res => res.text())
             .then(html => {
                 const temp = document.createElement('div');
@@ -86,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
                 document.body.appendChild(panel);
-                initAdminPanel(panel);
+                initManageItems(panel);
             });
     });
 });
