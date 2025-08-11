@@ -1,11 +1,15 @@
 // Handles planted item overlays, watering/feeding timers, and harvest prompts
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Persist slot states in localStorage so timers survive page reloads
-    const slotStates = JSON.parse(localStorage.getItem('slotStates') || '{}');
+    // Persist slot states on the server so they survive logout and long pauses
+    const slotStates = {};
 
     function saveStates() {
-        localStorage.setItem('slotStates', JSON.stringify(slotStates));
+        fetch('slot_states.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(slotStates)
+        });
     }
 
     function formatTime(sec) {
@@ -42,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             actionEl.classList.add('harvest');
             actionEl.style.display = 'flex';
         }
-        saveStates();
     }
 
     function startTimer(slotId, type) {
@@ -72,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.timerEnd = null;
                 if (timerEl) timerEl.style.display = 'none';
                 checkNextAction(slotId);
+                saveStates();
             } else {
                 updateTimer(slotId);
             }
@@ -164,31 +168,36 @@ document.addEventListener('DOMContentLoaded', () => {
         checkNextAction(slotId);
     });
 
-    // Restore existing states on load
-    Object.keys(slotStates).forEach(slotId => {
-        const state = slotStates[slotId];
-        const slot = document.getElementById(`slot-${slotId}`);
-        if (!slot) return;
-        const itemImg = slot.querySelector('.slot-item');
-        const actionEl = slot.querySelector('.slot-action');
-        const timerEl = slot.querySelector('.slot-timer');
-        if (itemImg && state.image) {
-            itemImg.src = state.image;
-            itemImg.style.display = 'block';
-        }
-        if (actionEl) {
-            actionEl.addEventListener('click', handleActionClick);
-        }
-        if (state.timerEnd && state.timerEnd > Date.now()) {
-            state.timeLeft = Math.round((state.timerEnd - Date.now()) / 1000);
-            startTimer(slotId, state.timerType);
-        } else {
-            state.timer = null;
-            state.timerEnd = null;
-            state.timeLeft = 0;
-            checkNextAction(slotId);
-        }
-    });
+    // Load existing states from server on page load
+    fetch('slot_states.php')
+        .then(res => res.json())
+        .then(data => {
+            Object.assign(slotStates, data);
+            Object.keys(slotStates).forEach(slotId => {
+                const state = slotStates[slotId];
+                const slot = document.getElementById(`slot-${slotId}`);
+                if (!slot) return;
+                const itemImg = slot.querySelector('.slot-item');
+                const actionEl = slot.querySelector('.slot-action');
+                const timerEl = slot.querySelector('.slot-timer');
+                if (itemImg && state.image) {
+                    itemImg.src = state.image;
+                    itemImg.style.display = 'block';
+                }
+                if (actionEl) {
+                    actionEl.addEventListener('click', handleActionClick);
+                }
+                if (state.timerEnd && state.timerEnd > Date.now()) {
+                    state.timeLeft = Math.round((state.timerEnd - Date.now()) / 1000);
+                    startTimer(slotId, state.timerType);
+                } else {
+                    state.timer = null;
+                    state.timerEnd = null;
+                    state.timeLeft = 0;
+                    checkNextAction(slotId);
+                }
+            });
+        });
 
     window.addEventListener('beforeunload', saveStates);
 });

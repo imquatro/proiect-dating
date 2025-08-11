@@ -3,7 +3,9 @@
     /* default values will be updated via JavaScript */
     --slot-size: 60px;
     --slot-gap: 1px;
+    --plant-size: 54px;
 }
+
 
 .farm-slots {
     display: flex;
@@ -52,8 +54,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 100%;
-    max-height: 100%;
+    width: var(--plant-size);
+    height: var(--plant-size);
     object-fit: contain;
     pointer-events: none;
     display: none;
