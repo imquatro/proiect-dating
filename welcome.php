@@ -55,6 +55,7 @@ for ($i = 0; $i < $total_slots; $i++) {
     echo '<img class="slot-item" alt="item" style="display:none;">';
     echo '<div class="slot-action"></div>';
     echo '<div class="slot-timer"></div>';
+    echo '<div class="slot-count"></div>';
     if (!$isUnlocked) {
         if ($slot_id > $total_slots - 5) {
             echo '<div class="slot-overlay"><img src="img/gold.png" alt="Gold"></div>';
