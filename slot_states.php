@@ -24,10 +24,20 @@ $db->exec('CREATE TABLE IF NOT EXISTS user_slot_states (
     PRIMARY KEY (user_id, slot_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $input = json_decode(file_get_contents("php://input"), true);
     if (!is_array($input)) {
         $input = [];
+    }
+    // Remove states for slots not present in the payload
+    $slotIds = array_map('intval', array_keys($input));
+    if ($slotIds) {
+        $placeholders = implode(',', array_fill(0, count($slotIds), '?'));
+        $params = array_merge([$userId], $slotIds);
+        $db->prepare("DELETE FROM user_slot_states WHERE user_id = ? AND slot_number NOT IN ($placeholders)")
+           ->execute($params);
+    } else {
+        $db->prepare('DELETE FROM user_slot_states WHERE user_id = ?')->execute([$userId]);
     }
     $stmt = $db->prepare('INSERT INTO user_slot_states (user_id, slot_number, image, water_interval, feed_interval, water_remaining, feed_remaining, timer_type, timer_end)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
