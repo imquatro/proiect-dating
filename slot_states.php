@@ -56,7 +56,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit;
 }
 
-$stmt = $db->prepare('SELECT slot_number, image, water_interval, feed_interval, water_remaining, feed_remaining, timer_type, timer_end FROM user_slot_states WHERE user_id = ?');
+$db->prepare('DELETE FROM user_slot_states WHERE user_id = ? AND slot_number NOT IN (SELECT slot_number FROM user_plants WHERE user_id = ?)')->execute([$userId, $userId]);
+
+$stmt = $db->prepare('SELECT uss.slot_number, uss.image, uss.water_interval, uss.feed_interval, uss.water_remaining, uss.feed_remaining, uss.timer_type, uss.timer_end FROM user_slot_states uss JOIN user_plants up ON up.user_id = uss.user_id AND up.slot_number = uss.slot_number WHERE uss.user_id = ?');
 $stmt->execute([$userId]);
 $states = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
