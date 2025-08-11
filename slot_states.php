@@ -56,7 +56,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit;
 }
 
-$db->prepare('DELETE FROM user_slot_states WHERE user_id = ? AND slot_number NOT IN (SELECT slot_number FROM user_plants WHERE user_id = ?)')->execute([$userId, $userId]);
+$db->prepare('UPDATE user_slot_states SET image = "", water_interval = 0, feed_interval = 0, water_remaining = 0, feed_remaining = 0, timer_type = NULL, timer_end = NULL WHERE user_id = ? AND slot_number NOT IN (SELECT slot_number FROM user_plants WHERE user_id = ?)')->execute([
+    $userId,
+    $userId
+]);
+
+$stmt = $db->prepare('SELECT us.slot_number, us.image, us.water_interval, us.feed_interval, us.water_remaining, us.feed_remaining, us.timer_type, us.timer_end FROM user_slot_states us JOIN user_plants up ON up.user_id = us.user_id AND up.slot_number = us.slot_number WHERE us.user_id = ?');
+$stmt->execute([$userId]);
 
 $stmt = $db->prepare('SELECT uss.slot_number, uss.image, uss.water_interval, uss.feed_interval, uss.water_remaining, uss.feed_remaining, uss.timer_type, uss.timer_end FROM user_slot_states uss JOIN user_plants up ON up.user_id = uss.user_id AND up.slot_number = uss.slot_number WHERE uss.user_id = ?');
 $stmt->execute([$userId]);

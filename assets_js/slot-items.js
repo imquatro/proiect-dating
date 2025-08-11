@@ -32,6 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!state || !slot) return;
         const actionEl = slot.querySelector('.slot-action');
         if (!actionEl) return;
+        if (!state.image) {
+            actionEl.style.display = 'none';
+            return;
+        }
 
         if (state.waterRemaining > 0) {
             actionEl.textContent = 'WATER';
@@ -48,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function startTimer(slotId, type) {
+    function startTimer(slotId, type, resume = false) {
         const state = slotStates[slotId];
         const slot = document.getElementById(`slot-${slotId}`);
         if (!state || !slot) return;
@@ -56,8 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const actionEl = slot.querySelector('.slot-action');
 
         state.timerType = type;
-        state.timeLeft = type === 'water' ? state.waterInterval : state.feedInterval;
-        state.timerEnd = Date.now() + state.timeLeft * 1000;
+        if (!resume) {
+            state.timeLeft = type === 'water' ? state.waterInterval : state.feedInterval;
+            state.timerEnd = Date.now() + state.timeLeft * 1000;
+        }
         saveStates();
         if (timerEl) {
             timerEl.style.display = 'block';
@@ -189,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (state.timerEnd && state.timerEnd > Date.now()) {
                     state.timeLeft = Math.round((state.timerEnd - Date.now()) / 1000);
-                    startTimer(slotId, state.timerType);
+                    startTimer(slotId, state.timerType, true);
                 } else {
                     state.timer = null;
                     state.timerEnd = null;
