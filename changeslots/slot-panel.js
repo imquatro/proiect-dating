@@ -29,8 +29,9 @@ function initSlotPanel(container) {
                 .then(res => res.text())
                 .then(html => {
                     container.innerHTML = html;
-                    if (window.initQuickShop) {
-                        window.initQuickShop(container);
+                    const panel = container.querySelector('#quickshop-panel');
+                    if (window.initQuickShop && panel) {
+                        window.initQuickShop(panel);
                     }
                 });
         });
