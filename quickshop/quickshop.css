@@ -9,32 +9,6 @@
     background: url("../img/bg2.png") center/cover no-repeat;
 }
 
-.qs-slot-view {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 20px;
-}
-
-.qs-slot-view img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.qs-remove {
-    margin: 0 auto 20px;
-    padding: 6px 12px;
-    background: #cc0000;
-    border: none;
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
 .quickshop-grid {
     flex: 1;
     display: grid;

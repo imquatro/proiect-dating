@@ -19,40 +19,16 @@ $stmt = $db->prepare('SELECT id,name,image_plant,price,water_interval,feed_inter
 $stmt->execute([$slotType]);
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Determine current plant in slot
-$plantStmt = $db->prepare('SELECT f.image_plant, f.name FROM user_plants up JOIN farm_items f ON f.id = up.item_id WHERE up.user_id = ? AND up.slot_number = ?');
-$plantStmt->execute([$userId, $slotId]);
-$currentPlant = $plantStmt->fetch(PDO::FETCH_ASSOC);
-$hasPlant = $currentPlant ? true : false;
-
-$slotImage = slot_image_from_type($slotType);
-if (strpos($slotImage, 'img/') !== 0) {
-    $slotImage = 'img/' . ltrim($slotImage, '/');
-}
-$plantImage = $hasPlant ? $currentPlant['image_plant'] : '';
-if ($plantImage && strpos($plantImage, 'img/') !== 0) {
-    $plantImage = 'img/' . ltrim($plantImage, '/');
-}
-$imagePrefix = $ajax ? '' : '../';
-
 ob_start();
 ?>
-<div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>"<?php if ($hasPlant) echo ' data-planted="1"'; ?> style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
-    <div class="qs-slot-view">
-        <img src="<?= $imagePrefix . htmlspecialchars($slotImage); ?>" class="qs-slot-base" alt="Slot">
-        <?php if ($hasPlant): ?>
-        <img src="<?= $imagePrefix . htmlspecialchars($plantImage); ?>" class="qs-slot-plant" alt="<?= htmlspecialchars($currentPlant['name']); ?>">
-        <?php endif; ?>
-    </div>
-    <?php if ($hasPlant): ?>
-        <button class="qs-remove">REMOVE</button>
-    <?php else: ?>
+<div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div class="quickshop-grid">
         <?php foreach ($items as $item):
             $imagePlant = $item['image_plant'];
             if (strpos($imagePlant, 'img/') !== 0) {
                 $imagePlant = 'img/' . ltrim($imagePlant, '/');
             }
+            $imagePrefix = $ajax ? '' : '../';
         ?>
         <div class="quickshop-item"
              data-item-id="<?= $item['id']; ?>"
@@ -70,7 +46,6 @@ ob_start();
         </div>
         <?php endforeach; ?>
     </div>
-    <?php endif; ?>
 </div>
 <?php
 $content = ob_get_clean();

@@ -75,13 +75,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.farm-slot:not(.locked)').forEach(slot => {
         slot.addEventListener('click', () => {
             const slotId = slot.id.replace('slot-', '');
-            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
+            fetch(`quickshop/quickshop.php?slot=${slotId}&ajax=1`)
                 .then(res => res.text())
                 .then(html => {
                     overlay.innerHTML = html;
                     overlay.classList.add('active');
-                    if (window.initSlotPanel) {
-                        window.initSlotPanel(overlay);
+                    if (content) {
+                        content.classList.add('no-scroll');
+                    }
+                    const panel = overlay.querySelector('#quickshop-panel');
+                    const init = () => {
+                        if (window.initQuickShop && panel) {
+                            window.initQuickShop(panel);
+                        }
+                    };
+                    if (!window.initQuickShop) {
+                        const script = document.createElement('script');
+                        script.src = 'quickshop/quickshop.js';
+                        script.onload = init;
+                        document.head.appendChild(script);
+                    } else {
+                        init();
                     }
                 });
         });
