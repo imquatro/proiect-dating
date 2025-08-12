@@ -28,25 +28,36 @@
 
     background: url("../img/bg2.png") center/cover no-repeat;
 }
-#cs-slot-image-wrapper {
+
+.cs-image-wrapper {
     position: relative;
     max-width: 60%;
 }
 
-#cs-slot-image-wrapper img {
+#cs-slot-image {
     width: 100%;
     height: auto;
+    display: block;
 }
 
-#cs-slot-plant {
+#cs-plant-image {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: var(--plant-size, 90%);
-    height: var(--plant-size, 90%);
     transform: translate(-50%, -50%);
-    object-fit: contain;
-    pointer-events: none;
+    width: 80%;
+    height: auto;
+}
+
+#cs-slot-details {
+    margin-top: 10px;
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+}
+
+#cs-slot-details .cs-detail {
+    margin: 2px 0;
 }
 #cs-slot-actions {
     position: absolute;
