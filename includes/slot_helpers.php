@@ -34,27 +34,10 @@ function get_slot_image($slotId, $userId = null)
         return 'img/default.png';
     }
 
-    // Check current slot state for an active plant
+    // Check if the user has a plant in this slot
     $stmt = $db->prepare(
-        'SELECT fi.image_plant FROM user_slots us '
-        . 'JOIN farm_items fi ON fi.id = us.item_id '
-        . 'WHERE us.user_id = ? AND us.slot_number = ?'
-    );
-    $stmt->execute([$userId, $slotId]);
-    $img = $stmt->fetchColumn();
-    if ($img) {
-        if (strpos($img, 'img/') !== 0) {
-            $img = 'img/' . ltrim($img, '/');
-        }
-        return $img;
-    }
-
-    // Fall back to the most recent entry in user_plants for legacy data
-    $stmt = $db->prepare(
-        'SELECT f.image_plant FROM user_plants up '
-        . 'JOIN farm_items f ON f.id = up.item_id '
-        . 'WHERE up.user_id = ? AND up.slot_number = ? '
-        . 'ORDER BY up.planted_at DESC LIMIT 1'
+        'SELECT f.image_plant FROM user_plants up JOIN farm_items f ON f.id = up.item_id '
+        . 'WHERE up.user_id = ? AND up.slot_number = ?'
     );
     $stmt->execute([$userId, $slotId]);
     $img = $stmt->fetchColumn();
@@ -74,6 +57,6 @@ function get_slot_required_level($slotId)
     static $levels = null;
     if ($levels === null) {
         $levels = include __DIR__ . '/slot_levels.php';
-    }
+       }
     return isset($levels[$slotId]) ? $levels[$slotId] : 0;
 }
