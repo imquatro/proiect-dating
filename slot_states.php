@@ -10,84 +10,74 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/includes/db.php';
 $userId = (int)$_SESSION['user_id'];
 
-// Ensure extended columns exist in user_slots
-$columns = [
-    'item_id INT DEFAULT NULL',
-    'plant_date DATETIME DEFAULT NULL',
-    'water_interval INT NOT NULL DEFAULT 0',
-    'feed_interval INT NOT NULL DEFAULT 0',
-    'water_remaining INT NOT NULL DEFAULT 0',
-    'feed_remaining INT NOT NULL DEFAULT 0',
-    'timer_type VARCHAR(10) DEFAULT NULL',
-    'timer_end DATETIME DEFAULT NULL'
-];
-foreach ($columns as $def) {
-    $db->exec("ALTER TABLE user_slots ADD COLUMN IF NOT EXISTS $def");
-}
+// Ensure table exists
+$db->exec('CREATE TABLE IF NOT EXISTS user_slot_states (
+    user_id INT NOT NULL,
+    slot_number INT NOT NULL,
+    image VARCHAR(255) NOT NULL DEFAULT "",
+    water_interval INT NOT NULL DEFAULT 0,
+    feed_interval INT NOT NULL DEFAULT 0,
+    water_remaining INT NOT NULL DEFAULT 0,
+    feed_remaining INT NOT NULL DEFAULT 0,
+    timer_type VARCHAR(10) DEFAULT NULL,
+    timer_end DATETIME DEFAULT NULL,
+    PRIMARY KEY (user_id, slot_number)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $input = json_decode(file_get_contents("php://input"), true);
     if (!is_array($input)) {
         $input = [];
     }
-    $stmt = $db->prepare(
-        'INSERT INTO user_slots (user_id, slot_number, item_id, plant_date, water_interval, feed_interval, water_remaining, feed_remaining, timer_type, timer_end)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE
-            item_id = VALUES(item_id),
-            plant_date = VALUES(plant_date),
-            water_interval = VALUES(water_interval),
-            feed_interval = VALUES(feed_interval),
-            water_remaining = VALUES(water_remaining),
-            feed_remaining = VALUES(feed_remaining),
-            timer_type = VALUES(timer_type),
-            timer_end = VALUES(timer_end)'
-    );
-    foreach ($input as $slotNumber => $data) {
-        $itemId = isset($data['itemId']) ? (int)$data['itemId'] : null;
-        $plantDate = isset($data['plantDate']) ? date('Y-m-d H:i:s', $data['plantDate']/1000) : null;
-        $waterInterval = isset($data['waterInterval']) ? (int)$data['waterInterval'] : 0;
-        $feedInterval = isset($data['feedInterval']) ? (int)$data['feedInterval'] : 0;
-        $waterRemaining = isset($data['waterRemaining']) ? (int)$data['waterRemaining'] : 0;
-        $feedRemaining = isset($data['feedRemaining']) ? (int)$data['feedRemaining'] : 0;
-        $timerType = isset($data['timerType']) ? substr($data['timerType'], 0, 10) : null;
-        $timerEnd = isset($data['timerEnd']) ? date('Y-m-d H:i:s', $data['timerEnd']/1000) : null;
-        $stmt->execute([
-            $userId,
-            (int)$slotNumber,
-            $itemId,
-            $plantDate,
-            $waterInterval,
-            $feedInterval,
-            $waterRemaining,
-            $feedRemaining,
-            $timerType,
-            $timerEnd
-        ]);
+    // Remove states for slots not present in the payload
+    $slotIds = array_map('intval', array_keys($input));
+    if ($slotIds) {
+        $placeholders = implode(',', array_fill(0, count($slotIds), '?'));
+        $params = array_merge([$userId], $slotIds);
+        $db->prepare("DELETE FROM user_slot_states WHERE user_id = ? AND slot_number NOT IN ($placeholders)")
+           ->execute($params);
+    } else {
+        $db->prepare('DELETE FROM user_slot_states WHERE user_id = ?')->execute([$userId]);
+    }
+    $stmt = $db->prepare('INSERT INTO user_slot_states (user_id, slot_number, image, water_interval, feed_interval, water_remaining, feed_remaining, timer_type, timer_end)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE image = VALUES(image), water_interval = VALUES(water_interval), feed_interval = VALUES(feed_interval), water_remaining = VALUES(water_remaining), feed_remaining = VALUES(feed_remaining), timer_type = VALUES(timer_type), timer_end = VALUES(timer_end)');
+    foreach ($input as $slotId => $state) {
+        $image = isset($state['image']) ? $state['image'] : '';
+        $waterInterval = isset($state['waterInterval']) ? (int)$state['waterInterval'] : 0;
+        $feedInterval = isset($state['feedInterval']) ? (int)$state['feedInterval'] : 0;
+        $waterRemaining = isset($state['waterRemaining']) ? (int)$state['waterRemaining'] : 0;
+        $feedRemaining = isset($state['feedRemaining']) ? (int)$state['feedRemaining'] : 0;
+        $timerType = isset($state['timerType']) ? substr($state['timerType'], 0, 10) : null;
+        $timerEnd = isset($state['timerEnd']) ? date('Y-m-d H:i:s', $state['timerEnd']/1000) : null;
+        $stmt->execute([$userId, (int)$slotId, $image, $waterInterval, $feedInterval, $waterRemaining, $feedRemaining, $timerType, $timerEnd]);
     }
     echo json_encode(['status' => 'ok']);
     exit;
 }
 
-$stmt = $db->prepare('SELECT us.slot_number, us.item_id, us.plant_date, us.water_interval, us.feed_interval, us.water_remaining, us.feed_remaining, us.timer_type, us.timer_end, fi.image_plant FROM user_slots us LEFT JOIN farm_items fi ON fi.id = us.item_id WHERE us.user_id = ?');
+$db->prepare('UPDATE user_slot_states SET image = "", water_interval = 0, feed_interval = 0, water_remaining = 0, feed_remaining = 0, timer_type = NULL, timer_end = NULL WHERE user_id = ? AND slot_number NOT IN (SELECT slot_number FROM user_plants WHERE user_id = ?)')->execute([
+    $userId,
+    $userId
+]);
+
+$stmt = $db->prepare('SELECT us.slot_number, us.image, us.water_interval, us.feed_interval, us.water_remaining, us.feed_remaining, us.timer_type, us.timer_end FROM user_slot_states us JOIN user_plants up ON up.user_id = us.user_id AND up.slot_number = us.slot_number WHERE us.user_id = ?');
+$stmt->execute([$userId]);
+
+$stmt = $db->prepare('SELECT uss.slot_number, uss.image, uss.water_interval, uss.feed_interval, uss.water_remaining, uss.feed_remaining, uss.timer_type, uss.timer_end FROM user_slot_states uss JOIN user_plants up ON up.user_id = uss.user_id AND up.slot_number = uss.slot_number WHERE uss.user_id = ?');
 $stmt->execute([$userId]);
 $states = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $slot = (int)$row['slot_number'];
-    $img = $row['image_plant'];
-    if ($img && strpos($img, 'img/') !== 0) {
-        $img = 'img/' . ltrim($img, '/');
-    }
+    $timerEnd = $row['timer_end'] ? (strtotime($row['timer_end']) * 1000) : null;
     $states[$slot] = [
-        'itemId' => $row['item_id'] !== null ? (int)$row['item_id'] : null,
-        'plantDate' => $row['plant_date'] ? (strtotime($row['plant_date']) * 1000) : null,
-        'image' => $img,
+        'image' => $row['image'],
         'waterInterval' => (int)$row['water_interval'],
         'feedInterval' => (int)$row['feed_interval'],
         'waterRemaining' => (int)$row['water_remaining'],
         'feedRemaining' => (int)$row['feed_remaining'],
         'timerType' => $row['timer_type'],
-        'timerEnd' => $row['timer_end'] ? (strtotime($row['timer_end']) * 1000) : null
+        'timerEnd' => $timerEnd
     ];
 }
 echo json_encode($states);
