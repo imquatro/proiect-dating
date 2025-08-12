@@ -52,7 +52,7 @@ ob_start();
     </div>
 </div>
 <hr class="farm-divider">
-<div class="farm-slots" data-user="<?= $visitId ?>">
+<div class="farm-slots">
 <?php
 $total_slots = 35;
 $slots_per_row = 5;
@@ -60,11 +60,7 @@ for ($i = 0; $i < $total_slots; $i++) {
     if ($i % $slots_per_row === 0) echo '<div class="farm-row">';
     $slot_id = $i + 1;
     $data = $slotData[$slot_id] ?? ['unlocked' => 0, 'required_level' => 0];
-    $required = get_slot_required_level($slot_id);
     $isUnlocked = !empty($data['unlocked']);
-    if (!$isUnlocked && $required > 0 && $level >= $required && $slot_id <= $total_slots - 5) {
-        $isUnlocked = true;
-    }
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
     $imgPath = get_slot_image($slot_id, $visitId);
     $imgFullPath = __DIR__ . '/../' . $imgPath;
@@ -74,6 +70,7 @@ for ($i = 0; $i < $total_slots; $i++) {
         if ($slot_id > $total_slots - 5) {
             echo '<div class="slot-overlay"><img src="img/gold.png" alt="Gold"></div>';
         } else {
+            $required = get_slot_required_level($slot_id);
             echo '<div class="slot-overlay">Level ' . htmlspecialchars($required) . '</div>';
         }
     }

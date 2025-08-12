@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = document.querySelector('.content');
     const divider = document.querySelector('.farm-divider');
     const farmSlots = document.querySelector('.farm-slots');
-    const visitId = farmSlots ? farmSlots.dataset.user : null;
 
     function updateSlotSize(iter = 0) {
         if (!farmSlots) return;
@@ -49,43 +48,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateSlotSize();
     window.addEventListener('resize', () => updateSlotSize());
-
-    function refreshSlots() {
-        if (!visitId) return;
-        fetch(`vizitfarm/slots_state.php?id=${visitId}`)
-            .then(res => res.json())
-            .then(data => {
-                if (!data || !data.slots) return;
-                data.slots.forEach(slot => {
-                    const slotEl = document.getElementById(`slot-${slot.id}`);
-                    if (!slotEl) return;
-                    const img = slotEl.querySelector('img');
-                    if (img && img.getAttribute('src') !== slot.image) {
-                        img.setAttribute('src', slot.image);
-                    }
-                    if (slot.unlocked) {
-                        slotEl.classList.remove('locked');
-                        const overlay = slotEl.querySelector('.slot-overlay');
-                        if (overlay) overlay.remove();
-                    } else {
-                        slotEl.classList.add('locked');
-                        let overlay = slotEl.querySelector('.slot-overlay');
-                        if (!overlay) {
-                            overlay = document.createElement('div');
-                            overlay.className = 'slot-overlay';
-                            slotEl.appendChild(overlay);
-                        }
-                        if (slot.premium) {
-                            overlay.innerHTML = '<img src="img/gold.png" alt="Gold">';
-                        } else {
-                            overlay.textContent = `Level ${slot.required}`;
-                        }
-                    }
-                });
-            })
-            .catch(err => console.error(err));
-    }
-
-    refreshSlots();
-    setInterval(refreshSlots, 3000);
 });
