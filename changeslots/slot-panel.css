@@ -28,9 +28,20 @@
 
     background: url("../img/bg2.png") center/cover no-repeat;
 }
-#cs-slot-image {
+#cs-slot-image-wrapper {
+    position: relative;
     max-width: 60%;
+}
+
+#cs-slot-image-wrapper img {
+    width: 100%;
     height: auto;
+}
+
+#cs-slot-plant {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 #cs-slot-actions {
     position: absolute;
