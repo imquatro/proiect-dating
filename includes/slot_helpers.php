@@ -34,22 +34,35 @@ function get_slot_image($slotId, $userId = null)
         return 'img/default.png';
     }
 
-    try {
+    // Check current slot state for an active plant
     $stmt = $db->prepare(
-        'SELECT f.image_plant FROM user_plants up JOIN farm_items f ON f.id = up.item_id '
+        'SELECT fi.image_plant FROM user_slots us '
+        . 'JOIN farm_items fi ON fi.id = us.item_id '
+        . 'WHERE us.user_id = ? AND us.slot_number = ?'
+    );
+    $stmt->execute([$userId, $slotId]);
+    $img = $stmt->fetchColumn();
+    if ($img) {
+        if (strpos($img, 'img/') !== 0) {
+            $img = 'img/' . ltrim($img, '/');
+        }
+        return $img;
+    }
+
+    // Fall back to the most recent entry in user_plants for legacy data
+    $stmt = $db->prepare(
+        'SELECT f.image_plant FROM user_plants up '
+        . 'JOIN farm_items f ON f.id = up.item_id '
         . 'WHERE up.user_id = ? AND up.slot_number = ? '
         . 'ORDER BY up.planted_at DESC LIMIT 1'
     );
-        $stmt->execute([$userId, $slotId]);
-        $img = $stmt->fetchColumn();
-        if ($img) {
-            if (strpos($img, 'img/') !== 0) {
-                $img = 'img/' . ltrim($img, '/');
-            }
-            return $img;
+    $stmt->execute([$userId, $slotId]);
+    $img = $stmt->fetchColumn();
+    if ($img) {
+        if (strpos($img, 'img/') !== 0) {
+            $img = 'img/' . ltrim($img, '/');
         }
-    } catch (PDOException $e) {
-        // Column may not exist yet; fall back to slot type image
+        return $img;
     }
 
     $type = get_slot_type($slotId, $userId);
