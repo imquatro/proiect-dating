@@ -3,8 +3,15 @@ function initQuickShop(container) {
     if (content) {
         content.classList.add('no-scroll');
     }
-const slotId = container.dataset.slotId;
+    const slotId = container.dataset.slotId;
     const overlay = document.getElementById('slot-panel-overlay');
+    if (container.dataset.planted === '1') {
+        const grid = container.querySelector('.quickshop-grid');
+        if (grid) {
+            grid.style.display = 'none';
+        }
+        return;
+    }
 
     function plantItem(itemId, price, itemElem) {
         const water = itemElem.dataset.water;

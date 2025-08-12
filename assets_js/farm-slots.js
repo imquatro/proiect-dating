@@ -83,6 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (content) {
                         content.classList.add('no-scroll');
                     }
+                    if (!document.getElementById('quickshop-css')) {
+                        const link = document.createElement('link');
+                        link.id = 'quickshop-css';
+                        link.rel = 'stylesheet';
+                        link.href = 'quickshop/quickshop.css';
+                        document.head.appendChild(link);
+                    }
                     const panel = overlay.querySelector('#quickshop-panel');
                     const init = () => {
                         if (window.initQuickShop && panel) {
