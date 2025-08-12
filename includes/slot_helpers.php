@@ -34,18 +34,22 @@ function get_slot_image($slotId, $userId = null)
         return 'img/default.png';
     }
 
-    // Check if the user has a plant in this slot
+    try {
     $stmt = $db->prepare(
         'SELECT f.image_plant FROM user_plants up JOIN farm_items f ON f.id = up.item_id '
-        . 'WHERE up.user_id = ? AND up.slot_number = ?'
+        . 'WHERE up.user_id = ? AND up.slot_number = ? '
+        . 'ORDER BY up.planted_at DESC LIMIT 1'
     );
-    $stmt->execute([$userId, $slotId]);
-    $img = $stmt->fetchColumn();
-    if ($img) {
-        if (strpos($img, 'img/') !== 0) {
-            $img = 'img/' . ltrim($img, '/');
+        $stmt->execute([$userId, $slotId]);
+        $img = $stmt->fetchColumn();
+        if ($img) {
+            if (strpos($img, 'img/') !== 0) {
+                $img = 'img/' . ltrim($img, '/');
+            }
+            return $img;
         }
-        return $img;
+    } catch (PDOException $e) {
+        // Column may not exist yet; fall back to slot type image
     }
 
     $type = get_slot_type($slotId, $userId);
@@ -57,6 +61,6 @@ function get_slot_required_level($slotId)
     static $levels = null;
     if ($levels === null) {
         $levels = include __DIR__ . '/slot_levels.php';
-       }
+    }
     return isset($levels[$slotId]) ? $levels[$slotId] : 0;
 }
