@@ -10,8 +10,11 @@ $bgImagePath = 'img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
 
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/slot_helpers.php';
 $userId = $_SESSION['user_id'];
 $slotType = get_slot_type($slotId, $userId);
+
 
 // Check if slot already has a plant
 $stmt = $db->prepare('SELECT 1 FROM user_plants WHERE user_id = ? AND slot_number = ?');
