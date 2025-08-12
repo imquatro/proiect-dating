@@ -68,8 +68,9 @@
 .cs-slot-btn {
     width: 80px;
     height: 80px;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -77,6 +78,7 @@
     font-size: 14px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
 }
 .cs-slot-btn i {
     font-size: 24px;

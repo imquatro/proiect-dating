@@ -41,6 +41,8 @@ if ($hasPlant) {
     $feedTimes = (int)$plantRow['feed_times'];
     $waterRemaining = $plantRow['water_remaining'] !== null ? (int)$plantRow['water_remaining'] : $waterTimes;
     $feedRemaining = $plantRow['feed_remaining'] !== null ? (int)$plantRow['feed_remaining'] : $feedTimes;
+    $waterDone = $waterTimes - $waterRemaining;
+    $feedDone = $feedTimes - $feedRemaining;
 }
 
 $bgImagePath = 'img/bg2.png';
@@ -60,10 +62,10 @@ ob_start();
     <?php if ($hasPlant): ?>
         <div id="cs-slot-details">
             <?php if ($waterTimes > 0): ?>
-                <div class="cs-detail">Udari: <?php echo $waterRemaining; ?>/<?php echo $waterTimes; ?></div>
+                <div class="cs-detail">Waterings: <?php echo $waterDone; ?>/<?php echo $waterTimes; ?> (<?php echo $waterRemaining; ?> left)</div>
             <?php endif; ?>
             <?php if ($feedTimes > 0): ?>
-                <div class="cs-detail">Hraniri: <?php echo $feedRemaining; ?>/<?php echo $feedTimes; ?></div>
+                <div class="cs-detail">Feedings: <?php echo $feedDone; ?>/<?php echo $feedTimes; ?> (<?php echo $feedRemaining; ?> left)</div>
             <?php endif; ?>
         </div>
     <?php endif; ?>
