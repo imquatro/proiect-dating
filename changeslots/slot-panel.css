@@ -40,8 +40,13 @@
 
 #cs-slot-plant {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    width: 20%;
+    height: 20%;
+    transform: translate(-50%, -50%);
+    object-fit: contain;
+    pointer-events: none;
 }
 #cs-slot-actions {
     position: absolute;
