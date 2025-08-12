@@ -24,12 +24,19 @@ function initSlotPanel(container) {
         });
     }
 
-     if (shopBtn) {
+    if (shopBtn) {
         shopBtn.addEventListener('click', () => {
             fetch(`quickshop/quickshop.php?slot=${slotId}&ajax=1`)
                 .then(res => res.text())
                 .then(html => {
                     container.innerHTML = html;
+                    if (!document.getElementById('quickshop-css')) {
+                        const link = document.createElement('link');
+                        link.id = 'quickshop-css';
+                        link.rel = 'stylesheet';
+                        link.href = 'quickshop/quickshop.css';
+                        document.head.appendChild(link);
+                    }
                     const panel = container.querySelector('#quickshop-panel');
                     const init = () => {
                         if (window.initQuickShop && panel) {

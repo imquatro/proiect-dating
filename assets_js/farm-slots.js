@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.farm-slot:not(.locked)').forEach(slot => {
         slot.addEventListener('click', () => {
             const slotId = slot.id.replace('slot-', '');
-            fetch(`quickshop/quickshop.php?slot=${slotId}&ajax=1`)
+            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
                 .then(res => res.text())
                 .then(html => {
                     overlay.innerHTML = html;
@@ -83,22 +83,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (content) {
                         content.classList.add('no-scroll');
                     }
-                    if (!document.getElementById('quickshop-css')) {
+                    if (!document.getElementById('slot-panel-css')) {
                         const link = document.createElement('link');
-                        link.id = 'quickshop-css';
+                        link.id = 'slot-panel-css';
                         link.rel = 'stylesheet';
-                        link.href = 'quickshop/quickshop.css';
+                        link.href = 'changeslots/slot-panel.css';
                         document.head.appendChild(link);
                     }
-                    const panel = overlay.querySelector('#quickshop-panel');
+                    const panel = overlay.querySelector('#cs-slot-panel');
                     const init = () => {
-                        if (window.initQuickShop && panel) {
-                            window.initQuickShop(panel);
+                        if (window.initSlotPanel && panel) {
+                            window.initSlotPanel(panel);
                         }
                     };
-                    if (!window.initQuickShop) {
+                    if (!window.initSlotPanel) {
                         const script = document.createElement('script');
-                        script.src = 'quickshop/quickshop.js';
+                        script.src = 'changeslots/slot-panel.js';
                         script.onload = init;
                         document.head.appendChild(script);
                     } else {

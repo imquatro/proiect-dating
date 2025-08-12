@@ -10,8 +10,6 @@ $bgImagePath = 'img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
 
-require_once '../includes/db.php';
-include_once '../includes/slot_helpers.php';
 $userId = $_SESSION['user_id'];
 $slotType = get_slot_type($slotId, $userId);
 
@@ -24,8 +22,6 @@ $stmt = $db->prepare('SELECT id,name,image_plant,price,water_interval,feed_inter
 $stmt->execute([$slotType]);
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-ob_start();
-?>
 ob_start();
 ?>
 <div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
