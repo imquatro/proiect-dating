@@ -34,6 +34,15 @@ if (!empty($user['gallery'])) {
 $username = $user['username'];
 $level = isset($user['level']) ? (int)$user['level'] : 1;
 
+// Check if the visiting user is friends with the profile owner
+$isFriend = false;
+if (isset($_SESSION['user_id'])) {
+    $currentId = (int)$_SESSION['user_id'];
+    $friendStmt = $db->prepare('SELECT 1 FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = "accepted"');
+    $friendStmt->execute([$currentId, $visitId, $visitId, $currentId]);
+    $isFriend = (bool)$friendStmt->fetchColumn();
+}
+
 $slotData = [];
 $slotStmt = $db->prepare('SELECT ds.slot_number, COALESCE(us.unlocked, ds.unlocked) AS unlocked, COALESCE(us.required_level, ds.required_level) AS required_level FROM default_slots ds LEFT JOIN user_slots us ON us.user_id = ? AND us.slot_number = ds.slot_number');
 $slotStmt->execute([$visitId]);
@@ -65,7 +74,11 @@ for ($i = 0; $i < $total_slots; $i++) {
     $imgPath = get_slot_image($slot_id, $visitId);
     $imgFullPath = __DIR__ . '/../' . $imgPath;
     $imgSrc = $imgPath . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
-    echo '<div class="' . $classes . '" id="slot-' . $slot_id . '"><img src="' . $imgSrc . '" alt="slot">';
+    echo '<div class="' . $classes . '" id="slot-' . $slot_id . '">';
+    echo '<img class="slot-base" src="' . $imgSrc . '" alt="slot">';
+    echo '<img class="slot-item" alt="item" style="display:none;">';
+    echo '<div class="slot-action"></div>';
+    echo '<div class="slot-timer"></div>';
     if (!$isUnlocked) {
         if ($slot_id > $total_slots - 5) {
             echo '<div class="slot-overlay"><img src="img/gold.png" alt="Gold"></div>';
@@ -83,7 +96,9 @@ if ($total_slots % $slots_per_row !== 0) echo '</div>';
 <?php
 $content = ob_get_clean();
 $pageCss = 'vizitfarm/vizitfarm.css';
-$extraJs = '<script src="vizitfarm/vizitfarm.js"></script>';
+$extraJs = '<script>window.isVisitor = true; window.visitId = ' . $visitId . '; window.canInteract = ' . ($isFriend ? 'true' : 'false') . ';</script>'
+         . '<script src="vizitfarm/vizitfarm.js"></script>'
+         . '<script src="assets_js/slot-items.js"></script>';
 $activePage = '';
 $baseHref = '../';
 chdir('..');
