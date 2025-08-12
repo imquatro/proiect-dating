@@ -15,13 +15,20 @@ include_once '../includes/slot_helpers.php';
 $userId = $_SESSION['user_id'];
 $slotType = get_slot_type($slotId, $userId);
 
+// Check if slot already has a plant
+$stmt = $db->prepare('SELECT 1 FROM user_plants WHERE user_id = ? AND slot_number = ?');
+$stmt->execute([$userId, $slotId]);
+$hasPlant = $stmt->fetchColumn() ? 1 : 0;
+
 $stmt = $db->prepare('SELECT id,name,image_plant,price,water_interval,feed_interval,water_times,feed_times,production FROM farm_items WHERE slot_type = ? AND active = 1');
 $stmt->execute([$slotType]);
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ob_start();
 ?>
-<div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
+ob_start();
+?>
+<div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <div class="quickshop-grid">
         <?php foreach ($items as $item):
             $imagePlant = $item['image_plant'];

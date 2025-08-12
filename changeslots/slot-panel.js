@@ -6,6 +6,7 @@ function initSlotPanel(container) {
 
     const changeBtn = container.querySelector('#cs-slot-change');
     const shopBtn = container.querySelector('#cs-slot-shop');
+    const removeBtn = container.querySelector('#cs-slot-remove');
     const slotImage = container.querySelector('#cs-slot-image');
     const slotId = slotImage ? slotImage.alt.replace(/\D/g, '') : '';
 
@@ -23,7 +24,7 @@ function initSlotPanel(container) {
         });
     }
 
-    if (shopBtn) {
+     if (shopBtn) {
         shopBtn.addEventListener('click', () => {
             fetch(`quickshop/quickshop.php?slot=${slotId}&ajax=1`)
                 .then(res => res.text())
@@ -47,8 +48,39 @@ function initSlotPanel(container) {
         });
     }
 
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+            fetch('quickshop/remove_item.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slot: slotId })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const overlay = container.parentElement;
+                        const evt = new CustomEvent('slotUpdated', {
+                            detail: { slotId: slotId, type: 'remove' }
+                        });
+                        document.dispatchEvent(evt);
+                        if (overlay) {
+                            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
+                                .then(res => res.text())
+                                .then(html => {
+                                    overlay.innerHTML = html;
+                                    const panel = overlay.querySelector('#cs-slot-panel');
+                                    if (window.initSlotPanel && panel) {
+                                        window.initSlotPanel(panel);
+                                    }
+                                });
+                        }
+                    }
+                });
+        });
+    }
+
     container.querySelectorAll('.cs-slot-btn').forEach(btn => {
-        if (btn !== changeBtn && btn !== shopBtn) {
+        if (btn !== changeBtn && btn !== shopBtn && btn !== removeBtn) {
             btn.addEventListener('click', () => {
                 alert('Functionality coming soon');
             });

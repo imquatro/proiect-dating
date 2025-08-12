@@ -10,6 +10,9 @@ function initQuickShop(container) {
         if (grid) {
             grid.style.display = 'none';
         }
+        container.querySelectorAll('.cs-slot-btn').forEach(btn => {
+            btn.style.display = 'none';
+        });
         return;
     }
 
