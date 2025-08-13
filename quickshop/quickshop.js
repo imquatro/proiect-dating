@@ -23,7 +23,7 @@ function initQuickShop(container) {
             timer = setTimeout(() => {
                 const uid = helper.dataset.userId;
                 if (uid) {
-                    window.location.href = `vizitfarm/vizitfarm.php?id=${uid}`;
+                    window.location.href = `${baseUrl}vizitfarm/vizitfarm.php?id=${uid}`;
                 }
             }, 1000);
         };
@@ -41,7 +41,7 @@ function initQuickShop(container) {
         const waterTimes = itemElem.dataset.waterTimes;
         const feedTimes = itemElem.dataset.feedTimes;
 
-        fetch('quickshop/plant_item.php', {
+        fetch(`${baseUrl}quickshop/plant_item.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ slot: slotId, item: itemId, price: price })
