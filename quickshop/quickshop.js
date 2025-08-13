@@ -3,7 +3,7 @@ function initQuickShop(container) {
     if (content) {
         content.classList.add('no-scroll');
     }
-    const slotId = container.dataset.slotId;
+      const slotId = container.dataset.slotId;
     const overlay = document.getElementById('slot-panel-overlay');
     if (container.dataset.planted === '1') {
         const grid = container.querySelector('.quickshop-grid');
@@ -14,6 +14,25 @@ function initQuickShop(container) {
             btn.style.display = 'none';
         });
         return;
+    }
+
+    const helper = container.querySelector('.qs-helper');
+    if (helper) {
+        let timer;
+        const start = () => {
+            timer = setTimeout(() => {
+                const uid = helper.dataset.userId;
+                if (uid) {
+                    window.location.href = `vizitfarm/vizitfarm.php?id=${uid}`;
+                }
+            }, 1000);
+        };
+        const cancel = () => clearTimeout(timer);
+        helper.addEventListener('mousedown', start);
+        helper.addEventListener('touchstart', start);
+        ['mouseup', 'mouseleave', 'mouseout', 'touchend', 'touchcancel'].forEach(ev => {
+            helper.addEventListener(ev, cancel);
+        });
     }
 
     function plantItem(itemId, price, itemElem) {
