@@ -45,12 +45,19 @@ $db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (
     owner_id INT NOT NULL,
     slot_number INT NOT NULL,
     helper_id INT NOT NULL,
-    clicks INT NOT NULL DEFAULT 1,
+    water_clicks INT NOT NULL DEFAULT 0,
+    feed_clicks INT NOT NULL DEFAULT 0,
+    last_action_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (owner_id, slot_number, helper_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
-$hstmt = $db->prepare('INSERT INTO slot_helpers (owner_id, slot_number, helper_id, clicks) VALUES (?, ?, ?, 1)
-    ON DUPLICATE KEY UPDATE clicks = clicks + 1');
+if ($action === 'water') {
+    $hstmt = $db->prepare('INSERT INTO slot_helpers (owner_id, slot_number, helper_id, water_clicks, feed_clicks, last_action_at) VALUES (?, ?, ?, 1, 0, NOW())
+        ON DUPLICATE KEY UPDATE water_clicks = water_clicks + 1, last_action_at = NOW()');
+} else {
+    $hstmt = $db->prepare('INSERT INTO slot_helpers (owner_id, slot_number, helper_id, water_clicks, feed_clicks, last_action_at) VALUES (?, ?, ?, 0, 1, NOW())
+        ON DUPLICATE KEY UPDATE feed_clicks = feed_clicks + 1, last_action_at = NOW()');
+}
 $hstmt->execute([$ownerId, $slotId, $userId]);
 
 echo json_encode(['status' => 'ok']);

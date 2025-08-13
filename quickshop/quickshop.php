@@ -53,11 +53,13 @@ if ($hasPlant) {
         owner_id INT NOT NULL,
         slot_number INT NOT NULL,
         helper_id INT NOT NULL,
-        clicks INT NOT NULL DEFAULT 1,
+        water_clicks INT NOT NULL DEFAULT 0,
+        feed_clicks INT NOT NULL DEFAULT 0,
+        last_action_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (owner_id, slot_number, helper_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
-    $hstmt = $db->prepare('SELECT h.helper_id, h.clicks, u.gallery FROM slot_helpers h JOIN users u ON u.id = h.helper_id WHERE h.owner_id = ? AND h.slot_number = ? ORDER BY h.clicks DESC');
+    $hstmt = $db->prepare('SELECT h.helper_id, h.water_clicks, h.feed_clicks, u.gallery FROM slot_helpers h JOIN users u ON u.id = h.helper_id WHERE h.owner_id = ? AND h.slot_number = ? ORDER BY h.last_action_at DESC');
     $hstmt->execute([$userId, $slotId]);
     while ($row = $hstmt->fetch(PDO::FETCH_ASSOC)) {
         $avatar = 'default-avatar.png';
@@ -70,7 +72,7 @@ if ($hasPlant) {
                 }
             }
         }
-        $helpers[] = ['id' => $row['helper_id'], 'avatar' => $avatar, 'clicks' => $row['clicks']];
+        $helpers[] = ['id' => $row['helper_id'], 'avatar' => $avatar, 'water' => $row['water_clicks'], 'feed' => $row['feed_clicks']];
     }
 }
 
@@ -84,18 +86,18 @@ ob_start();
         <img src="<?= $imagePrefix . htmlspecialchars(strpos($plantImage, 'img/') === 0 ? $plantImage : 'img/' . ltrim($plantImage, '/')); ?>" alt="Plant">
         <?php endif; ?>
     </div>
+    <div id="qs-helper-bar">
+        <?php foreach ($helpers as $h): ?>
+        <div class="qs-helper" data-user-id="<?= $h['id']; ?>">
+            <img src="<?= $imagePrefix . htmlspecialchars($h['avatar']); ?>" alt="Helper">
+            <span class="qs-count">W: <?= $h['water']; ?> F: <?= $h['feed']; ?></span>
+        </div>
+        <?php endforeach; ?>
+    </div>
     <div id="qs-helper-panel">
         <div class="qs-progress">
-            <div class="qs-progress-item">Udări <?= $progress ? $progress['water_done'] : 0; ?>/<?= $progress ? $progress['water_total'] : 0; ?></div>
-            <div class="qs-progress-item">Hraniri <?= $progress ? $progress['feed_done'] : 0; ?>/<?= $progress ? $progress['feed_total'] : 0; ?></div>
-        </div>
-        <div class="qs-helper-grid">
-            <?php foreach ($helpers as $h): ?>
-            <div class="qs-helper" data-user-id="<?= $h['id']; ?>">
-                <img src="<?= $imagePrefix . htmlspecialchars($h['avatar']); ?>" alt="Helper">
-                <span class="qs-count">Hraniri: <?= $h['clicks']; ?></span>
-            </div>
-            <?php endforeach; ?>
+            <div class="qs-progress-item">Watered <?= $progress ? $progress['water_done'] : 0; ?>/<?= $progress ? $progress['water_total'] : 0; ?></div>
+            <div class="qs-progress-item">Fed <?= $progress ? $progress['feed_done'] : 0; ?>/<?= $progress ? $progress['feed_total'] : 0; ?></div>
         </div>
     </div>
     <div class="quickshop-grid">
