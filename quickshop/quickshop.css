@@ -66,3 +66,26 @@
     cursor: pointer;
     font-size: 12px;
 }
+
+#qs-helper-bar {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.qs-helper {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.qs-helper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

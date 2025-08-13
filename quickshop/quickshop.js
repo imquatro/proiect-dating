@@ -16,6 +16,25 @@ function initQuickShop(container) {
         return;
     }
 
+    const helper = container.querySelector('.qs-helper');
+    if (helper) {
+        let timer;
+        const start = () => {
+            timer = setTimeout(() => {
+                const uid = helper.dataset.userId;
+                if (uid) {
+                    window.location.href = `vizitfarm/vizitfarm.php?id=${uid}`;
+                }
+            }, 1000);
+        };
+        const cancel = () => clearTimeout(timer);
+        helper.addEventListener('mousedown', start);
+        helper.addEventListener('touchstart', start);
+        ['mouseup', 'mouseleave', 'mouseout', 'touchend', 'touchcancel'].forEach(ev => {
+            helper.addEventListener(ev, cancel);
+        });
+    }
+
     function plantItem(itemId, price, itemElem) {
         const water = itemElem.dataset.water;
         const feed = itemElem.dataset.feed;

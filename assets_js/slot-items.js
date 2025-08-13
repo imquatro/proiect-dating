@@ -17,6 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function recordHelp(action) {
+        if (!isVisitor || !visitId) return;
+        fetch('record_help.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `owner_id=${visitId}&action=${encodeURIComponent(action)}`
+        });
+    }
+
     function formatTime(sec) {
         const m = Math.floor(sec / 60);
         const s = sec % 60;
@@ -113,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkNextAction(slotId);
                 }
                 saveStates();
+                recordHelp('water');
             }
         } else if (action === 'FEED') {
             if (state.feedRemaining > 0) {
@@ -123,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkNextAction(slotId);
                 }
                 saveStates();
+                recordHelp('feed');
             }
         }
     }
