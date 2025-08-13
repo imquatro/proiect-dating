@@ -16,8 +16,8 @@ function initQuickShop(container) {
         return;
     }
 
-    const helper = container.querySelector('.qs-helper');
-    if (helper) {
+    const helpers = container.querySelectorAll('.qs-helper');
+    helpers.forEach(helper => {
         let timer;
         const start = () => {
             timer = setTimeout(() => {
@@ -33,7 +33,7 @@ function initQuickShop(container) {
         ['mouseup', 'mouseleave', 'mouseout', 'touchend', 'touchcancel'].forEach(ev => {
             helper.addEventListener(ev, cancel);
         });
-    }
+    });
 
     function plantItem(itemId, price, itemElem) {
         const water = itemElem.dataset.water;

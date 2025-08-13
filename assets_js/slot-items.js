@@ -17,12 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function recordHelp(action) {
+    function recordHelp(action, slotId) {
         if (!isVisitor || !visitId) return;
         fetch('record_help.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `owner_id=${visitId}&action=${encodeURIComponent(action)}`
+            body: `owner_id=${visitId}&slot_id=${slotId}&action=${encodeURIComponent(action)}`
         });
     }
 
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.waterRemaining > 0) {
                 state.waterRemaining--;
                 if (state.waterInterval > 0) {
-                    startTimer(slotId, 'water');
+                    startTimer(slotId, 'water, slotId');
                 } else {
                     checkNextAction(slotId);
                 }
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkNextAction(slotId);
                 }
                 saveStates();
-                recordHelp('feed');
+                recordHelp('feed, slotId');
             }
         }
     }

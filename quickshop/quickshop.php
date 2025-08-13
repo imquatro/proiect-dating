@@ -16,41 +16,57 @@ $userId = $_SESSION['user_id'];
 $slotType = get_slot_type($slotId, $userId);
 
 // Check if slot already has a plant
-$stmt = $db->prepare('SELECT 1 FROM user_plants WHERE user_id = ? AND slot_number = ?');
+$stmt = $db->prepare('SELECT item_id FROM user_plants WHERE user_id = ? AND slot_number = ?');
 $stmt->execute([$userId, $slotId]);
-$hasPlant = $stmt->fetchColumn() ? 1 : 0;
+$plantRow = $stmt->fetch(PDO::FETCH_ASSOC);
+$hasPlant = $plantRow ? 1 : 0;
 
 $stmt = $db->prepare('SELECT id,name,image_plant,price,water_interval,feed_interval,water_times,feed_times,production FROM farm_items WHERE slot_type = ? AND active = 1');
 $stmt->execute([$slotType]);
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Last helper info
-$db->exec('CREATE TABLE IF NOT EXISTS user_last_helpers (
-    owner_id INT PRIMARY KEY,
-    helper_id INT NOT NULL,
-    action ENUM("water","feed") NOT NULL,
-    helped_at DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
-$helper = null;
-$hstmt = $db->prepare('SELECT helper_id FROM user_last_helpers WHERE owner_id = ?');
-$hstmt->execute([$userId]);
-$hrow = $hstmt->fetch(PDO::FETCH_ASSOC);
-if ($hrow) {
-    $ustmt = $db->prepare('SELECT gallery FROM users WHERE id = ?');
-    $ustmt->execute([$hrow['helper_id']]);
-    $u = $ustmt->fetch(PDO::FETCH_ASSOC);
-    if ($u) {
+$progress = null;
+$helpers = [];
+if ($hasPlant) {
+    $pst = $db->prepare('SELECT f.water_times, f.feed_times FROM farm_items f WHERE f.id = ?');
+    $pst->execute([$plantRow['item_id']]);
+    $plant = $pst->fetch(PDO::FETCH_ASSOC);
+
+    $sst = $db->prepare('SELECT water_remaining, feed_remaining FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
+    $sst->execute([$userId, $slotId]);
+    $state = $sst->fetch(PDO::FETCH_ASSOC);
+
+    if ($plant && $state) {
+        $progress = [
+            'water_done' => $plant['water_times'] - $state['water_remaining'],
+            'water_total' => $plant['water_times'],
+            'feed_done' => $plant['feed_times'] - $state['feed_remaining'],
+            'feed_total' => $plant['feed_times']
+        ];
+    }
+
+    $db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (
+        owner_id INT NOT NULL,
+        slot_number INT NOT NULL,
+        helper_id INT NOT NULL,
+        clicks INT NOT NULL DEFAULT 1,
+        PRIMARY KEY (owner_id, slot_number, helper_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
+
+    $hstmt = $db->prepare('SELECT h.helper_id, h.clicks, u.gallery FROM slot_helpers h JOIN users u ON u.id = h.helper_id WHERE h.owner_id = ? AND h.slot_number = ? ORDER BY h.clicks DESC');
+    $hstmt->execute([$userId, $slotId]);
+    while ($row = $hstmt->fetch(PDO::FETCH_ASSOC)) {
         $avatar = 'default-avatar.png';
-        if (!empty($u['gallery'])) {
-            $gal = array_filter(explode(',', $u['gallery']));
+        if (!empty($row['gallery'])) {
+            $gal = array_filter(explode(',', $row['gallery']));
             if (!empty($gal)) {
-                $candidate = 'uploads/' . $hrow['helper_id'] . '/' . trim($gal[0]);
+                $candidate = 'uploads/' . $row['helper_id'] . '/' . trim($gal[0]);
                 if (is_file(__DIR__ . '/../' . $candidate)) {
                     $avatar = $candidate;
                 }
             }
         }
-        $helper = ['id' => $hrow['helper_id'], 'avatar' => $avatar];
+        $helpers[] = ['id' => $row['helper_id'], 'avatar' => $avatar, 'clicks' => $row['clicks']];
     }
 }
 
@@ -59,10 +75,26 @@ $imagePrefix = $ajax ? '' : '../';
 ob_start();
 ?>
 <div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
-    <?php if ($helper): ?>
-    <div id="qs-helper-bar">
-        <div class="qs-helper" data-user-id="<?= $helper['id']; ?>">
-            <img src="<?= $imagePrefix . htmlspecialchars($helper['avatar']); ?>" alt="Helper">
+    <?php if ($hasPlant): ?>
+    <div id="qs-helper-panel">
+        <?php if ($progress): ?>
+        <?php
+            $progText = '';
+            if ($progress['water_total'] > 0) {
+                $progText = $progress['water_done'] . '/' . $progress['water_total'] . ' water';
+            } elseif ($progress['feed_total'] > 0) {
+                $progText = $progress['feed_done'] . '/' . $progress['feed_total'] . ' feed';
+            }
+        ?>
+        <div class="qs-progress"><?= htmlspecialchars($progText); ?></div>
+        <?php endif; ?>
+        <div class="qs-helper-grid">
+            <?php foreach ($helpers as $h): ?>
+            <div class="qs-helper" data-user-id="<?= $h['id']; ?>">
+                <img src="<?= $imagePrefix . htmlspecialchars($h['avatar']); ?>" alt="Helper">
+                <span class="qs-count"><?= $h['clicks']; ?></span>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
     <?php endif; ?>

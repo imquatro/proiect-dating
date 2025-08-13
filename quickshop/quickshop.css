@@ -67,25 +67,51 @@
     font-size: 12px;
 }
 
-#qs-helper-bar {
+#qs-helper-panel {
     width: 100%;
-    display: flex;
-    gap: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 10px;
     margin-bottom: 10px;
+    color: #fff;
 }
 
-.qs-helper {
-    width: 60px;
-    height: 60px;
+.qs-progress {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.qs-helper-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.qs-helper-grid .qs-helper {
+    width: 40px;
+    height: 40px;
     border: 2px solid #fff;
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
+    position: relative;
     flex-shrink: 0;
     cursor: pointer;
 }
 
-.qs-helper img {
+.qs-helper-grid .qs-helper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.qs-helper-grid .qs-helper .qs-count {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 3px;
+    border-top-left-radius: 4px;
 }

@@ -10,8 +10,9 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/includes/db.php';
 $userId = (int)$_SESSION['user_id'];
 $ownerId = isset($_POST['owner_id']) ? (int)$_POST['owner_id'] : 0;
+$slotId = isset($_POST['slot_id']) ? (int)$_POST['slot_id'] : 0;
 $action = isset($_POST['action']) ? $_POST['action'] : '';
-if (!$ownerId || !$action) {
+if (!$ownerId || !$action || !$slotId) {
     echo json_encode(['status' => 'error']);
     exit;
 }
@@ -39,5 +40,17 @@ $db->exec('CREATE TABLE IF NOT EXISTS user_last_helpers (
 $stmt = $db->prepare('INSERT INTO user_last_helpers (owner_id, helper_id, action, helped_at) VALUES (?, ?, ?, NOW())
     ON DUPLICATE KEY UPDATE helper_id = VALUES(helper_id), action = VALUES(action), helped_at = VALUES(helped_at)');
 $stmt->execute([$ownerId, $userId, $action]);
+
+$db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (
+    owner_id INT NOT NULL,
+    slot_number INT NOT NULL,
+    helper_id INT NOT NULL,
+    clicks INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (owner_id, slot_number, helper_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
+
+$hstmt = $db->prepare('INSERT INTO slot_helpers (owner_id, slot_number, helper_id, clicks) VALUES (?, ?, ?, 1)
+    ON DUPLICATE KEY UPDATE clicks = clicks + 1');
+$hstmt->execute([$ownerId, $slotId, $userId]);
 
 echo json_encode(['status' => 'ok']);
