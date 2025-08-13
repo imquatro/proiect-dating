@@ -86,14 +86,14 @@ ob_start();
     </div>
     <div id="qs-helper-panel">
         <div class="qs-progress">
-            <div class="qs-progress-item">Water <?= $progress ? $progress['water_done'] : 0; ?>/<?= $progress ? $progress['water_total'] : 0; ?></div>
-            <div class="qs-progress-item">Feed <?= $progress ? $progress['feed_done'] : 0; ?>/<?= $progress ? $progress['feed_total'] : 0; ?></div>
+            <div class="qs-progress-item">Udări <?= $progress ? $progress['water_done'] : 0; ?>/<?= $progress ? $progress['water_total'] : 0; ?></div>
+            <div class="qs-progress-item">Hraniri <?= $progress ? $progress['feed_done'] : 0; ?>/<?= $progress ? $progress['feed_total'] : 0; ?></div>
         </div>
         <div class="qs-helper-grid">
             <?php foreach ($helpers as $h): ?>
             <div class="qs-helper" data-user-id="<?= $h['id']; ?>">
                 <img src="<?= $imagePrefix . htmlspecialchars($h['avatar']); ?>" alt="Helper">
-                <span class="qs-count"><?= $h['clicks']; ?></span>
+                <span class="qs-count">Hraniri: <?= $h['clicks']; ?></span>
             </div>
             <?php endforeach; ?>
         </div>
