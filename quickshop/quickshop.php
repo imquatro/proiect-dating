@@ -27,10 +27,14 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $progress = null;
 $helpers = [];
+$plantImage = null;
 if ($hasPlant) {
-    $pst = $db->prepare('SELECT f.water_times, f.feed_times FROM farm_items f WHERE f.id = ?');
+    $pst = $db->prepare('SELECT f.water_times, f.feed_times, f.image_plant FROM farm_items f WHERE f.id = ?');
     $pst->execute([$plantRow['item_id']]);
     $plant = $pst->fetch(PDO::FETCH_ASSOC);
+    if ($plant) {
+        $plantImage = $plant['image_plant'];
+    }
 
     $sst = $db->prepare('SELECT water_remaining, feed_remaining FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
     $sst->execute([$userId, $slotId]);
@@ -72,9 +76,14 @@ if ($hasPlant) {
 
 $imagePrefix = $ajax ? '' : '../';
 
-oob_start();
+ob_start();
 ?>
 <div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
+    <div id="qs-slot-preview">
+        <?php if ($plantImage): ?>
+        <img src="<?= $imagePrefix . htmlspecialchars(strpos($plantImage, 'img/') === 0 ? $plantImage : 'img/' . ltrim($plantImage, '/')); ?>" alt="Plant">
+        <?php endif; ?>
+    </div>
     <div id="qs-helper-panel">
         <div class="qs-progress">
             <div class="qs-progress-item">Water <?= $progress ? $progress['water_done'] : 0; ?>/<?= $progress ? $progress['water_total'] : 0; ?></div>
