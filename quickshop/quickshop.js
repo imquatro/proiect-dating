@@ -16,32 +16,13 @@ function initQuickShop(container) {
         return;
     }
 
-    const helpers = container.querySelectorAll('.qs-helper');
-    helpers.forEach(helper => {
-        let timer;
-        const start = () => {
-            timer = setTimeout(() => {
-                const uid = helper.dataset.userId;
-                if (uid) {
-                    window.location.href = `${baseUrl}vizitfarm/vizitfarm.php?id=${uid}`;
-                }
-            }, 1000);
-        };
-        const cancel = () => clearTimeout(timer);
-        helper.addEventListener('mousedown', start);
-        helper.addEventListener('touchstart', start);
-        ['mouseup', 'mouseleave', 'mouseout', 'touchend', 'touchcancel'].forEach(ev => {
-            helper.addEventListener(ev, cancel);
-        });
-    });
-
     function plantItem(itemId, price, itemElem) {
         const water = itemElem.dataset.water;
         const feed = itemElem.dataset.feed;
         const waterTimes = itemElem.dataset.waterTimes;
         const feedTimes = itemElem.dataset.feedTimes;
 
-        fetch(`${baseUrl}quickshop/plant_item.php`, {
+        fetch('quickshop/plant_item.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ slot: slotId, item: itemId, price: price })
