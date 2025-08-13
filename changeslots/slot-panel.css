@@ -84,3 +84,52 @@
     font-size: 24px;
     margin-bottom: 5px;
 }
+
+#cs-helper-container {
+    margin-top: 10px;
+    width: 560px;
+    height: 80px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding: 0 10px;
+    scrollbar-width: none;
+}
+
+#cs-helper-container::-webkit-scrollbar {
+    display: none;
+}
+
+.cs-helper-entry {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.cs-helper-entry img {
+    width: 25px;
+    height: 25px;
+    object-fit: cover;
+}
+
+.cs-helper-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #f6cf49;
+    color: #6c4e09;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #6c4e09;
+}

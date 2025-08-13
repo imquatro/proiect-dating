@@ -45,6 +45,32 @@ if ($hasPlant) {
     $feedDone = $feedTimes - $feedRemaining;
 }
 
+$helpers = [];
+if ($hasPlant) {
+    $hstmt = $db->prepare('SELECT sh.helper_id, sh.water_clicks, sh.feed_clicks, sh.last_action_at, u.gallery
+                           FROM slot_helpers sh
+                           JOIN users u ON u.id = sh.helper_id
+                           WHERE sh.owner_id = ? AND sh.slot_number = ?
+                           ORDER BY sh.last_action_at DESC');
+    $hstmt->execute([$userId, $slotId]);
+    while ($row = $hstmt->fetch(PDO::FETCH_ASSOC)) {
+        $avatar = 'default-avatar.png';
+        if (!empty($row['gallery'])) {
+            $gal = array_filter(explode(',', $row['gallery']));
+            if (!empty($gal)) {
+                $candidate = 'uploads/' . $row['helper_id'] . '/' . trim($gal[0]);
+                if (is_file(__DIR__ . '/../' . $candidate)) {
+                    $avatar = $candidate;
+                }
+            }
+        }
+        $helpers[] = [
+            'avatar' => $avatar,
+            'count' => (int)$row['water_clicks'] + (int)$row['feed_clicks']
+        ];
+    }
+}
+
 $bgImagePath = 'img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 
@@ -67,6 +93,14 @@ ob_start();
             <?php if ($feedTimes > 0): ?>
                 <div class="cs-detail">Feedings: <?php echo $feedDone; ?>/<?php echo $feedTimes; ?> (<?php echo $feedRemaining; ?> left)</div>
             <?php endif; ?>
+        </div>
+        <div id="cs-helper-container">
+            <?php foreach ($helpers as $h): ?>
+                <div class="cs-helper-entry">
+                    <img src="<?php echo htmlspecialchars($h['avatar']); ?>" alt="Helper">
+                    <span class="cs-helper-count"><?php echo $h['count']; ?></span>
+                </div>
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
     <div id="cs-slot-actions">
