@@ -71,7 +71,7 @@ if ($total_slots % $slots_per_row !== 0) echo '</div>';
 </div>
 <?php
 $content = ob_get_clean();
-$pageCss = 'assets_css/welcome.css?v=' . filemtime(__DIR__ . '/assets_css/welcome.css');
+$pageCss = 'assets_css/welcome.css';
 $extraJs = '<script src="assets_js/mini-profile.js"></script>'
          . '<script src="assets_js/farm-slots.js"></script>'
          . '<script src="assets_js/slot-items.js"></script>'
