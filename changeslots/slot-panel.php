@@ -47,27 +47,30 @@ if ($hasPlant) {
 
 $helpers = [];
 if ($hasPlant) {
-    $hstmt = $db->prepare('SELECT sh.helper_id, sh.water_clicks, sh.feed_clicks, sh.last_action_at, u.gallery
+    $tableCheck = $db->query("SHOW TABLES LIKE 'slot_helpers'");
+    if ($tableCheck && $tableCheck->rowCount() > 0) {
+        $hstmt = $db->prepare('SELECT sh.helper_id, sh.water_clicks, sh.feed_clicks, sh.last_action_at, u.gallery
                            FROM slot_helpers sh
                            JOIN users u ON u.id = sh.helper_id
                            WHERE sh.owner_id = ? AND sh.slot_number = ?
                            ORDER BY sh.last_action_at DESC');
-    $hstmt->execute([$userId, $slotId]);
-    while ($row = $hstmt->fetch(PDO::FETCH_ASSOC)) {
-        $avatar = 'default-avatar.png';
-        if (!empty($row['gallery'])) {
-            $gal = array_filter(explode(',', $row['gallery']));
-            if (!empty($gal)) {
-                $candidate = 'uploads/' . $row['helper_id'] . '/' . trim($gal[0]);
-                if (is_file(__DIR__ . '/../' . $candidate)) {
-                    $avatar = $candidate;
+        $hstmt->execute([$userId, $slotId]);
+        while ($row = $hstmt->fetch(PDO::FETCH_ASSOC)) {
+            $avatar = 'default-avatar.png';
+            if (!empty($row['gallery'])) {
+                $gal = array_filter(explode(',', $row['gallery']));
+                if (!empty($gal)) {
+                    $candidate = 'uploads/' . $row['helper_id'] . '/' . trim($gal[0]);
+                    if (is_file(__DIR__ . '/../' . $candidate)) {
+                        $avatar = $candidate;
+                    }
                 }
             }
+            $helpers[] = [
+                'avatar' => $avatar,
+                'count' => (int)$row['water_clicks'] + (int)$row['feed_clicks']
+            ];
         }
-        $helpers[] = [
-            'avatar' => $avatar,
-            'count' => (int)$row['water_clicks'] + (int)$row['feed_clicks']
-        ];
     }
 }
 
