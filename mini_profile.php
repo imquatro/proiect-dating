@@ -24,7 +24,10 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 ?>
-<div class="mini-profile">
+<div class="mini-profile" id="miniProfile">
+    <div id="helper-effect" class="helper-effect">
+        <img src="" alt="Helper">
+    </div>
     <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
     <div class="mini-profile-card">
         <div class="username"><?= htmlspecialchars($user_name) ?></div>

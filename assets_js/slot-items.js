@@ -3,9 +3,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Persist slot states on the server so they survive logout and long pauses
     const slotStates = {};
+    const isVisitor = window.isVisitor || false;
+    const visitId = window.visitId || null;
+    const canInteract = window.canInteract || false;
 
     function saveStates() {
-        fetch('slot_states.php', {
+        if (isVisitor && !canInteract) return;
+        const url = isVisitor && visitId ? `slot_states.php?user_id=${visitId}` : 'slot_states.php';
+        fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(slotStates)
@@ -96,6 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = slotStates[slotId];
         if (!state) return;
 
+        if (isVisitor && !canInteract) return;
+        if (action === 'HARVEST') return;
+
         if (action === 'WATER') {
             if (state.waterRemaining > 0) {
                 state.waterRemaining--;
@@ -175,7 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Load existing states from server on page load
-    fetch('slot_states.php')
+    const fetchUrl = isVisitor && visitId ? `slot_states.php?user_id=${visitId}` : 'slot_states.php';
+    fetch(fetchUrl)
         .then(res => res.json())
         .then(data => {
             Object.assign(slotStates, data);

@@ -72,10 +72,11 @@ if ($total_slots % $slots_per_row !== 0) echo '</div>';
 <?php
 $content = ob_get_clean();
 $pageCss = 'assets_css/welcome.css';
-$extraJs = '<script src="assets_js/mini-profile.js"></script>'
+ $extraJs = '<script src="assets_js/mini-profile.js"></script>'
          . '<script src="assets_js/farm-slots.js"></script>'
          . '<script src="assets_js/slot-items.js"></script>'
          . '<script src="changeslots/slot-panel.js"></script>'
-         . '<script src="slotstype/slotstype.js"></script>';
+         . '<script src="slotstype/slotstype.js"></script>'
+         . '<script src="assets_js/helper-effect.js"></script>';
 include 'template.php';
 ?>
