@@ -3,26 +3,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Persist slot states on the server so they survive logout and long pauses
     const slotStates = {};
-    const isVisitor = window.isVisitor || false;
-    const visitId = window.visitId || null;
-    const canInteract = window.canInteract || false;
 
     function saveStates() {
-        if (isVisitor && !canInteract) return;
-        const url = isVisitor && visitId ? `slot_states.php?user_id=${visitId}` : 'slot_states.php';
-        fetch(url, {
+        fetch('slot_states.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(slotStates)
-        });
-    }
-
-    function recordHelp(action, slotId) {
-        if (!isVisitor || !visitId) return;
-        fetch('record_help.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `owner_id=${visitId}&slot_id=${slotId}&action=${encodeURIComponent(action)}`
         });
     }
 
@@ -110,19 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = slotStates[slotId];
         if (!state) return;
 
-        if (isVisitor && !canInteract) return;
-        if (action === 'HARVEST') return;
-
         if (action === 'WATER') {
             if (state.waterRemaining > 0) {
                 state.waterRemaining--;
                 if (state.waterInterval > 0) {
-                    startTimer(slotId, 'water, slotId');
+                    startTimer(slotId, 'water');
                 } else {
                     checkNextAction(slotId);
                 }
                 saveStates();
-                recordHelp('water');
             }
         } else if (action === 'FEED') {
             if (state.feedRemaining > 0) {
@@ -133,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkNextAction(slotId);
                 }
                 saveStates();
-                recordHelp('feed, slotId');
             }
         }
     }
@@ -194,8 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Load existing states from server on page load
-    const fetchUrl = isVisitor && visitId ? `slot_states.php?user_id=${visitId}` : 'slot_states.php';
-    fetch(fetchUrl)
+    fetch('slot_states.php')
         .then(res => res.json())
         .then(data => {
             Object.assign(slotStates, data);
