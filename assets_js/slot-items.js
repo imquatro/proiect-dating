@@ -6,11 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const isVisitor = window.isVisitor || false;
     const visitId = window.visitId || null;
     const canInteract = window.canInteract || false;
+    const fetchUrl = isVisitor && visitId ? `slot_states.php?user_id=${visitId}` : 'slot_states.php';
 
     function saveStates() {
         if (isVisitor && !canInteract) return;
-        const url = isVisitor && visitId ? `slot_states.php?user_id=${visitId}` : 'slot_states.php';
-        fetch(url, {
+        fetch(fetchUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(slotStates)
@@ -102,16 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    function handleActionClick(e) {
+     async function handleActionClick(e) {
         e.stopPropagation();
         const slot = e.currentTarget.closest('.farm-slot');
         const slotId = slot.id.replace('slot-', '');
         const action = e.currentTarget.textContent;
-        const state = slotStates[slotId];
-        if (!state) return;
 
         if (isVisitor && !canInteract) return;
         if (action === 'HARVEST') return;
+
+        // Refresh states to avoid acting on stale data
+        await loadStates();
+        const state = slotStates[slotId];
+        if (!state) return;
 
         if (action === 'WATER') {
             if (state.waterRemaining > 0) {
@@ -123,6 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 saveStates();
                 recordHelp('water');
+            } else {
+                alert('This slot is already watered');
             }
         } else if (action === 'FEED') {
             if (state.feedRemaining > 0) {
@@ -134,6 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 saveStates();
                 recordHelp('feed');
+            } else {
+                alert('This slot is already fed');
             }
         }
     }
@@ -193,37 +200,72 @@ document.addEventListener('DOMContentLoaded', () => {
         checkNextAction(slotId);
     });
 
-    // Load existing states from server on page load
-    const fetchUrl = isVisitor && visitId ? `slot_states.php?user_id=${visitId}` : 'slot_states.php';
-    fetch(fetchUrl)
-        .then(res => res.json())
-        .then(data => {
-            Object.assign(slotStates, data);
-            Object.keys(slotStates).forEach(slotId => {
-                const state = slotStates[slotId];
-                const slot = document.getElementById(`slot-${slotId}`);
-                if (!slot) return;
-                const itemImg = slot.querySelector('.slot-item');
-                const actionEl = slot.querySelector('.slot-action');
-                const timerEl = slot.querySelector('.slot-timer');
-                if (itemImg && state.image) {
-                    itemImg.src = state.image;
-                    itemImg.style.display = 'block';
+    async function loadStates() {
+        const res = await fetch(fetchUrl);
+        const data = await res.json();
+
+        // Remove states that no longer exist on the server
+        Object.keys(slotStates).forEach(id => {
+            if (!data[id]) {
+                const old = slotStates[id];
+                if (old.timer) clearInterval(old.timer);
+                const slot = document.getElementById(`slot-${id}`);
+                if (slot) {
+                    const itemImg = slot.querySelector('.slot-item');
+                    const actionEl = slot.querySelector('.slot-action');
+                    const timerEl = slot.querySelector('.slot-timer');
+                    if (itemImg) { itemImg.style.display = 'none'; itemImg.src = ''; }
+                    if (actionEl) { actionEl.style.display = 'none'; actionEl.classList.remove('harvest'); }
+                    if (timerEl) { timerEl.style.display = 'none'; }
                 }
-                if (actionEl) {
-                    actionEl.addEventListener('click', handleActionClick);
-                }
-                if (state.timerEnd && state.timerEnd > Date.now()) {
-                    state.timeLeft = Math.round((state.timerEnd - Date.now()) / 1000);
-                    startTimer(slotId, state.timerType, true);
-                } else {
-                    state.timer = null;
-                    state.timerEnd = null;
-                    state.timeLeft = 0;
-                    checkNextAction(slotId);
-                }
-            });
+                delete slotStates[id];
+            }
         });
 
+        Object.keys(data).forEach(id => {
+            const incoming = data[id];
+            const slot = document.getElementById(`slot-${id}`);
+            if (!slot) return;
+            const itemImg = slot.querySelector('.slot-item');
+            const actionEl = slot.querySelector('.slot-action');
+            const timerEl = slot.querySelector('.slot-timer');
+
+            if (slotStates[id] && slotStates[id].timer) {
+                clearInterval(slotStates[id].timer);
+            }
+            slotStates[id] = {
+                image: incoming.image,
+                waterInterval: parseInt(incoming.waterInterval) || 0,
+                feedInterval: parseInt(incoming.feedInterval) || 0,
+                waterRemaining: parseInt(incoming.waterRemaining) || 0,
+                feedRemaining: parseInt(incoming.feedRemaining) || 0,
+                timerType: incoming.timerType || null,
+                timerEnd: incoming.timerEnd || null,
+                timer: null,
+                timeLeft: 0
+            };
+
+            if (itemImg && incoming.image) {
+                itemImg.src = incoming.image;
+                itemImg.style.display = 'block';
+            }
+            if (actionEl) {
+                actionEl.addEventListener('click', handleActionClick);
+            }
+            if (slotStates[id].timerEnd && slotStates[id].timerEnd > Date.now()) {
+                slotStates[id].timeLeft = Math.round((slotStates[id].timerEnd - Date.now()) / 1000);
+                startTimer(id, slotStates[id].timerType, true);
+            } else {
+                slotStates[id].timer = null;
+                slotStates[id].timerEnd = null;
+                slotStates[id].timeLeft = 0;
+                checkNextAction(id);
+            }
+        });
+    }
+
+    // Initial load and periodic refresh for live updates
+    loadStates();
+    setInterval(loadStates, 5000);
     window.addEventListener('beforeunload', saveStates);
 });
