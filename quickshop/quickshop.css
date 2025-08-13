@@ -67,7 +67,7 @@
     font-size: 12px;
 }
 
-#qs-helper-panel {
+##qs-helper-panel {
     width: 100%;
     background: rgba(0, 0, 0, 0.5);
     border-radius: 8px;
@@ -77,10 +77,19 @@
 }
 
 .qs-progress {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
     margin-bottom: 8px;
-    font-size: 14px;
 }
+
+.qs-progress-item {
+    background: #0066cc;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
 
 .qs-helper-grid {
     display: flex;

@@ -76,17 +76,20 @@ ob_start();
 ?>
 <div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <?php if ($hasPlant): ?>
-    <div id="qs-helper-panel">
+     <div id="qs-helper-panel">
         <?php if ($progress): ?>
-        <?php
-            $progText = '';
-            if ($progress['water_total'] > 0) {
-                $progText = $progress['water_done'] . '/' . $progress['water_total'] . ' water';
-            } elseif ($progress['feed_total'] > 0) {
-                $progText = $progress['feed_done'] . '/' . $progress['feed_total'] . ' feed';
-            }
-        ?>
-        <div class="qs-progress"><?= htmlspecialchars($progText); ?></div>
+        <div class="qs-progress">
+            <?php if ($progress['water_total'] > 0): ?>
+            <div class="qs-progress-item">
+                <?= $progress['water_done']; ?>/<?= $progress['water_total']; ?> water
+            </div>
+            <?php endif; ?>
+            <?php if ($progress['feed_total'] > 0): ?>
+            <div class="qs-progress-item">
+                <?= $progress['feed_done']; ?>/<?= $progress['feed_total']; ?> feed
+            </div>
+            <?php endif; ?>
+        </div>
         <?php endif; ?>
         <div class="qs-helper-grid">
             <?php foreach ($helpers as $h): ?>
