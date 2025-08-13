@@ -12,7 +12,7 @@ function initSlotPanel(container) {
 
     if (changeBtn) {
         changeBtn.addEventListener('click', () => {
-            fetch(`${baseUrl}slotstype/slotstype.php?slot=${slotId}&ajax=1`)
+            fetch(`slotstype/slotstype.php?slot=${slotId}&ajax=1`)
                 .then(res => res.text())
                 .then(html => {
                     container.innerHTML = html;
@@ -26,7 +26,7 @@ function initSlotPanel(container) {
 
     if (shopBtn) {
         shopBtn.addEventListener('click', () => {
-            fetch(`${baseUrl}quickshop/quickshop.php?slot=${slotId}&ajax=1`)
+            fetch(`quickshop/quickshop.php?slot=${slotId}&ajax=1`)
                 .then(res => res.text())
                 .then(html => {
                     container.innerHTML = html;
@@ -34,7 +34,7 @@ function initSlotPanel(container) {
                         const link = document.createElement('link');
                         link.id = 'quickshop-css';
                         link.rel = 'stylesheet';
-                        link.href = `${baseUrl}quickshop/quickshop.css`;
+                        link.href = 'quickshop/quickshop.css';
                         document.head.appendChild(link);
                     }
                     const panel = container.querySelector('#quickshop-panel');
@@ -45,7 +45,7 @@ function initSlotPanel(container) {
                     };
                     if (!window.initQuickShop) {
                         const script = document.createElement('script');
-                        script.src = `${baseUrl}quickshop/quickshop.js`;
+                        script.src = 'quickshop/quickshop.js';
                         script.onload = init;
                         document.head.appendChild(script);
                     } else {
@@ -57,7 +57,7 @@ function initSlotPanel(container) {
 
     if (removeBtn) {
         removeBtn.addEventListener('click', () => {
-            fetch(`${baseUrl}quickshop/remove_item.php`, {
+            fetch('quickshop/remove_item.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ slot: slotId })
@@ -71,7 +71,7 @@ function initSlotPanel(container) {
                         });
                         document.dispatchEvent(evt);
                         if (overlay) {
-                            fetch(`${baseUrl}changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
+                            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
                                 .then(res => res.text())
                                 .then(html => {
                                     overlay.innerHTML = html;
