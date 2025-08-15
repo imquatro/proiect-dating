@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gazdă: 127.0.0.1
--- Timp de generare: aug. 11, 2025 la 08:53 PM
+-- Timp de generare: aug. 15, 2025 la 03:56 PM
 -- Versiune server: 10.4.32-MariaDB
 -- Versiune PHP: 8.0.30
 
@@ -95,20 +95,16 @@ CREATE TABLE `farm_items` (
   `feed_times` int(11) NOT NULL DEFAULT 0,
   `price` int(11) NOT NULL DEFAULT 0,
   `production` int(11) NOT NULL DEFAULT 0,
-  `active` tinyint(1) NOT NULL DEFAULT 1
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `barn_capacity` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Eliminarea datelor din tabel `farm_items`
 --
 
-INSERT INTO `farm_items` (`id`, `name`, `item_type`, `slot_type`, `image_plant`, `image_ready`, `image_product`, `water_interval`, `feed_interval`, `water_times`, `feed_times`, `price`, `production`, `active`) VALUES
-(3, 'Trident King', 'animal', 'pool', 'img/farm_items/image_plant_689a1e773ee51.png', 'img/farm_items/image_ready_689a1e773ef86.png', 'img/farm_items/image_product_689a1e773f060.png', 0, 20, 0, 100, 200, 1, 1),
-(4, 'BUNNY', 'animal', 'tarc', 'img/farm_items/image_plant_689a1f41bcb3d.png', 'img/farm_items/image_ready_689a1f41bcc75.png', 'img/farm_items/image_product_689a1f41bcd68.png', 0, 59, 0, 20, 3000, 1, 1),
-(5, 'Preaty Siren', 'animal', 'pool', 'img/farm_items/image_plant_689a1f82dc148.png', 'img/farm_items/image_ready_689a1f82dc248.png', 'img/farm_items/image_product_689a1f82dc2f5.png', 0, 20, 0, 100, 2000, 1, 1),
-(6, 'Pig', 'animal', 'tarc', 'img/farm_items/image_plant_689a20052bee5.png', 'img/farm_items/image_ready_689a20052c078.png', 'img/farm_items/image_product_689a20052c225.png', 0, 3600, 0, 24, 4000, 1, 1),
-(7, 'Delpin', 'animal', 'pool', 'img/farm_items/image_plant_689a22f4239a1.png', 'img/farm_items/image_ready_689a22f423abf.png', 'img/farm_items/image_product_689a22f423b95.png', 0, 3600, 0, 5, 6000, 1, 1),
-(8, 'Octopus', 'animal', 'pool', 'img/farm_items/image_plant_689a234f7e17a.png', 'img/farm_items/image_ready_689a234f7e31d.png', 'img/farm_items/image_product_689a234f7e453.png', 0, 3600, 0, 6, 7000, 1, 1);
+INSERT INTO `farm_items` (`id`, `name`, `item_type`, `slot_type`, `image_plant`, `image_ready`, `image_product`, `water_interval`, `feed_interval`, `water_times`, `feed_times`, `price`, `production`, `active`, `barn_capacity`) VALUES
+(1, 'strawberry', 'plant', 'crop', 'img/farm_items/image_plant_689f3ada8dd45.png', 'img/farm_items/image_ready_689f3ada8de81.png', 'img/farm_items/image_product_689f3ada8df6d.png', 5, 0, 20, 0, 1000, 100, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -583,8 +579,8 @@ INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `created_at
 (451, 4, 1, 'meama', '2025-08-10 16:31:49', 1),
 (452, 1, 4, 'am treaba multa inca', '2025-08-10 16:32:09', 1),
 (453, 4, 1, 'mi-a rupt capu sunetu', '2025-08-10 16:32:29', 1),
-(454, 1, 4, 'cae sunet', '2025-08-10 16:36:14', 0),
-(455, 1, 4, 'ca si ion o zis asa', '2025-08-10 16:36:20', 0),
+(454, 1, 4, 'cae sunet', '2025-08-10 16:36:14', 1),
+(455, 1, 4, 'ca si ion o zis asa', '2025-08-10 16:36:20', 1),
 (456, 1, 3, 'salut', '2025-08-11 16:47:55', 1),
 (457, 3, 1, 'Salut', '2025-08-11 16:48:08', 1);
 
@@ -631,16 +627,36 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `country`, `city`, `age`, `gender`, `description`, `gallery`, `created_at`, `gallery_status`, `is_admin`, `last_active`, `money`, `gold`, `level`) VALUES
-(1, 'quatro', 'serverboost93@gmail.com', '$2y$10$XUP9QK9AU/EgETee1NVvKemxG2xpWWKWzCbg1.AkRIWjmKLbdeLDW', 'Romania', 'Suceava', 31, 'masculin', '╔════༺†༻✝️༺†༻════╗\r\n  JESUS CHRIST IS LORD  \r\n╚════༺†༻✝️༺†༻════╝', 'photo_20250809_230730_64.jpg,photo_20250806_144906_20.jpg', '2025-07-21 21:56:14', 'pending,pending', 1, '2025-08-11 21:52:48', 999948600, 5000, 120),
-(2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-11 21:44:10', 999859800, 100, 20),
-(3, 'Catalina', 'albacazapada@gmail.com', '$2y$10$oSYlVjpRUK3.cEJRMinID.DkjFTAzxSVykk0V88SefTegqkIeHsy.', 'Romania', 'suceava', 23, 'feminin', '', 'photo_20250806_144758_94.jpeg,photo_20250806_164731_41.jpeg', '2025-08-04 08:42:45', 'pending,pending', 0, '2025-08-11 21:45:07', 999780000, 100, 1),
-(4, 'Nexus', 'ionut.fidirovici2@gmail.com', '$2y$10$KuZ/MTsqYGSjN9ebtmsfa.6C/ROwsTEcUcWBSpWCGib8p9pjp31t2', 'Romania', 'Radauti', 18, 'masculin', 'Sunt smecher', 'photo_20250806_172705_30.png,photo_20250805_212441_56.png', '2025-08-05 19:24:00', 'pending,pending,pend', 0, '2025-08-10 19:32:45', 999980000, 5000, 120),
+(1, 'quatro', 'serverboost93@gmail.com', '$2y$10$XUP9QK9AU/EgETee1NVvKemxG2xpWWKWzCbg1.AkRIWjmKLbdeLDW', 'Romania', 'Suceava', 31, 'masculin', '╔════༺†༻✝️༺†༻════╗\r\n  JESUS CHRIST IS LORD  \r\n╚════༺†༻✝️༺†༻════╝', 'photo_20250809_230730_64.jpg,photo_20250806_144906_20.jpg', '2025-07-21 21:56:14', 'pending,pending', 1, '2025-08-15 16:51:13', 999291700, 5000, 120),
+(2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-15 16:51:59', 999856800, 100, 20),
+(3, 'Catalina', 'albacazapada@gmail.com', '$2y$10$oSYlVjpRUK3.cEJRMinID.DkjFTAzxSVykk0V88SefTegqkIeHsy.', 'Romania', 'suceava', 23, 'feminin', '', 'photo_20250806_144758_94.jpeg,photo_20250806_164731_41.jpeg', '2025-08-04 08:42:45', 'pending,pending', 0, '2025-08-15 12:26:13', 999776400, 100, 1),
+(4, 'Nexus', 'ionut.fidirovici2@gmail.com', '$2y$10$KuZ/MTsqYGSjN9ebtmsfa.6C/ROwsTEcUcWBSpWCGib8p9pjp31t2', 'Romania', 'Radauti', 18, 'masculin', 'Sunt smecher', 'photo_20250806_172705_30.png,photo_20250805_212441_56.png', '2025-08-05 19:24:00', 'pending,pending,pend', 0, '2025-08-12 23:56:00', 999980000, 5000, 120),
 (5, 'test', 'test@gmail.com', '$2y$10$VblPlxQqXNqXsbHtHL/Qd.6oIVy8ZcICXbXyl/zWVi4c7uBafmmTW', 'Romania', 'suceava', 31, 'masculin', NULL, NULL, '2025-08-06 09:19:36', 'pending', 0, NULL, 0, 0, 1),
 (6, 'test2', 'test2@gmail.com', '$2y$10$UEnt3nQ4YTUCLBXQqd9N1.EBh0qsWtiE9oHyMpU5BBLpwknjyOwR6', 'Romania', 'suceava', 33, 'masculin', NULL, NULL, '2025-08-06 10:08:10', 'pending', 0, '2025-08-06 15:43:54', 0, 0, 1),
 (7, 'Test3', 'teat3@gmail.com', '$2y$10$J5YGNEPj1eQ1bu3LRKNTY.JoUa5RrhYuJIOOYqJFxJ0x6XdwHz8fG', 'Romania', 'România', 33, 'masculin', NULL, NULL, '2025-08-06 10:35:38', 'pending', 0, '2025-08-06 15:45:23', 0, 0, 1),
 (8, 'Olena', 'frecja@spoko.pl', '$2y$10$aHKKJu9sFIjhWNLQTz80xetYaccbZRjVO3SLCDy0uKjzhFvp9um9.', 'Polska', 'Gdańsk', 25, 'feminin', NULL, NULL, '2025-08-07 17:41:08', 'pending', 0, '2025-08-07 20:43:23', 1000000000, 5000, 1),
 (9, 'Test5', 'test5@gmail.com', '$2y$10$Kj2df/QnJwoVqJ1aL4KQFuTs7rRMe8bnjxi6eJk6XOL0mglTH.uLu', 'România', 'suceava', 31, 'masculin', NULL, NULL, '2025-08-10 10:14:24', 'pending', 0, '2025-08-10 15:53:57', 0, 0, 1),
 (10, 'Nesu', 'nesu@gmail.com', '$2y$10$lC61FaNSMDGmQ7u2xHsiGOdWVI1zDjLjAXyMmF.T/R3nuuHT4dEdG', 'ro', 'm', 18, 'masculin', NULL, NULL, '2025-08-10 10:50:57', 'pending', 0, '2025-08-10 14:05:47', 9950000, 10000000, 120);
+
+-- --------------------------------------------------------
+
+--
+-- Structură tabel pentru tabel `user_last_helpers`
+--
+
+CREATE TABLE `user_last_helpers` (
+  `owner_id` int(11) NOT NULL,
+  `helper_id` int(11) NOT NULL,
+  `action` enum('water','feed') NOT NULL,
+  `helped_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Eliminarea datelor din tabel `user_last_helpers`
+--
+
+INSERT INTO `user_last_helpers` (`owner_id`, `helper_id`, `action`, `helped_at`) VALUES
+(3, 1, 'feed', '2025-08-13 18:11:19');
 
 -- --------------------------------------------------------
 
@@ -660,11 +676,11 @@ CREATE TABLE `user_plants` (
 --
 
 INSERT INTO `user_plants` (`user_id`, `slot_number`, `item_id`, `planted_at`) VALUES
-(1, 6, 5, '2025-08-11 21:52:28'),
-(1, 7, 5, '2025-08-11 21:52:13'),
-(1, 8, 5, '2025-08-11 21:52:17'),
-(1, 9, 5, '2025-08-11 21:52:20'),
-(1, 10, 5, '2025-08-11 21:52:30');
+(1, 6, 1, '2025-08-15 16:49:29'),
+(1, 7, 1, '2025-08-15 16:49:40'),
+(1, 8, 1, '2025-08-15 16:49:42'),
+(1, 9, 1, '2025-08-15 16:49:44'),
+(1, 10, 1, '2025-08-15 16:49:45');
 
 -- --------------------------------------------------------
 
@@ -677,112 +693,142 @@ CREATE TABLE `user_slots` (
   `slot_number` int(11) NOT NULL,
   `unlocked` tinyint(1) NOT NULL DEFAULT 0,
   `required_level` int(11) NOT NULL DEFAULT 0,
-  `slot_type` varchar(20) NOT NULL DEFAULT 'crop'
+  `slot_type` varchar(20) NOT NULL DEFAULT 'crop',
+  `item_id` int(11) DEFAULT NULL,
+  `plant_date` datetime DEFAULT NULL,
+  `water_interval` int(11) NOT NULL DEFAULT 0,
+  `feed_interval` int(11) NOT NULL DEFAULT 0,
+  `water_remaining` int(11) NOT NULL DEFAULT 0,
+  `feed_remaining` int(11) NOT NULL DEFAULT 0,
+  `timer_type` varchar(10) DEFAULT NULL,
+  `timer_end` datetime DEFAULT NULL,
+  `water_times` int(11) NOT NULL DEFAULT 0,
+  `feed_times` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Eliminarea datelor din tabel `user_slots`
 --
 
-INSERT INTO `user_slots` (`user_id`, `slot_number`, `unlocked`, `required_level`, `slot_type`) VALUES
-(1, 1, 1, 0, 'tarc'),
-(1, 2, 1, 0, 'tarc'),
-(1, 3, 1, 0, 'tarc'),
-(1, 4, 1, 5, 'tarc'),
-(1, 5, 1, 10, 'tarc'),
-(1, 6, 1, 0, 'pool'),
-(1, 7, 1, 0, 'pool'),
-(1, 8, 1, 0, 'pool'),
-(1, 9, 1, 15, 'pool'),
-(1, 10, 1, 20, 'pool'),
-(2, 1, 1, 0, 'pool'),
-(2, 2, 1, 0, 'pool'),
-(2, 3, 1, 0, 'pool'),
-(2, 4, 1, 5, 'pool'),
-(2, 5, 1, 10, 'pool'),
-(2, 6, 1, 0, 'tarc'),
-(2, 7, 1, 0, 'tarc'),
-(2, 8, 1, 0, 'tarc'),
-(2, 9, 1, 15, 'tarc'),
-(2, 10, 1, 20, 'tarc'),
-(3, 1, 1, 0, 'pool'),
-(3, 2, 1, 0, 'crop'),
-(3, 3, 1, 0, 'pool'),
-(3, 6, 1, 0, 'tarc'),
-(3, 7, 1, 0, 'tarc'),
-(3, 8, 1, 0, 'tarc'),
-(4, 2, 1, 0, 'tarc'),
-(4, 3, 1, 0, 'pool'),
-(9, 1, 1, 0, 'crop'),
-(9, 2, 1, 0, 'crop'),
-(9, 3, 1, 0, 'crop'),
-(9, 4, 0, 5, 'crop'),
-(9, 5, 0, 10, 'crop'),
-(9, 6, 1, 0, 'crop'),
-(9, 7, 1, 0, 'crop'),
-(9, 8, 1, 0, 'crop'),
-(9, 9, 0, 15, 'crop'),
-(9, 10, 0, 20, 'crop'),
-(9, 11, 0, 25, 'crop'),
-(9, 12, 0, 30, 'crop'),
-(9, 13, 0, 35, 'crop'),
-(9, 14, 0, 40, 'crop'),
-(9, 15, 0, 45, 'crop'),
-(9, 16, 0, 50, 'crop'),
-(9, 17, 0, 55, 'crop'),
-(9, 18, 0, 60, 'crop'),
-(9, 19, 0, 65, 'crop'),
-(9, 20, 0, 70, 'crop'),
-(9, 21, 0, 75, 'crop'),
-(9, 22, 0, 80, 'crop'),
-(9, 23, 0, 85, 'crop'),
-(9, 24, 0, 90, 'crop'),
-(9, 25, 0, 95, 'crop'),
-(9, 26, 0, 100, 'crop'),
-(9, 27, 0, 105, 'crop'),
-(9, 28, 0, 110, 'crop'),
-(9, 29, 0, 115, 'crop'),
-(9, 30, 0, 120, 'crop'),
-(9, 31, 0, 0, 'crop'),
-(9, 32, 0, 0, 'crop'),
-(9, 33, 0, 0, 'crop'),
-(9, 34, 0, 0, 'crop'),
-(9, 35, 0, 0, 'crop'),
-(10, 1, 1, 0, 'tarc'),
-(10, 2, 1, 0, 'pool'),
-(10, 3, 1, 0, 'tarc'),
-(10, 4, 1, 5, 'pool'),
-(10, 5, 1, 10, 'tarc'),
-(10, 6, 1, 0, 'crop'),
-(10, 7, 1, 0, 'crop'),
-(10, 8, 1, 0, 'crop'),
-(10, 9, 1, 15, 'crop'),
-(10, 10, 1, 20, 'crop'),
-(10, 11, 1, 25, 'crop'),
-(10, 12, 1, 30, 'crop'),
-(10, 13, 1, 35, 'crop'),
-(10, 14, 1, 40, 'crop'),
-(10, 15, 1, 45, 'crop'),
-(10, 16, 1, 50, 'crop'),
-(10, 17, 1, 55, 'crop'),
-(10, 18, 1, 60, 'crop'),
-(10, 19, 1, 65, 'crop'),
-(10, 20, 1, 70, 'crop'),
-(10, 21, 1, 75, 'crop'),
-(10, 22, 1, 80, 'crop'),
-(10, 23, 1, 85, 'crop'),
-(10, 24, 1, 90, 'crop'),
-(10, 25, 1, 95, 'crop'),
-(10, 26, 1, 100, 'crop'),
-(10, 27, 1, 105, 'crop'),
-(10, 28, 1, 110, 'crop'),
-(10, 29, 1, 115, 'crop'),
-(10, 30, 1, 120, 'crop'),
-(10, 31, 0, 0, 'crop'),
-(10, 32, 0, 0, 'crop'),
-(10, 33, 0, 0, 'crop'),
-(10, 34, 0, 0, 'crop'),
-(10, 35, 0, 0, 'crop');
+INSERT INTO `user_slots` (`user_id`, `slot_number`, `unlocked`, `required_level`, `slot_type`, `item_id`, `plant_date`, `water_interval`, `feed_interval`, `water_remaining`, `feed_remaining`, `timer_type`, `timer_end`, `water_times`, `feed_times`) VALUES
+(1, 1, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 2, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 3, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 4, 1, 5, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 5, 1, 10, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 6, 1, 0, 'crop', 3, '2025-08-12 19:47:32', 0, 20, 0, 100, 'grow', '2025-08-12 18:47:33', 0, 100),
+(1, 7, 1, 0, 'crop', 3, '2025-08-12 00:24:14', 0, 20, 0, 20, NULL, NULL, 0, 0),
+(1, 8, 1, 0, 'crop', 3, '2025-08-12 19:27:27', 0, 20, 0, 100, 'grow', '2025-08-12 18:27:28', 0, 100),
+(1, 9, 1, 15, 'crop', 3, '2025-08-12 19:57:18', 0, 20, 0, 100, 'grow', '2025-08-12 18:57:19', 0, 100),
+(1, 10, 1, 20, 'crop', 3, '2025-08-12 20:01:16', 0, 20, 0, 100, 'grow', '2025-08-12 19:01:17', 0, 100),
+(1, 11, 1, 25, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 12, 1, 30, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 13, 1, 35, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 14, 1, 40, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 15, 1, 45, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 16, 1, 50, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 17, 1, 55, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 18, 1, 60, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 19, 1, 65, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 20, 1, 70, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 21, 1, 75, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 22, 1, 80, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 23, 1, 85, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 24, 1, 90, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 25, 1, 95, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 26, 1, 100, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 27, 1, 105, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 28, 1, 110, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 29, 1, 115, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 30, 1, 120, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 1, 1, 0, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 2, 1, 0, 'pool', 3, '2025-08-12 20:02:04', 0, 20, 0, 100, 'grow', '2025-08-12 19:02:05', 0, 100),
+(2, 3, 1, 0, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 4, 1, 5, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 5, 1, 10, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 6, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 7, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 8, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 9, 1, 15, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(2, 10, 1, 20, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(3, 1, 1, 0, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(3, 2, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(3, 3, 1, 0, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(3, 6, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(3, 7, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(3, 8, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(4, 2, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(4, 3, 1, 0, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 1, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 2, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 3, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 4, 0, 5, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 5, 0, 10, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 6, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 7, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 8, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 9, 0, 15, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 10, 0, 20, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 11, 0, 25, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 12, 0, 30, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 13, 0, 35, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 14, 0, 40, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 15, 0, 45, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 16, 0, 50, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 17, 0, 55, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 18, 0, 60, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 19, 0, 65, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 20, 0, 70, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 21, 0, 75, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 22, 0, 80, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 23, 0, 85, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 24, 0, 90, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 25, 0, 95, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 26, 0, 100, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 27, 0, 105, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 28, 0, 110, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 29, 0, 115, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 30, 0, 120, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 31, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 32, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 33, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 34, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(9, 35, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 1, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 2, 1, 0, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 3, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 4, 1, 5, 'pool', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 5, 1, 10, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 6, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 7, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 8, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 9, 1, 15, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 10, 1, 20, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 11, 1, 25, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 12, 1, 30, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 13, 1, 35, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 14, 1, 40, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 15, 1, 45, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 16, 1, 50, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 17, 1, 55, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 18, 1, 60, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 19, 1, 65, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 20, 1, 70, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 21, 1, 75, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 22, 1, 80, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 23, 1, 85, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 24, 1, 90, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 25, 1, 95, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 26, 1, 100, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 27, 1, 105, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 28, 1, 110, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 29, 1, 115, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 30, 1, 120, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 31, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 32, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 33, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 34, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(10, 35, 0, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -799,8 +845,21 @@ CREATE TABLE `user_slot_states` (
   `water_remaining` int(11) NOT NULL DEFAULT 0,
   `feed_remaining` int(11) NOT NULL DEFAULT 0,
   `timer_type` varchar(10) DEFAULT NULL,
-  `timer_end` datetime DEFAULT NULL
+  `timer_end` datetime DEFAULT NULL,
+  `water_total` int(11) NOT NULL DEFAULT 0,
+  `feed_total` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Eliminarea datelor din tabel `user_slot_states`
+--
+
+INSERT INTO `user_slot_states` (`user_id`, `slot_number`, `image`, `water_interval`, `feed_interval`, `water_remaining`, `feed_remaining`, `timer_type`, `timer_end`, `water_total`, `feed_total`) VALUES
+(1, 6, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0),
+(1, 7, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0),
+(1, 8, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0),
+(1, 9, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0),
+(1, 10, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0);
 
 --
 -- Indexuri pentru tabele eliminate
@@ -847,6 +906,12 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexuri pentru tabele `user_last_helpers`
+--
+ALTER TABLE `user_last_helpers`
+  ADD PRIMARY KEY (`owner_id`);
+
+--
 -- Indexuri pentru tabele `user_plants`
 --
 ALTER TABLE `user_plants`
@@ -872,7 +937,7 @@ ALTER TABLE `user_slot_states`
 -- AUTO_INCREMENT pentru tabele `farm_items`
 --
 ALTER TABLE `farm_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pentru tabele `friend_requests`
