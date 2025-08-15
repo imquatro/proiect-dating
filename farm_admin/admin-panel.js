@@ -12,25 +12,29 @@ function initAdminPanel(panel){
         });
     });
 
-    // add-item form behaviour
-    const typeSel = panel.querySelector('select[name="item_type"]');
-    if (typeSel) {
-        const waterFields = panel.querySelectorAll('.water-field');
-        const feedFields = panel.querySelectorAll('.feed-field');
-        const updateFields = () => {
-            if(typeSel.value === 'plant'){
-                waterFields.forEach(el => el.style.display = 'block');
-                feedFields.forEach(el => el.style.display = 'none');
-            }else{
-                waterFields.forEach(el => el.style.display = 'none');
-                feedFields.forEach(el => el.style.display = 'block');
-            }
-        };
-        typeSel.addEventListener('change', updateFields);
-        updateFields();
-    }
-
+    initTypeToggle(panel.querySelector('#fa-item-form'));
+    initTypeToggle(panel.querySelector('#fa-edit-form'));
     initManageItems(panel);
+    initEditItems(panel);
+}
+
+function initTypeToggle(form){
+    if (!form) return;
+    const typeSel = form.querySelector('select[name="item_type"]');
+    if (!typeSel) return;
+    const waterFields = form.querySelectorAll('.water-field');
+    const feedFields = form.querySelectorAll('.feed-field');
+    const updateFields = () => {
+        if(typeSel.value === 'plant'){
+            waterFields.forEach(el => el.style.display = 'block');
+            feedFields.forEach(el => el.style.display = 'none');
+        }else{
+            waterFields.forEach(el => el.style.display = 'none');
+            feedFields.forEach(el => el.style.display = 'block');
+        }
+    };
+    typeSel.addEventListener('change', updateFields);
+    updateFields();
 }
 
 function initManageItems(panel){
@@ -67,6 +71,43 @@ function initManageItems(panel){
                 delBtn.disabled = true;
             }
         });
+    });
+}
+
+function initEditItems(panel){
+    const select = panel.querySelector('#fa-edit-select');
+    const form = panel.querySelector('#fa-edit-form');
+    if (!select || !form) return;
+    select.addEventListener('change', () => {
+        const id = select.value;
+        if (!id) {
+            form.style.display = 'none';
+            return;
+        }
+        fetch(`farm_admin/get_item.php?id=${id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && !data.error) {
+                    form.style.display = 'block';
+                    form.querySelector('input[name="id"]').value = data.id;
+                    form.querySelector('input[name="name"]').value = data.name;
+                    form.querySelector('select[name="item_type"]').value = data.item_type;
+                    form.querySelector('select[name="slot_type"]').value = data.slot_type;
+                    form.querySelector('input[name="current_image_plant"]').value = data.image_plant || '';
+                    form.querySelector('input[name="current_image_product"]').value = data.image_product || '';
+                    form.querySelector('input[name="water_hours"]').value = Math.floor(data.water_interval/3600);
+                    form.querySelector('input[name="water_minutes"]').value = Math.floor((data.water_interval%3600)/60);
+                    form.querySelector('input[name="water_seconds"]').value = data.water_interval%60;
+                    form.querySelector('input[name="feed_hours"]').value = Math.floor(data.feed_interval/3600);
+                    form.querySelector('input[name="feed_minutes"]').value = Math.floor((data.feed_interval%3600)/60);
+                    form.querySelector('input[name="feed_seconds"]').value = data.feed_interval%60;
+                    form.querySelector('input[name="water_times"]').value = data.water_times;
+                    form.querySelector('input[name="feed_times"]').value = data.feed_times;
+                    form.querySelector('input[name="price"]').value = data.price;
+                    form.querySelector('input[name="production"]').value = data.production;
+                    initTypeToggle(form);
+                }
+            });
     });
 }
 
