@@ -108,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const slotId = slot.id.replace('slot-', '');
         const action = e.currentTarget.textContent;
 
+        const action = e.currentTarget.textContent;
+
         if (isVisitor && !canInteract) return;
         if (action === 'HARVEST') {
             const res = await fetch('harvest.php', {

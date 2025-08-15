@@ -7,12 +7,15 @@
 .barn-panel {
     width: 90%;
     max-width: 600px;
+    height: 90vh;
+    max-height: 570px;
     margin-top: 20px;
+    position: relative;
     display: flex;
     flex-direction: column;
     padding: 20px;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-    background: url('../img/bg2.png') center/cover no-repeat;
+    background: url('../img/bg.png') center/cover no-repeat;
 }
 
 .barn-header {
@@ -31,6 +34,7 @@
 }
 
 .barn-slots {
+    flex: 1;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;

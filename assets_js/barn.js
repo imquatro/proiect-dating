@@ -6,16 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch('barn_items.php');
         const items = await res.json();
         slotsEl.innerHTML = '';
-        const displayed = items.slice(0, capacity);
-        displayed.forEach(it => {
+        for (let i = 0; i < capacity; i++) {
             const slot = document.createElement('div');
-            slot.className = 'barn-slot';
-            slot.innerHTML = `<img src="${it.image}" alt=""><div class="quantity">${it.quantity}</div>`;
-            slotsEl.appendChild(slot);
-        });
-        for (let i = displayed.length; i < capacity; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'barn-slot empty';
+            if (items[i]) {
+                const it = items[i];
+                slot.className = 'barn-slot';
+                slot.innerHTML = `<img src="${it.image}" alt=""><div class="quantity">${it.quantity}</div>`;
+            } else {
+                slot.className = 'barn-slot empty';
+            }
             slotsEl.appendChild(slot);
         }
     }

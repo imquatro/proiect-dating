@@ -1,8 +1,7 @@
 <?php
 $activePage = 'barn';
-$pageCss = 'assets_css/barn.css';
-$extraJs = '<script src="assets_js/barn.js"></script>';
-$content = <<<HTML
+ob_start();
+?>
 <div class="barn-container">
     <div class="barn-panel">
         <div class="barn-header">
@@ -11,5 +10,9 @@ $content = <<<HTML
         <div id="barn-slots" class="barn-slots"></div>
     </div>
 </div>
-HTML;
+<?php
+$content = ob_get_clean();
+$pageCss = 'assets_css/barn.css';
+$extraJs = '<script src="assets_js/barn.js"></script>';
 include 'template.php';
+?>
