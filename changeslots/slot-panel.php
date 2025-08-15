@@ -45,6 +45,8 @@ if ($hasPlant) {
     $feedDone = $feedTimes - $feedRemaining;
 }
 
+$isHarvestReady = $hasPlant && $waterRemaining <= 0 && $feedRemaining <= 0;
+
 $helpers = [];
 if ($hasPlant) {
     $tableCheck = $db->query("SHOW TABLES LIKE 'slot_helpers'");
@@ -108,6 +110,9 @@ ob_start();
     <?php endif; ?>
     <div id="cs-slot-actions">
         <?php if ($hasPlant): ?>
+            <?php if ($isHarvestReady): ?>
+                <button class="cs-slot-btn" id="cs-slot-harvest"><i class="fas fa-seedling"></i><span>Harvest</span></button>
+            <?php endif; ?>
             <button class="cs-slot-btn" id="cs-slot-remove"><i class="fas fa-trash"></i><span>Remove</span></button>
         <?php else: ?>
             <button class="cs-slot-btn" id="cs-slot-shop"><i class="fas fa-store"></i><span>SHOP</span></button>

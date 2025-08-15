@@ -55,6 +55,38 @@ function initSlotPanel(container) {
         });
     }
 
+    if (harvestBtn) {
+        harvestBtn.addEventListener('click', () => {
+            fetch('harvest.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slot: parseInt(slotId, 10) })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const overlay = container.parentElement;
+                        const evt = new CustomEvent('slotUpdated', {
+                            detail: { slotId: slotId, type: 'remove' }
+                        });
+                        document.dispatchEvent(evt);
+                        document.dispatchEvent(new CustomEvent('barnUpdated'));
+                        if (overlay) {
+                            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
+                                .then(res => res.text())
+                                .then(html => {
+                                    overlay.innerHTML = html;
+                                    const panel = overlay.querySelector('#cs-slot-panel');
+                                    if (window.initSlotPanel && panel) {
+                                        window.initSlotPanel(panel);
+                                    }
+                                });
+                        }
+                    }
+                });
+        });
+    }
+
     if (removeBtn) {
         removeBtn.addEventListener('click', () => {
             fetch('quickshop/remove_item.php', {
@@ -87,7 +119,7 @@ function initSlotPanel(container) {
     }
 
     container.querySelectorAll('.cs-slot-btn').forEach(btn => {
-        if (btn !== changeBtn && btn !== shopBtn && btn !== removeBtn) {
+        if (btn !== changeBtn && btn !== shopBtn && btn !== removeBtn && btn !== harvestBtn) {
             btn.addEventListener('click', () => {
                 alert('Functionality coming soon');
             });
