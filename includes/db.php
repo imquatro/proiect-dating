@@ -31,3 +31,13 @@ try {
 } catch (PDOException $e) {
     // ignore if insufficient privileges or other errors
 }
+
+// Ensure `image_ready` column exists in `farm_items` table
+try {
+    $col = $db->query("SHOW COLUMNS FROM farm_items LIKE 'image_ready'")->fetch();
+    if (!$col) {
+        $db->exec("ALTER TABLE farm_items ADD COLUMN image_ready VARCHAR(255) NOT NULL DEFAULT '' AFTER image_plant");
+    }
+} catch (PDOException $e) {
+    // ignore if insufficient privileges or other errors
+}
