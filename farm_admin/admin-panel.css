@@ -11,8 +11,6 @@
 .fa-panel-window{
     width:90%;
     max-width:600px;
-    height:90vh;
-    max-height:570px;
     padding:20px;
     box-shadow:0 0 30px rgba(255,255,255,0.6);
     background:url('../img/bg2.png') center/cover no-repeat;
@@ -37,7 +35,6 @@
 #fa-admin-panel .fa-tab-content{
     display:none;
     flex:1;
-    overflow-y:auto;
 }
 #fa-admin-panel .fa-tab-content.active{
     display:block;

@@ -4,7 +4,7 @@ if (!isset($_SESSION['user_id'])) {
     exit('Access denied');
 }
 
-require_once '../includes/db.php';
+require_once __DIR__ . '/../includes/db.php';
 
 function fa_upload($field) {
     if (empty($_FILES[$field]['name'])) {

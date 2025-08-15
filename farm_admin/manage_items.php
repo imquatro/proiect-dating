@@ -3,7 +3,7 @@ session_start();
 if (!isset($_SESSION['user_id'])) {
     exit('Access denied');
 }
-require_once '../includes/db.php';
+require_once __DIR__ . '/../includes/db.php';
 $items = $db->query('SELECT id,name,image_plant FROM farm_items ORDER BY name')->fetchAll(PDO::FETCH_ASSOC);
 $ajax = isset($_GET['ajax']);
 ob_start();
