@@ -109,7 +109,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const action = e.currentTarget.textContent;
 
         if (isVisitor && !canInteract) return;
-        if (action === 'HARVEST') return;
+        if (action === 'HARVEST') {
+            const res = await fetch('harvest.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slot: parseInt(slotId, 10) })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const itemImg = slot.querySelector('.slot-item');
+                const actionEl = slot.querySelector('.slot-action');
+                const timerEl = slot.querySelector('.slot-timer');
+                if (itemImg) { itemImg.style.display = 'none'; itemImg.src = ''; }
+                if (actionEl) { actionEl.style.display = 'none'; actionEl.classList.remove('harvest'); }
+                if (timerEl) { timerEl.style.display = 'none'; }
+                delete slotStates[slotId];
+                saveStates();
+                document.dispatchEvent(new CustomEvent('barnUpdated'));
+            }
+            return;
+        }
 
         // Refresh states to avoid acting on stale data
         await loadStates();

@@ -1,0 +1,88 @@
+.barn-container {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.barn-panel {
+    width: 90%;
+    max-width: 600px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    background: url('../img/bg2.png') center/cover no-repeat;
+}
+
+.barn-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.barn-settings {
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.barn-slots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.barn-slots::-webkit-scrollbar {
+    display: none;
+}
+
+.barn-slot {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+}
+
+.barn-slot img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+}
+
+.barn-slot .quantity {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    padding: 2px 4px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.barn-slot::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    background: rgba(0,0,0,0.15);
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+.barn-slot.empty img,
+.barn-slot.empty .quantity {
+    display: none;
+}
