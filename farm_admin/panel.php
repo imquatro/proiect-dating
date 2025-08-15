@@ -160,25 +160,21 @@ ob_start();
                 </div>
             </form>
         </div>
-        <div class="fa-tab-content" id="fa-tab-delete">
+         <div class="fa-tab-content" id="fa-tab-delete">
             <h2>Delete Items</h2>
-            <select id="fa-item-select">
-                <option value="">Select item</option>
+            <div class="fa-delete-grid">
                 <?php foreach ($items as $item):
                     $img = $item['image_plant'];
                     if (strpos($img, 'img/') !== 0) {
                         $img = 'img/' . ltrim($img, '/');
                     }
                 ?>
-                <option value="<?= htmlspecialchars($item['id']); ?>" data-image="<?= htmlspecialchars($img); ?>">
-                    <?= htmlspecialchars($item['name']); ?>
-                </option>
+                <div class="fa-delete-item" data-id="<?= htmlspecialchars($item['id']); ?>">
+                    <img src="<?= htmlspecialchars($img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+                </div>
                 <?php endforeach; ?>
-            </select>
-            <div class="fa-item-preview">
-                <img id="fa-item-image" src="" alt="preview" style="display:none;" />
             </div>
-            <button id="fa-delete-item" disabled>Delete</button>
+            <button id="fa-delete-item-btn" disabled>Delete</button>
         </div>
     </div>
 </div>
