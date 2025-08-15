@@ -175,9 +175,9 @@ function initEditItems(panel){
                 form.querySelector('input[name="water_times"]').value = item.water_times;
                 form.querySelector('input[name="feed_times"]').value = item.feed_times;
                 form.querySelector('input[name="price"]').value = item.price;
+                form.querySelector('input[name="sell_price"]').value = item.sell_price;
                 form.querySelector('input[name="production"]').value = item.production;
-                form.querySelector('input[name="current_image_plant"]').value = item.image_plant;
-                form.querySelector('input[name="current_image_product"]').value = item.image_product;
+                form.querySelector('input[name="image_name"]').value = item.image_plant.replace(/^img\//, '');
                 form.querySelector('input[name="barn_capacity"]').value = item.barn_capacity;
                 toggleFields();
             });

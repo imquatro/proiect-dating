@@ -26,7 +26,7 @@ ob_start();
         </div>
         <div class="fa-tab-content active" id="fa-tab-add">
             <h2>Add Plants & Animals</h2>
-            <form id="fa-item-form" action="farm_admin/save_item.php" method="post" enctype="multipart/form-data">
+            <form id="fa-item-form" action="farm_admin/save_item.php" method="post">
                 <label>Name
                     <input type="text" name="name" required>
                 </label>
@@ -43,14 +43,8 @@ ob_start();
                         <?php endforeach; ?>
                     </select>
                 </label>
-                <label>Planted Image
-                    <input type="file" name="image_plant" required>
-                </label>
-                <label>Ready Image
-                    <input type="file" name="image_ready" required>
-                </label>
-                <label>Product Image
-                    <input type="file" name="image_product" required>
+                <label>Image Name
+                    <input type="text" name="image_name" required>
                 </label>
                 <div class="water-field">
                     <label>Water interval
@@ -78,6 +72,9 @@ ob_start();
                 </label>
                 <label>Price
                     <input type="number" name="price" min="0" value="0">
+                </label>
+                <label>Sell Price
+                    <input type="number" name="sell_price" min="0" value="0">
                 </label>
                 <label>Production amount
                     <input type="number" name="production" min="0" value="0">
@@ -106,8 +103,8 @@ ob_start();
             </div>
             <form id="fa-edit-form" action="farm_admin/update_item.php" method="post" style="display:none;">
                 <input type="hidden" name="id">
-                <input type="hidden" name="current_image_plant">
-                <input type="hidden" name="current_image_product">
+            <form id="fa-edit-form" action="farm_admin/update_item.php" method="post" style="display:none;">
+                <input type="hidden" name="id">
                 <input type="hidden" name="barn_capacity">
                 <label>Name
                     <input type="text" name="name" required>
@@ -124,6 +121,9 @@ ob_start();
                         <option value="<?= htmlspecialchars($type['id']); ?>"><?= htmlspecialchars($type['name']); ?></option>
                         <?php endforeach; ?>
                     </select>
+                </label>
+                <label>Image Name
+                    <input type="text" name="image_name" required>
                 </label>
                 <div class="water-field">
                     <label>Water interval
@@ -150,7 +150,11 @@ ob_start();
                     <input type="number" name="feed_times" min="0" value="0">
                 </label>
                 <label>Price
+                <label>Price
                     <input type="number" name="price" min="0" value="0">
+                </label>
+                <label>Sell Price
+                    <input type="number" name="sell_price" min="0" value="0">
                 </label>
                 <label>Production amount
                     <input type="number" name="production" min="0" value="0">

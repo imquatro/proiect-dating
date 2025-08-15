@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gazdă: 127.0.0.1
--- Timp de generare: aug. 15, 2025 la 03:56 PM
+-- Timp de generare: aug. 15, 2025 la 10:16 PM
 -- Versiune server: 10.4.32-MariaDB
 -- Versiune PHP: 8.0.30
 
@@ -94,6 +94,7 @@ CREATE TABLE `farm_items` (
   `water_times` int(11) NOT NULL DEFAULT 0,
   `feed_times` int(11) NOT NULL DEFAULT 0,
   `price` int(11) NOT NULL DEFAULT 0,
+  `sell_price` int(11) NOT NULL DEFAULT 0,
   `production` int(11) NOT NULL DEFAULT 0,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `barn_capacity` int(11) NOT NULL DEFAULT 0
@@ -103,8 +104,9 @@ CREATE TABLE `farm_items` (
 -- Eliminarea datelor din tabel `farm_items`
 --
 
-INSERT INTO `farm_items` (`id`, `name`, `item_type`, `slot_type`, `image_plant`, `image_ready`, `image_product`, `water_interval`, `feed_interval`, `water_times`, `feed_times`, `price`, `production`, `active`, `barn_capacity`) VALUES
-(1, 'strawberry', 'plant', 'crop', 'img/farm_items/image_plant_689f3ada8dd45.png', 'img/farm_items/image_ready_689f3ada8de81.png', 'img/farm_items/image_product_689f3ada8df6d.png', 5, 0, 20, 0, 1000, 100, 1, 0);
+INSERT INTO `farm_items` (`id`, `name`, `item_type`, `slot_type`, `image_plant`, `image_ready`, `image_product`, `water_interval`, `feed_interval`, `water_times`, `feed_times`, `price`, `sell_price`, `production`, `active`, `barn_capacity`) VALUES
+(11, 'Preaty Siren', 'animal', 'pool', 'img/sirena.png', 'img/sirena.png', 'img/sirena.png', 0, 20, 0, 100, 1000000, 10000000, 1, 1, 0),
+(12, 'Trident King', 'plant', 'crop', 'img/tridentlord.png', 'img/tridentlord.png', 'img/tridentlord.png', 20, 0, 100, 0, 1000000, 10000000, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -627,9 +629,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `country`, `city`, `age`, `gender`, `description`, `gallery`, `created_at`, `gallery_status`, `is_admin`, `last_active`, `money`, `gold`, `level`) VALUES
-(1, 'quatro', 'serverboost93@gmail.com', '$2y$10$XUP9QK9AU/EgETee1NVvKemxG2xpWWKWzCbg1.AkRIWjmKLbdeLDW', 'Romania', 'Suceava', 31, 'masculin', '╔════༺†༻✝️༺†༻════╗\r\n  JESUS CHRIST IS LORD  \r\n╚════༺†༻✝️༺†༻════╝', 'photo_20250809_230730_64.jpg,photo_20250806_144906_20.jpg', '2025-07-21 21:56:14', 'pending,pending', 1, '2025-08-15 16:51:13', 999291700, 5000, 120),
-(2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-15 16:51:59', 999856800, 100, 20),
-(3, 'Catalina', 'albacazapada@gmail.com', '$2y$10$oSYlVjpRUK3.cEJRMinID.DkjFTAzxSVykk0V88SefTegqkIeHsy.', 'Romania', 'suceava', 23, 'feminin', '', 'photo_20250806_144758_94.jpeg,photo_20250806_164731_41.jpeg', '2025-08-04 08:42:45', 'pending,pending', 0, '2025-08-15 12:26:13', 999776400, 100, 1),
+(1, 'quatro', 'serverboost93@gmail.com', '$2y$10$XUP9QK9AU/EgETee1NVvKemxG2xpWWKWzCbg1.AkRIWjmKLbdeLDW', 'Romania', 'Suceava', 31, 'masculin', '╔════༺†༻✝️༺†༻════╗\r\n  JESUS CHRIST IS LORD  \r\n╚════༺†༻✝️༺†༻════╝', 'photo_20250809_230730_64.jpg,photo_20250806_144906_20.jpg', '2025-07-21 21:56:14', 'pending,pending', 1, '2025-08-15 22:24:25', 990245600, 5000, 120),
+(2, 'quatro93', 'quatro93@gmail.com', '$2y$10$D2nwnAS7tkNt7MZTzuB2jOGSt8dWPFXbxHMQy/6hpJT/FRPlce3B2', 'Romania', 'Suceava', 31, 'masculin', 'Miauuuuuuu 😅', '', '2025-07-22 00:47:31', '', 0, '2025-08-15 17:34:07', 999856800, 100, 20),
+(3, 'Catalina', 'albacazapada@gmail.com', '$2y$10$oSYlVjpRUK3.cEJRMinID.DkjFTAzxSVykk0V88SefTegqkIeHsy.', 'Romania', 'suceava', 23, 'feminin', '', 'photo_20250806_144758_94.jpeg,photo_20250806_164731_41.jpeg', '2025-08-04 08:42:45', 'pending,pending', 0, '2025-08-15 17:45:36', 999776400, 100, 1),
 (4, 'Nexus', 'ionut.fidirovici2@gmail.com', '$2y$10$KuZ/MTsqYGSjN9ebtmsfa.6C/ROwsTEcUcWBSpWCGib8p9pjp31t2', 'Romania', 'Radauti', 18, 'masculin', 'Sunt smecher', 'photo_20250806_172705_30.png,photo_20250805_212441_56.png', '2025-08-05 19:24:00', 'pending,pending,pend', 0, '2025-08-12 23:56:00', 999980000, 5000, 120),
 (5, 'test', 'test@gmail.com', '$2y$10$VblPlxQqXNqXsbHtHL/Qd.6oIVy8ZcICXbXyl/zWVi4c7uBafmmTW', 'Romania', 'suceava', 31, 'masculin', NULL, NULL, '2025-08-06 09:19:36', 'pending', 0, NULL, 0, 0, 1),
 (6, 'test2', 'test2@gmail.com', '$2y$10$UEnt3nQ4YTUCLBXQqd9N1.EBh0qsWtiE9oHyMpU5BBLpwknjyOwR6', 'Romania', 'suceava', 33, 'masculin', NULL, NULL, '2025-08-06 10:08:10', 'pending', 0, '2025-08-06 15:43:54', 0, 0, 1),
@@ -637,6 +639,36 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `country`, `city`, `
 (8, 'Olena', 'frecja@spoko.pl', '$2y$10$aHKKJu9sFIjhWNLQTz80xetYaccbZRjVO3SLCDy0uKjzhFvp9um9.', 'Polska', 'Gdańsk', 25, 'feminin', NULL, NULL, '2025-08-07 17:41:08', 'pending', 0, '2025-08-07 20:43:23', 1000000000, 5000, 1),
 (9, 'Test5', 'test5@gmail.com', '$2y$10$Kj2df/QnJwoVqJ1aL4KQFuTs7rRMe8bnjxi6eJk6XOL0mglTH.uLu', 'România', 'suceava', 31, 'masculin', NULL, NULL, '2025-08-10 10:14:24', 'pending', 0, '2025-08-10 15:53:57', 0, 0, 1),
 (10, 'Nesu', 'nesu@gmail.com', '$2y$10$lC61FaNSMDGmQ7u2xHsiGOdWVI1zDjLjAXyMmF.T/R3nuuHT4dEdG', 'ro', 'm', 18, 'masculin', NULL, NULL, '2025-08-10 10:50:57', 'pending', 0, '2025-08-10 14:05:47', 9950000, 10000000, 120);
+
+-- --------------------------------------------------------
+
+--
+-- Structură tabel pentru tabel `user_barn`
+--
+
+CREATE TABLE `user_barn` (
+  `user_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structură tabel pentru tabel `user_barn_info`
+--
+
+CREATE TABLE `user_barn_info` (
+  `user_id` int(11) NOT NULL,
+  `capacity` int(11) NOT NULL DEFAULT 16
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Eliminarea datelor din tabel `user_barn_info`
+--
+
+INSERT INTO `user_barn_info` (`user_id`, `capacity`) VALUES
+(1, 16);
 
 -- --------------------------------------------------------
 
@@ -671,17 +703,6 @@ CREATE TABLE `user_plants` (
   `planted_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Eliminarea datelor din tabel `user_plants`
---
-
-INSERT INTO `user_plants` (`user_id`, `slot_number`, `item_id`, `planted_at`) VALUES
-(1, 6, 1, '2025-08-15 16:49:29'),
-(1, 7, 1, '2025-08-15 16:49:40'),
-(1, 8, 1, '2025-08-15 16:49:42'),
-(1, 9, 1, '2025-08-15 16:49:44'),
-(1, 10, 1, '2025-08-15 16:49:45');
-
 -- --------------------------------------------------------
 
 --
@@ -713,7 +734,7 @@ CREATE TABLE `user_slots` (
 INSERT INTO `user_slots` (`user_id`, `slot_number`, `unlocked`, `required_level`, `slot_type`, `item_id`, `plant_date`, `water_interval`, `feed_interval`, `water_remaining`, `feed_remaining`, `timer_type`, `timer_end`, `water_times`, `feed_times`) VALUES
 (1, 1, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
 (1, 2, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
-(1, 3, 1, 0, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
+(1, 3, 1, 0, 'crop', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
 (1, 4, 1, 5, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
 (1, 5, 1, 10, 'tarc', NULL, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0),
 (1, 6, 1, 0, 'crop', 3, '2025-08-12 19:47:32', 0, 20, 0, 100, 'grow', '2025-08-12 18:47:33', 0, 100),
@@ -851,17 +872,6 @@ CREATE TABLE `user_slot_states` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Eliminarea datelor din tabel `user_slot_states`
---
-
-INSERT INTO `user_slot_states` (`user_id`, `slot_number`, `image`, `water_interval`, `feed_interval`, `water_remaining`, `feed_remaining`, `timer_type`, `timer_end`, `water_total`, `feed_total`) VALUES
-(1, 6, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0),
-(1, 7, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0),
-(1, 8, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0),
-(1, 9, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0),
-(1, 10, 'img/farm_items/image_plant_689f3ada8dd45.png', 5, 0, 0, 0, 'water', NULL, 0, 0);
-
---
 -- Indexuri pentru tabele eliminate
 --
 
@@ -906,6 +916,18 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexuri pentru tabele `user_barn`
+--
+ALTER TABLE `user_barn`
+  ADD PRIMARY KEY (`user_id`,`item_id`);
+
+--
+-- Indexuri pentru tabele `user_barn_info`
+--
+ALTER TABLE `user_barn_info`
+  ADD PRIMARY KEY (`user_id`);
+
+--
 -- Indexuri pentru tabele `user_last_helpers`
 --
 ALTER TABLE `user_last_helpers`
@@ -937,7 +959,7 @@ ALTER TABLE `user_slot_states`
 -- AUTO_INCREMENT pentru tabele `farm_items`
 --
 ALTER TABLE `farm_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT pentru tabele `friend_requests`

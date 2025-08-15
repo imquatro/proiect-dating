@@ -5,21 +5,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 require_once __DIR__ . '/../includes/db.php';
 
-function fa_upload($field, $current) {
-    if (!isset($_FILES[$field]) || empty($_FILES[$field]['name'])) {
-        return $current;
-    }
-    $dir = __DIR__ . '/../img/farm_items/';
-    if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
-    }
-    $name = basename($_FILES[$field]['name']);
-    $ext = pathinfo($name, PATHINFO_EXTENSION);
-    $target = uniqid($field . '_') . '.' . $ext;
-    move_uploaded_file($_FILES[$field]['tmp_name'], $dir . $target);
-    return 'img/farm_items/' . $target;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = intval($_POST['id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
@@ -31,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $feed_times = intval($_POST['feed_times'] ?? 0);
     $production = intval($_POST['production'] ?? 0);
     $price = intval($_POST['price'] ?? 0);
+    $sell_price = intval($_POST['sell_price'] ?? 0);
     $barn_capacity = intval($_POST['barn_capacity'] ?? 0);
     if ($item_type === 'plant') {
         $feed_interval = 0;
@@ -39,11 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $water_interval = 0;
         $water_times = 0;
     }
-    $imgPlant = fa_upload('image_plant', $_POST['current_image_plant'] ?? '');
-    $imgProduct = fa_upload('image_product', $_POST['current_image_product'] ?? '');
+    $imgName = trim($_POST['image_name'] ?? '');
+    $imgPlant = $imgName ? 'img/' . ltrim($imgName, '/') : '';
+    $imgProduct = $imgPlant;
     $imgReady = $imgPlant;
-    $stmt = $db->prepare('UPDATE farm_items SET name=?,item_type=?,slot_type=?,image_plant=?,image_ready=?,image_product=?,water_interval=?,feed_interval=?,water_times=?,feed_times=?,production=?,price=?,barn_capacity=? WHERE id=?');
-    $stmt->execute([$name,$item_type,$slot_type,$imgPlant,$imgReady,$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$production,$price,$barn_capacity,$id]);
+    $stmt = $db->prepare('UPDATE farm_items SET name=?,item_type=?,slot_type=?,image_plant=?,image_ready=?,image_product=?,water_interval=?,feed_interval=?,water_times=?,feed_times=?,production=?,price=?,sell_price=?,barn_capacity=? WHERE id=?');
+    $stmt->execute([$name,$item_type,$slot_type,$imgPlant,$imgReady,$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$production,$price,$sell_price,$barn_capacity,$id]);
     header('Location: ../diverse.php');
     exit;
 }
