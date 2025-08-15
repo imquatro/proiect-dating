@@ -11,8 +11,6 @@
 .fa-panel-window{
     width:90%;
     max-width:600px;
-    height:90vh;
-    max-height:570px;
     padding:20px;
     box-shadow:0 0 30px rgba(255,255,255,0.6);
     background:url('../img/bg2.png') center/cover no-repeat;
@@ -29,28 +27,36 @@
     flex:1;
     padding:8px;
     cursor:pointer;
+    background:#ddd;
+    border:none;
+    border-radius:4px;
 }
 #fa-admin-panel .fa-tab-header button.active{
-    background:#0066cc;
+    background:linear-gradient(90deg,#8bc34a,#4caf50);
     color:#fff;
 }
 #fa-admin-panel .fa-tab-content{
     display:none;
-    flex:1;
-    overflow-y:auto;
 }
 #fa-admin-panel .fa-tab-content.active{
     display:block;
 }
-#fa-item-form label{
+#fa-item-form label,
+#fa-edit-form label{
     display:block;
     margin-bottom:10px;
 }
 #fa-item-form input,
-#fa-item-form select{
+#fa-item-form select,
+#fa-edit-form input,
+#fa-edit-form select{
     width:100%;
     box-sizing:border-box;
     margin-top:4px;
+    padding:8px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    background:#fff;
 }
 .time-input{
     display:flex;
@@ -59,15 +65,58 @@
 .time-input input{
     width:33%;
 }
-.fa-form-actions{
+..fa-form-actions{
     text-align:right;
     margin-top:10px;
 }
-.fa-form-actions button{
+.fa-form-actions button,
+#fa-tab-delete button{
     padding:8px 16px;
-    background:#0066cc;
+    background:linear-gradient(90deg,#8bc34a,#4caf50);
     color:#fff;
     border:none;
     border-radius:4px;
     cursor:pointer;
+}
+
+.fa-edit-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+    gap:10px;
+    margin-bottom:10px;
+}
+.fa-edit-item{
+    position:relative;
+    width:100%;
+    padding-top:100%;
+    background:rgba(255,255,255,0.9);
+    border-radius:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+    overflow:hidden;
+    cursor:pointer;
+}
+.fa-edit-item img{
+    position:absolute;
+    top:0;left:0;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+.fa-edit-item.selected{
+    outline:3px solid #4caf50;
+}
+.fa-edit-item .qs-info{
+    position:absolute;
+    bottom:0;left:0;
+    width:100%;
+    background:rgba(0,0,0,0.6);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:5px 0;
+    font-size:12px;
+}
+.fa-edit-item .qs-price{
+    font-size:12px;
 }

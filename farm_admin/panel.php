@@ -11,7 +11,7 @@ $slotTypes = [
 ];
 
 require_once '../includes/db.php';
-$items = $db->query('SELECT id,name,image_plant FROM farm_items ORDER BY name')
+$items = $db->query('SELECT id,name,image_plant,price FROM farm_items ORDER BY name')
     ->fetchAll(PDO::FETCH_ASSOC);
 
 $ajax = isset($_GET['ajax']);
@@ -89,12 +89,21 @@ ob_start();
         </div>
         <div class="fa-tab-content" id="fa-tab-edit">
             <h2>Edit Items</h2>
-            <select id="fa-edit-select">
-                <option value="">Select item</option>
-                <?php foreach ($items as $item): ?>
-                <option value="<?= htmlspecialchars($item['id']); ?>"><?= htmlspecialchars($item['name']); ?></option>
+            <div class="fa-edit-grid">
+                <?php foreach ($items as $item):
+                    $img = $item['image_plant'];
+                    if (strpos($img, 'img/') !== 0) {
+                        $img = 'img/' . ltrim($img, '/');
+                    }
+                ?>
+                <div class="fa-edit-item" data-id="<?= htmlspecialchars($item['id']); ?>">
+                    <img src="<?= htmlspecialchars($img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+                    <div class="qs-info">
+                        <span class="qs-price"><?= htmlspecialchars($item['price']); ?></span>
+                    </div>
+                </div>
                 <?php endforeach; ?>
-            </select>
+            </div>
             <form id="fa-edit-form" action="farm_admin/update_item.php" method="post" style="display:none;">
                 <input type="hidden" name="id">
                 <input type="hidden" name="current_image_plant">

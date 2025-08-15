@@ -7,7 +7,6 @@ if (!isset($extraJs)) { $extraJs = ''; }
 if (!isset($extraCss)) { $extraCss = []; }
 if (!isset($baseHref)) { $baseHref = ''; }
 if (!isset($hideNav)) { $hideNav = false; }
-if (!isset($profilePhoto)) {
     $profilePhoto = 'default-avatar.png';
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -27,7 +26,6 @@ if (!isset($profilePhoto)) {
             }
         }
     }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
