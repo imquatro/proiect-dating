@@ -65,37 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('slotUpdated', e => {
         const { slotId, image, type } = e.detail || {};
-        if (!slotId) return;
-        const slot = document.getElementById(`slot-${slotId}`);
-        if (!slot) return;
-
-        if (type === 'remove') {
-            const itemImg = slot.querySelector('.slot-item');
-            if (itemImg) {
-                itemImg.style.display = 'none';
-                itemImg.src = '';
-            }
-            return;
-        }
-
-        if (type && type !== 'plant') {
-            if (image) {
-                const baseImg = slot.querySelector('.slot-base');
-                if (baseImg) baseImg.src = image;
-            }
-            return;
-        }
-
-        if (image) {
-            let itemImg = slot.querySelector('.slot-item');
-            if (!itemImg) {
-                itemImg = document.createElement('img');
-                itemImg.className = 'slot-item';
-                itemImg.style.display = 'none';
-                slot.appendChild(itemImg);
-            }
-            itemImg.src = image;
-            itemImg.style.display = 'block';
+        if (!slotId || !image || !type) return;
+        const baseImg = document.querySelector(`#slot-${slotId} .slot-base`);
+        if (baseImg) {
+            baseImg.src = image;
         }
     });
 
