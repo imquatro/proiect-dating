@@ -18,9 +18,10 @@ $userId = (int)$_SESSION['user_id'];
 
 $db->exec('CREATE TABLE IF NOT EXISTS user_barn (
     user_id INT NOT NULL,
+    slot_number INT NOT NULL,
     item_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 0,
-    PRIMARY KEY (user_id, item_id)
+    PRIMARY KEY (user_id, slot_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
 try {
@@ -46,10 +47,52 @@ try {
     if (strpos($img, 'img/') !== 0) {
         $img = 'img/' . ltrim($img, '/');
     }
-    $ins = $db->prepare('INSERT INTO user_barn (user_id, item_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)');
-    if (!$ins->execute([$userId, $itemId, $qty])) {
-        throw new Exception('Barn update failed');
+
+    $maxPerSlot = ($qty === 1) ? 1 : 1000;
+
+    $slotStmt = $db->prepare('SELECT slot_number, item_id, quantity FROM user_barn WHERE user_id = ? ORDER BY slot_number');
+    $slotStmt->execute([$userId]);
+    $rows = $slotStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $usedSlots = [];
+    $existingSlots = [];
+    foreach ($rows as $r) {
+        $usedSlots[] = (int)$r['slot_number'];
+        if ((int)$r['item_id'] === (int)$itemId) {
+            $existingSlots[] = $r;
+        }
     }
+
+    $remaining = $qty;
+    if ($qty > 1) {
+        foreach ($existingSlots as $es) {
+            if ($remaining <= 0) {
+                break;
+            }
+            $avail = $maxPerSlot - (int)$es['quantity'];
+            if ($avail > 0) {
+                $add = min($avail, $remaining);
+                $db->prepare('UPDATE user_barn SET quantity = quantity + ? WHERE user_id = ? AND slot_number = ?')
+                   ->execute([$add, $userId, (int)$es['slot_number']]);
+                $remaining -= $add;
+            }
+        }
+    }
+
+    $usedSet = array_flip($usedSlots);
+    $nextSlot = 1;
+    while ($remaining > 0) {
+        while (isset($usedSet[$nextSlot])) {
+            $nextSlot++;
+        }
+        $add = min($maxPerSlot, $remaining);
+        $db->prepare('INSERT INTO user_barn (user_id, slot_number, item_id, quantity) VALUES (?, ?, ?, ?)')
+           ->execute([$userId, $nextSlot, $itemId, $add]);
+        $usedSet[$nextSlot] = true;
+        $remaining -= $add;
+        $nextSlot++;
+    }
+
     $delPlant = $db->prepare('DELETE FROM user_plants WHERE user_id = ? AND slot_number = ?');
     $delPlant->execute([$userId, $slotId]);
     $delState = $db->prepare('DELETE FROM user_slot_states WHERE user_id = ? AND slot_number = ?');

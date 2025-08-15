@@ -10,15 +10,15 @@ require_once __DIR__ . '/includes/db.php';
 
 $db->exec('CREATE TABLE IF NOT EXISTS user_barn (
     user_id INT NOT NULL,
+    slot_number INT NOT NULL,
     item_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 0,
-    PRIMARY KEY (user_id, item_id)
+    PRIMARY KEY (user_id, slot_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
 $userId = (int)$_SESSION['user_id'];
 
-$stmt = $db->prepare('SELECT ub.item_id, ub.quantity, fi.image_product FROM user_barn ub JOIN farm_items fi ON fi.id = ub.item_id WHERE ub.user_id = ?');
-$stmt->execute([$userId]);
+$stmt = $db->prepare('SELECT ub.slot_number, ub.item_id, ub.quantity, fi.image_product FROM user_barn ub JOIN farm_items fi ON fi.id = ub.item_id WHERE ub.user_id = ? ORDER BY ub.slot_number');
 $items = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $img = $row['image_product'];
@@ -26,6 +26,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $img = 'img/' . ltrim($img, '/');
     }
     $items[] = [
+        'slot' => (int)$row['slot_number'],
         'item_id' => (int)$row['item_id'],
         'quantity' => (int)$row['quantity'],
         'image' => $img
