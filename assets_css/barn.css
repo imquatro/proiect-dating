@@ -53,8 +53,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -60%);
-    width: 60%;
-    height: 60%;
+    width: 50%;
+    height: 50%;
     object-fit: contain;
     z-index: 1;
 }

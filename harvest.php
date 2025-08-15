@@ -46,9 +46,14 @@ try {
     if (strpos($img, 'img/') !== 0) {
         $img = 'img/' . ltrim($img, '/');
     }
-    $db->prepare('DELETE FROM user_plants WHERE user_id = ? AND slot_number = ?')->execute([$userId, $slotId]);
-    $db->prepare('DELETE FROM user_slot_states WHERE user_id = ? AND slot_number = ?')->execute([$userId, $slotId]);
-    $db->prepare('INSERT INTO user_barn (user_id, item_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)')->execute([$userId, $itemId, $qty]);
+    $ins = $db->prepare('INSERT INTO user_barn (user_id, item_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)');
+    if (!$ins->execute([$userId, $itemId, $qty])) {
+        throw new Exception('Barn update failed');
+    }
+    $delPlant = $db->prepare('DELETE FROM user_plants WHERE user_id = ? AND slot_number = ?');
+    $delPlant->execute([$userId, $slotId]);
+    $delState = $db->prepare('DELETE FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
+    $delState->execute([$userId, $slotId]);
     $db->commit();
     echo json_encode(['success' => true, 'item' => ['item_id' => (int)$itemId, 'quantity' => $qty, 'image' => $img]]);
 } catch (Exception $e) {
