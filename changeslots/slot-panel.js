@@ -67,7 +67,7 @@ function initSlotPanel(container) {
                     if (data.success) {
                         const overlay = container.parentElement;
                         const evt = new CustomEvent('slotUpdated', {
-                            detail: { slotId: slotId, type: 'remove' }
+                            detail: { slotId: slotId, type: 'remove', image: data.image }
                         });
                         document.dispatchEvent(evt);
                         if (overlay) {
