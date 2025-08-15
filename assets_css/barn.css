@@ -37,19 +37,15 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;
-    overflow-y: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.barn-slots::-webkit-scrollbar {
-    display: none;
+    overflow: hidden;
+    justify-items: center;
+    align-content: start;
 }
 
 .barn-slot {
     position: relative;
-    width: 100%;
-    padding-top: 100%;
+    width: 100px;
+    height: 100px;
 }
 
 .barn-slot img {
@@ -60,6 +56,7 @@
     width: 60%;
     height: 60%;
     object-fit: contain;
+    z-index: 1;
 }
 
 .barn-slot .quantity {
@@ -71,6 +68,7 @@
     padding: 2px 4px;
     font-size: 12px;
     border-radius: 4px;
+    z-index: 2;
 }
 
 .barn-slot::after {
@@ -83,6 +81,18 @@
     background: rgba(0,0,0,0.15);
     border-radius: 50%;
     transform: translateX(-50%);
+}
+.barn-slot::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    width: 50%;
+    height: 25%;
+    background: rgba(0,0,0,0.15);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    z-index: 0;
 }
 
 .barn-slot.empty img,

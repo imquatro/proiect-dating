@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const slotsEl = document.getElementById('barn-slots');
-    const capacity = 4;
+    const capacity = 16;
 
     async function loadBarn() {
         const res = await fetch('barn_items.php');
