@@ -68,6 +68,11 @@ function initDeleteItems(panel){
                     const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${selectedId}"]`);
                     if (qsItem) qsItem.remove();
                 }
+                const manageSelect = document.querySelector('#fa-item-select');
+                if (manageSelect) {
+                    const opt = manageSelect.querySelector(`option[value="${selectedId}"]`);
+                    if (opt) opt.remove();
+                }
                 delBtn.disabled = true;
                 selectedId = null;
             }

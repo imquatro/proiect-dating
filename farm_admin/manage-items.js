@@ -29,10 +29,25 @@ function initManageItems(panel){
                 select.querySelector(`option[value="${id}"]`).remove();
                 img.style.display = 'none';
                 delBtn.disabled = true;
+
+                const adminPanel = document.getElementById('fa-admin-panel');
+                if (adminPanel) {
+                    const delItem = adminPanel.querySelector(`#fa-tab-delete .fa-delete-item[data-id="${id}"]`);
+                    if (delItem) delItem.remove();
+                    const editItem = adminPanel.querySelector(`#fa-tab-edit .fa-edit-item[data-id="${id}"]`);
+                    if (editItem) editItem.remove();
+                }
+
+                const qsPanel = document.getElementById('quickshop-panel');
+                if (qsPanel) {
+                    const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${id}"]`);
+                    if (qsItem) qsItem.remove();
+                }
             }
         });
     });
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('open-manage-items');
