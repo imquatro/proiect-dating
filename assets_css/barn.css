@@ -5,16 +5,15 @@
 }
 
 .barn-panel {
-    width: 90%;
-    max-width: 600px;
-    height: 90vh;
-    max-height: 570px;
+    width: 570px;
+    height: 570px;
     margin-top: 20px;
     position: relative;
     display: flex;
     flex-direction: column;
     padding: 20px;
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.8);
     background: url('../img/bg2.png') center/cover no-repeat;
 }
 
