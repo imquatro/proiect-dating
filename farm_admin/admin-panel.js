@@ -77,9 +77,19 @@ function initManageItems(panel){
 function initEditItems(panel){
     const select = panel.querySelector('#fa-edit-select');
     const form = panel.querySelector('#fa-edit-form');
+    const img = panel.querySelector('#fa-edit-image');
     if (!select || !form) return;
     select.addEventListener('change', () => {
         const id = select.value;
+        const opt = select.selectedOptions[0];
+        if (img) {
+            if (opt && opt.value) {
+                img.src = opt.dataset.image;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+        }
         if (!id) {
             form.style.display = 'none';
             return;
@@ -103,8 +113,9 @@ function initEditItems(panel){
                     form.querySelector('input[name="feed_seconds"]').value = data.feed_interval%60;
                     form.querySelector('input[name="water_times"]').value = data.water_times;
                     form.querySelector('input[name="feed_times"]').value = data.feed_times;
-                    form.querySelector('input[name="price"]').value = data.price;
                     form.querySelector('input[name="production"]').value = data.production;
+                    form.querySelector('input[name="price"]').value = data.price;
+                    form.querySelector('input[name="barn_capacity"]').value = data.barn_capacity;
                     initTypeToggle(form);
                 }
             });

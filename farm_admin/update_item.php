@@ -29,8 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $feed_interval = intval($_POST['feed_hours'] ?? 0) * 3600 + intval($_POST['feed_minutes'] ?? 0) * 60 + intval($_POST['feed_seconds'] ?? 0);
     $water_times = intval($_POST['water_times'] ?? 0);
     $feed_times = intval($_POST['feed_times'] ?? 0);
-    $price = intval($_POST['price'] ?? 0);
     $production = intval($_POST['production'] ?? 0);
+    $price = intval($_POST['price'] ?? 0);
+    $barn_capacity = intval($_POST['barn_capacity'] ?? 0);
     if ($item_type === 'plant') {
         $feed_interval = 0;
         $feed_times = 0;
@@ -40,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $imgPlant = fa_upload('image_plant', $_POST['current_image_plant'] ?? '');
     $imgProduct = fa_upload('image_product', $_POST['current_image_product'] ?? '');
-    $stmt = $db->prepare('UPDATE farm_items SET name=?,item_type=?,slot_type=?,image_plant=?,image_ready=?,image_product=?,water_interval=?,feed_interval=?,water_times=?,feed_times=?,price=?,production=? WHERE id=?');
-    $stmt->execute([$name,$item_type,$slot_type,$imgPlant,'',$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$price,$production,$id]);
+    $stmt = $db->prepare('UPDATE farm_items SET name=?,item_type=?,slot_type=?,image_plant=?,image_ready=?,image_product=?,water_interval=?,feed_interval=?,water_times=?,feed_times=?,production=?,price=?,barn_capacity=? WHERE id=?');
+    $stmt->execute([$name,$item_type,$slot_type,$imgPlant,'',$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$production,$price,$barn_capacity,$id]);
     header('Location: ../diverse.php');
     exit;
 }
