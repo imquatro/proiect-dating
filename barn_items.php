@@ -19,6 +19,7 @@ $db->exec('CREATE TABLE IF NOT EXISTS user_barn (
 $userId = (int)$_SESSION['user_id'];
 
 $stmt = $db->prepare('SELECT ub.slot_number, ub.item_id, ub.quantity, fi.image_product FROM user_barn ub JOIN farm_items fi ON fi.id = ub.item_id WHERE ub.user_id = ? ORDER BY ub.slot_number');
+$stmt->execute([$userId]);
 $items = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $img = $row['image_product'];

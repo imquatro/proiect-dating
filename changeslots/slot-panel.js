@@ -67,11 +67,11 @@ function initSlotPanel(container) {
                 .then(data => {
                     if (data.success) {
                         const overlay = container.parentElement;
+                        document.dispatchEvent(new CustomEvent('barnAddItem', { detail: data.item }));
                         const evt = new CustomEvent('slotUpdated', {
                             detail: { slotId: slotId, type: 'remove' }
                         });
                         document.dispatchEvent(evt);
-                        document.dispatchEvent(new CustomEvent('barnUpdated'));
                         if (overlay) {
                             overlay.classList.remove('active');
                             overlay.innerHTML = '';

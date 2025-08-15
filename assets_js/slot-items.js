@@ -106,10 +106,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         const slot = e.currentTarget.closest('.farm-slot');
         const slotId = slot.id.replace('slot-', '');
-        const action = e.currentTarget.textContent;
+        const actionEl = e.currentTarget;
+        const action = actionEl.textContent.trim();
 
         if (isVisitor && !canInteract) return;
-        if (action === 'HARVEST') {
+        if (actionEl.classList.contains('harvest')) {
             const res = await fetch('harvest.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -117,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await res.json();
             if (data.success) {
+                document.dispatchEvent(new CustomEvent('barnAddItem', { detail: data.item }));
                 const itemImg = slot.querySelector('.slot-item');
                 const actionEl = slot.querySelector('.slot-action');
                 const timerEl = slot.querySelector('.slot-timer');
