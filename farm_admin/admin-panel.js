@@ -30,6 +30,7 @@ function initAdminPanel(panel){
         updateFields();
     }
 
+    initEditItems(panel);
     initManageItems(panel);
 }
 
@@ -68,6 +69,60 @@ function initManageItems(panel){
             }
         });
     });
+}
+
+function initEditItems(panel){
+    const select = panel.querySelector('#fa-edit-select');
+    if (!select) return;
+    const form = panel.querySelector('#fa-edit-form');
+    const typeSel = form.querySelector('select[name="item_type"]');
+    const waterFields = form.querySelectorAll('.water-field');
+    const feedFields = form.querySelectorAll('.feed-field');
+
+    const toggleFields = () => {
+        if (typeSel.value === 'plant') {
+            waterFields.forEach(el => el.style.display = 'block');
+            feedFields.forEach(el => el.style.display = 'none');
+        } else {
+            waterFields.forEach(el => el.style.display = 'none');
+            feedFields.forEach(el => el.style.display = 'block');
+        }
+    };
+
+    typeSel.addEventListener('change', toggleFields);
+
+    select.addEventListener('change', () => {
+        const id = select.value;
+        if (!id) {
+            form.style.display = 'none';
+            return;
+        }
+        fetch(`farm_admin/get_item.php?id=${id}`)
+            .then(res => res.json())
+            .then(item => {
+                form.style.display = 'block';
+                form.querySelector('input[name="id"]').value = item.id;
+                form.querySelector('input[name="name"]').value = item.name;
+                typeSel.value = item.item_type;
+                form.querySelector('select[name="slot_type"]').value = item.slot_type;
+                form.querySelector('input[name="water_hours"]').value = Math.floor(item.water_interval / 3600);
+                form.querySelector('input[name="water_minutes"]').value = Math.floor(item.water_interval % 3600 / 60);
+                form.querySelector('input[name="water_seconds"]').value = item.water_interval % 60;
+                form.querySelector('input[name="feed_hours"]').value = Math.floor(item.feed_interval / 3600);
+                form.querySelector('input[name="feed_minutes"]').value = Math.floor(item.feed_interval % 3600 / 60);
+                form.querySelector('input[name="feed_seconds"]').value = item.feed_interval % 60;
+                form.querySelector('input[name="water_times"]').value = item.water_times;
+                form.querySelector('input[name="feed_times"]').value = item.feed_times;
+                form.querySelector('input[name="price"]').value = item.price;
+                form.querySelector('input[name="production"]').value = item.production;
+                form.querySelector('input[name="current_image_plant"]').value = item.image_plant;
+                form.querySelector('input[name="current_image_product"]').value = item.image_product;
+                form.querySelector('input[name="barn_capacity"]').value = item.barn_capacity;
+                toggleFields();
+            });
+    });
+
+    toggleFields();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

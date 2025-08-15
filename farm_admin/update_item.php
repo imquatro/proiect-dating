@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/../includes/db.php';
 
 function fa_upload($field, $current) {
-    if (empty($_FILES[$field]['name'])) {
+    if (!isset($_FILES[$field]) || empty($_FILES[$field]['name'])) {
         return $current;
     }
     $dir = __DIR__ . '/../img/farm_items/';

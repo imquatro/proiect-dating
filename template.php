@@ -6,6 +6,7 @@ if (!isset($pageCss)) { $pageCss = ''; }
 if (!isset($extraJs)) { $extraJs = ''; }
 if (!isset($extraCss)) { $extraCss = []; }
 if (!isset($baseHref)) { $baseHref = ''; }
+if (!isset($hideNav)) { $hideNav = false; }
 if (!isset($profilePhoto)) {
     $profilePhoto = 'default-avatar.png';
     if (session_status() === PHP_SESSION_NONE) {
@@ -61,6 +62,7 @@ if (!isset($profilePhoto)) {
     <div class="content">
         <?= $content ?>
     </div>
+    <?php if (!$hideNav): ?>
     <nav class="bottom-nav">
         <a href="welcome.php" class="nav-btn <?php if($activePage==='welcome') echo 'active';?>"><i class="fas fa-seedling"></i></a>
         <a href="barn.php" class="nav-btn <?php if($activePage==='barn') echo 'active';?>"><i class="fas fa-warehouse"></i></a>
@@ -70,6 +72,7 @@ if (!isset($profilePhoto)) {
         <a href="diverse.php" class="nav-btn <?php if($activePage==='diverse') echo 'active';?>"><i class="fas fa-table-cells-large"></i></a>
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>
+    <?php endif; ?>
 </div>
 <?php if (!$noScroll): ?>
 <script>
