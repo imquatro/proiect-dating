@@ -65,10 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('slotUpdated', e => {
         const { slotId, image, type } = e.detail || {};
-        if (!slotId || !image || !type) return;
-        const baseImg = document.querySelector(`#slot-${slotId} .slot-base`);
-        if (baseImg) {
-            baseImg.src = image;
+        if (!slotId || !image) return;
+        if (type) {
+            const baseImg = document.querySelector(`#slot-${slotId} .slot-base`);
+            if (baseImg) {
+                baseImg.src = image;
+            }
         }
     });
 
