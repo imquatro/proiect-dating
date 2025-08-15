@@ -41,7 +41,7 @@ function initQuickShop(container) {
         const waterTimes = itemElem.dataset.waterTimes;
         const feedTimes = itemElem.dataset.feedTimes;
 
-        fetch('quickshop/plant_item.php', {
+        fetch('/quickshop/plant_item.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ slot: slotId, item: itemId, price: price })
