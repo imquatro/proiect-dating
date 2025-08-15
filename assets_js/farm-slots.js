@@ -65,11 +65,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('slotUpdated', e => {
         const { slotId, image, type } = e.detail || {};
-        if (!slotId || !image) return;
+        if (!slotId) return;
+        const slot = document.getElementById(`slot-${slotId}`);
+        if (!slot) return;
+
         if (type) {
-            const baseImg = document.querySelector(`#slot-${slotId} .slot-base`);
-            if (baseImg) {
-                baseImg.src = image;
+            if (image) {
+                const baseImg = slot.querySelector('.slot-base');
+                if (baseImg) baseImg.src = image;
+            }
+            if (type === 'remove') {
+                const itemImg = slot.querySelector('.slot-item');
+                if (itemImg) {
+                    itemImg.style.display = 'none';
+                    itemImg.src = '';
+                }
+            }
+        } else if (image) {
+            const itemImg = slot.querySelector('.slot-item');
+            if (itemImg) {
+                itemImg.src = image;
+                itemImg.style.display = 'block';
             }
         }
     });
