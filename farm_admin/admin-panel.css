@@ -65,7 +65,7 @@
 .time-input input{
     width:33%;
 }
-..fa-form-actions{
+.fa-form-actions{
     text-align:right;
     margin-top:10px;
 }
@@ -109,7 +109,8 @@
 .fa-delete-item.selected{
     outline:3px solid #4caf50;
 }
-.fa-edit-item .qs-info{
+.fa-edit-item .qs-info,
+.fa-delete-item .qs-info{
     position:absolute;
     bottom:0;left:0;
     width:100%;
@@ -121,6 +122,7 @@
     padding:5px 0;
     font-size:12px;
 }
-.fa-edit-item .qs-price{
+.fa-edit-item .qs-price,
+.fa-delete-item .qs-price{
     font-size:12px;
 }

@@ -160,7 +160,7 @@ ob_start();
                 </div>
             </form>
         </div>
-         <div class="fa-tab-content" id="fa-tab-delete">
+        <div class="fa-tab-content" id="fa-tab-delete">
             <h2>Delete Items</h2>
             <div class="fa-delete-grid">
                 <?php foreach ($items as $item):
@@ -171,6 +171,9 @@ ob_start();
                 ?>
                 <div class="fa-delete-item" data-id="<?= htmlspecialchars($item['id']); ?>">
                     <img src="<?= htmlspecialchars($img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+                    <div class="qs-info">
+                        <span class="qs-price"><?= htmlspecialchars($item['price']); ?></span>
+                    </div>
                 </div>
                 <?php endforeach; ?>
             </div>
