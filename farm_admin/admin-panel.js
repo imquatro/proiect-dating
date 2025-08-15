@@ -63,6 +63,11 @@ function initDeleteItems(panel){
                 if (delItem) delItem.remove();
                 const editItem = panel.querySelector(`#fa-tab-edit .fa-edit-item[data-id="${selectedId}"]`);
                 if (editItem) editItem.remove();
+                const qsPanel = document.getElementById('quickshop-panel');
+                if (qsPanel) {
+                    const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${selectedId}"]`);
+                    if (qsItem) qsItem.remove();
+                }
                 delBtn.disabled = true;
                 selectedId = null;
             }
