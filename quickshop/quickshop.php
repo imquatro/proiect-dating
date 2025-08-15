@@ -59,7 +59,7 @@ $imagePrefix = $ajax ? '' : '../';
 
 ob_start();
 ?>
-<div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
+<div id="quickshop-panel" data-slot-id="<?php echo $slotId; ?>" data-slot-type="<?php echo htmlspecialchars($slotType); ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <?php if ($helper): ?>
     <div id="qs-helper-bar">
         <div class="qs-helper" data-user-id="<?= $helper['id']; ?>">

@@ -20,13 +20,14 @@ function initManageItems(panel){
         if (!id) return;
         fetch('farm_admin/delete_item.php', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id})
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({id})
         })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
                 select.querySelector(`option[value="${id}"]`).remove();
+                select.value = '';
                 img.style.display = 'none';
                 delBtn.disabled = true;
 
@@ -47,7 +48,6 @@ function initManageItems(panel){
         });
     });
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('open-manage-items');

@@ -1,9 +1,12 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    exit('Access denied');
+    http_response_code(403);
+    echo json_encode(['success' => false]);
+    exit;
 }
 
+header('Content-Type: application/json');
 require_once '../includes/db.php';
 
 function fa_upload($field) {
@@ -32,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = intval($_POST['price'] ?? 0);
     $production = intval($_POST['production'] ?? 0);
 
-    if($item_type === 'plant') {
+    if ($item_type === 'plant') {
         $feed_interval = 0;
         $feed_times = 0;
     } else {
@@ -44,11 +47,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imgReady = fa_upload('image_ready');
     $imgProduct = fa_upload('image_product');
 
-    $stmt = $db->prepare('INSERT INTO farm_items (name,item_type,slot_type,image_plant,image_ready,image_product,water_interval,feed_interval,water_times,feed_times,price,production) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
-    $stmt->execute([$name,$item_type,$slot_type,$imgPlant,$imgReady,$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$price,$production]);
-
-    header('Location: ../diverse.php');
+    try {
+        $stmt = $db->prepare('INSERT INTO farm_items (name,item_type,slot_type,image_plant,image_ready,image_product,water_interval,feed_interval,water_times,feed_times,price,production,active) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,1)');
+        $stmt->execute([$name,$item_type,$slot_type,$imgPlant,$imgReady,$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$price,$production]);
+        $id = $db->lastInsertId();
+        echo json_encode(['success' => true, 'item' => [
+            'id' => $id,
+            'name' => $name,
+            'item_type' => $item_type,
+            'slot_type' => $slot_type,
+            'image_plant' => $imgPlant,
+            'water_interval' => $water_interval,
+            'feed_interval' => $feed_interval,
+            'water_times' => $water_times,
+            'feed_times' => $feed_times,
+            'price' => $price,
+            'production' => $production
+        ]]);
+    } catch (Throwable $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
     exit;
 }
 
-echo 'Invalid request';
+echo json_encode(['success' => false]);
