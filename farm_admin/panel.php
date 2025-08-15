@@ -46,9 +46,6 @@ ob_start();
                 <label>Planted Image
                     <input type="file" name="image_plant" required>
                 </label>
-                <label>Ready Image
-                    <input type="file" name="image_ready" required>
-                </label>
                 <label>Product Image
                     <input type="file" name="image_product" required>
                 </label>
@@ -83,7 +80,7 @@ ob_start();
                     <input type="number" name="production" min="0" value="0">
                 </label>
                 <div class="fa-form-actions">
-                    <button type="submit">Save</button>
+                    <button type="submit">Add Item</button>
                 </div>
             </form>
         </div>
@@ -106,7 +103,6 @@ ob_start();
                 <form id="fa-edit-form" action="farm_admin/update_item.php" method="post" enctype="multipart/form-data" data-item-form>
                     <input type="hidden" name="id">
                     <input type="hidden" name="current_image_plant">
-                    <input type="hidden" name="current_image_ready">
                     <input type="hidden" name="current_image_product">
                     <input type="hidden" name="barn_capacity">
                     <label>Name
@@ -125,11 +121,8 @@ ob_start();
                             <?php endforeach; ?>
                         </select>
                     </label>
-                    <label>Planted Image
+                     <label>Planted Image
                         <input type="file" name="image_plant">
-                    </label>
-                    <label>Ready Image
-                        <input type="file" name="image_ready">
                     </label>
                     <label>Product Image
                         <input type="file" name="image_product">

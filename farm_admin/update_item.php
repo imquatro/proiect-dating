@@ -40,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $water_times = 0;
     }
     $imgPlant = fa_upload('image_plant', $_POST['current_image_plant'] ?? '');
-    $imgReady = fa_upload('image_ready', $_POST['current_image_ready'] ?? '');
     $imgProduct = fa_upload('image_product', $_POST['current_image_product'] ?? '');
+    $imgReady = $imgPlant;
     $stmt = $db->prepare('UPDATE farm_items SET name=?,item_type=?,slot_type=?,image_plant=?,image_ready=?,image_product=?,water_interval=?,feed_interval=?,water_times=?,feed_times=?,production=?,price=?,barn_capacity=? WHERE id=?');
     $stmt->execute([$name,$item_type,$slot_type,$imgPlant,$imgReady,$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$production,$price,$barn_capacity,$id]);
     header('Location: ../diverse.php');

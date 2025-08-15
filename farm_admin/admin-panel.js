@@ -96,7 +96,6 @@ function initEditItems(panel){
                 form.querySelector('select[name="item_type"]').value = data.item_type;
                 form.querySelector('select[name="slot_type"]').value = data.slot_type;
                 form.querySelector('input[name="current_image_plant"]').value = data.image_plant;
-                form.querySelector('input[name="current_image_ready"]').value = data.image_ready || '';
                 form.querySelector('input[name="current_image_product"]').value = data.image_product;
                 form.querySelector('input[name="barn_capacity"]').value = data.barn_capacity || 0;
 
