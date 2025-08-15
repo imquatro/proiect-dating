@@ -87,4 +87,24 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'timerEnd' => $timerEnd
     ];
 }
+
+// Include harvest-ready slots missing from user_slot_states
+$missingStmt = $db->prepare('SELECT us.slot_number, f.image_plant, us.water_interval, us.feed_interval, us.water_remaining, us.feed_remaining FROM user_slots us JOIN user_plants up ON up.user_id = us.user_id AND up.slot_number = us.slot_number JOIN farm_items f ON f.id = up.item_id LEFT JOIN user_slot_states ss ON ss.user_id = us.user_id AND ss.slot_number = us.slot_number WHERE us.user_id = ? AND ss.slot_number IS NULL AND us.water_remaining <= 0 AND us.feed_remaining <= 0');
+$missingStmt->execute([$targetId]);
+while ($row = $missingStmt->fetch(PDO::FETCH_ASSOC)) {
+    $slot = (int)$row['slot_number'];
+    $img = $row['image_plant'];
+    if (strpos($img, 'img/') !== 0) {
+        $img = 'img/' . ltrim($img, '/');
+    }
+    $states[$slot] = [
+        'image' => $img,
+        'waterInterval' => (int)$row['water_interval'],
+        'feedInterval' => (int)$row['feed_interval'],
+        'waterRemaining' => (int)$row['water_remaining'],
+        'feedRemaining' => (int)$row['feed_remaining'],
+        'timerType' => null,
+        'timerEnd' => null
+    ];
+}
 echo json_encode($states);

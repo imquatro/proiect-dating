@@ -102,12 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-     async function handleActionClick(e) {
+    async function handleActionClick(e) {
         e.stopPropagation();
         const slot = e.currentTarget.closest('.farm-slot');
         const slotId = slot.id.replace('slot-', '');
-        const action = e.currentTarget.textContent;
-
         const action = e.currentTarget.textContent;
 
         if (isVisitor && !canInteract) return;
