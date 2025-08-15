@@ -80,7 +80,7 @@ function initEditItems(panel){
     const form = panel.querySelector('#fa-edit-form');
     if (!select || !container || !form) return;
 
-    select.addEventListener('change', () => {
+     select.addEventListener('change', () => {
         const id = select.value;
         if (!id) {
             container.style.display = 'none';
@@ -116,6 +116,25 @@ function initEditItems(panel){
 
                 setupTypeSelect(form);
             });
+    });
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        fetch('farm_admin/update_item.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.text())
+        .then(() => {
+            const id = formData.get('id');
+            const name = formData.get('name');
+            const opt = select.querySelector(`option[value="${id}"]`);
+            if (opt) {
+                opt.textContent = name;
+            }
+            container.style.display = 'none';
+        });
     });
 }
 
