@@ -10,6 +10,7 @@ ob_start();
             <div class="diverse-item"><button type="button"><img src="img/setari.png" alt="Setari"></button></div>
         </div>
     </div>
+</div>
 <?php
 $content = ob_get_clean();
 $pageTitle = 'Diverse';
