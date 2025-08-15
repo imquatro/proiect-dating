@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false]);
     exit;
 }
-require_once __DIR__ . '/../includes/db.php';
+require_once '../includes/db.php';
 $data = json_decode(file_get_contents('php://input'), true);
 $id = intval($data['id'] ?? 0);
 if (!$id) {

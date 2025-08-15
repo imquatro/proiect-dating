@@ -4,7 +4,7 @@ if (!isset($_SESSION['user_id'])) {
     exit('Access denied');
 }
 
-require_once __DIR__ . '/../includes/db.php';
+require_once '../includes/db.php';
 
 function fa_upload($field) {
     if (empty($_FILES[$field]['name'])) {
@@ -41,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $imgPlant = fa_upload('image_plant');
+    $imgReady = fa_upload('image_ready');
     $imgProduct = fa_upload('image_product');
-    $imgReady = $imgPlant;
 
     $stmt = $db->prepare('INSERT INTO farm_items (name,item_type,slot_type,image_plant,image_ready,image_product,water_interval,feed_interval,water_times,feed_times,price,production) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
     $stmt->execute([$name,$item_type,$slot_type,$imgPlant,$imgReady,$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$price,$production]);
