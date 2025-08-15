@@ -41,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $imgPlant = fa_upload('image_plant', $_POST['current_image_plant'] ?? '');
     $imgProduct = fa_upload('image_product', $_POST['current_image_product'] ?? '');
-    $stmt = $db->prepare('UPDATE farm_items SET name=?,item_type=?,slot_type=?,image_plant=?,image_ready=?,image_product=?,water_interval=?,feed_interval=?,water_times=?,feed_times=?,production=?,price=?,barn_capacity=? WHERE id=?');
-    $stmt->execute([$name,$item_type,$slot_type,$imgPlant,'',$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$production,$price,$barn_capacity,$id]);
+    $stmt = $db->prepare('UPDATE farm_items SET name=?,item_type=?,slot_type=?,image_plant=?,image_product=?,water_interval=?,feed_interval=?,water_times=?,feed_times=?,production=?,price=?,barn_capacity=? WHERE id=?');
+    $stmt->execute([$name,$item_type,$slot_type,$imgPlant,$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$production,$price,$barn_capacity,$id]);
     header('Location: ../diverse.php');
     exit;
 }
