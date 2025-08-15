@@ -7,6 +7,7 @@ function initSlotPanel(container) {
     const changeBtn = container.querySelector('#cs-slot-change');
     const shopBtn = container.querySelector('#cs-slot-shop');
     const removeBtn = container.querySelector('#cs-slot-remove');
+    const harvestBtn = container.querySelector('#cs-slot-harvest');
     const slotImage = container.querySelector('#cs-slot-image');
     const slotId = slotImage ? slotImage.alt.replace(/\D/g, '') : '';
 
@@ -55,7 +56,7 @@ function initSlotPanel(container) {
         });
     }
 
-    if (harvestBtn) {
+     if (harvestBtn) {
         harvestBtn.addEventListener('click', () => {
             fetch('harvest.php', {
                 method: 'POST',
@@ -72,15 +73,11 @@ function initSlotPanel(container) {
                         document.dispatchEvent(evt);
                         document.dispatchEvent(new CustomEvent('barnUpdated'));
                         if (overlay) {
-                            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
-                                .then(res => res.text())
-                                .then(html => {
-                                    overlay.innerHTML = html;
-                                    const panel = overlay.querySelector('#cs-slot-panel');
-                                    if (window.initSlotPanel && panel) {
-                                        window.initSlotPanel(panel);
-                                    }
-                                });
+                            overlay.classList.remove('active');
+                            overlay.innerHTML = '';
+                        }
+                        if (content) {
+                            content.classList.remove('no-scroll');
                         }
                     }
                 });
