@@ -1,11 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const slotsEl = document.getElementById('barn-slots');
 
-    async function loadBarn() {
-        const res = await fetch('barn_items.php');
-        const data = await res.json();
-        const capacity = data.capacity || 16;
-        const items = data.items || [];
+    function renderSlots(capacity, items) {
         const map = {};
         for (const it of items) {
             map[it.slot] = it;
@@ -22,6 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 slot.className = 'barn-slot empty';
             }
             slotsEl.appendChild(slot);
+        }
+    }
+
+    async function loadBarn() {
+        try {
+            const res = await fetch('barn_items.php');
+            if (!res.ok) throw new Error('network');
+            const data = await res.json();
+            renderSlots(data.capacity || 16, data.items || []);
+        } catch (err) {
+            console.error('Failed to load barn data', err);
+            renderSlots(16, []);
         }
     }
 
