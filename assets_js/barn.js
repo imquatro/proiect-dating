@@ -1,15 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const slotsEl = document.getElementById('barn-slots');
-    const capacity = 16;
 
     async function loadBarn() {
         const res = await fetch('barn_items.php');
-        const items = await res.json();
+        const data = await res.json();
+        const capacity = data.capacity || 16;
+        const items = data.items || [];
+        const map = {};
+        for (const it of items) {
+            map[it.slot] = it;
+        }
         slotsEl.innerHTML = '';
-        for (let i = 0; i < capacity; i++) {
+        for (let i = 1; i <= capacity; i++) {
             const slot = document.createElement('div');
-            if (items[i]) {
-                const it = items[i];
+            const it = map[i];
+            if (it) {
                 slot.className = 'barn-slot';
                 slot.dataset.item = it.item_id;
                 slot.innerHTML = `<img src="${it.image}" alt=""><div class="quantity">${it.quantity}</div>`;
@@ -21,26 +26,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addItem(item) {
-        // Try to update an existing slot with the same item
-        const slots = slotsEl.querySelectorAll('.barn-slot');
-        for (const slot of slots) {
-            if (parseInt(slot.dataset.item, 10) === item.item_id) {
-                const qty = slot.querySelector('.quantity');
-                if (qty) {
-                    qty.textContent = parseInt(qty.textContent, 10) + item.quantity;
+        const slots = Array.from(slotsEl.querySelectorAll('.barn-slot'));
+        const maxPerSlot = item.quantity === 1 ? 1 : 1000;
+        let remaining = item.quantity;
+
+        if (maxPerSlot > 1) {
+            for (const slot of slots) {
+                if (parseInt(slot.dataset.item, 10) === item.item_id) {
+                    const qtyEl = slot.querySelector('.quantity');
+                    const current = qtyEl ? parseInt(qtyEl.textContent, 10) : 0;
+                    const space = maxPerSlot - current;
+                    if (space > 0) {
+                        const add = Math.min(space, remaining);
+                        qtyEl.textContent = current + add;
+                        remaining -= add;
+                        if (remaining <= 0) return;
+                    }
                 }
-                return;
             }
         }
 
-        // Otherwise find the first empty slot and fill it
-        for (const slot of slots) {
-            if (slot.classList.contains('empty')) {
-                slot.classList.remove('empty');
-                slot.dataset.item = item.item_id;
-                slot.innerHTML = `<img src="${item.image}" alt=""><div class="quantity">${item.quantity}</div>`;
-                return;
-            }
+        while (remaining > 0) {
+            const empty = slotsEl.querySelector('.barn-slot.empty');
+            if (!empty) break;
+            const add = Math.min(maxPerSlot, remaining);
+            empty.classList.remove('empty');
+            empty.dataset.item = item.item_id;
+            empty.innerHTML = `<img src="${item.image}" alt=""><div class="quantity">${add}</div>`;
+            remaining -= add;
         }
     }
 
