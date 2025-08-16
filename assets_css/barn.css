@@ -5,9 +5,9 @@
 }
 
 .barn-panel {
-    width: 570px;
-    height: 570px;
-    margin-top: 20px;
+    width: min(570px, calc(100vw - 40px));
+    height: min(570px, calc(100vh - 80px));
+    margin: 20px auto;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -37,7 +37,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;
-    overflow: hidden;
+    overflow: auto;
     justify-items: center;
     align-content: start;
 }
@@ -46,6 +46,17 @@
     position: relative;
     width: 100px;
     height: 100px;
+}
+
+.barn-slot.empty::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
 .barn-slot img {
