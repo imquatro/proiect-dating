@@ -117,5 +117,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php endif; ?>
 <script src="assets_js/message-notification.js"></script>
 <script src="moneysistem/money.js"></script>
+<script src="assets_js/interaction-blocker.js"></script>
 <?= $extraJs ?>
 </html>

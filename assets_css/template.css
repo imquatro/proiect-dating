@@ -10,6 +10,18 @@ html, body {
     box-sizing: border-box;
 }
 
+/* Prevent selecting text or images across the site */
+body, body *:not(input):not(textarea):not(select) {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+img {
+    -webkit-user-drag: none;
+}
+
 .app-frame {
     position: relative;
     max-width: 620px;
