@@ -52,15 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (state.waterRemaining > 0) {
-            actionEl.textContent = 'WATER';
+            actionEl.dataset.action = 'water';
+            actionEl.innerHTML = '<img src="img/uda.png" alt="Water">';
             actionEl.classList.remove('harvest');
             actionEl.style.display = 'flex';
         } else if (state.feedRemaining > 0) {
-            actionEl.textContent = 'FEED';
+            actionEl.dataset.action = 'feed';
+            actionEl.innerHTML = '<img src="img/hraneste.png" alt="Feed">';
             actionEl.classList.remove('harvest');
             actionEl.style.display = 'flex';
         } else {
-            actionEl.textContent = 'HARVEST';
+            actionEl.dataset.action = 'harvest';
+            actionEl.innerHTML = '<img src="img/ready.png" alt="Harvest">';
             actionEl.classList.add('harvest');
             actionEl.style.display = 'flex';
         }
@@ -107,10 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const slot = e.currentTarget.closest('.farm-slot');
         const slotId = slot.id.replace('slot-', '');
         const actionEl = e.currentTarget;
-        const action = actionEl.textContent.trim();
+        const action = actionEl.dataset.action;
 
         if (isVisitor && !canInteract) return;
-        if (actionEl.classList.contains('harvest')) {
+        if (action === 'harvest') {
             const res = await fetch('harvest.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -131,13 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return;
         }
-
         // Refresh states to avoid acting on stale data
         await loadStates();
         const state = slotStates[slotId];
         if (!state) return;
 
-        if (action === 'WATER') {
+        if (action === 'water') {
             if (state.waterRemaining > 0) {
                 state.waterRemaining--;
                 if (state.waterInterval > 0) {
@@ -150,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 alert('This slot is already watered');
             }
-        } else if (action === 'FEED') {
+        } else if (action === 'feed') {
             if (state.feedRemaining > 0) {
                 state.feedRemaining--;
                 if (state.feedInterval > 0) {
@@ -165,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-
     document.addEventListener('slotUpdated', e => {
         const { slotId, image, waterInterval, feedInterval, waterTimes, feedTimes, type } = e.detail || {};
         if (!slotId) return;
