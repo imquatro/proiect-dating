@@ -8,6 +8,9 @@ if (!isset($_SESSION['user_id'])) {
 }
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/slot_helpers.php';
+require_once __DIR__ . '/includes/barn_helpers.php';
+
+ensureBarnSchema($db);
 
 $data = json_decode(file_get_contents('php://input'), true);
 $slotId = isset($data['slot']) ? (int)$data['slot'] : 0;
@@ -16,19 +19,6 @@ if (!$slotId) {
     exit;
 }
 $userId = (int)$_SESSION['user_id'];
-
-$db->exec('CREATE TABLE IF NOT EXISTS user_barn (
-    user_id INT NOT NULL,
-    slot_number INT NOT NULL,
-    item_id INT NOT NULL,
-    quantity INT NOT NULL DEFAULT 0,
-    PRIMARY KEY (user_id, slot_number)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
-
-$db->exec('CREATE TABLE IF NOT EXISTS user_barn_info (
-    user_id INT NOT NULL PRIMARY KEY,
-    capacity INT NOT NULL DEFAULT 16
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
 try {
     $db->beginTransaction();
