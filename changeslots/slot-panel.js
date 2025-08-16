@@ -10,6 +10,7 @@ function initSlotPanel(container) {
     const harvestBtn = container.querySelector('#cs-slot-harvest');
     const slotImage = container.querySelector('#cs-slot-image');
     const slotId = slotImage ? slotImage.alt.replace(/\D/g, '') : '';
+    const slotNum = parseInt(slotId, 10);
 
     if (changeBtn) {
         changeBtn.addEventListener('click', () => {
@@ -56,12 +57,13 @@ function initSlotPanel(container) {
         });
     }
 
-     if (harvestBtn) {
+    if (harvestBtn && slotNum) {
         harvestBtn.addEventListener('click', () => {
             fetch('harvest.php', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slot: parseInt(slotId, 10) })
+                body: JSON.stringify({ slot: slotNum })
             })
                 .then(res => res.json())
                 .then(data => {
@@ -70,7 +72,7 @@ function initSlotPanel(container) {
                         document.dispatchEvent(new CustomEvent('barnAddItem', { detail: data.item }));
                         document.dispatchEvent(new CustomEvent('barnUpdated'));
                         const evt = new CustomEvent('slotUpdated', {
-                            detail: { slotId: slotId, image: data.slotImage, type: 'remove' }
+                            detail: { slotId: slotNum, image: data.slotImage, type: 'remove' }
                         });
                         document.dispatchEvent(evt);
                         if (overlay) {
@@ -80,28 +82,32 @@ function initSlotPanel(container) {
                         if (content) {
                             content.classList.remove('no-scroll');
                         }
+                    } else {
+                        alert('Harvest failed');
                     }
-                });
+                })
+                .catch(() => alert('Harvest request failed'));
         });
     }
 
-    if (removeBtn) {
+    if (removeBtn && slotNum) {
         removeBtn.addEventListener('click', () => {
             fetch('quickshop/remove_item.php', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slot: slotId })
+                body: JSON.stringify({ slot: slotNum })
             })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
                         const overlay = container.parentElement;
                         const evt = new CustomEvent('slotUpdated', {
-                            detail: { slotId: slotId, image: data.slotImage, type: 'remove' }
+                            detail: { slotId: slotNum, image: data.slotImage, type: 'remove' }
                         });
                         document.dispatchEvent(evt);
                         if (overlay) {
-                            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
+                            fetch(`changeslots/slot-panel.php?slot=${slotNum}&ajax=1`)
                                 .then(res => res.text())
                                 .then(html => {
                                     overlay.innerHTML = html;
@@ -111,8 +117,11 @@ function initSlotPanel(container) {
                                     }
                                 });
                         }
+                    } else {
+                        alert('Remove failed');
                     }
-                });
+                })
+                .catch(() => alert('Remove request failed'));
         });
     }
 
