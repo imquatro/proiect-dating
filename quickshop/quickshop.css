@@ -1,18 +1,46 @@
 #quickshop-panel {
-    width: 600px;
-    height: 570px;
+    width: 90%;
+    max-width: 600px;
+    height: 90vh;
+    max-height: 570px;
+    margin: 20px auto 0;
     position: relative;
     display: flex;
     flex-direction: column;
     padding: 20px;
+    box-sizing: border-box;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
     background: url("../img/bg2.png") center/cover no-repeat;
+}
+
+#qs-helper-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+#qs-helper-bar::-webkit-scrollbar {
+    display: none;
+}
+.qs-helper {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+}
+.qs-helper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
 }
 
 .quickshop-grid {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     grid-auto-rows: 1fr;
     gap: 10px;
     overflow-y: auto;

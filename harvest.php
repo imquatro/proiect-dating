@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/slot_helpers.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $slotId = isset($data['slot']) ? (int)$data['slot'] : 0;
@@ -22,6 +23,11 @@ $db->exec('CREATE TABLE IF NOT EXISTS user_barn (
     item_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 0,
     PRIMARY KEY (user_id, slot_number)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
+
+$db->exec('CREATE TABLE IF NOT EXISTS user_barn_info (
+    user_id INT NOT NULL PRIMARY KEY,
+    capacity INT NOT NULL DEFAULT 16
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
 try {
@@ -49,6 +55,14 @@ try {
     }
 
     $maxPerSlot = ($qty === 1) ? 1 : 1000;
+
+    $capStmt = $db->prepare('SELECT capacity FROM user_barn_info WHERE user_id = ?');
+    $capStmt->execute([$userId]);
+    $capacity = (int)$capStmt->fetchColumn();
+    if (!$capacity) {
+        $capacity = 16;
+        $db->prepare('INSERT INTO user_barn_info (user_id, capacity) VALUES (?, ?)')->execute([$userId, $capacity]);
+    }
 
     $slotStmt = $db->prepare('SELECT slot_number, item_id, quantity FROM user_barn WHERE user_id = ? ORDER BY slot_number');
     $slotStmt->execute([$userId]);
@@ -78,12 +92,14 @@ try {
             }
         }
     }
-
     $usedSet = array_flip($usedSlots);
     $nextSlot = 1;
-    while ($remaining > 0) {
-        while (isset($usedSet[$nextSlot])) {
+    while ($remaining > 0 && count($usedSet) < $capacity) {
+        while (isset($usedSet[$nextSlot]) && $nextSlot <= $capacity) {
             $nextSlot++;
+        }
+        if ($nextSlot > $capacity) {
+            break;
         }
         $add = min($maxPerSlot, $remaining);
         $db->prepare('INSERT INTO user_barn (user_id, slot_number, item_id, quantity) VALUES (?, ?, ?, ?)')
@@ -97,8 +113,17 @@ try {
     $delPlant->execute([$userId, $slotId]);
     $delState = $db->prepare('DELETE FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
     $delState->execute([$userId, $slotId]);
+
+    $base = get_slot_image($slotId, $userId);
+    $basePath = __DIR__ . '/' . $base;
+    $baseImage = $base . '?v=' . (file_exists($basePath) ? filemtime($basePath) : time());
+
     $db->commit();
-    echo json_encode(['success' => true, 'item' => ['item_id' => (int)$itemId, 'quantity' => $qty, 'image' => $img]]);
+    echo json_encode([
+        'success' => true,
+        'item' => ['item_id' => (int)$itemId, 'quantity' => $qty, 'image' => $img],
+        'slotImage' => $baseImage
+    ]);
 } catch (Exception $e) {
     $db->rollBack();
     echo json_encode(['success' => false]);

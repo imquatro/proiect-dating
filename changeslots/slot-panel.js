@@ -68,8 +68,9 @@ function initSlotPanel(container) {
                     if (data.success) {
                         const overlay = container.parentElement;
                         document.dispatchEvent(new CustomEvent('barnAddItem', { detail: data.item }));
+                        document.dispatchEvent(new CustomEvent('barnUpdated'));
                         const evt = new CustomEvent('slotUpdated', {
-                            detail: { slotId: slotId, type: 'remove' }
+                            detail: { slotId: slotId, image: data.slotImage, type: 'remove' }
                         });
                         document.dispatchEvent(evt);
                         if (overlay) {
@@ -96,7 +97,7 @@ function initSlotPanel(container) {
                     if (data.success) {
                         const overlay = container.parentElement;
                         const evt = new CustomEvent('slotUpdated', {
-                            detail: { slotId: slotId, type: 'remove' }
+                            detail: { slotId: slotId, image: data.slotImage, type: 'remove' }
                         });
                         document.dispatchEvent(evt);
                         if (overlay) {
