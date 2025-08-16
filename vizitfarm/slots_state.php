@@ -32,15 +32,22 @@ while ($row = $slotStmt->fetch(PDO::FETCH_ASSOC)) {
     $slot_id = (int)$row['slot_number'];
     $required = get_slot_required_level($slot_id);
     $isUnlocked = !empty($row['unlocked']);
+    $isUnlocked = !empty($row['unlocked']);
     if (!$isUnlocked && $required > 0 && $level >= $required && $slot_id <= $total_slots - 5) {
         $isUnlocked = true;
     }
-    $imgPath = get_slot_image($slot_id, $visitId);
-    $imgFullPath = __DIR__ . '/../' . $imgPath;
-    $imgSrc = $imgPath . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
+    $baseImg = get_slot_image($slot_id, $visitId);
+    $imgFullPath = __DIR__ . '/../' . $baseImg;
+    $imgSrc = $baseImg . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
+    $plantImg = get_planted_image($slot_id, $visitId);
+    if ($plantImg) {
+        $plantFullPath = __DIR__ . '/../' . $plantImg;
+        $plantImg .= '?v=' . (file_exists($plantFullPath) ? filemtime($plantFullPath) : time());
+    }
     $slots[] = [
         'id' => $slot_id,
         'image' => $imgSrc,
+        'plant' => $plantImg,
         'unlocked' => $isUnlocked,
         'required' => $required,
         'premium' => ($slot_id > $total_slots - 5)

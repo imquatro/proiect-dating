@@ -23,8 +23,8 @@ if ($apply && $slotId && isset($_SESSION['user_id'])) {
                           VALUES (?, ?, ?, 1, 0)
                           ON DUPLICATE KEY UPDATE slot_type = VALUES(slot_type)')
                 ->execute([$userId, $slotId, 'tarc']);
-            $image = get_slot_image($slotId, $userId) . '?v=' . time();
-            $response = ['success' => true, 'image' => $image];
+            $baseImage = get_slot_image($slotId, $userId) . '?v=' . time();
+            $response = ['success' => true, 'image' => $baseImage];
         } else {
             $response = ['success' => false, 'error' => 'Insufficient funds'];
         }

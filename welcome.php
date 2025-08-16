@@ -47,9 +47,9 @@ for ($i = 0; $i < $total_slots; $i++) {
         $isUnlocked = true;
     }
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
-    $imgPath = get_slot_image($slot_id, $userId);
-    $imgFullPath = __DIR__ . '/' . $imgPath;
-    $imgSrc = $imgPath . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
+    $baseImg = get_slot_image($slot_id, $userId);
+    $imgFullPath = __DIR__ . '/' . $baseImg;
+    $imgSrc = $baseImg . '?v=' . (file_exists($imgFullPath) ? filemtime($imgFullPath) : time());
     echo '<div class="' . $classes . '" id="slot-' . $slot_id . '">';
     echo '<img class="slot-base" src="' . $imgSrc . '" alt="slot">';
     echo '<img class="slot-item" alt="item" style="display:none;">';

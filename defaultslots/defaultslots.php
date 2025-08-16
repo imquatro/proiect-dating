@@ -52,8 +52,9 @@ ob_start();
             if ($i === 1) { $classes .= ' active'; }
             $classes .= $isUnlocked ? ' open' : ' locked';
         ?>
+        <?php $baseImg = get_slot_image($i, $userId); ?>
         <div class="<?php echo $classes; ?>" data-slot="<?php echo $i; ?>">
-            <img src="../<?php echo get_slot_image($i, $userId); ?>" class="slot-img" alt="Slot <?php echo $i; ?>">
+            <img src="../<?php echo $baseImg; ?>" class="slot-img" alt="Slot <?php echo $i; ?>">
             <?php if (!$isUnlocked): ?>
                 <?php if ($i > $total_slots - 5): ?>
                     <div class="ds-overlay"><img src="../img/gold.png" alt="Gold"></div>
