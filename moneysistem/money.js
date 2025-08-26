@@ -2,8 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const moneyEl = document.getElementById('moneyAmount');
     const goldEl = document.getElementById('goldAmount');
 
-    let currentMoney = parseInt(moneyEl?.textContent || '0', 10);
-    let currentGold = parseInt(goldEl?.textContent || '0', 10);
+    let currentMoney = parseInt(moneyEl?.textContent.replace(/\./g, '') || '0', 10);
+    let currentGold = parseInt(goldEl?.textContent.replace(/\./g, '') || '0', 10);
+
+    function formatNumber(value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
 
     function animateValue(el, start, end) {
         const duration = 800;
@@ -11,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function frame(now) {
             const progress = Math.min((now - startTime) / duration, 1);
-            const value = Math.round(start + (end - start) * progress);
-            el.textContent = value;
+            const value = Math.round(start + (end - start) * progress);␊
+            el.textContent = formatNumber(value);
             if (progress < 1) {
                 requestAnimationFrame(frame);
             }

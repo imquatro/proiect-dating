@@ -16,8 +16,11 @@ if (isset($_SESSION['user_id'])) {
         $gold = (int)$wallet['gold'];
     }
 }
+// Format numbers with dot as thousands separator
+$moneyFormatted = number_format($money, 0, '.', '.');
+$goldFormatted  = number_format($gold, 0, '.', '.');
 ?>
 <div class="wallet-display">
-    <div class="currency money"><img src="img/money.png" alt="Money"><span id="moneyAmount"><?= htmlspecialchars($money) ?></span></div>
-    <div class="currency gold"><img src="img/gold.png" alt="Gold"><span id="goldAmount"><?= htmlspecialchars($gold) ?></span></div>
+    <div class="currency money"><img src="img/money.png" alt="Money"><span id="moneyAmount"><?= htmlspecialchars($moneyFormatted) ?></span></div>
+    <div class="currency gold"><img src="img/gold.png" alt="Gold"><span id="goldAmount"><?= htmlspecialchars($goldFormatted) ?></span></div>
 </div>
