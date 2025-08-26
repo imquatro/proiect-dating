@@ -1,8 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
     const slotsEl = document.getElementById('barn-slots');
+    const settingsBtn = document.getElementById('barn-settings');
+    let currentCapacity = 0;
 
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function openSettings() {
+        const overlay = document.createElement('div');
+        overlay.className = 'sell-overlay';
+        overlay.innerHTML = `
+            <div class="settings-card">
+                <div class="settings-title">Slots: <span class="settings-capacity">${currentCapacity}</span></div>
+                <div class="buy-options">
+                    <button class="buy-money"><img src="img/money.png" alt=""><span>10.000.000</span></button>
+                    <button class="buy-gold"><img src="img/gold.png" alt=""><span>50</span></button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) overlay.remove();
+        });
+
+        const capEl = overlay.querySelector('.settings-capacity');
+
+        function purchase(type) {
+            fetch('barn_buy_slot.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `type=${type}`
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        currentCapacity = data.capacity || currentCapacity;
+                        capEl.textContent = currentCapacity;
+                        overlay.remove();
+                        document.dispatchEvent(new Event('barnUpdated'));
+                        if (typeof updateCurrency === 'function') {
+                            updateCurrency(data.money, data.gold);
+                        }
+                    } else {
+                        let msg = 'Purchase failed';
+                        if (data.error === 'not_enough_money') msg = 'You do not have enough money.';
+                        else if (data.error === 'not_enough_gold') msg = 'You do not have enough gold.';
+                        alert(msg);
+                    }
+                })
+                .catch(() => alert('Purchase failed'));
+        }
+
+        overlay.querySelector('.buy-money').addEventListener('click', () => purchase('money'));
+        overlay.querySelector('.buy-gold').addEventListener('click', () => purchase('gold'));
     }
 
     function openSell(slot) {
@@ -32,10 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const input = overlay.querySelector('input');
         const totalEl = overlay.querySelector('.sell-total span');
-
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
 
         function updateTotal() {
             let val = parseInt(input.value, 10);
@@ -111,9 +158,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('barn_items.php');
             if (!res.ok) throw new Error('network');
             const data = await res.json();
-            renderSlots(data.capacity || 16, data.items || []);
+            currentCapacity = data.capacity || 16;
+            renderSlots(currentCapacity, data.items || []);
         } catch (err) {
             console.error('Failed to load barn data', err);
+            currentCapacity = 16;
             renderSlots(16, []);
         }
     }
@@ -151,6 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
             remaining -= add;
         }
     }
+
+    if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
 
     loadBarn();
     document.addEventListener('barnUpdated', loadBarn);

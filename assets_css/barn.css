@@ -217,3 +217,41 @@
     width: 24px;
     height: 24px;
 }
+
+.settings-card {
+    background: url('../img/bg2.png') center/cover no-repeat;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.settings-title {
+    font-weight: bold;
+}
+
+.buy-options {
+    display: flex;
+    gap: 8px;
+}
+
+.buy-options button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0,0,0,0.4);
+    border: none;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.buy-options img {
+    width: 24px;
+    height: 24px;
