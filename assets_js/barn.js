@@ -1,13 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
     const slotsEl = document.getElementById('barn-slots');
 
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
     function openSell(slot) {
         const itemId = parseInt(slot.dataset.item, 10);
         const slotNumber = parseInt(slot.dataset.slot, 10);
         const name = slot.dataset.name || '';
         const price = parseInt(slot.dataset.price, 10) || 0;
         const qtyEl = slot.querySelector('.quantity');
-        const maxQty = qtyEl ? parseInt(qtyEl.textContent, 10) : 1;
+        const maxQty = qtyEl ? parseInt(qtyEl.textContent.replace(/\./g, ''), 10) : 1;
         const imgSrc = slot.querySelector('img').src;
 
         const overlay = document.createElement('div');
@@ -21,20 +25,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="number" min="1" max="${maxQty}" value="${maxQty}">
                     <button class="inc">+</button>
                 </div>
-                <div class="sell-total">${price * maxQty}</div>
+                <div class="sell-total"><img src="img/money.png" alt=""><span>${price * maxQty}</span></div>
                 <button class="sell-btn">Sell</button>
             </div>`;
         document.body.appendChild(overlay);
 
         const input = overlay.querySelector('input');
-        const totalEl = overlay.querySelector('.sell-total');
-
+        const totalEl = overlay.querySelector('.sell-total span');
         function updateTotal() {
             let val = parseInt(input.value, 10);
             if (isNaN(val) || val < 1) val = 1;
             if (val > maxQty) val = maxQty;
             input.value = val;
-            totalEl.textContent = price * val;
+            totalEl.textContent = formatNumber(price * val);
         }
 
         overlay.querySelector('.dec').addEventListener('click', () => {
@@ -88,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 slot.dataset.item = it.item_id;
                 slot.dataset.name = it.name;
                 slot.dataset.price = it.sell_price;
-                slot.innerHTML = `<img src="${it.image}" alt=""><div class="quantity">${it.quantity}</div>`;
+                slot.innerHTML = `<img src="${it.image}" alt=""><div class="quantity">${formatNumber(it.quantity)}</div>`;
                 slot.addEventListener('click', () => openSell(slot));
             } else {
                 slot.className = 'barn-slot empty';
@@ -118,11 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const slot of slots) {
                 if (parseInt(slot.dataset.item, 10) === item.item_id) {
                     const qtyEl = slot.querySelector('.quantity');
-                    const current = qtyEl ? parseInt(qtyEl.textContent, 10) : 0;
+                    const current = qtyEl ? parseInt(qtyEl.textContent.replace(/\./g, ''), 10) : 0;
                     const space = maxPerSlot - current;
                     if (space > 0) {
                         const add = Math.min(space, remaining);
-                        qtyEl.textContent = current + add;
+                        qtyEl.textContent = formatNumber(current + add);
                         remaining -= add;
                         if (remaining <= 0) return;
                     }
@@ -138,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             empty.dataset.item = item.item_id;
             empty.dataset.name = item.name || '';
             empty.dataset.price = item.sell_price || 0;
-            empty.innerHTML = `<img src="${item.image}" alt=""><div class="quantity">${add}</div>`;
+            empty.innerHTML = `<img src="${item.image}" alt=""><div class="quantity">${formatNumber(add)}</div>`;
             remaining -= add;
         }
     }
