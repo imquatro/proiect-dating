@@ -25,13 +25,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="number" min="1" max="${maxQty}" value="${maxQty}">
                     <button class="inc">+</button>
                 </div>
-                <div class="sell-total"><img src="img/money.png" alt=""><span>${price * maxQty}</span></div>
+                <div class="sell-total"><img src="img/money.png" alt=""><span></span></div>
                 <button class="sell-btn">Sell</button>
             </div>`;
         document.body.appendChild(overlay);
 
         const input = overlay.querySelector('input');
         const totalEl = overlay.querySelector('.sell-total span');
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
         function updateTotal() {
             let val = parseInt(input.value, 10);
             if (isNaN(val) || val < 1) val = 1;
@@ -39,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             input.value = val;
             totalEl.textContent = formatNumber(price * val);
         }
-
         overlay.querySelector('.dec').addEventListener('click', () => {
             input.value = Math.max(1, (parseInt(input.value, 10) || 1) - 1);
             updateTotal();
@@ -49,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTotal();
         });
         input.addEventListener('input', updateTotal);
+
+        updateTotal();
 
         overlay.addEventListener('click', e => {
             if (e.target === overlay) overlay.remove();
