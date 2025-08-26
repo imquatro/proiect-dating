@@ -106,34 +106,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function handleActionClick(e) {
-        e.stopPropagation();
-        const slot = e.currentTarget.closest('.farm-slot');
-        const slotId = slot.id.replace('slot-', '');
         const actionEl = e.currentTarget;
         const action = actionEl.dataset.action;
-
-        if (isVisitor && !canInteract) return;
         if (action === 'harvest') {
-            const res = await fetch('harvest.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slot: parseInt(slotId, 10) })
-            });
-            const data = await res.json();
-            if (data.success) {
-                document.dispatchEvent(new CustomEvent('barnAddItem', { detail: data.item }));
-                const itemImg = slot.querySelector('.slot-item');
-                const actionEl = slot.querySelector('.slot-action');
-                const timerEl = slot.querySelector('.slot-timer');
-                if (itemImg) { itemImg.style.display = 'none'; itemImg.src = ''; }
-                if (actionEl) { actionEl.style.display = 'none'; actionEl.classList.remove('harvest'); }
-                if (timerEl) { timerEl.style.display = 'none'; }
-                delete slotStates[slotId];
-                saveStates();
-                document.dispatchEvent(new CustomEvent('barnUpdated'));
-            }
+            // Allow click to bubble so the slot panel can handle harvesting
             return;
         }
+        e.stopPropagation();
+        const slot = actionEl.closest('.farm-slot');
+        const slotId = slot.id.replace('slot-', '');
+
+        if (isVisitor && !canInteract) return;
         // Refresh states to avoid acting on stale data
         await loadStates();
         const state = slotStates[slotId];
