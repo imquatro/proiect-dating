@@ -63,19 +63,20 @@
 
 .farm-slot .slot-action {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 40px;
-    height: 40px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: none;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
     cursor: pointer;
 }
 
 .farm-slot .slot-action img {
-    width: 100%;
-    height: 100%;
+    width: 40px;
+    height: 40px;
+    margin: 2px;
     object-fit: contain;
     pointer-events: none;
 }
