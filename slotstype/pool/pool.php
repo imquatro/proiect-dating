@@ -24,7 +24,15 @@ if ($apply && $slotId && isset($_SESSION['user_id'])) {
                           ON DUPLICATE KEY UPDATE slot_type = VALUES(slot_type)')
                 ->execute([$userId, $slotId, 'pool']);
             $baseImage = get_slot_image($slotId, $userId) . '?v=' . time();
-            $response = ['success' => true, 'image' => $baseImage];
+            $walletStmt = $db->prepare('SELECT money, gold FROM users WHERE id = ?');
+            $walletStmt->execute([$userId]);
+            $wallet = $walletStmt->fetch(PDO::FETCH_ASSOC);
+            $response = [
+                'success' => true,
+                'image'   => $baseImage,
+                'money'   => isset($wallet['money']) ? (int)$wallet['money'] : 0,
+                'gold'    => isset($wallet['gold']) ? (int)$wallet['gold'] : 0
+            ];
         } else {
             $response = ['success' => false, 'error' => 'Insufficient funds'];
         }

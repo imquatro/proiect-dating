@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function frame(now) {
             const progress = Math.min((now - startTime) / duration, 1);
-            const value = Math.round(start + (end - start) * progress);␊
+            const value = Math.round(start + (end - start) * progress);
             el.textContent = formatNumber(value);
             if (progress < 1) {
                 requestAnimationFrame(frame);
@@ -38,11 +38,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.updateCurrency = setValues;
 
+    const originalFetch = window.fetch;
+    window.fetch = function (...args) {
+        return originalFetch(...args).then(res => {
+            try {
+                const clone = res.clone();
+                const ct = res.headers.get('content-type') || '';
+                if (ct.includes('application/json')) {
+                    clone.json().then(data => {
+                        if (data && (data.money !== undefined || data.gold !== undefined)) {
+                            setValues(data.money, data.gold);
+                        }
+                    }).catch(() => {});
+                }
+            } catch (e) {}
+            return res;
+        });
+    };
+
     function refresh() {
-        fetch('moneysistem/money_api.php')
-            .then(r => r.json())
-            .then(data => setValues(data.money, data.gold))
-            .catch(() => {});
+        fetch('moneysistem/money_api.php').catch(() => {});
     }
 
     setInterval(refresh, 3000);

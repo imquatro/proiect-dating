@@ -39,9 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         capEl.textContent = currentCapacity;
                         overlay.remove();
                         document.dispatchEvent(new Event('barnUpdated'));
-                        if (typeof updateCurrency === 'function') {
-                            updateCurrency(data.money, data.gold);
-                        }
                     } else {
                         let msg = 'Purchase failed';
                         if (data.error === 'not_enough_money') msg = 'You do not have enough money.';
@@ -119,9 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     overlay.remove();
                     document.dispatchEvent(new Event('barnUpdated'));
-                    if (typeof updateCurrency === 'function') {
-                        updateCurrency(data.money, data.gold);
-                    }
                 }
             } catch (err) {
                 console.error('Sell failed', err);

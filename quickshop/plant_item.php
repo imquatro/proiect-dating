@@ -56,7 +56,17 @@ try {
                   ON DUPLICATE KEY UPDATE item_id = VALUES(item_id), planted_at = NOW()')
         ->execute([$userId, $slotId, $itemId]);
     $db->commit();
-    echo json_encode(['success' => true, 'image' => $image]);
+
+    $walletStmt = $db->prepare('SELECT money, gold FROM users WHERE id = ?');
+    $walletStmt->execute([$userId]);
+    $wallet = $walletStmt->fetch(PDO::FETCH_ASSOC);
+
+    echo json_encode([
+        'success' => true,
+        'image'   => $image,
+        'money'   => isset($wallet['money']) ? (int)$wallet['money'] : 0,
+        'gold'    => isset($wallet['gold']) ? (int)$wallet['gold'] : 0
+    ]);
 } catch (Exception $e) {
     $db->rollBack();
     echo json_encode(['success' => false]);
