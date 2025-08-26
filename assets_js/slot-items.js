@@ -97,7 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.timer = null;
                 state.timerEnd = null;
                 if (timerEl) timerEl.style.display = 'none';
-                checkNextAction(slotId);
+                // Ensure the timer is hidden before showing the next action
+                requestAnimationFrame(() => checkNextAction(slotId));
                 saveStates();
             } else {
                 updateTimer(slotId);
