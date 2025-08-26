@@ -4,7 +4,7 @@ ob_start();
 ?>
 <div class="barn-container">
     <div class="barn-panel">
-        <div class="barn-header">
+        <div class="barn-settings-bar">
             <button id="barn-settings" class="barn-settings"><i class="fas fa-cog"></i></button>
         </div>
         <div id="barn-slots" class="barn-slots"></div>
