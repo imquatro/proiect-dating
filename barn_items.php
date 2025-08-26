@@ -31,7 +31,7 @@ if (!$capacity) {
     $db->prepare('INSERT INTO user_barn_info (user_id, capacity) VALUES (?, ?)')->execute([$userId, $capacity]);
 }
 
-$stmt = $db->prepare('SELECT ub.slot_number, ub.item_id, ub.quantity, fi.image_product, fi.sell_price FROM user_barn ub JOIN farm_items fi ON fi.id = ub.item_id WHERE ub.user_id = ? ORDER BY ub.slot_number');
+$stmt = $db->prepare('SELECT ub.slot_number, ub.item_id, ub.quantity, fi.image_product, fi.sell_price, fi.name FROM user_barn ub JOIN farm_items fi ON fi.id = ub.item_id WHERE ub.user_id = ? ORDER BY ub.slot_number');
 $stmt->execute([$userId]);
 $items = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -44,7 +44,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'item_id' => (int)$row['item_id'],
         'quantity' => (int)$row['quantity'],
         'image' => $img,
-        'sell_price' => (int)$row['sell_price']
+        'sell_price' => (int)$row['sell_price'],
+        'name' => $row['name']
     ];
 }
 echo json_encode(['capacity' => $capacity, 'items' => $items]);
