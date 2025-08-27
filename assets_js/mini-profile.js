@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 helpersCard.innerHTML = '';
                 if (!Array.isArray(data)) return;
+                data.sort((a, b) => new Date(b.last) - new Date(a.last));
                 data.forEach(helper => {
                     const item = document.createElement('div');
                     item.className = 'helper-item';
@@ -35,5 +36,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (helpersCard) {
         loadHelpers();
         setInterval(loadHelpers, 5000);
+
+        let isDown = false;
+        let startX = 0;
+        let scrollLeft = 0;
+
+        helpersCard.addEventListener('pointerdown', (e) => {
+            isDown = true;
+            startX = e.clientX;
+            scrollLeft = helpersCard.scrollLeft;
+            helpersCard.style.cursor = 'grabbing';
+            helpersCard.setPointerCapture(e.pointerId);
+        });
+
+        helpersCard.addEventListener('pointermove', (e) => {
+            if (!isDown) return;
+            const dx = e.clientX - startX;
+            helpersCard.scrollLeft = scrollLeft - dx;
+            e.preventDefault();
+        });
+
+        const endDrag = () => {
+            isDown = false;
+            helpersCard.style.cursor = 'grab';
+        };
+
+        helpersCard.addEventListener('pointerup', endDrag);
+        helpersCard.addEventListener('pointerleave', endDrag);
+        helpersCard.addEventListener('pointercancel', endDrag);
     }
 });

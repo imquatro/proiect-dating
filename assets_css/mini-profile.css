@@ -68,17 +68,35 @@
     background: rgba(0,0,0,0.2);
 }
 
+
 .helpers-card {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    overflow: hidden;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 5px;
+    padding: 0 10px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    cursor: grab;
+}
+
+.helpers-card::-webkit-scrollbar {
+    display: none;
 }
 
 .helper-item {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
+    flex: 0 0 auto;
+}
+
+.helpers-card img {
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+    margin: 5% auto;
+    display: block;
 }
 
 .helpers-card img {
