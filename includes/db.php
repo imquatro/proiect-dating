@@ -21,13 +21,3 @@ try {
 } catch (PDOException $e) {
     // ignore if insufficient privileges or other errors
 }
-
-// Ensure `level` column exists in `users` table
-try {
-    $col = $db->query("SHOW COLUMNS FROM users LIKE 'level'")->fetch();
-    if (!$col) {
-        $db->exec("ALTER TABLE users ADD COLUMN level INT(11) NOT NULL DEFAULT 1");
-    }
-} catch (PDOException $e) {
-    // ignore if insufficient privileges or other errors
-}
