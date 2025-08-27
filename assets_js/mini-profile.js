@@ -15,8 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.forEach(helper => {
                     const item = document.createElement('div');
                     item.className = 'helper-item';
+                    const total = (helper.feed || 0) + (helper.water || 0);
                     item.innerHTML = `
                         <img src="${helper.photo}" alt="${helper.username}">
+                        <div class="helper-total">${total}</div>
                         <div class="helper-counts">🍖 ${helper.feed} | 💧 ${helper.water}</div>`;
                     helpersCard.appendChild(item);
                 });
