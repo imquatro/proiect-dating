@@ -5,7 +5,7 @@ function initSlotstype(container) {
     }
 
     const slotId = container.dataset.slot;
-    const overlay = container.parentElement;
+    const overlay = container.closest('#slot-panel-overlay');
 
     container.querySelectorAll('.st-slotstype-item').forEach(item => {
         const applyBtn = item.querySelector('.st-slot-apply');

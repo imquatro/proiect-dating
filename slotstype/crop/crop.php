@@ -37,6 +37,9 @@ if ($apply && $slotId && isset($_SESSION['user_id'])) {
         }
     }
     header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
+}
 
 $bgImagePath = '../../img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
