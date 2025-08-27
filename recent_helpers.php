@@ -19,16 +19,19 @@ $db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (
     PRIMARY KEY (owner_id, slot_number, helper_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
-$stmt = $db->prepare('SELECT sh.helper_id, u.username, u.gallery,␊
-                             SUM(sh.water_clicks) AS water,␊
-                             SUM(sh.feed_clicks) AS feed,␊
-                             MAX(sh.last_action_at) AS last_action␊
-                      FROM slot_helpers sh␊
-                      JOIN users u ON u.id = sh.helper_id␊
-                      WHERE sh.owner_id = ?␊
-                      GROUP BY sh.helper_id␊
-                      ORDER BY MAX(sh.last_action_at) DESC, (SUM(sh.water_clicks) + SUM(sh.feed_clicks)) DESC
-                      LIMIT 6');
+$stmt = $db->prepare(
+    'SELECT sh.helper_id, u.username, u.gallery,
+            SUM(sh.water_clicks) AS water,
+            SUM(sh.feed_clicks) AS feed,
+            MAX(sh.last_action_at) AS last_action,
+            (SUM(sh.water_clicks) + SUM(sh.feed_clicks)) AS total
+     FROM slot_helpers sh
+     JOIN users u ON u.id = sh.helper_id
+     WHERE sh.owner_id = ?
+     GROUP BY sh.helper_id
+     ORDER BY last_action DESC, total DESC
+     LIMIT 6'
+);
 $stmt->execute([$userId]);
 $helpers = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
