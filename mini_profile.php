@@ -39,3 +39,4 @@ if (isset($_SESSION['user_id'])) {
     </div>
     <div class="mini-card achievements-card" id="achievementsCard"></div>
 </div>
+<script src="assets_js/mini-profile.js"></script>

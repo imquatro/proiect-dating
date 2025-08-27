@@ -17,12 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function recordHelp(action) {
+    function recordHelp(slotId, action) {
         if (!isVisitor || !visitId) return;
         fetch('record_help.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `owner_id=${visitId}&action=${encodeURIComponent(action)}`
+            body: `owner_id=${visitId}&slot_id=${slotId}&action=${encodeURIComponent(action)}`
         });
     }
 
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkNextAction(slotId);
                 }
                 saveStates();
-                recordHelp('water');
+                recordHelp(slotId, 'water');
             } else {
                 alert('This slot is already watered');
             }
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkNextAction(slotId);
                 }
                 saveStates();
-                recordHelp('feed');
+                recordHelp(slotId, 'feed');
             } else {
                 alert('This slot is already fed');
             }
