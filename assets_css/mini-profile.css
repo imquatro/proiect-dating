@@ -1,14 +1,22 @@
+.mini-profile-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--slot-gap, 1px);
+    margin: 0 auto var(--slot-gap, 1px) auto;
+}
+
 .mini-profile {
     display: flex;
     align-items: center;
     background: #ffe9a3;
     padding: 8px 12px;
-    margin: 0 auto var(--slot-gap, 1px) auto;
     box-shadow: 0 2px 8px #0001;
     width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
     max-width: 100%;
     position: relative;
 }
+
 .mini-profile-avatar, .profile-avatar {
     width: var(--slot-size, 60px);
     height: var(--slot-size, 60px);
@@ -19,20 +27,26 @@
     max-width: 120px;
     max-height: 120px;
 }
-.mini-profile-card {
+
+.mini-profile-card,
+.mini-card {
     width: var(--slot-size, 60px);
     height: var(--slot-size, 60px);
     background: #ffe9a3;
     border: 2px solid #f6cf49;
     box-shadow: 0 2px 8px #0001;
+    max-width: 120px;
+    max-height: 120px;
+}
+
+.mini-profile-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    max-width: 120px;
-    max-height: 120px;
 }
+
 .mini-profile-card .username,
 .mini-profile-card .level {
     flex: 1;
@@ -44,10 +58,49 @@
     color: #6c4e09;
     width: 100%;
 }
+
 .mini-profile-card .divider {
     width: 100%;
     height: 2px;
     background: #f6cf49;
+}
+
+.helpers-card {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    overflow: hidden;
+}
+
+.helper-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.helpers-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.helper-counts {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-size: 0.6em;
+    text-align: center;
+}
+
+.achievements-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c4e09;
+    font-size: 0.7em;
 }
 
 .helper-effect {
@@ -76,3 +129,4 @@
 
 .helper-effect.animate {
     animation: helperFade 1s forwards;
+}
