@@ -156,9 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleActionClick(e) {
         const actionEl = e.currentTarget;
         const action   = actionEl.dataset.action;
-        e.stopPropagation();
-        const slot    = actionEl.closest('.farm-slot');
-        const slotId  = slot.id.replace('slot-', '');
+        const slot     = actionEl.closest('.farm-slot');
+        const slotId   = slot.id.replace('slot-', '');
+
+        // For watering/feeding we prevent the slot click handler
+        // from opening the management panel. Harvest actions should
+        // fall through so the slot click handler can open the panel
+        // and perform the server-side harvest via the old flow.
+        if (action !== 'harvest') {
+            e.stopPropagation();
+        }
 
         if (isVisitor && !canInteract) return;
         const state = slotStates[slotId];
@@ -187,10 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 recordHelp(slotId, 'feed');
             }
         } else if (action === 'harvest') {
-            clearSlot(slotId);
-            delete slotStates[slotId];
-            saveStates(slotId);
-            recordHelp(slotId, 'harvest');
+            // No direct harvest here; the slot's click handler will
+            // open the panel where the user can confirm harvesting.
+            return;
         }
     }
     document.addEventListener('slotUpdated', e => {

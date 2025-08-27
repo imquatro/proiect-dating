@@ -94,7 +94,7 @@ try {
     $stmt = $db->prepare('SELECT u.id, u.username, u.gallery, u.last_active
         FROM friend_requests fr
         JOIN users u ON u.id = fr.sender_id
-        WHERE fr.receiver_id = ? AND fr.status = "pending"');
+        WHERE fr.receiver_id = ? AND fr.status = \'pending\'');
     $stmt->execute([$user_id]);
     $reqRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach ($reqRows as $r) {
@@ -109,7 +109,7 @@ try {
     $stmt = $db->prepare('SELECT u.id, u.username, u.gallery, u.last_active
         FROM friend_requests fr
         JOIN users u ON u.id = CASE WHEN fr.sender_id = ? THEN fr.receiver_id ELSE fr.sender_id END
-        WHERE (fr.sender_id = ? OR fr.receiver_id = ?) AND fr.status = "accepted"');
+        WHERE (fr.sender_id = ? OR fr.receiver_id = ?) AND fr.status = \'accepted\'');
     $stmt->execute([$user_id, $user_id, $user_id]);
     $friendRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach ($friendRows as $r) {

@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $friendStmt = $db->prepare(
             'SELECT 1 FROM friend_requests
              WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
-               AND status = "accepted"'
+               AND status = \'accepted\''
         );
         $friendStmt->execute([$userId, $targetId, $targetId, $userId]);
         if (!$friendStmt->fetchColumn()) {
@@ -58,8 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $waterInterval  = isset($state['waterInterval']) ? (int)$state['waterInterval'] : 0;
         $feedInterval   = isset($state['feedInterval']) ? (int)$state['feedInterval'] : 0;
         $waterRemaining = isset($state['waterRemaining']) ? (int)$state['waterRemaining'] : 0;
-        $feedRemaining  = isset($state['feedRemaining']) ? (int)$state['feedRemaining'] : 0
-;
+        $feedRemaining  = isset($state['feedRemaining']) ? (int)$state['feedRemaining'] : 0;
         $timerType      = isset($state['timerType']) ? substr($state['timerType'], 0, 10) : null;
         $timerEnd       = isset($state['timerEnd'])
             ? date('Y-m-d H:i:s', $state['timerEnd'] / 1000)

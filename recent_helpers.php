@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 require_once __DIR__ . '/includes/db.php';
-$userId = (int)$_SESSION['user_id'];
+$userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : (int)$_SESSION['user_id'];
 
 // Ensure slot_helpers table exists
 $db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (

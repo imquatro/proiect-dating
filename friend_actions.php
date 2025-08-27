@@ -51,11 +51,8 @@ if ($action === 'send_request') {
             echo json_encode(['success' => false, 'message' => 'Request already exists']);
             exit;
         }
-        $stmt = $db->prepare('INSERT INTO friend_requests (sender_id, receiver_id, status, created_at) VALUES (?, ?, "pending", NOW())');
+        $stmt = $db->prepare('INSERT INTO friend_requests (sender_id, receiver_id, status, created_at) VALUES (?, ?, \'pending\', NOW())');
         $stmt->execute([$currentId, $receiver]);
-        echo json_encode(['success' => true]);
-        exit;
-    } catch (PDOException $e) {
         echo json_encode(['success' => true]);
         exit;
     } catch (PDOException $e) {
@@ -71,7 +68,7 @@ if ($action === 'accept_request') {
         exit;
     }
     try {
-        $stmt = $db->prepare('UPDATE friend_requests SET status = "accepted", responded_at = NOW() WHERE sender_id = ? AND receiver_id = ? AND status = "pending"');
+        $stmt = $db->prepare('UPDATE friend_requests SET status = \'accepted\', responded_at = NOW() WHERE sender_id = ? AND receiver_id = ? AND status = \'pending\'');
         $stmt->execute([$sender, $currentId]);
         if (!$stmt->rowCount()) {
             echo json_encode(['success' => false, 'message' => 'Request not found']);
@@ -95,7 +92,7 @@ if ($action === 'decline_request') {
         exit;
     }
     try {
-        $stmt = $db->prepare('DELETE FROM friend_requests WHERE sender_id = ? AND receiver_id = ? AND status = "pending"');
+        $stmt = $db->prepare('DELETE FROM friend_requests WHERE sender_id = ? AND receiver_id = ? AND status = \'pending\'');
         $stmt->execute([$sender, $currentId]);
         if ($stmt->rowCount()) {
             $stmt = $db->prepare('SELECT id, username, gallery, last_active FROM users WHERE id = ?');
@@ -119,7 +116,7 @@ if ($action === 'remove_friend') {
         exit;
     }
     try {
-        $stmt = $db->prepare('DELETE FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = "accepted"');
+        $stmt = $db->prepare('DELETE FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = \'accepted\'');
         $stmt->execute([$currentId, $friendId, $friendId, $currentId]);
         if ($stmt->rowCount()) {
             echo json_encode(['success' => true]);

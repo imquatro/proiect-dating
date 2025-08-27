@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const helpersCard = document.getElementById('helpersCard');
-    const helpersUrl = (window.baseUrl || '') + 'recent_helpers.php';
+    const helpersUrl = (window.baseUrl || '') + 'recent_helpers.php' +
+        (window.isVisitor && window.visitId ? ('?user_id=' + window.visitId) : '');
 
     const loadHelpers = () => {
         if (!helpersCard) return;

@@ -38,7 +38,7 @@ $level = isset($user['level']) ? (int)$user['level'] : 1;
 $isFriend = false;
 if (isset($_SESSION['user_id'])) {
     $currentId = (int)$_SESSION['user_id'];
-    $friendStmt = $db->prepare('SELECT 1 FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = "accepted"');
+    $friendStmt = $db->prepare('SELECT 1 FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = \'accepted\'');
     $friendStmt->execute([$currentId, $visitId, $visitId, $currentId]);
     $isFriend = (bool)$friendStmt->fetchColumn();
 }
@@ -52,13 +52,20 @@ foreach ($slotStmt as $row) {
 
 ob_start();
 ?>
-<div class="mini-profile">
-    <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
-    <div class="mini-profile-card">
-        <div class="username"><?= htmlspecialchars($username) ?></div>
-        <div class="divider"></div>
-        <div class="level">LVL: <?= htmlspecialchars($level) ?></div>
+<div class="mini-profile-wrapper">
+    <div class="mini-card helpers-card" id="helpersCard"></div>
+    <div class="mini-profile" id="miniProfile">
+        <div id="helper-effect" class="helper-effect">
+            <img src="" alt="Helper">
+        </div>
+        <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
+        <div class="mini-profile-card">
+            <div class="username"><?= htmlspecialchars($username) ?></div>
+            <div class="divider"></div>
+            <div class="level">LVL: <?= htmlspecialchars($level) ?></div>
+        </div>
     </div>
+    <div class="mini-card achievements-card" id="achievementsCard"></div>
 </div>
 <hr class="farm-divider">
 <div class="farm-slots">
@@ -97,6 +104,7 @@ if ($total_slots % $slots_per_row !== 0) echo '</div>';
 $content = ob_get_clean();
 $pageCss = 'vizitfarm/vizitfarm.css';
 $extraJs = '<script>window.isVisitor = true; window.visitId = ' . $visitId . '; window.canInteract = ' . ($isFriend ? 'true' : 'false') . ';</script>'
+         . '<script src="assets_js/mini-profile.js"></script>'
          . '<script src="vizitfarm/vizitfarm.js"></script>'
          . '<script src="assets_js/slot-items.js"></script>';
 $activePage = '';

@@ -88,39 +88,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (baseImg) baseImg.src = image;
     });
 
-    document.querySelectorAll('.farm-slot:not(.locked)').forEach(slot => {
-        slot.addEventListener('click', () => {
-            const slotId = slot.id.replace('slot-', '');
-            fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
-                .then(res => res.text())
-                .then(html => {
-                    overlay.innerHTML = html;
-                    overlay.classList.add('active');
-                    if (content) content.classList.add('no-scroll');
+    if (window.canInteract !== false) {
+        document.querySelectorAll('.farm-slot:not(.locked)').forEach(slot => {
+            slot.addEventListener('click', () => {
+                const slotId = slot.id.replace('slot-', '');
+                fetch(`changeslots/slot-panel.php?slot=${slotId}&ajax=1`)
+                    .then(res => res.text())
+                    .then(html => {
+                        overlay.innerHTML = html;
+                        overlay.classList.add('active');
+                        if (content) content.classList.add('no-scroll');
 
-                    if (!document.getElementById('slot-panel-css')) {
-                        const link = document.createElement('link');
-                        link.id = 'slot-panel-css';
-                        link.rel = 'stylesheet';
-                        link.href = 'changeslots/slot-panel.css';
-                        document.head.appendChild(link);
-                    }
-
-                    const panel = overlay.querySelector('#cs-slot-panel');
-                    const init = () => {
-                        if (window.initSlotPanel && panel) {
-                            window.initSlotPanel(panel);
+                        if (!document.getElementById('slot-panel-css')) {
+                            const link = document.createElement('link');
+                            link.id = 'slot-panel-css';
+                            link.rel = 'stylesheet';
+                            link.href = 'changeslots/slot-panel.css';
+                            document.head.appendChild(link);
                         }
-                    };
-                    if (!window.initSlotPanel) {
-                        const script = document.createElement('script');
-                        script.src = 'changeslots/slot-panel.js';
-                        script.onload = init;
-                        document.head.appendChild(script);
-                    } else {
-                        init();
-                    }
-                });
+
+                        const panel = overlay.querySelector('#cs-slot-panel');
+                        const init = () => {
+                            if (window.initSlotPanel && panel) {
+                                window.initSlotPanel(panel);
+                            }
+                        };
+                        if (!window.initSlotPanel) {
+                            const script = document.createElement('script');
+                            script.src = 'changeslots/slot-panel.js';
+                            script.onload = init;
+                            document.head.appendChild(script);
+                        } else {
+                            init();
+                        }
+                    });
+            });
         });
-    });
+    }
 });

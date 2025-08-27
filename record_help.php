@@ -22,7 +22,7 @@ if ($ownerId === $userId) {
     exit;
 }
 
-$friendStmt = $db->prepare('SELECT 1 FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = "accepted"');
+$friendStmt = $db->prepare('SELECT 1 FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = \'accepted\'');
 $friendStmt->execute([$userId, $ownerId, $ownerId, $userId]);
 if (!$friendStmt->fetchColumn()) {
     http_response_code(403);
