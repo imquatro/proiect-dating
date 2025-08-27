@@ -89,10 +89,10 @@
     position: absolute;
     top: 2px;
     right: 2px;
-    background: rgba(0, 0, 0, 0.6);
     color: #fff;
     padding: 1px 3px;
-    font-size: 10px;
+    font-size: 17px;
+    font-weight: bold;
     border-radius: 3px;
     display: none;
 }
