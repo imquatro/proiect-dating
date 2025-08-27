@@ -5,7 +5,11 @@ if (!isset($pageTitle)) { $pageTitle = ''; }
 if (!isset($pageCss)) { $pageCss = ''; }
 if (!isset($extraJs)) { $extraJs = ''; }
 if (!isset($extraCss)) { $extraCss = []; }
-if (!isset($baseHref)) { $baseHref = ''; }
+if (!isset($baseHref)) {
+    $path = trim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
+    $depth = $path === '' ? 0 : substr_count($path, '/');
+    $baseHref = $depth ? str_repeat('../', $depth) : './';
+}
 if (!isset($hideNav)) { $hideNav = false; }
     $profilePhoto = 'default-avatar.png';
     if (session_status() === PHP_SESSION_NONE) {
@@ -32,9 +36,7 @@ if (!isset($hideNav)) { $hideNav = false; }
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <?php if ($baseHref): ?>
     <base href="<?= htmlspecialchars($baseHref) ?>">
-    <?php endif; ?>
     <link rel="stylesheet" href="assets_css/template.css">
     <link rel="stylesheet" href="assets_css/message-notification.css">
     <link rel="stylesheet" href="moneysistem/money.css">
@@ -120,4 +122,5 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="moneysistem/money.js"></script>
 <script src="assets_js/interaction-blocker.js"></script>
 <?= $extraJs ?>
+</body>
 </html>
