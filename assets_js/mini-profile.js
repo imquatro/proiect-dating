@@ -1,13 +1,15 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const avatar = document.querySelector('.mini-profile-avatar');
     if (avatar) {
-        avatar.addEventListener('click', function() {
+        avatar.addEventListener('click', () => {
             console.log('Mini profile avatar clicked');
         });
     }
 
     const helpersCard = document.getElementById('helpersCard');
-    if (helpersCard) {
+
+    const loadHelpers = () => {
+        if (!helpersCard) return;
         fetch('recent_helpers.php', { credentials: 'same-origin' })
             .then(response => response.json())
             .then(data => {
@@ -27,5 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(() => {
                 helpersCard.innerHTML = '';
             });
+    };
+
+    if (helpersCard) {
+        loadHelpers();
+        setInterval(loadHelpers, 5000);
     }
 });
