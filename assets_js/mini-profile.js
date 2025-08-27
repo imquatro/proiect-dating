@@ -7,10 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const helpersCard = document.getElementById('helpersCard');
+    const helpersUrl = (window.baseUrl || '') + 'recent_helpers.php';
 
     const loadHelpers = () => {
         if (!helpersCard) return;
-        fetch('recent_helpers.php', { credentials: 'same-origin' })
+        fetch(helpersUrl, { credentials: 'same-origin' })
             .then(response => response.json())
             .then(data => {
                 helpersCard.innerHTML = '';

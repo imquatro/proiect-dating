@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const isVisitor = window.isVisitor || false;
     const visitId = window.visitId || null;
     const canInteract = window.canInteract || false;
-    const fetchUrl = isVisitor && visitId ? `slot_states.php?user_id=${visitId}` : 'slot_states.php';
+    const fetchUrl = isVisitor && visitId
+        ? `${(window.baseUrl || '')}slot_states.php?user_id=${visitId}`
+        : (window.baseUrl || '') + 'slot_states.php';
 
     function saveStates() {
         if (isVisitor && !canInteract) return;
@@ -19,8 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function recordHelp(slotId, action) {
         if (!isVisitor || !visitId) return;
-        fetch('record_help.php', {
+        const url = (window.baseUrl || '') + 'record_help.php';
+        fetch(url, {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `owner_id=${visitId}&slot_id=${slotId}&action=${encodeURIComponent(action)}`
         });

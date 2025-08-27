@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
+<script src="assets_js/base-url.js"></script>
 <script src="assets_js/message-notification.js"></script>
 <script src="moneysistem/money.js"></script>
 <script src="assets_js/interaction-blocker.js"></script>
