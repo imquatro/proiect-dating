@@ -8,10 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const helpersCard = document.getElementById('helpersCard');
     if (helpersCard) {
-        fetch('recent_helpers.php')
+        fetch('recent_helpers.php', { credentials: 'same-origin' })
             .then(response => response.json())
             .then(data => {
                 helpersCard.innerHTML = '';
+                if (!Array.isArray(data)) return;
                 data.forEach(helper => {
                     const item = document.createElement('div');
                     item.className = 'helper-item';

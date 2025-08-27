@@ -6,12 +6,14 @@
     margin: 0 auto var(--slot-gap, 1px) auto;
 }
 
+
 .mini-profile {
     display: flex;
     align-items: center;
-    background: #ffe9a3;
+    background: url('../img/bg2.png') center/cover no-repeat;
     padding: 8px 12px;
-    box-shadow: 0 2px 8px #0001;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
     width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
     max-width: 100%;
     position: relative;
@@ -22,8 +24,9 @@
     height: var(--slot-size, 60px);
     object-fit: cover;
     margin-right: var(--slot-gap, 1px);
-    border: 2px solid #f6cf49;
-    background: #ffe9a3;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
     max-width: 120px;
     max-height: 120px;
 }
@@ -32,9 +35,9 @@
 .mini-card {
     width: var(--slot-size, 60px);
     height: var(--slot-size, 60px);
-    background: #ffe9a3;
-    border: 2px solid #f6cf49;
-    box-shadow: 0 2px 8px #0001;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
     max-width: 120px;
     max-height: 120px;
 }
@@ -62,7 +65,7 @@
 .mini-profile-card .divider {
     width: 100%;
     height: 2px;
-    background: #f6cf49;
+    background: rgba(0,0,0,0.2);
 }
 
 .helpers-card {
@@ -128,8 +131,9 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border: 2px solid #f6cf49;
-    background: #ffe9a3;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
 }
 
 @keyframes helperFade {
