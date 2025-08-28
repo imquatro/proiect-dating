@@ -11,18 +11,27 @@ document.addEventListener('DOMContentLoaded', () => {
         (window.isVisitor && window.visitId ? ('?user_id=' + window.visitId) : '');
 
     let slideTimeout;
+    let snapTimeout;
+    let animationFrame;
     const startSlider = () => {
         if (!helpersCard) return;
         clearTimeout(slideTimeout);
+        clearTimeout(snapTimeout);
+        cancelAnimationFrame(animationFrame);
         helpersCard.scrollLeft = 0;
 
         const items = helpersCard.querySelectorAll('.helper-item');
         if (!items.length) return;
 
-        const itemWidth = helpersCard.clientWidth;
+        const gap = parseInt(getComputedStyle(helpersCard).gap) || 0;
+        const itemWidth = items[0].offsetWidth + gap;
         let index = 0;
         const pause = 4000;
+        const resumeDelay = 4000;
         const duration = 1000;
+        let isDragging = false;
+        let startX = 0;
+        let scrollStart = 0;
 
         const animateScroll = (from, to, time, callback) => {
             const start = performance.now();
@@ -30,13 +39,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 const progress = Math.min((now - start) / time, 1);
                 helpersCard.scrollLeft = from + (to - from) * progress;
                 if (progress < 1) {
-                    requestAnimationFrame(frame);
+                    animationFrame = requestAnimationFrame(frame);
                 } else if (callback) {
                     callback();
                 }
             };
-            requestAnimationFrame(frame);
+            animationFrame = requestAnimationFrame(frame);
         };
+
+        const snap = () => {
+            index = Math.max(0, Math.min(items.length - 1, Math.round(helpersCard.scrollLeft / itemWidth)));
+            animateScroll(helpersCard.scrollLeft, index * itemWidth, duration, () => {
+                slideTimeout = setTimeout(schedule, pause);
+            });
+        };
+
+        const onDragStart = (clientX) => {
+            isDragging = true;
+            startX = clientX;
+            scrollStart = helpersCard.scrollLeft;
+            clearTimeout(slideTimeout);
+            clearTimeout(snapTimeout);
+            cancelAnimationFrame(animationFrame);
+        };
+
+        const onDragMove = (clientX) => {
+            if (!isDragging) return;
+            helpersCard.scrollLeft = scrollStart - (clientX - startX);
+        };
+
+        const onDragEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            clearTimeout(snapTimeout);
+            snapTimeout = setTimeout(snap, resumeDelay);
+        };
+
+        helpersCard.addEventListener('mousedown', (e) => onDragStart(e.pageX));
+        helpersCard.addEventListener('touchstart', (e) => onDragStart(e.touches[0].pageX));
+        helpersCard.addEventListener('mousemove', (e) => onDragMove(e.pageX));
+        helpersCard.addEventListener('touchmove', (e) => onDragMove(e.touches[0].pageX));
+        ['mouseleave', 'mouseup'].forEach(ev => helpersCard.addEventListener(ev, onDragEnd));
+        ['touchend', 'touchcancel'].forEach(ev => helpersCard.addEventListener(ev, onDragEnd));
 
         const schedule = () => {
             const nextIndex = (index + 1) % items.length;

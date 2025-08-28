@@ -86,7 +86,11 @@
     padding: 0;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    cursor: default;
+    cursor: grab;
+}
+
+.helpers-card:active {
+    cursor: grabbing;
 }
 
 
