@@ -103,9 +103,15 @@
 .farm-slot .slot-action .harvest-icon { font-size: 32px; }
 
 @media (max-width: 768px) {
+    .farm-slot .slot-action img {
+        width: 20px;
+        height: 20px;
+        margin: 1px;
+    }
+
     .farm-slot .slot-action .action-icon {
-        width: 10px;
-        height: 10px;
+        width: 20px;
+        height: 20px;
         margin: 1px;
     }
 
