@@ -45,7 +45,8 @@ $urow = $stmt->fetch(PDO::FETCH_ASSOC);
 $money = isset($urow['money']) ? (int)$urow['money'] : 0;
 $vip   = isset($urow['vip']) ? (int)$urow['vip'] : 0;
 
-if ($slotCount > 1 && $vip !== 1) {
+// Allow multiple slot planting for any user with a non-zero VIP value
+if ($slotCount > 1 && $vip < 1) {
     echo json_encode(['success' => false, 'error' => 'You are not VIP']);
     exit;
 }

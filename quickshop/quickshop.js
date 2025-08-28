@@ -4,7 +4,7 @@ function initQuickShop(container) {
         content.classList.add('no-scroll');
     }
     const overlay = document.getElementById('slot-panel-overlay');
-    const isVip = container.dataset.vip === '1';
+    const isVip = parseInt(container.dataset.vip, 10) > 0;
 
     if (container.dataset.planted === '1') {
         const grid = container.querySelector('.quickshop-grid');
