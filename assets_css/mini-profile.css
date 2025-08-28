@@ -6,8 +6,7 @@
     margin: 0 auto var(--slot-gap, 1px) auto;
     background: url('../img/bg2.png') center/cover no-repeat;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-    width: 100%;
-    max-width: calc(4 * var(--slot-size, 60px) + 3 * var(--slot-gap, 1px));
+    width: calc(100% - (var(--slot-size, 60px) + var(--slot-gap, 1px)));
     padding: 5px;
     box-sizing: border-box;
     height: var(--slot-size, 60px);
