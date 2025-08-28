@@ -93,7 +93,7 @@ if ($targetId === $userId) {
 }
 
 $stmt = $db->prepare(
-    'SELECT us.slot_number,
+    'SELECT COALESCE(us.slot_number, up.slot_number) AS slot_number,
             COALESCE(ss.image, f.image_plant) AS image,
             COALESCE(ss.water_interval, us.water_interval) AS water_interval,
             COALESCE(ss.feed_interval, us.feed_interval) AS feed_interval,
@@ -101,11 +101,11 @@ $stmt = $db->prepare(
             COALESCE(ss.feed_remaining, us.feed_remaining) AS feed_remaining,
             COALESCE(ss.timer_type, us.timer_type) AS timer_type,
             COALESCE(ss.timer_end, us.timer_end) AS timer_end
-       FROM user_slots us
-       JOIN user_plants up ON up.user_id = us.user_id AND up.slot_number = us.slot_number
+       FROM user_plants up
        JOIN farm_items f ON f.id = up.item_id
-       LEFT JOIN user_slot_states ss ON ss.user_id = us.user_id AND ss.slot_number = us.slot_number
-      WHERE us.user_id = ?'
+       LEFT JOIN user_slot_states ss ON ss.user_id = up.user_id AND ss.slot_number = up.slot_number
+       LEFT JOIN user_slots us ON us.user_id = up.user_id AND us.slot_number = up.slot_number
+      WHERE up.user_id = ?'
 );
 $stmt->execute([$targetId]);
 $states = [];

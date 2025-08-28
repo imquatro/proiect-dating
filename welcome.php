@@ -36,13 +36,17 @@ for ($i = 0; $i < $total_slots; $i++) {
     $data = $slotData[$slot_id] ?? ['unlocked' => 0, 'required_level' => 0];
     $required = get_slot_required_level($slot_id);
     if ($data['required_level'] != $required) {
-        $db->prepare('UPDATE user_slots SET required_level = ? WHERE user_id = ? AND slot_number = ?')
-           ->execute([$required, $userId, $slot_id]);
+        $db->prepare('INSERT INTO user_slots (user_id, slot_number, required_level)
+                       VALUES (?, ?, ?)
+                       ON DUPLICATE KEY UPDATE required_level = VALUES(required_level)')
+           ->execute([$userId, $slot_id, $required]);
         $data['required_level'] = $required;
     }
     $isUnlocked = !empty($data['unlocked']);
     if (!$isUnlocked && $required > 0 && $userLevel >= $required && $slot_id <= $total_slots - 5) {
-        $db->prepare('UPDATE user_slots SET unlocked = 1 WHERE user_id = ? AND slot_number = ?')
+        $db->prepare('INSERT INTO user_slots (user_id, slot_number, unlocked)
+                       VALUES (?, ?, 1)
+                       ON DUPLICATE KEY UPDATE unlocked = 1')
            ->execute([$userId, $slot_id]);
         $isUnlocked = true;
     }

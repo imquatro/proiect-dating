@@ -38,13 +38,17 @@ ob_start();
             $data = $slotData[$i] ?? ['unlocked' => 0, 'required_level' => 0];
             $required = get_slot_required_level($i);
             if ($data['required_level'] != $required) {
-                $db->prepare('UPDATE user_slots SET required_level = ? WHERE user_id = ? AND slot_number = ?')
-                   ->execute([$required, $userId, $i]);
+                $db->prepare('INSERT INTO user_slots (user_id, slot_number, required_level)
+                               VALUES (?, ?, ?)
+                               ON DUPLICATE KEY UPDATE required_level = VALUES(required_level)')
+                   ->execute([$userId, $i, $required]);
                 $data['required_level'] = $required;
             }
             $isUnlocked = !empty($data['unlocked']);
             if (!$isUnlocked && $required > 0 && $userLevel >= $required && $i <= $total_slots - 5) {
-                $db->prepare('UPDATE user_slots SET unlocked = 1 WHERE user_id = ? AND slot_number = ?')
+                $db->prepare('INSERT INTO user_slots (user_id, slot_number, unlocked)
+                               VALUES (?, ?, 1)
+                               ON DUPLICATE KEY UPDATE unlocked = 1')
                    ->execute([$userId, $i]);
                 $isUnlocked = true;
             }

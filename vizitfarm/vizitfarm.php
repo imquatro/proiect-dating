@@ -44,7 +44,12 @@ if (isset($_SESSION['user_id'])) {
 }
 
 $slotData = [];
-$slotStmt = $db->prepare('SELECT ds.slot_number, COALESCE(us.unlocked, ds.unlocked) AS unlocked, COALESCE(us.required_level, ds.required_level) AS required_level FROM default_slots ds LEFT JOIN user_slots us ON us.user_id = ? AND us.slot_number = ds.slot_number');
+$slotStmt = $db->prepare('SELECT ds.slot_number,
+                                 COALESCE(us.unlocked, ds.unlocked) AS unlocked,
+                                 COALESCE(us.required_level, ds.required_level) AS required_level
+                            FROM default_slots ds
+                            LEFT JOIN user_slots us
+                                  ON us.user_id = ? AND us.slot_number = ds.slot_number');
 $slotStmt->execute([$visitId]);
 foreach ($slotStmt as $row) {
     $slotData[(int)$row['slot_number']] = $row;
@@ -78,7 +83,14 @@ for ($i = 0; $i < $total_slots; $i++) {
     if ($i % $slots_per_row === 0) echo '<div class="farm-row">';
     $slot_id = $i + 1;
     $data = $slotData[$slot_id] ?? ['unlocked' => 0, 'required_level' => 0];
+    $required = get_slot_required_level($slot_id);
+    if ($data['required_level'] != $required) {
+        $data['required_level'] = $required;
+    }
     $isUnlocked = !empty($data['unlocked']);
+    if (!$isUnlocked && $required > 0 && $level >= $required && $slot_id <= $total_slots - 5) {
+        $isUnlocked = true;
+    }
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
     $baseImg = get_slot_image($slot_id, $visitId);
     $imgFullPath = __DIR__ . '/../' . $baseImg;
