@@ -102,6 +102,20 @@
 .farm-slot .slot-action .feed-icon { font-size: 32px; }
 .farm-slot .slot-action .harvest-icon { font-size: 32px; }
 
+@media (max-width: 768px) {
+    .farm-slot .slot-action .action-icon {
+        width: 10px;
+        height: 10px;
+        margin: 1px;
+    }
+
+    .farm-slot .slot-action .water-icon,
+    .farm-slot .slot-action .feed-icon,
+    .farm-slot .slot-action .harvest-icon {
+        font-size: 20px;
+    }
+}
+
 .farm-slot .slot-action.harvest {
     cursor: default;
 }
