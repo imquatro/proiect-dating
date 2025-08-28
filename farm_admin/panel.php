@@ -92,10 +92,7 @@ ob_start();
             <h2>Edit Items</h2>
             <div class="fa-edit-grid">
                 <?php foreach ($items as $item):
-                    $img = $item['image_plant'];
-                    if (strpos($img, 'img/') !== 0) {
-                        $img = 'img/' . ltrim($img, '/');
-                    }
+                    $img = 'img/' . basename($item['image_plant']);
                 ?>
                 <div class="fa-edit-item" data-id="<?= htmlspecialchars($item['id']); ?>">
                     <img src="<?= htmlspecialchars($img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
@@ -169,10 +166,7 @@ ob_start();
             <h2>Delete Items</h2>
             <div class="fa-delete-grid">
                 <?php foreach ($items as $item):
-                    $img = $item['image_plant'];
-                    if (strpos($img, 'img/') !== 0) {
-                        $img = 'img/' . ltrim($img, '/');
-                    }
+                    $img = 'img/' . basename($item['image_plant']);
                 ?>
                 <div class="fa-delete-item" data-id="<?= htmlspecialchars($item['id']); ?>">
                     <img src="<?= htmlspecialchars($img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">

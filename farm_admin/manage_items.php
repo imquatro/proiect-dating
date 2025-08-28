@@ -14,10 +14,7 @@ ob_start();
         <select id="fa-item-select">
             <option value="">Select item</option>
             <?php foreach ($items as $item):
-                $img = $item['image_plant'];
-                if (strpos($img, 'img/') !== 0) {
-                    $img = 'img/' . ltrim($img, '/');
-                }
+                $img = 'img/' . basename($item['image_plant']);
             ?>
             <option value="<?= htmlspecialchars($item['id']); ?>" data-image="<?= htmlspecialchars($img); ?>">
                 <?= htmlspecialchars($item['name']); ?>
