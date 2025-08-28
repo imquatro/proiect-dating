@@ -10,16 +10,17 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../includes/db.php';
 
-$data    = json_decode(file_get_contents('php://input'), true);
-$slots   = isset($data['slots']) && is_array($data['slots']) ? array_map('intval', $data['slots']) : [];
-$itemId  = intval($data['item'] ?? 0);
+$data   = json_decode(file_get_contents('php://input'), true);
+$slots  = isset($data['slots']) && is_array($data['slots']) ? array_map('intval', $data['slots']) : [];
+$slots  = array_values(array_unique($slots));
+$itemId = intval($data['item'] ?? 0);
 
 if (empty($slots) || !$itemId) {
     echo json_encode(['success' => false]);
     exit;
 }
 
-$userId = $_SESSION['user_id'];
+$userId    = $_SESSION['user_id'];
 $slotCount = count($slots);
 
 // Verify item and price from database
@@ -41,12 +42,12 @@ if (strpos($image, 'img/') !== 0) {
 // Check user funds and VIP status
 $stmt = $db->prepare('SELECT money, vip FROM users WHERE id = ?');
 $stmt->execute([$userId]);
-$urow = $stmt->fetch(PDO::FETCH_ASSOC);
+$urow  = $stmt->fetch(PDO::FETCH_ASSOC);
 $money = isset($urow['money']) ? (int)$urow['money'] : 0;
-$vip   = isset($urow['vip']) ? (int)$urow['vip'] : 0;
+$vip   = !empty($urow['vip']);
 
-// Allow multiple slot planting for any user with a non-zero VIP value
-if ($slotCount > 1 && $vip < 1) {
+// Allow multiple slot planting only for VIP users
+if ($slotCount > 1 && !$vip) {
     echo json_encode(['success' => false, 'error' => 'You are not VIP']);
     exit;
 }

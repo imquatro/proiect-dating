@@ -27,7 +27,8 @@ function initQuickShop(container) {
         let count = 1;
         const select = itemElem.querySelector('.qs-count');
         if (select) {
-            count = parseInt(select.value);
+            const match = select.value.match(/\d+/);
+            count = match ? parseInt(match[0], 10) : 1;
         }
         if (count > 1 && !isVip) {
             alert('You are not VIP');
