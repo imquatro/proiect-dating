@@ -1,4 +1,5 @@
 function initAdminPanel(panel){
+    const imgPrefix = panel.dataset.prefix || '';
     // tab switching
     const tabs = panel.querySelectorAll('.fa-tab-header button');
     const contents = panel.querySelectorAll('.fa-tab-content');
@@ -49,7 +50,7 @@ function initAdminPanel(panel){
                         const div = document.createElement('div');
                         div.className = cls;
                         div.dataset.id = item.id;
-                        div.innerHTML = `<img src="${item.image_plant}" alt="${item.name}"><div class="qs-info"><span class="qs-price">${item.price}</span></div>`;
+                        div.innerHTML = `<img src="${imgPrefix}${item.image_plant}" alt="${item.name}"><div class="qs-info"><span class="qs-price">${item.price}</span></div>`;
                         return div;
                     };
                     const editGrid = panel.querySelector('.fa-edit-grid');
@@ -156,6 +157,7 @@ function initEditItems(panel){
     if (!grid) return;
     const form = panel.querySelector('#fa-edit-form');
     const typeSel = form.querySelector('select[name="item_type"]');
+    const imgPrefix = panel.dataset.prefix || '';
     const waterFields = form.querySelectorAll('.water-field');
     const feedFields = form.querySelectorAll('.feed-field');
 
@@ -218,12 +220,12 @@ function initEditItems(panel){
                 const item = data.item;
                 const editItem = grid.querySelector(`.fa-edit-item[data-id="${item.id}"]`);
                 if (editItem) {
-                    editItem.querySelector('img').src = item.image_plant;
+                    editItem.querySelector('img').src = imgPrefix + item.image_plant;
                     editItem.querySelector('.qs-price').textContent = item.price;
                 }
                 const delItem = panel.querySelector(`#fa-tab-delete .fa-delete-item[data-id="${item.id}"]`);
                 if (delItem) {
-                    delItem.querySelector('img').src = item.image_plant;
+                    delItem.querySelector('img').src = imgPrefix + item.image_plant;
                     delItem.querySelector('.qs-price').textContent = item.price;
                 }
                 const qsPanel = document.getElementById('quickshop-panel');

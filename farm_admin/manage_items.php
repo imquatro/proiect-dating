@@ -6,6 +6,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once '../includes/db.php';
 $items = $db->query('SELECT id,name,image_plant FROM farm_items ORDER BY name')->fetchAll(PDO::FETCH_ASSOC);
 $ajax = isset($_GET['ajax']);
+$imagePrefix = $ajax ? '' : '../';
 ob_start();
 ?>
 <div id="fa-manage-panel">
@@ -16,7 +17,7 @@ ob_start();
             <?php foreach ($items as $item):
                 $img = 'img/' . basename($item['image_plant']);
             ?>
-            <option value="<?= htmlspecialchars($item['id']); ?>" data-image="<?= htmlspecialchars($img); ?>">
+            <option value="<?= htmlspecialchars($item['id']); ?>" data-image="<?= htmlspecialchars($imagePrefix . $img); ?>">
                 <?= htmlspecialchars($item['name']); ?>
             </option>
             <?php endforeach; ?>

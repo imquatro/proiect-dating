@@ -18,9 +18,10 @@ $versionFile = __DIR__ . '/../version.txt';
 $currentVersion = is_file($versionFile) ? trim(file_get_contents($versionFile)) : 'unknown';
 
 $ajax = isset($_GET['ajax']);
+$imagePrefix = $ajax ? '' : '../';
 ob_start();
 ?>
-<div id="fa-admin-panel">
+<div id="fa-admin-panel" data-prefix="<?= htmlspecialchars($imagePrefix); ?>">
     <div class="fa-panel-window">
         <div class="fa-tab-header">
             <button class="active" data-tab="add">Add Items</button>
@@ -95,7 +96,7 @@ ob_start();
                     $img = 'img/' . basename($item['image_plant']);
                 ?>
                 <div class="fa-edit-item" data-id="<?= htmlspecialchars($item['id']); ?>">
-                    <img src="<?= htmlspecialchars($img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+                    <img src="<?= htmlspecialchars($imagePrefix . $img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
                     <div class="qs-info">
                         <span class="qs-price"><?= htmlspecialchars($item['price']); ?></span>
                     </div>
@@ -169,7 +170,7 @@ ob_start();
                     $img = 'img/' . basename($item['image_plant']);
                 ?>
                 <div class="fa-delete-item" data-id="<?= htmlspecialchars($item['id']); ?>">
-                    <img src="<?= htmlspecialchars($img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
+                    <img src="<?= htmlspecialchars($imagePrefix . $img); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
                     <div class="qs-info">
                         <span class="qs-price"><?= htmlspecialchars($item['price']); ?></span>
                     </div>
