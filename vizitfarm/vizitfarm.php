@@ -52,7 +52,7 @@ foreach ($slotStmt as $row) {
 
 ob_start();
 ?>
-<div class="main-profile-card">
+<div class="mini-cards-row">
     <div class="mini-card helpers-card" id="helpersCard"></div>
     <div class="mini-profile" id="miniProfile">
         <div id="helper-effect" class="helper-effect">

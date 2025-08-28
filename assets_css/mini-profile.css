@@ -1,33 +1,31 @@
-.main-profile-card {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--slot-gap, 1px);
-    margin: 0 auto var(--slot-gap, 1px) auto;
-    background: url('../img/bg2.png') center/cover no-repeat;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-    width: calc(100% - (var(--slot-size, 60px) + var(--slot-gap, 1px)));
-    padding: 20px;
-    box-sizing: border-box;
+/* Container for helper, profile and achievement mini cards */
+.mini-cards-row {
+    position: relative;
+    width: calc(5 * var(--slot-size, 60px) + 4 * var(--slot-gap, 1px));
     height: var(--slot-size, 60px);
+    margin: 0 auto var(--slot-gap, 1px);
+    box-sizing: border-box;
 }
 
 .mini-profile {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
     display: flex;
     align-items: stretch;
     background: url('../img/bg2.png') center/cover no-repeat;
     padding: 0;
     border: 1px solid #000;
     box-shadow: none;
-    width: calc(2 * (var(--slot-size, 60px) - 20px) + var(--slot-gap, 1px));
-    height: calc(var(--slot-size, 60px) - 20px);
+    width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
+    height: var(--slot-size, 60px);
     max-width: 100%;
-    position: relative;
     box-sizing: border-box;
 }
 
 .mini-profile-avatar, .profile-avatar {
-    width: calc(var(--slot-size, 60px) - 20px);
+    width: var(--slot-size, 60px);
     height: 100%;
     object-fit: cover;
     margin-right: 0;
@@ -41,8 +39,8 @@
 
 .mini-profile-card,
 .mini-card {
-    width: calc(var(--slot-size, 60px) - 20px);
-    height: calc(var(--slot-size, 60px) - 20px);
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
     background: url('../img/bg2.png') center/cover no-repeat;
     border: 1px solid #000;
     box-shadow: none;
@@ -77,6 +75,11 @@
 }
 
 .helpers-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
@@ -87,10 +90,17 @@
     cursor: grab;
 }
 
-.helpers-card,
 .achievements-card {
-    width: 100%;
-    max-width: calc(4 * (var(--slot-size, 60px) - 20px) + 3 * var(--slot-gap, 1px));
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c4e09;
+    font-size: 0.7em;
 }
 
 .helpers-card::-webkit-scrollbar {
@@ -99,7 +109,7 @@
 
 .helper-item {
     position: relative;
-    width: calc(var(--slot-size, 60px) - 20px);
+    width: var(--slot-size, 60px);
     height: 100%;
     flex: 0 0 auto;
 }
@@ -132,14 +142,6 @@
     padding: 1px 3px;
 }
 
-.achievements-card {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6c4e09;
-    font-size: 0.7em;
-}
-
 .avatar-wrapper {
     position: relative;
     height: 100%;
@@ -162,10 +164,10 @@
 
 .helper-effect {
     position: absolute;
-    left: calc(-1 * ((var(--slot-size, 60px) - 20px) + var(--slot-gap, 1px)));
+    left: calc(-1 * (var(--slot-size, 60px) + var(--slot-gap, 1px)));
     top: 0;
-    width: calc(var(--slot-size, 60px) - 20px);
-    height: calc(var(--slot-size, 60px) - 20px);
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
     opacity: 0;
     pointer-events: none;
 }
@@ -191,15 +193,12 @@
 }
 
 @media (max-width: 800px) {
-    .main-profile-card {
-        width: calc(100% - 2 * var(--slot-gap, 1px));
-        padding: var(--slot-gap, 1px);
-        max-width: 100%;
+    .mini-cards-row {
+        margin: 0 auto;
     }
 
     .mini-profile {
         width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
-        padding: var(--slot-gap, 1px);
     }
 
     .mini-profile-card,
@@ -211,8 +210,8 @@
 
     .helpers-card,
     .achievements-card {
-        max-width: 100%;
-        padding: var(--slot-gap, 1px);
+        max-width: var(--slot-size, 60px);
+        padding: 0;
         gap: var(--slot-gap, 1px);
     }
 }
