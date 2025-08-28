@@ -24,7 +24,7 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 ?>
-<div class="main-profile-card">
+<div class="mini-cards-row">
     <div class="mini-card helpers-card" id="helpersCard"></div>
     <div class="mini-profile" id="miniProfile">
         <div id="helper-effect" class="helper-effect">
