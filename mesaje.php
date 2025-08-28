@@ -13,7 +13,7 @@ $friend_id = isset($_GET['id']) ? (int)$_GET['id'] : (isset($_GET['user_id']) ? 
 $friend = null;
 $friend_avatar = 'default-avatar.png';
 if ($friend_id > 0) {
-    $stmt = $db->prepare('SELECT id, username, gallery FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT id, username, gallery, vip FROM users WHERE id = ?');
     $stmt->execute([$friend_id]);
     $friend = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($friend && !empty($friend['gallery'])) {
@@ -41,12 +41,12 @@ if (!$friend) {
     } catch (PDOException $e) {
         // Column may already exist
     }
-    $stmt = $db->prepare('SELECT u.id, u.username, u.gallery,
+            $stmt = $db->prepare('SELECT u.id, u.username, u.gallery, u.vip,
         SUM(CASE WHEN m.sender_id = u.id AND m.receiver_id = ? AND m.is_read = 0 THEN 1 ELSE 0 END) AS unread
         FROM users u
         JOIN messages m ON (m.sender_id = u.id OR m.receiver_id = u.id)
         WHERE (m.sender_id = ? OR m.receiver_id = ?) AND u.id != ?
-        GROUP BY u.id, u.username, u.gallery
+        GROUP BY u.id, u.username, u.gallery, u.vip
         ORDER BY MAX(m.created_at) DESC');
     $stmt->execute([$user_id, $user_id, $user_id, $user_id]);
     $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -63,7 +63,7 @@ if (!$friend) {
                     }
                 }
             }
-            echo '<li data-id="' . (int)$c['id'] . '"><a href="mesaje.php?id=' . (int)$c['id'] . '"><img src="' . htmlspecialchars($avatar) . '" class="conv-avatar" alt="">' . htmlspecialchars($c['username']);
+            echo '<li data-id="' . (int)$c['id'] . '"><a href="mesaje.php?id=' . (int)$c['id'] . '"><img src="' . htmlspecialchars($avatar) . '" class="conv-avatar" alt=""><span class="conv-name' . (!empty($c['vip']) ? ' gold-shimmer' : '') . '">' . htmlspecialchars($c['username']) . '</span>';
             if ((int)$c['unread'] > 0) {
                 echo '<span class="message-indicator conversation-indicator"></span>';
             }
@@ -78,7 +78,7 @@ if (!$friend) {
 else {
 ?>
 <div class="chat-container">
-    <div class="chat-header"><?= htmlspecialchars($friend['username']) ?></div>
+    <div class="chat-header<?= !empty($friend['vip']) ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($friend['username']) ?></div>
     <div id="chatMessages" class="chat-messages"></div>
     <div id="typingIndicator" class="typing-indicator"><img src="<?= htmlspecialchars($friend_avatar) ?>" class="typing-avatar" alt=""><span></span><span></span><span></span></div>
     <form id="messageForm" class="chat-input" autocomplete="off">

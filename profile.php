@@ -13,6 +13,7 @@ require_once __DIR__ . '/includes/update_last_active.php';
 $stmt = $db->prepare('SELECT * FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+$isVip = !empty($user['vip']);
 
 $gallery = !empty($user['gallery']) ? array_filter(explode(',', $user['gallery'])) : [];
 $profile_photo = 'default-avatar.png';
@@ -44,7 +45,7 @@ ob_start();
         </div>
     </div>
     <div class="profile-info-list">
-        <div class="info-row"><span class="profile-label">Name:</span><span class="profile-value"><?=htmlspecialchars($user['username'])?></span></div>
+        <div class="info-row"><span class="profile-label">Name:</span><span class="profile-value<?= $isVip ? ' gold-shimmer' : '' ?>"><?=htmlspecialchars($user['username'])?></span></div>
         <div class="info-row"><span class="profile-label">Email:</span><span class="profile-value"><?=htmlspecialchars($user['email'])?></span></div>
         <div class="info-row"><span class="profile-label">Age:</span><span class="profile-value"><?=htmlspecialchars($user['age'])?></span></div>
         <div class="info-row"><span class="profile-label">Gender:</span><span class="profile-value"><?=htmlspecialchars($user['gender'])?></span></div>

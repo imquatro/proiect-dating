@@ -6,9 +6,10 @@ require_once __DIR__ . '/includes/db.php';
 $mini_avatar = 'default-avatar.png';
 $user_name = 'Vizitator';
 $user_level = 1;
+$isVip = false;
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $stmt = $db->prepare('SELECT username, gallery, level FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT username, gallery, level, vip FROM users WHERE id = ?');
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($user) {
@@ -21,6 +22,7 @@ if (isset($_SESSION['user_id'])) {
         }
         $user_name = $user['username'] ?? $user_name;
         $user_level = isset($user['level']) ? (int)$user['level'] : $user_level;
+        $isVip = !empty($user['vip']);
     }
 }
 ?>
@@ -35,7 +37,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="level-circle"><?= htmlspecialchars($user_level) ?></div>
         </div>
         <div class="mini-profile-card">
-            <div class="username"><?= htmlspecialchars($user_name) ?></div>
+            <div class="username<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($user_name) ?></div>
             <div class="divider"></div>
         </div>
     </div>

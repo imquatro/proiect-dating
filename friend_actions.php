@@ -33,7 +33,8 @@ function build_user($row) {
         'id' => $row['id'],
         'username' => $row['username'],
         'avatar' => $avatar,
-        'status' => $status
+        'status' => $status,
+        'vip' => !empty($row['vip'])
     ];
 }
 
@@ -74,7 +75,7 @@ if ($action === 'accept_request') {
             echo json_encode(['success' => false, 'message' => 'Request not found']);
             exit;
         }
-        $stmt = $db->prepare('SELECT id, username, gallery, last_active FROM users WHERE id = ?');
+        $stmt = $db->prepare('SELECT id, username, gallery, vip, last_active FROM users WHERE id = ?');
         $stmt->execute([$sender]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         echo json_encode(['success' => true, 'user' => build_user($user)]);
@@ -95,7 +96,7 @@ if ($action === 'decline_request') {
         $stmt = $db->prepare('DELETE FROM friend_requests WHERE sender_id = ? AND receiver_id = ? AND status = \'pending\'');
         $stmt->execute([$sender, $currentId]);
         if ($stmt->rowCount()) {
-            $stmt = $db->prepare('SELECT id, username, gallery, last_active FROM users WHERE id = ?');
+            $stmt = $db->prepare('SELECT id, username, gallery, vip, last_active FROM users WHERE id = ?');
             $stmt->execute([$sender]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             echo json_encode(['success' => true, 'user' => build_user($user)]);

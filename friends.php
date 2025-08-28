@@ -29,7 +29,8 @@ function build_card($u) {
         'id' => $u['id'],
         'username' => $u['username'],
         'avatar' => $avatar,
-        'status' => $status
+        'status' => $status,
+        'vip' => !empty($u['vip'])
     ];
 }
 
@@ -57,11 +58,11 @@ $excludeIds = array_unique($pendingReceived);
 
 $rawUsers = [];
 try {
-    $stmt = $db->prepare('SELECT id, username, gallery, last_active FROM users WHERE id != ?');
+    $stmt = $db->prepare('SELECT id, username, gallery, vip, last_active FROM users WHERE id != ?');
     $stmt->execute([$user_id]);
     $rawUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $stmt = $db->prepare('SELECT id, username, gallery FROM users WHERE id != ?');
+    $stmt = $db->prepare('SELECT id, username, gallery, vip FROM users WHERE id != ?');
     $stmt->execute([$user_id]);
     $rawUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach ($rawUsers as &$u) {
@@ -91,7 +92,7 @@ foreach ($rawUsers as $u) {
 
 $friendRequests = [];
 try {
-    $stmt = $db->prepare('SELECT u.id, u.username, u.gallery, u.last_active
+    $stmt = $db->prepare('SELECT u.id, u.username, u.gallery, u.vip, u.last_active
         FROM friend_requests fr
         JOIN users u ON u.id = fr.sender_id
         WHERE fr.receiver_id = ? AND fr.status = \'pending\'');
@@ -106,7 +107,7 @@ try {
 
 $friends = [];
 try {
-    $stmt = $db->prepare('SELECT u.id, u.username, u.gallery, u.last_active
+    $stmt = $db->prepare('SELECT u.id, u.username, u.gallery, u.vip, u.last_active
         FROM friend_requests fr
         JOIN users u ON u.id = CASE WHEN fr.sender_id = ? THEN fr.receiver_id ELSE fr.sender_id END
         WHERE (fr.sender_id = ? OR fr.receiver_id = ?) AND fr.status = \'accepted\'');
