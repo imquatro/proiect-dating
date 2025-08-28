@@ -7,7 +7,7 @@
     background: url('../img/bg2.png') center/cover no-repeat;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
     width: calc(100% - (var(--slot-size, 60px) + var(--slot-gap, 1px)));
-    padding: 5px;
+    padding: 20px;
     box-sizing: border-box;
     height: var(--slot-size, 60px);
 }
@@ -19,7 +19,7 @@
     padding: 0;
     border: 1px solid #000;
     box-shadow: none;
-    width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
+    width: calc(2 * (var(--slot-size, 60px) - 20px) + var(--slot-gap, 1px));
     height: calc(var(--slot-size, 60px) - 20px);
     max-width: 100%;
     position: relative;
@@ -27,7 +27,7 @@
 }
 
 .mini-profile-avatar, .profile-avatar {
-    width: var(--slot-size, 60px);
+    width: calc(var(--slot-size, 60px) - 20px);
     height: 100%;
     object-fit: cover;
     margin-right: 0;
@@ -41,7 +41,7 @@
 
 .mini-profile-card,
 .mini-card {
-    width: var(--slot-size, 60px);
+    width: calc(var(--slot-size, 60px) - 20px);
     height: calc(var(--slot-size, 60px) - 20px);
     background: url('../img/bg2.png') center/cover no-repeat;
     border: 1px solid #000;
@@ -90,7 +90,7 @@
 .helpers-card,
 .achievements-card {
     width: 100%;
-    max-width: calc(4 * var(--slot-size, 60px) + 3 * var(--slot-gap, 1px));
+    max-width: calc(4 * (var(--slot-size, 60px) - 20px) + 3 * var(--slot-gap, 1px));
 }
 
 .helpers-card::-webkit-scrollbar {
@@ -99,7 +99,7 @@
 
 .helper-item {
     position: relative;
-    width: var(--slot-size, 60px);
+    width: calc(var(--slot-size, 60px) - 20px);
     height: 100%;
     flex: 0 0 auto;
 }
@@ -162,10 +162,10 @@
 
 .helper-effect {
     position: absolute;
-    left: calc(-1 * (var(--slot-size, 60px) + var(--slot-gap, 1px)));
+    left: calc(-1 * ((var(--slot-size, 60px) - 20px) + var(--slot-gap, 1px)));
     top: 0;
-    width: var(--slot-size, 60px);
-    height: var(--slot-size, 60px);
+    width: calc(var(--slot-size, 60px) - 20px);
+    height: calc(var(--slot-size, 60px) - 20px);
     opacity: 0;
     pointer-events: none;
 }
