@@ -52,17 +52,19 @@ foreach ($slotStmt as $row) {
 
 ob_start();
 ?>
-<div class="mini-profile-wrapper">
+<div class="main-profile-card">
     <div class="mini-card helpers-card" id="helpersCard"></div>
     <div class="mini-profile" id="miniProfile">
         <div id="helper-effect" class="helper-effect">
             <img src="" alt="Helper">
         </div>
-        <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
+        <div class="avatar-wrapper">
+            <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
+            <div class="level-circle"><?= htmlspecialchars($level) ?></div>
+        </div>
         <div class="mini-profile-card">
             <div class="username"><?= htmlspecialchars($username) ?></div>
             <div class="divider"></div>
-            <div class="level">LVL: <?= htmlspecialchars($level) ?></div>
         </div>
     </div>
     <div class="mini-card achievements-card" id="achievementsCard"></div>

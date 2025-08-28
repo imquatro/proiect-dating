@@ -24,17 +24,19 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 ?>
-<div class="mini-profile-wrapper">
+<div class="main-profile-card">
     <div class="mini-card helpers-card" id="helpersCard"></div>
     <div class="mini-profile" id="miniProfile">
         <div id="helper-effect" class="helper-effect">
             <img src="" alt="Helper">
         </div>
-        <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
+        <div class="avatar-wrapper">
+            <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
+            <div class="level-circle"><?= htmlspecialchars($user_level) ?></div>
+        </div>
         <div class="mini-profile-card">
             <div class="username"><?= htmlspecialchars($user_name) ?></div>
             <div class="divider"></div>
-            <div class="level">LVL: <?= htmlspecialchars($user_level) ?></div>
         </div>
     </div>
     <div class="mini-card achievements-card" id="achievementsCard"></div>
