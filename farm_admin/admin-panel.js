@@ -63,6 +63,7 @@ function initAdminPanel(panel){
                         const qsGrid = qsPanel.querySelector('.quickshop-grid');
                         if (qsGrid) {
                             const qsPrefix = qsPanel.dataset.prefix || '';
+                            const qsImg = normalizeImg(item.image_plant);
                             const qs = document.createElement('div');
                             qs.className = 'quickshop-item';
                             qs.dataset.itemId = item.id;
@@ -72,7 +73,7 @@ function initAdminPanel(panel){
                             qs.dataset.waterTimes = item.water_times;
                             qs.dataset.feedTimes = item.feed_times;
                             qs.dataset.production = item.production;
-                            qs.innerHTML = `<img src="${qsPrefix}${item.image_plant}" alt="${item.name}"><div class="qs-info"><span class="qs-price">${item.price}</span><button class="qs-buy">BUY/USE</button></div>`;
+                            qs.innerHTML = `<img src="${qsPrefix}${qsImg}" alt="${item.name}"><div class="qs-info"><span class="qs-price">${item.price}</span><button class="qs-buy">BUY/USE</button></div>`;
                             qsGrid.appendChild(qs);
                             if (typeof initQuickShop === 'function') {
                                 initQuickShop(qsPanel);
@@ -199,7 +200,7 @@ function initEditItems(panel){
                 form.querySelector('input[name="price"]').value = item.price;
                 form.querySelector('input[name="sell_price"]').value = item.sell_price;
                 form.querySelector('input[name="production"]').value = item.production;
-                form.querySelector('input[name="image_name"]').value = item.image_plant.replace(/^img\//, '');
+                form.querySelector('input[name="image_name"]').value = normalizeImg(item.image_plant).replace(/^img\//, '');
                 form.querySelector('input[name="barn_capacity"]').value = item.barn_capacity;
                 toggleFields();
             });
@@ -221,21 +222,21 @@ function initEditItems(panel){
                 const item = data.item;
                 const editItem = grid.querySelector(`.fa-edit-item[data-id="${item.id}"]`);
                 if (editItem) {
-                    editItem.querySelector('img').src = imgPrefix + item.image_plant;
+                    editItem.querySelector('img').src = imgPrefix + normalizeImg(item.image_plant);
                     editItem.querySelector('.qs-price').textContent = item.price;
                 }
                 const delItem = panel.querySelector(`#fa-tab-delete .fa-delete-item[data-id="${item.id}"]`);
                 if (delItem) {
-                    delItem.querySelector('img').src = imgPrefix + item.image_plant;
+                    delItem.querySelector('img').src = imgPrefix + normalizeImg(item.image_plant);
                     delItem.querySelector('.qs-price').textContent = item.price;
                 }
-                const qsPanel = document.getElementById('quickshop-panel');
+                 const qsPanel = document.getElementById('quickshop-panel');
                 if (qsPanel) {
                     const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${item.id}"]`);
                     if (qsItem) {
                         const qsPrefix = qsPanel.dataset.prefix || '';
                         qsItem.dataset.price = item.price;
-                        qsItem.querySelector('img').src = qsPrefix + item.image_plant;
+                        qsItem.querySelector('img').src = qsPrefix + normalizeImg(item.image_plant);
                         qsItem.querySelector('.qs-price').textContent = item.price;
                     }
                 }

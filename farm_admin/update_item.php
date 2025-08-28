@@ -23,7 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sell_price = intval($_POST['sell_price'] ?? 0);
     $barn_capacity = intval($_POST['barn_capacity'] ?? 0);
     $imgName = trim($_POST['image_name'] ?? '');
-    $imgPlant = $imgName !== '' ? 'img/' . basename($imgName) : '';
+    $imgName = ltrim($imgName, '/');
+    if (strpos($imgName, 'img/') === 0) {
+        $imgName = substr($imgName, 4);
+    }
+    $imgFile = basename($imgName);
+    $imgPlant = $imgFile !== '' ? 'img/' . $imgFile : '';
     $imgReady = $imgPlant;
     $imgProduct = $imgPlant;
     if ($item_type === 'plant') {

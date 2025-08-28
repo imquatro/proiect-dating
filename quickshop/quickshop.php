@@ -6,9 +6,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 $activePage = 'welcome';
 $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
-$bgImagePath = 'img/bg2.png';
-$bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
+$imagePrefix = $ajax ? '' : '../';
+$bgImagePath = 'img/bg2.png';
+$bgImage = $imagePrefix . $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/slot_helpers.php';
@@ -55,12 +56,8 @@ if ($hrow) {
     }
 }
 
-$imagePrefix = $ajax ? '' : '../';
-
 ob_start();
 ?>
-ob_start();␊
-?>␊
 <div id="quickshop-panel" data-prefix="<?= htmlspecialchars($imagePrefix); ?>" data-slot-id="<?php echo $slotId; ?>" data-slot-type="<?php echo htmlspecialchars($slotType); ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
     <?php if ($helper): ?>
     <div id="qs-helper-bar">

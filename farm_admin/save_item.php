@@ -30,7 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $imgName = trim($_POST['image_name'] ?? '');
-    $imgPlant = $imgName !== '' ? 'img/' . basename($imgName) : '';
+    $imgName = ltrim($imgName, '/');
+    if (strpos($imgName, 'img/') === 0) {
+        $imgName = substr($imgName, 4);
+    }
+    $imgFile = basename($imgName);
+    $imgPlant = $imgFile !== '' ? 'img/' . $imgFile : '';
     $imgReady = $imgPlant;
     $imgProduct = $imgPlant;
 
