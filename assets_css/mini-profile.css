@@ -192,8 +192,8 @@
 
 @media (max-width: 800px) {
     .main-profile-card {
-        width: calc(3 * var(--slot-size, 120px) + 2 * var(--slot-gap, 120px));
-        padding: var(--slot-gap, 120px);
+        width: calc(100% - 2 * var(--slot-gap, 1px));
+        padding: var(--slot-gap, 1px);
         max-width: 100%;
     }
 
@@ -209,6 +209,6 @@
 
     .helpers-card,
     .achievements-card {
-        max-width: calc(3 * var(--slot-size, 60px) + 2 * var(--slot-gap, 1px));
+        max-width: 100%;
     }
 }
