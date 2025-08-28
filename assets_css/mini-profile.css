@@ -5,20 +5,24 @@
     gap: var(--slot-gap, 1px);
     margin: 0 auto var(--slot-gap, 1px) auto;
     background: url('../img/bg2.png') center/cover no-repeat;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-    width: calc(5 * var(--slot-size, 60px) + 4 * var(--slot-gap, 1px));
-    padding: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    width: 100%;
+    max-width: calc(4 * var(--slot-size, 60px) + 3 * var(--slot-gap, 1px));
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 .mini-profile {
     display: flex;
     align-items: center;
     background: url('../img/bg2.png') center/cover no-repeat;
-    padding: 8px 12px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    padding: var(--slot-gap, 1px);
+    border: 1px solid #000;
+    box-shadow: none;
     width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
     max-width: 100%;
     position: relative;
+    box-sizing: border-box;
 }
 
 .mini-profile-avatar, .profile-avatar {
@@ -27,9 +31,11 @@
     object-fit: cover;
     margin-right: var(--slot-gap, 1px);
     background: url('../img/bg2.png') center/cover no-repeat;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    border: 1px solid #000;
+    box-shadow: none;
     max-width: 120px;
     max-height: 120px;
+    box-sizing: border-box;
 }
 
 .mini-profile-card,
@@ -37,9 +43,11 @@
     width: var(--slot-size, 60px);
     height: var(--slot-size, 60px);
     background: url('../img/bg2.png') center/cover no-repeat;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    border: 1px solid #000;
+    box-shadow: none;
     max-width: 120px;
     max-height: 120px;
+    box-sizing: border-box;
 }
 
 .mini-profile-card {
@@ -72,7 +80,7 @@
     overflow-x: auto;
     overflow-y: hidden;
     gap: 5px;
-    padding: 0 10px;
+    padding: 0;
     -ms-overflow-style: none;
     scrollbar-width: none;
     cursor: grab;
@@ -80,7 +88,8 @@
 
 .helpers-card,
 .achievements-card {
-    width: calc(var(--slot-size, 60px) * 1.5);
+    width: 100%;
+    max-width: calc(4 * var(--slot-size, 60px) + 3 * var(--slot-gap, 1px));
 }
 
 .helpers-card::-webkit-scrollbar {
@@ -95,17 +104,10 @@
 }
 
 .helpers-card img {
-    width: 90%;
-    height: 90%;
-    object-fit: cover;
-    margin: 5% auto;
-    display: block;
-}
-
-.helpers-card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .helper-counts {
@@ -171,7 +173,9 @@
     height: 100%;
     object-fit: cover;
     background: url('../img/bg2.png') center/cover no-repeat;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    border: 1px solid #000;
+    box-shadow: none;
+    box-sizing: border-box;
 }
 
 @keyframes helperFade {
