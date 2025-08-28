@@ -16,56 +16,39 @@ require_once __DIR__ . '/../includes/slot_helpers.php';
 $userId = $_SESSION['user_id'];
 $slotType = get_slot_type($slotId, $userId);
 
-
 // Check if slot already has a plant
 $stmt = $db->prepare('SELECT 1 FROM user_plants WHERE user_id = ? AND slot_number = ?');
 $stmt->execute([$userId, $slotId]);
 $hasPlant = $stmt->fetchColumn() ? 1 : 0;
 
+// Fetch items available for this slot type
 $stmt = $db->prepare('SELECT id,name,image_plant,price,water_interval,feed_interval,water_times,feed_times,production FROM farm_items WHERE slot_type = ? AND active = 1');
 $stmt->execute([$slotType]);
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Last helper info
-$db->exec('CREATE TABLE IF NOT EXISTS user_last_helpers (
-    owner_id INT PRIMARY KEY,
-    helper_id INT NOT NULL,
-    action ENUM("water","feed") NOT NULL,
-    helped_at DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
-$helper = null;
-$hstmt = $db->prepare('SELECT helper_id FROM user_last_helpers WHERE owner_id = ?');
-$hstmt->execute([$userId]);
-$hrow = $hstmt->fetch(PDO::FETCH_ASSOC);
-if ($hrow) {
-    $ustmt = $db->prepare('SELECT gallery FROM users WHERE id = ?');
-    $ustmt->execute([$hrow['helper_id']]);
-    $u = $ustmt->fetch(PDO::FETCH_ASSOC);
-    if ($u) {
-        $avatar = 'default-avatar.png';
-        if (!empty($u['gallery'])) {
-            $gal = array_filter(explode(',', $u['gallery']));
-            if (!empty($gal)) {
-                $candidate = 'uploads/' . $hrow['helper_id'] . '/' . trim($gal[0]);
-                if (is_file(__DIR__ . '/../' . $candidate)) {
-                    $avatar = $candidate;
-                }
-            }
-        }
-        $helper = ['id' => $hrow['helper_id'], 'avatar' => $avatar];
-    }
-}
+// Determine available slots of this type without plants
+$slotQuery = $db->prepare(
+    'SELECT ds.slot_number
+     FROM default_slots ds
+     LEFT JOIN user_slots us ON us.user_id = ? AND us.slot_number = ds.slot_number
+     LEFT JOIN user_plants up ON up.user_id = ? AND up.slot_number = ds.slot_number
+     WHERE COALESCE(us.slot_type, ds.slot_type) = ?
+       AND COALESCE(us.unlocked, ds.unlocked) = 1
+       AND up.slot_number IS NULL'
+);
+$slotQuery->execute([$userId, $userId, $slotType]);
+$availableSlots = $slotQuery->fetchAll(PDO::FETCH_COLUMN);
+$slotsCsv = implode(',', $availableSlots);
+
+// VIP status for multiple planting
+$vipStmt = $db->prepare('SELECT vip FROM users WHERE id = ?');
+$vipStmt->execute([$userId]);
+$isVip = (int)$vipStmt->fetchColumn();
+
 
 ob_start();
 ?>
-<div id="quickshop-panel" data-prefix="<?= htmlspecialchars($imagePrefix); ?>" data-slot-id="<?php echo $slotId; ?>" data-slot-type="<?php echo htmlspecialchars($slotType); ?>" data-planted="<?php echo $hasPlant; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
-    <?php if ($helper): ?>
-    <div id="qs-helper-bar">
-        <div class="qs-helper" data-user-id="<?= $helper['id']; ?>">
-            <img src="<?= $imagePrefix . htmlspecialchars($helper['avatar']); ?>" alt="Helper">
-        </div>
-    </div>
-    <?php endif; ?>
+<div id="quickshop-panel" data-prefix="<?= htmlspecialchars($imagePrefix); ?>" data-slot-id="<?= $slotId; ?>" data-slot-type="<?= htmlspecialchars($slotType); ?>" data-planted="<?= $hasPlant; ?>" data-vip="<?= $isVip; ?>" style="background: url('<?= $bgImage; ?>') no-repeat center/cover;">
     <div class="quickshop-grid">
         <?php foreach ($items as $item):
             $imagePlant = $item['image_plant'];
@@ -80,10 +63,19 @@ ob_start();
              data-feed="<?= $item['feed_interval']; ?>"
              data-water-times="<?= $item['water_times']; ?>"
              data-feed-times="<?= $item['feed_times']; ?>"
-             data-production="<?= $item['production']; ?>">
+             data-production="<?= $item['production']; ?>"
+             data-slots="<?= htmlspecialchars($slotsCsv); ?>">
             <img src="<?= $imagePrefix . htmlspecialchars($imagePlant); ?>" alt="<?= htmlspecialchars($item['name']); ?>">
             <div class="qs-info">
-                <span class="qs-price"><?= $item['price']; ?></span>
+                <span class="qs-price"><img src="<?= $imagePrefix; ?>img/money.png" alt="Money"> <?= $item['price']; ?></span>
+                <span class="qs-details">Water: <?= $item['water_times']; ?>x | Feed: <?= $item['feed_times']; ?>x | Yield: <?= $item['production']; ?></span>
+                <?php if (!empty($availableSlots)): ?>
+                <select class="qs-count">
+                    <?php for ($i = 1; $i <= count($availableSlots); $i++): ?>
+                    <option value="<?= $i; ?>"><?= $i; ?></option>
+                    <?php endfor; ?>
+                </select>
+                <?php endif; ?>
                 <button class="qs-buy">BUY/USE</button>
             </div>
         </div>

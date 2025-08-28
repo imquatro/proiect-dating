@@ -10,16 +10,17 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../includes/db.php';
 
-$data   = json_decode(file_get_contents('php://input'), true);
-$slotId = intval($data['slot'] ?? 0);
-$itemId = intval($data['item'] ?? 0);
+$data    = json_decode(file_get_contents('php://input'), true);
+$slots   = isset($data['slots']) && is_array($data['slots']) ? array_map('intval', $data['slots']) : [];
+$itemId  = intval($data['item'] ?? 0);
 
-if (!$slotId || !$itemId) {
+if (empty($slots) || !$itemId) {
     echo json_encode(['success' => false]);
     exit;
 }
 
 $userId = $_SESSION['user_id'];
+$slotCount = count($slots);
 
 // Verify item and price from database
 $stmt = $db->prepare('SELECT price, image_plant FROM farm_items WHERE id = ?');
@@ -37,11 +38,20 @@ if (strpos($image, 'img/') !== 0) {
     $image = 'img/' . ltrim($image, '/');
 }
 
-// Check user funds
-$stmt = $db->prepare('SELECT money FROM users WHERE id = ?');
+// Check user funds and VIP status
+$stmt = $db->prepare('SELECT money, vip FROM users WHERE id = ?');
 $stmt->execute([$userId]);
-$money = (int)$stmt->fetchColumn();
-if ($money < $price) {
+$urow = $stmt->fetch(PDO::FETCH_ASSOC);
+$money = isset($urow['money']) ? (int)$urow['money'] : 0;
+$vip   = isset($urow['vip']) ? (int)$urow['vip'] : 0;
+
+if ($slotCount > 1 && $vip !== 1) {
+    echo json_encode(['success' => false, 'error' => 'You are not VIP']);
+    exit;
+}
+
+$totalPrice = $price * $slotCount;
+if ($money < $totalPrice) {
     echo json_encode(['success' => false, 'error' => 'Insufficient funds']);
     exit;
 }
@@ -50,11 +60,13 @@ if ($money < $price) {
 try {
     $db->beginTransaction();
     $db->prepare('UPDATE users SET money = money - ? WHERE id = ?')
-        ->execute([$price, $userId]);
-    $db->prepare('INSERT INTO user_plants (user_id, slot_number, item_id, planted_at)
+        ->execute([$totalPrice, $userId]);
+    $ins = $db->prepare('INSERT INTO user_plants (user_id, slot_number, item_id, planted_at)
                   VALUES (?, ?, ?, NOW())
-                  ON DUPLICATE KEY UPDATE item_id = VALUES(item_id), planted_at = NOW()')
-        ->execute([$userId, $slotId, $itemId]);
+                  ON DUPLICATE KEY UPDATE item_id = VALUES(item_id), planted_at = NOW()');
+    foreach ($slots as $slotId) {
+        $ins->execute([$userId, $slotId, $itemId]);
+    }
     $db->commit();
 
     $walletStmt = $db->prepare('SELECT money, gold FROM users WHERE id = ?');

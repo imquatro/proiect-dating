@@ -3,8 +3,9 @@ function initQuickShop(container) {
     if (content) {
         content.classList.add('no-scroll');
     }
-      const slotId = container.dataset.slotId;
     const overlay = document.getElementById('slot-panel-overlay');
+    const isVip = container.dataset.vip === '1';
+
     if (container.dataset.planted === '1') {
         const grid = container.querySelector('.quickshop-grid');
         if (grid) {
@@ -16,50 +17,45 @@ function initQuickShop(container) {
         return;
     }
 
-    const helper = container.querySelector('.qs-helper');
-    if (helper) {
-        let timer;
-        const start = () => {
-            timer = setTimeout(() => {
-                const uid = helper.dataset.userId;
-                if (uid) {
-                    window.location.href = `vizitfarm/vizitfarm.php?id=${uid}`;
-                }
-            }, 1000);
-        };
-        const cancel = () => clearTimeout(timer);
-        helper.addEventListener('mousedown', start);
-        helper.addEventListener('touchstart', start);
-        ['mouseup', 'mouseleave', 'mouseout', 'touchend', 'touchcancel'].forEach(ev => {
-            helper.addEventListener(ev, cancel);
-        });
-    }
-
-    function plantItem(itemId, price, itemElem) {
+    function plantItem(itemId, itemElem) {
         const water = itemElem.dataset.water;
         const feed = itemElem.dataset.feed;
         const waterTimes = itemElem.dataset.waterTimes;
         const feedTimes = itemElem.dataset.feedTimes;
+        const slotsAttr = itemElem.dataset.slots || '';
+        const allSlots = slotsAttr ? slotsAttr.split(',').map(s => parseInt(s)) : [];
+        let count = 1;
+        const select = itemElem.querySelector('.qs-count');
+        if (select) {
+            count = parseInt(select.value);
+        }
+        if (count > 1 && !isVip) {
+            alert('You are not VIP');
+            return;
+        }
+        const slots = allSlots.slice(0, count);
 
         fetch('quickshop/plant_item.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slot: slotId, item: itemId, price: price })
+            body: JSON.stringify({ slots: slots, item: itemId })
         })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    const evt = new CustomEvent('slotUpdated', {
-                        detail: {
-                            slotId: slotId,
-                            image: data.image,
-                            waterInterval: water,
-                            feedInterval: feed,
-                            waterTimes: waterTimes,
-                            feedTimes: feedTimes
-                        }
+                    slots.forEach(slot => {
+                        const evt = new CustomEvent('slotUpdated', {
+                            detail: {
+                                slotId: slot,
+                                image: data.image,
+                                waterInterval: water,
+                                feedInterval: feed,
+                                waterTimes: waterTimes,
+                                feedTimes: feedTimes
+                            }
+                        });
+                        document.dispatchEvent(evt);
                     });
-                    document.dispatchEvent(evt);
                     if (overlay) {
                         overlay.classList.remove('active');
                         overlay.innerHTML = '';
@@ -67,6 +63,8 @@ function initQuickShop(container) {
                     if (content) {
                         content.classList.remove('no-scroll');
                     }
+                } else if (data.error) {
+                    alert(data.error);
                 } else {
                     console.error('Plant failed');
                 }
@@ -75,15 +73,11 @@ function initQuickShop(container) {
 
     container.querySelectorAll('.quickshop-item').forEach(item => {
         const id = item.dataset.itemId;
-        const price = item.dataset.price;
-        item.addEventListener('click', () => {
-            plantItem(id, price, item);
-        });
         const buyBtn = item.querySelector('.qs-buy');
         if (buyBtn) {
             buyBtn.addEventListener('click', e => {
                 e.stopPropagation();
-                plantItem(id, price, item);
+                plantItem(id, item);
             });
         }
     });
