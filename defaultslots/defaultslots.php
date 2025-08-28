@@ -9,6 +9,7 @@ require_once '../includes/db.php';
 require_once '../includes/slot_helpers.php';
 
 $userId = $_SESSION['user_id'];
+$isVip = 0;
 $stmt = $db->prepare("
     SELECT ds.slot_number,
            COALESCE(us.unlocked, ds.unlocked) AS unlocked,
@@ -24,9 +25,11 @@ $slotData = [];
 foreach ($slots as $slot) {
     $slotData[(int)$slot['slot_number']] = $slot;
 }
-$lvlStmt = $db->prepare('SELECT level FROM users WHERE id = ?');
+$lvlStmt = $db->prepare('SELECT level, vip FROM users WHERE id = ?');
 $lvlStmt->execute([$userId]);
-$userLevel = (int)$lvlStmt->fetchColumn();
+$userRow = $lvlStmt->fetch(PDO::FETCH_ASSOC);
+$userLevel = (int)($userRow['level'] ?? 1);
+$isVip = !empty($userRow['vip']);
 $total_slots = 35;
 $bgImagePath = '../img/bg2.png';
 $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../img/bg2.png');
@@ -45,12 +48,22 @@ ob_start();
                 $data['required_level'] = $required;
             }
             $isUnlocked = !empty($data['unlocked']);
-            if (!$isUnlocked && $required > 0 && $userLevel >= $required && $i <= $total_slots - 5) {
-                $db->prepare('INSERT INTO user_slots (user_id, slot_number, unlocked)
-                               VALUES (?, ?, 1)
-                               ON DUPLICATE KEY UPDATE unlocked = 1')
-                   ->execute([$userId, $i]);
-                $isUnlocked = true;
+            if (!$isUnlocked) {
+                if ($i <= $total_slots - 5) {
+                    if ($required > 0 && $userLevel >= $required) {
+                        $db->prepare('INSERT INTO user_slots (user_id, slot_number, unlocked)
+                                       VALUES (?, ?, 1)
+                                       ON DUPLICATE KEY UPDATE unlocked = 1')
+                           ->execute([$userId, $i]);
+                        $isUnlocked = true;
+                    }
+                } elseif ($isVip) {
+                    $db->prepare('INSERT INTO user_slots (user_id, slot_number, unlocked)
+                                   VALUES (?, ?, 1)
+                                   ON DUPLICATE KEY UPDATE unlocked = 1')
+                       ->execute([$userId, $i]);
+                    $isUnlocked = true;
+                }
             }
             $classes = 'ds-slot';
             if ($i === 1) { $classes .= ' active'; }

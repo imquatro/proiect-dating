@@ -140,6 +140,30 @@
     border: 1px solid #6c4e09;
 }
 
+.cs-vip-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 8px;
+    border-radius: 5px;
+}
+
+.cs-vip-badge img {
+    width: 24px;
+    height: 24px;
+}
+
+.cs-vip-badge span {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 1;
+}
+
 #cs-helper-container {
     margin-top: 10px;
     width: 560px;

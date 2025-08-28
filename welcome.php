@@ -7,6 +7,7 @@ include_once 'includes/slot_helpers.php';
 $slotData = [];
 $userId = $_SESSION['user_id'] ?? null;
 $userLevel = 1;
+$isVip = 0;
 if ($userId && isset($db)) {
     $stmt = $db->prepare("
         SELECT ds.slot_number,
@@ -20,9 +21,11 @@ if ($userId && isset($db)) {
     foreach ($stmt as $row) {
         $slotData[(int)$row['slot_number']] = $row;
     }
-    $lvlStmt = $db->prepare('SELECT level FROM users WHERE id = ?');
+    $lvlStmt = $db->prepare('SELECT level, vip FROM users WHERE id = ?');
     $lvlStmt->execute([$userId]);
-    $userLevel = (int)$lvlStmt->fetchColumn();
+    $userRow = $lvlStmt->fetch(PDO::FETCH_ASSOC);
+    $userLevel = (int)($userRow['level'] ?? 1);
+    $isVip = !empty($userRow['vip']);
 }
 ?>
 <hr class="farm-divider">
@@ -43,12 +46,22 @@ for ($i = 0; $i < $total_slots; $i++) {
         $data['required_level'] = $required;
     }
     $isUnlocked = !empty($data['unlocked']);
-    if (!$isUnlocked && $required > 0 && $userLevel >= $required && $slot_id <= $total_slots - 5) {
-        $db->prepare('INSERT INTO user_slots (user_id, slot_number, unlocked)
-                       VALUES (?, ?, 1)
-                       ON DUPLICATE KEY UPDATE unlocked = 1')
-           ->execute([$userId, $slot_id]);
-        $isUnlocked = true;
+    if (!$isUnlocked) {
+        if ($slot_id <= $total_slots - 5) {
+            if ($required > 0 && $userLevel >= $required) {
+                $db->prepare('INSERT INTO user_slots (user_id, slot_number, unlocked)
+                               VALUES (?, ?, 1)
+                               ON DUPLICATE KEY UPDATE unlocked = 1')
+                   ->execute([$userId, $slot_id]);
+                $isUnlocked = true;
+            }
+        } elseif ($isVip) {
+            $db->prepare('INSERT INTO user_slots (user_id, slot_number, unlocked)
+                           VALUES (?, ?, 1)
+                           ON DUPLICATE KEY UPDATE unlocked = 1')
+               ->execute([$userId, $slot_id]);
+            $isUnlocked = true;
+        }
     }
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
     $baseImg = get_slot_image($slot_id, $userId);

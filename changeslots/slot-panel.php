@@ -11,6 +11,10 @@ $slotId = isset($_GET['slot']) ? intval($_GET['slot']) : 0;
 require_once '../includes/db.php';
 include_once '../includes/slot_helpers.php';
 $userId = $_SESSION['user_id'];
+$vipStmt = $db->prepare('SELECT vip FROM users WHERE id = ?');
+$vipStmt->execute([$userId]);
+$isVip = (int)$vipStmt->fetchColumn();
+$isGoldSlot = ($slotId > 30);
 
 // Base slot image
 $slotType = get_slot_type($slotId, $userId);
@@ -88,6 +92,9 @@ ob_start();
         <img src="<?php echo $slotImage; ?>" alt="Slot <?php echo $slotId; ?>" id="cs-slot-image">
         <?php if ($hasPlant && $plantImage): ?>
             <img src="<?php echo $plantImage; ?>" alt="Plant" id="cs-plant-image">
+        <?php endif; ?>
+        <?php if ($isGoldSlot && $isVip): ?>
+            <div class="cs-vip-badge"><img src="img/gold.png" alt="Gold"><span>VIP</span></div>
         <?php endif; ?>
     </div>
     <?php if ($hasPlant): ?>
