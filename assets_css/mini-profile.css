@@ -199,16 +199,20 @@
 
     .mini-profile {
         width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
+        padding: var(--slot-gap, 1px);
     }
 
     .mini-profile-card,
     .mini-card,
-    .mini-profile-avatar {
+    .mini-profile-avatar,
+    .helper-item {
         width: var(--slot-size, 60px);
     }
 
     .helpers-card,
     .achievements-card {
         max-width: 100%;
+        padding: var(--slot-gap, 1px);
+        gap: var(--slot-gap, 1px);
     }
 }
