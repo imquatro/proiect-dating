@@ -128,3 +128,21 @@ img {
     align-items: center;
     z-index: 20;
 }
+
+/* Gold 3D subtil + shimmer, fără să schimbe mărimea fontului existent */
+.gold-shimmer {
+    background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: goldShimmer 5s linear infinite;
+}
+
+@keyframes goldShimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
