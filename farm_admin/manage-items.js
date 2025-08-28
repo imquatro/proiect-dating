@@ -2,11 +2,12 @@ function initManageItems(panel){
     const select = panel.querySelector('#fa-item-select');
     const img = panel.querySelector('#fa-item-image');
     const delBtn = panel.querySelector('#fa-delete-item');
+    const imgPrefix = panel.dataset.prefix || '';
 
     select.addEventListener('change', () => {
         const opt = select.selectedOptions[0];
         if (opt && opt.value) {
-            img.src = opt.dataset.image;
+            img.src = imgPrefix + opt.dataset.image;
             img.style.display = 'block';
             delBtn.disabled = false;
         } else {

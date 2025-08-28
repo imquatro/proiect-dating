@@ -9,15 +9,15 @@ $ajax = isset($_GET['ajax']);
 $imagePrefix = $ajax ? '' : '../';
 ob_start();
 ?>
-<div id="fa-manage-panel">
+<div id="fa-manage-panel" data-prefix="<?= htmlspecialchars($imagePrefix); ?>">
     <div class="fa-panel-window">
         <h2>Manage Items</h2>
         <select id="fa-item-select">
             <option value="">Select item</option>
-            <?php foreach ($items as $item):
+            <?php foreach ($items as $item):            <?php foreach ($items as $item):
                 $img = 'img/' . basename($item['image_plant']);
             ?>
-            <option value="<?= htmlspecialchars($item['id']); ?>" data-image="<?= htmlspecialchars($imagePrefix . $img); ?>">
+            <option value="<?= htmlspecialchars($item['id']); ?>" data-image="<?= htmlspecialchars($img); ?>">
                 <?= htmlspecialchars($item['name']); ?>
             </option>
             <?php endforeach; ?>
