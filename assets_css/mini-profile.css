@@ -210,8 +210,9 @@
 
     .helpers-card,
     .achievements-card {
-        max-width: var(--slot-size, 60px);
-        padding: 0;
-        gap: var(--slot-gap, 1px);
+        width: var(--slot-size, 60px);
+        flex: 0 0 var(--slot-size, 60px);
+        padding: var(--slot-gap, 1px);
+        gap: 0;
     }
 }
