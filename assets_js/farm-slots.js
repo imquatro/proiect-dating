@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (baseImg) baseImg.src = image;
     });
 
-    if (window.canInteract !== false) {
+    if (window.canInteract !== false && !window.isVisitor) {
         document.querySelectorAll('.farm-slot:not(.locked)').forEach(slot => {
             slot.addEventListener('click', () => {
                 const slotId = slot.id.replace('slot-', '');

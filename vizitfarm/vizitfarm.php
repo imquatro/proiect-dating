@@ -105,10 +105,10 @@ if ($total_slots % $slots_per_row !== 0) echo '</div>';
 <?php
 $content = ob_get_clean();
 $pageCss = 'vizitfarm/vizitfarm.css';
-$extraJs = '<script>window.isVisitor = true; window.visitId = ' . $visitId . '; window.canInteract = ' . ($isFriend ? 'true' : 'false') . ';</script>'
-         . '<script src="assets_js/mini-profile.js"></script>'
-         . '<script src="vizitfarm/vizitfarm.js"></script>'
-         . '<script src="assets_js/slot-items.js"></script>';
+  $extraJs = '<script>window.isVisitor = true; window.visitId = ' . $visitId . '; window.canInteract = ' . ($isFriend ? 'true' : 'false') . ';</script>'
+           . '<script src="assets_js/mini-profile.js"></script>'
+           . '<script src="assets_js/farm-slots.js"></script>'
+           . '<script src="assets_js/slot-items.js"></script>';
 $activePage = '';
 $baseHref = '../';
 chdir('..');
