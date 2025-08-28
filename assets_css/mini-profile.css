@@ -81,13 +81,12 @@
     width: var(--slot-size, 60px);
     height: var(--slot-size, 60px);
     display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: hidden;
     gap: 5px;
     padding: 0;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    cursor: grab;
+    cursor: default;
 }
 
 .achievements-card {

@@ -10,6 +10,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const helpersUrl = (window.baseUrl || '') + 'recent_helpers.php' +
         (window.isVisitor && window.visitId ? ('?user_id=' + window.visitId) : '');
 
+    let sliderInterval;
+    const startSlider = () => {
+        if (!helpersCard) return;
+        clearInterval(sliderInterval);
+        helpersCard.scrollLeft = 0;
+        const step = () => {
+            const maxScroll = helpersCard.scrollWidth - helpersCard.clientWidth;
+            if (helpersCard.scrollLeft >= maxScroll) {
+                clearInterval(sliderInterval);
+                setTimeout(() => {
+                    helpersCard.scrollLeft = 0;
+                    startSlider();
+                }, 1000);
+            } else {
+                helpersCard.scrollLeft += 0.3;
+            }
+        };
+        sliderInterval = setInterval(step, 40);
+    };
+
     const loadHelpers = () => {
         if (!helpersCard) return;
         fetch(helpersUrl, { credentials: 'same-origin' })
@@ -28,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="helper-counts">🍖 ${helper.feed} | 💧 ${helper.water}</div>`;
                     helpersCard.appendChild(item);
                 });
+                startSlider();
             })
             .catch(() => {
                 helpersCard.innerHTML = '';
@@ -36,34 +57,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (helpersCard) {
         loadHelpers();
-        setInterval(loadHelpers, 5000);
-
-        let isDown = false;
-        let startX = 0;
-        let scrollLeft = 0;
-
-        helpersCard.addEventListener('pointerdown', (e) => {
-            isDown = true;
-            startX = e.clientX;
-            scrollLeft = helpersCard.scrollLeft;
-            helpersCard.style.cursor = 'grabbing';
-            helpersCard.setPointerCapture(e.pointerId);
-        });
-
-        helpersCard.addEventListener('pointermove', (e) => {
-            if (!isDown) return;
-            const dx = e.clientX - startX;
-            helpersCard.scrollLeft = scrollLeft - dx;
-            e.preventDefault();
-        });
-
-        const endDrag = () => {
-            isDown = false;
-            helpersCard.style.cursor = 'grab';
-        };
-
-        helpersCard.addEventListener('pointerup', endDrag);
-        helpersCard.addEventListener('pointerleave', endDrag);
-        helpersCard.addEventListener('pointercancel', endDrag);
     }
 });
