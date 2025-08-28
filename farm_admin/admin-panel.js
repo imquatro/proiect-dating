@@ -62,6 +62,7 @@ function initAdminPanel(panel){
                     if (qsPanel && qsPanel.dataset.slotType === item.slot_type) {
                         const qsGrid = qsPanel.querySelector('.quickshop-grid');
                         if (qsGrid) {
+                            const qsPrefix = qsPanel.dataset.prefix || '';
                             const qs = document.createElement('div');
                             qs.className = 'quickshop-item';
                             qs.dataset.itemId = item.id;
@@ -71,7 +72,7 @@ function initAdminPanel(panel){
                             qs.dataset.waterTimes = item.water_times;
                             qs.dataset.feedTimes = item.feed_times;
                             qs.dataset.production = item.production;
-                            qs.innerHTML = `<img src="${item.image_plant}" alt="${item.name}"><div class="qs-info"><span class="qs-price">${item.price}</span><button class="qs-buy">BUY/USE</button></div>`;
+                            qs.innerHTML = `<img src="${qsPrefix}${item.image_plant}" alt="${item.name}"><div class="qs-info"><span class="qs-price">${item.price}</span><button class="qs-buy">BUY/USE</button></div>`;
                             qsGrid.appendChild(qs);
                             if (typeof initQuickShop === 'function') {
                                 initQuickShop(qsPanel);
@@ -232,8 +233,9 @@ function initEditItems(panel){
                 if (qsPanel) {
                     const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${item.id}"]`);
                     if (qsItem) {
+                        const qsPrefix = qsPanel.dataset.prefix || '';
                         qsItem.dataset.price = item.price;
-                        qsItem.querySelector('img').src = item.image_plant;
+                        qsItem.querySelector('img').src = qsPrefix + item.image_plant;
                         qsItem.querySelector('.qs-price').textContent = item.price;
                     }
                 }
