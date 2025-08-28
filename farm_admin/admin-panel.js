@@ -90,6 +90,7 @@ function initAdminPanel(panel){
     initDeleteItems(panel);
 
     const verBtn = panel.querySelector('#fa-update-version');
+    const verDisplay = panel.querySelector('#fa-current-version');
     if (verBtn) {
         verBtn.addEventListener('click', () => {
             fetch('farm_admin/bump_version.php', {
@@ -99,6 +100,7 @@ function initAdminPanel(panel){
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
+                    if (verDisplay) verDisplay.textContent = data.version;
                     alert('Version updated to ' + data.version);
                 }
             });
@@ -245,12 +247,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('open-admin-panel');
     if (!btn) return;
     btn.addEventListener('click', () => {
-        fetch('farm_admin/panel.php?ajax=1')
+        fetch('farm_admin/panel.php?ajax=1', { credentials: 'same-origin' })
             .then(res => res.text())
             .then(html => {
                 const temp = document.createElement('div');
                 temp.innerHTML = html.trim();
                 const panel = temp.firstElementChild;
+                if (!panel) {
+                    alert(html.trim());
+                    return;
+                }
                 panel.addEventListener('click', e => {
                     if (e.target === panel) {
                         panel.remove();

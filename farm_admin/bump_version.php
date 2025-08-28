@@ -9,3 +9,4 @@ $version = time();
 file_put_contents(__DIR__ . '/../version.txt', $version);
 header('Content-Type: application/json');
 echo json_encode(['success' => true, 'version' => $version]);
+

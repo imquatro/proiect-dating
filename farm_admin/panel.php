@@ -14,6 +14,9 @@ require_once '../includes/db.php';
 $items = $db->query('SELECT id,name,image_plant,price FROM farm_items ORDER BY name')
     ->fetchAll(PDO::FETCH_ASSOC);
 
+$versionFile = __DIR__ . '/../version.txt';
+$currentVersion = is_file($versionFile) ? trim(file_get_contents($versionFile)) : 'unknown';
+
 $ajax = isset($_GET['ajax']);
 ob_start();
 ?>
@@ -165,9 +168,6 @@ ob_start();
         <div class="fa-tab-content" id="fa-tab-delete">
             <h2>Delete Items</h2>
             <div class="fa-delete-grid">
-        <div class="fa-tab-content" id="fa-tab-delete">
-            <h2>Delete Items</h2>
-            <div class="fa-delete-grid">
                 <?php foreach ($items as $item):
                     $img = $item['image_plant'];
                     if (strpos($img, 'img/') !== 0) {
@@ -186,6 +186,7 @@ ob_start();
         </div>
         <div class="fa-tab-content" id="fa-tab-version">
             <h2>Cache Version</h2>
+            <p>Current version: <span id="fa-current-version"><?= htmlspecialchars($currentVersion); ?></span></p>
             <button id="fa-update-version">Update Version</button>
         </div>
     </div>
