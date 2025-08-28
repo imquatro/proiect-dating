@@ -69,7 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let slotSize = Math.min(slotSizeByHeight, slotSizeByWidth);
         slotSize = Math.floor(slotSize) - 4;
         const safeSize = Math.max(slotSize, 0);
-        const plantSize = Math.max(Math.floor(safeSize * 0.6) - 4, 0);
+        const scale = window.innerWidth <= 768 ? 0.6 : 0.3;
+        const plantSize = Math.max(Math.floor(safeSize * scale) - 4, 0);
         root.style.setProperty('--slot-size', `${safeSize}px`);
         root.style.setProperty('--plant-size', `${plantSize}px`);
 
