@@ -196,4 +196,19 @@
         padding: var(--slot-gap, 120px);
         max-width: 100%;
     }
+
+    .mini-profile {
+        width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
+    }
+
+    .mini-profile-card,
+    .mini-card,
+    .mini-profile-avatar {
+        width: var(--slot-size, 60px);
+    }
+
+    .helpers-card,
+    .achievements-card {
+        max-width: calc(3 * var(--slot-size, 60px) + 2 * var(--slot-gap, 1px));
+    }
 }

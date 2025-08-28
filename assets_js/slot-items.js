@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionEl.style.display = 'flex';
         } else if (state.feedRemaining > 0) {
             actionEl.dataset.action = 'feed';
-            actionEl.innerHTML = '<span class="action-icon feed-icon" aria-label="Feed">🥩</span>';
+            actionEl.innerHTML = '<span class="action-icon feed-icon" aria-label="Feed">🍖</span>';
             actionEl.classList.remove('harvest');
             actionEl.style.display = 'flex';
         } else {
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (action === 'water') {
             if (state.waterRemaining > 0) {
                 state.waterRemaining--;
-                if (state.waterInterval > 0) {
+                if (state.waterRemaining > 0 && state.waterInterval > 0) {
                     startTimer(slotId, 'water');
                 } else {
                     checkNextAction(slotId);
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (action === 'feed') {
             if (state.feedRemaining > 0) {
                 state.feedRemaining--;
-                if (state.feedInterval > 0) {
+                if (state.feedRemaining > 0 && state.feedInterval > 0) {
                     startTimer(slotId, 'feed');
                 } else {
                     checkNextAction(slotId);
