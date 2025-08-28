@@ -13,7 +13,7 @@ if ($visitId <= 0) {
     exit;
 }
 
-$stmt = $db->prepare('SELECT username, gallery, level FROM users WHERE id = ?');
+$stmt = $db->prepare('SELECT username, gallery, level, vip FROM users WHERE id = ?');
 $stmt->execute([$visitId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$user) {
@@ -33,6 +33,7 @@ if (!empty($user['gallery'])) {
 }
 $username = $user['username'];
 $level = isset($user['level']) ? (int)$user['level'] : 1;
+$isVip = !empty($user['vip']);
 
 // Check if the visiting user is friends with the profile owner
 $isFriend = false;
@@ -90,6 +91,9 @@ for ($i = 0; $i < $total_slots; $i++) {
     $isUnlocked = !empty($data['unlocked']);
     if (!$isUnlocked && $required > 0 && $level >= $required && $slot_id <= $total_slots - 5) {
         $isUnlocked = true;
+    }
+    if ($slot_id > $total_slots - 5) {
+        $isUnlocked = $isVip;
     }
     $classes = 'farm-slot' . ($isUnlocked ? '' : ' locked');
     $baseImg = get_slot_image($slot_id, $visitId);
