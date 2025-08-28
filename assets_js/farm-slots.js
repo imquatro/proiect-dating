@@ -66,8 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const slotSizeByWidth =
             (containerWidth - farmPaddingH - horizontalGaps) / columns;
 
-        const slotSize = Math.min(slotSizeByHeight, slotSizeByWidth);
-        root.style.setProperty('--slot-size', `${slotSize}px`);
+        let slotSize = Math.min(slotSizeByHeight, slotSizeByWidth);
+        slotSize = Math.floor(slotSize) - 4;
+        const safeSize = Math.max(slotSize, 0);
+        const plantSize = Math.max(Math.floor(safeSize * 0.6) - 4, 0);
+        root.style.setProperty('--slot-size', `${safeSize}px`);
+        root.style.setProperty('--plant-size', `${plantSize}px`);
 
         if (iter < 2) {
             requestAnimationFrame(() => updateSlotSize(iter + 1));
