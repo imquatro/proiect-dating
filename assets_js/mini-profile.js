@@ -10,24 +10,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const helpersUrl = (window.baseUrl || '') + 'recent_helpers.php' +
         (window.isVisitor && window.visitId ? ('?user_id=' + window.visitId) : '');
 
-    let sliderInterval;
+    let slideTimeout;
     const startSlider = () => {
         if (!helpersCard) return;
-        clearInterval(sliderInterval);
+        clearTimeout(slideTimeout);
         helpersCard.scrollLeft = 0;
-        const step = () => {
-            const maxScroll = helpersCard.scrollWidth - helpersCard.clientWidth;
-            if (helpersCard.scrollLeft >= maxScroll) {
-                clearInterval(sliderInterval);
-                setTimeout(() => {
-                    helpersCard.scrollLeft = 0;
-                    startSlider();
-                }, 1000);
-            } else {
-                helpersCard.scrollLeft += 0.3;
-            }
+
+        const items = helpersCard.querySelectorAll('.helper-item');
+        if (!items.length) return;
+
+        const itemWidth = helpersCard.clientWidth;
+        let index = 0;
+        const pause = 4000;
+        const duration = 1000;
+
+        const animateScroll = (from, to, time, callback) => {
+            const start = performance.now();
+            const frame = (now) => {
+                const progress = Math.min((now - start) / time, 1);
+                helpersCard.scrollLeft = from + (to - from) * progress;
+                if (progress < 1) {
+                    requestAnimationFrame(frame);
+                } else if (callback) {
+                    callback();
+                }
+            };
+            requestAnimationFrame(frame);
         };
-        sliderInterval = setInterval(step, 40);
+
+        const schedule = () => {
+            const nextIndex = (index + 1) % items.length;
+            animateScroll(index * itemWidth, nextIndex * itemWidth, duration, () => {
+                index = nextIndex;
+                slideTimeout = setTimeout(schedule, pause);
+            });
+        };
+
+        slideTimeout = setTimeout(schedule, pause);
     };
 
     const loadHelpers = () => {
