@@ -79,6 +79,7 @@ function initAdminPanel(panel){
                     }
 
                     addForm.reset();
+                    panel.remove();
                 }
             })
             .catch(err => console.error(err));
@@ -87,6 +88,22 @@ function initAdminPanel(panel){
 
     initEditItems(panel);
     initDeleteItems(panel);
+
+    const verBtn = panel.querySelector('#fa-update-version');
+    if (verBtn) {
+        verBtn.addEventListener('click', () => {
+            fetch('farm_admin/bump_version.php', {
+                method: 'POST',
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Version updated to ' + data.version);
+                }
+            });
+        });
+    }
 }
 
 function initDeleteItems(panel){
@@ -184,6 +201,44 @@ function initEditItems(panel){
     });
 
     toggleFields();
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        fetch('farm_admin/update_item.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const item = data.item;
+                const editItem = grid.querySelector(`.fa-edit-item[data-id="${item.id}"]`);
+                if (editItem) {
+                    editItem.querySelector('img').src = item.image_plant;
+                    editItem.querySelector('.qs-price').textContent = item.price;
+                }
+                const delItem = panel.querySelector(`#fa-tab-delete .fa-delete-item[data-id="${item.id}"]`);
+                if (delItem) {
+                    delItem.querySelector('img').src = item.image_plant;
+                    delItem.querySelector('.qs-price').textContent = item.price;
+                }
+                const qsPanel = document.getElementById('quickshop-panel');
+                if (qsPanel) {
+                    const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${item.id}"]`);
+                    if (qsItem) {
+                        qsItem.dataset.price = item.price;
+                        qsItem.querySelector('img').src = item.image_plant;
+                        qsItem.querySelector('.qs-price').textContent = item.price;
+                    }
+                }
+                form.reset();
+                form.style.display = 'none';
+            }
+        })
+        .catch(err => console.error(err));
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -23,6 +23,7 @@ ob_start();
             <button class="active" data-tab="add">Add Items</button>
             <button data-tab="edit">Edit Items</button>
             <button data-tab="delete">Delete Items</button>
+            <button data-tab="version">Update Version</button>
         </div>
         <div class="fa-tab-content active" id="fa-tab-add">
             <h2>Add Plants & Animals</h2>
@@ -101,9 +102,7 @@ ob_start();
                 </div>
                 <?php endforeach; ?>
             </div>
-            <form id="fa-edit-form" action="farm_admin/update_item.php" method="post" style="display:none;">
-                <input type="hidden" name="id">
-            <form id="fa-edit-form" action="farm_admin/update_item.php" method="post" style="display:none;">
+             <form id="fa-edit-form" action="farm_admin/update_item.php" method="post" style="display:none;">
                 <input type="hidden" name="id">
                 <input type="hidden" name="barn_capacity">
                 <label>Name
@@ -150,7 +149,6 @@ ob_start();
                     <input type="number" name="feed_times" min="0" value="0">
                 </label>
                 <label>Price
-                <label>Price
                     <input type="number" name="price" min="0" value="0">
                 </label>
                 <label>Sell Price
@@ -164,6 +162,9 @@ ob_start();
                 </div>
             </form>
         </div>
+        <div class="fa-tab-content" id="fa-tab-delete">
+            <h2>Delete Items</h2>
+            <div class="fa-delete-grid">
         <div class="fa-tab-content" id="fa-tab-delete">
             <h2>Delete Items</h2>
             <div class="fa-delete-grid">
@@ -182,6 +183,10 @@ ob_start();
                 <?php endforeach; ?>
             </div>
             <button id="fa-delete-item-btn" disabled>Delete</button>
+        </div>
+        <div class="fa-tab-content" id="fa-tab-version">
+            <h2>Cache Version</h2>
+            <button id="fa-update-version">Update Version</button>
         </div>
     </div>
 </div>

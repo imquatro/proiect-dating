@@ -11,6 +11,7 @@ if (!isset($baseHref)) {
     $baseHref = $depth ? str_repeat('../', $depth) : './';
 }
 if (!isset($hideNav)) { $hideNav = false; }
+require_once __DIR__ . '/includes/cache_buster.php';
     $profilePhoto = 'default-avatar.png';
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -37,14 +38,14 @@ if (!isset($hideNav)) { $hideNav = false; }
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <base href="<?= htmlspecialchars($baseHref) ?>">
-    <link rel="stylesheet" href="assets_css/template.css">
-    <link rel="stylesheet" href="assets_css/message-notification.css">
-    <link rel="stylesheet" href="moneysistem/money.css">
+    <link rel="stylesheet" href="<?= asset('assets_css/template.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets_css/message-notification.css') ?>">
+    <link rel="stylesheet" href="<?= asset('moneysistem/money.css') ?>">
     <?php if ($pageCss): ?>
-    <link rel="stylesheet" href="<?= htmlspecialchars($pageCss) ?>">
+    <link rel="stylesheet" href="<?= asset($pageCss) ?>">
     <?php endif; ?>
     <?php foreach ((array)$extraCss as $css): ?>
-    <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>">
+    <link rel="stylesheet" href="<?= asset($css) ?>">
     <?php endforeach; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
@@ -117,10 +118,25 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
-<script src="assets_js/base-url.js"></script>
-<script src="assets_js/message-notification.js"></script>
-<script src="moneysistem/money.js"></script>
-<script src="assets_js/interaction-blocker.js"></script>
-<?= $extraJs ?>
+  <script src="<?= asset('assets_js/base-url.js') ?>"></script>
+  <script src="<?= asset('assets_js/message-notification.js') ?>"></script>
+  <script src="<?= asset('moneysistem/money.js') ?>"></script>
+  <script src="<?= asset('assets_js/interaction-blocker.js') ?>"></script>
+  <?php
+  if ($extraJs) {
+      if (is_array($extraJs)) {
+          foreach ($extraJs as $js) {
+              echo '<script src="' . asset($js) . '"></script>';
+          }
+      } else {
+          $extraJs = preg_replace_callback(
+              '/<script\\s+[^>]*src=["\\\']([^"\\\']+)["\\\'][^>]*><\\/script>/i',
+              fn($m) => '<script src="' . asset($m[1]) . '"></script>',
+              $extraJs
+          );
+          echo $extraJs;
+      }
+  }
+  ?>
 </body>
 </html>

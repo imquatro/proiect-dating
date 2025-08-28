@@ -1,8 +1,12 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    exit('Access denied');
+    http_response_code(403);
+    echo json_encode(['success' => false]);
+    exit;
 }
+
+header('Content-Type: application/json');
 require_once __DIR__ . '/../includes/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -25,13 +29,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $water_interval = 0;
         $water_times = 0;
     }
-    $imgName = trim($_POST['image_name'] ?? '');
-    $imgPlant = $imgName ? 'img/' . ltrim($imgName, '/') : '';
-    $imgProduct = $imgPlant;
-    $imgReady = $imgPlant;
     $stmt = $db->prepare('UPDATE farm_items SET name=?,item_type=?,slot_type=?,image_plant=?,image_ready=?,image_product=?,water_interval=?,feed_interval=?,water_times=?,feed_times=?,production=?,price=?,sell_price=?,barn_capacity=? WHERE id=?');
     $stmt->execute([$name,$item_type,$slot_type,$imgPlant,$imgReady,$imgProduct,$water_interval,$feed_interval,$water_times,$feed_times,$production,$price,$sell_price,$barn_capacity,$id]);
-    header('Location: ../diverse.php');
+    echo json_encode(['success' => true, 'item' => [
+        'id' => $id,
+        'name' => $name,
+        'item_type' => $item_type,
+        'slot_type' => $slot_type,
+        'image_plant' => $imgPlant,
+        'water_interval' => $water_interval,
+        'feed_interval' => $feed_interval,
+        'water_times' => $water_times,
+        'feed_times' => $feed_times,
+        'production' => $production,
+        'price' => $price,
+        'sell_price' => $sell_price,
+        'barn_capacity' => $barn_capacity
+    ]]);
     exit;
 }
-echo 'Invalid request';
+
+echo json_encode(['success' => false]);
