@@ -80,17 +80,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (state.waterRemaining > 0) {
             actionEl.dataset.action = 'water';
-            actionEl.innerHTML = '<img src="img/uda.png" alt="Water">';
+            actionEl.innerHTML = '<span class="action-icon water-icon" aria-label="Water">💧</span>';
             actionEl.classList.remove('harvest');
             actionEl.style.display = 'flex';
         } else if (state.feedRemaining > 0) {
             actionEl.dataset.action = 'feed';
-            actionEl.innerHTML = '<img src="img/hraneste.png" alt="Feed">';
+            actionEl.innerHTML = '<span class="action-icon feed-icon" aria-label="Feed">🥩</span>';
             actionEl.classList.remove('harvest');
             actionEl.style.display = 'flex';
         } else {
             actionEl.dataset.action = 'harvest';
-            actionEl.innerHTML = '<img src="img/ready.png" alt="Harvest">';
+            actionEl.innerHTML = '<span class="action-icon harvest-icon" aria-label="Harvest">❕</span>';
             actionEl.classList.add('harvest');
             actionEl.style.display = 'flex';
         }

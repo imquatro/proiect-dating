@@ -1,9 +1,9 @@
 /* Grid of farm slots */
 :root {
     /* default values will be updated via JavaScript */
-    --slot-size: 60px;
+    --slot-size: 20px;
     --slot-gap: 1px;
-    --plant-size: 54px;
+    --plant-size: 20px;
 }
 
 
@@ -80,6 +80,20 @@
     object-fit: contain;
     pointer-events: none;
 }
+
+.farm-slot .slot-action .action-icon {
+    width: 40px;
+    height: 40px;
+    margin: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.farm-slot .slot-action .water-icon { font-size: 32px; }
+.farm-slot .slot-action .feed-icon { font-size: 32px; }
+.farm-slot .slot-action .harvest-icon { font-size: 32px; }
 
 .farm-slot .slot-action.harvest {
     cursor: default;

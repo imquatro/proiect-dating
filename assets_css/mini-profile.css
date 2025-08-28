@@ -189,3 +189,11 @@
 .helper-effect.animate {
     animation: helperFade 1s forwards;
 }
+
+@media (max-width: 800px) {
+    .main-profile-card {
+        width: calc(3 * var(--slot-size, 120px) + 2 * var(--slot-gap, 120px));
+        padding: var(--slot-gap, 120px);
+        max-width: 100%;
+    }
+}
