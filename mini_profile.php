@@ -40,6 +40,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="username<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($user_name) ?></div>
             <div class="divider"></div>
         </div>
+        <img src="img/frames/defaultframe.png" alt="Frame" class="mini-profile-frame" />
     </div>
     <div class="mini-card achievements-card" id="achievementsCard"></div>
 </div>
