@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         slot.addEventListener('click', () => {
             const canInteract = window.canInteract !== false;
             if (window.isVisitor && !canInteract) {
-                alert('You and ' + (window.visitUsername || 'this user') + ' are not friends.');
+                if (window.showFriendRequestCard) window.showFriendRequestCard();
                 return;
             }
             if (!canInteract) return;

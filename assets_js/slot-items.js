@@ -174,7 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
         }
 
-        if (isVisitor && !canInteract) return;
+        if (isVisitor && !canInteract) {
+            if (window.showFriendRequestCard) window.showFriendRequestCard();
+            return;
+        }
         const state = slotStates[slotId];
         if (!state) return;
 
