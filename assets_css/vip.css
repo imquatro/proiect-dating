@@ -1,0 +1,103 @@
+.vip-container {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.vip-panel {
+    width: 90%;
+    max-width: 600px;
+    height: 90vh;
+    max-height: 570px;
+    margin-top: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    background: url('../img/bg2.png') center/cover no-repeat;
+}
+
+.vip-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 6px 4px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #f6cf49;
+}
+
+.vip-tab-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-content {
+    display: none;
+    color: #fff;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.vip-sub-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.sub-tab-btn {
+    flex: 1;
+    padding: 6px 4px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+}
+
+.sub-tab-btn.active {
+    background: #f6cf49;
+}
+
+.vip-subtab-content {
+    flex: 1;
+}
+
+.subtab-content {
+    display: none;
+    color: #fff;
+}
+
+.subtab-content.active {
+    display: block;
+}
+
+.vip-frame-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.vip-frame-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+@media (max-width: 480px) {
+    .tab-btn, .sub-tab-btn {
+        padding: 5px 2px;
+        font-size: 12px;
+    }
+}

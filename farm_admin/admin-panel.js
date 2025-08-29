@@ -95,6 +95,26 @@ function initAdminPanel(panel){
         });
     }
 
+    const vipForm = panel.querySelector('#fa-vip-form');
+    if (vipForm) {
+        vipForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const formData = new FormData(vipForm);
+            fetch('farm_admin/save_vip.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('VIP item uploaded');
+                    vipForm.reset();
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    }
     initEditItems(panel);
     initDeleteItems(panel);
 

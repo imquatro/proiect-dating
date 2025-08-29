@@ -70,6 +70,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
         <a href="profile.php" class="nav-btn <?php if($activePage==='profile') echo 'active';?>"><i class="fas fa-user"></i></a>
         <a href="friends.php" class="nav-btn <?php if($activePage==='friends') echo 'active';?>"><i class="fas fa-user-friends"></i></a>
         <a href="shop.php" class="nav-btn <?php if($activePage==='shop') echo 'active';?>"><i class="fas fa-store"></i></a>
+        <a href="vip.php" class="nav-btn <?php if($activePage==='vip') echo 'active';?>"><i class="fas fa-crown"></i></a>
         <a href="diverse.php" class="nav-btn <?php if($activePage==='diverse') echo 'active';?>"><i class="fas fa-table-cells-large"></i></a>
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>

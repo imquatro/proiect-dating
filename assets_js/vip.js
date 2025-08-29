@@ -1,0 +1,22 @@
+document.addEventListener('DOMContentLoaded', function () {
+    function initTabs(container, btnSelector, contentSelector, attr) {
+        const btns = container.querySelectorAll(btnSelector);
+        const contents = container.querySelectorAll(contentSelector);
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btns.forEach(b => b.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const target = btn.getAttribute(attr);
+                const el = container.querySelector('#' + target);
+                if (el) el.classList.add('active');
+            });
+        });
+    }
+    const panel = document.getElementById('vipPanel');
+    if (!panel) return;
+    initTabs(panel, '.tab-btn', '.tab-content', 'data-tab');
+    panel.querySelectorAll('.vip-sub-tabs').forEach(sub => {
+        initTabs(sub.parentElement, '.sub-tab-btn', '.subtab-content', 'data-subtab');
+    });
+});

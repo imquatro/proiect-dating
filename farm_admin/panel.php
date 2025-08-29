@@ -27,6 +27,7 @@ ob_start();
             <button class="active" data-tab="add">Add Items</button>
             <button data-tab="edit">Edit Items</button>
             <button data-tab="delete">Delete Items</button>
+            <button data-tab="vip">VIP Items</button>
             <button data-tab="version">Update Version</button>
         </div>
         <div class="fa-tab-content active" id="fa-tab-add">
@@ -178,6 +179,27 @@ ob_start();
                 <?php endforeach; ?>
             </div>
             <button id="fa-delete-item-btn" disabled>Delete</button>
+        </div>
+
+        <div class="fa-tab-content" id="fa-tab-vip">
+            <h2>Add VIP Frames/Cards</h2>
+            <form id="fa-vip-form" action="farm_admin/save_vip.php" method="post" enctype="multipart/form-data">
+                <label>Type
+                    <select name="vip_type">
+                        <option value="frame">Frame</option>
+                        <option value="card">Card</option>
+                    </select>
+                </label>
+                <label>Image File
+                    <input type="file" name="vip_image" accept=".png,.gif,.jpg,.jpeg" required>
+                </label>
+                <label>Image Name
+                    <input type="text" name="image_name" required>
+                </label>
+                <div class="fa-form-actions">
+                    <button type="submit">Upload</button>
+                </div>
+            </form>
         </div>
         <div class="fa-tab-content" id="fa-tab-version">
             <h2>Cache Version</h2>
