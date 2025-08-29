@@ -41,9 +41,9 @@ if (isset($_SESSION['user_id'])) {
         </div>
         <div class="avatar-wrapper">
             <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
-            <div class="level-circle"><?= htmlspecialchars($user_level) ?></div>
         </div>
         <div class="mini-profile-card">
+            <div class="level-circle"><?= htmlspecialchars($user_level) ?></div>
             <div class="username<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($user_name) ?></div>
             <div class="divider"></div>
         </div>
