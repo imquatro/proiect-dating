@@ -178,13 +178,17 @@
 }
 
 .helper-effect {
-    position: absolute;
-    left: calc(-1 * (var(--slot-size, 60px) + var(--slot-gap, 1px)));
-    top: 0;
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
     width: var(--slot-size, 60px);
     height: var(--slot-size, 60px);
     opacity: 0;
     pointer-events: none;
+    display: none;
+    transition: opacity 0.5s;
+    z-index: 1000;
 }
 
 .helper-effect img {
@@ -197,14 +201,28 @@
     box-sizing: border-box;
 }
 
-@keyframes helperFade {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
+.helper-effect .combo-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
 }
 
-.helper-effect.animate {
-    animation: helperFade 1s forwards;
+.combo-count.pulse {
+    animation: comboPulse 0.3s;
+}
+
+@keyframes comboPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
 }
 
 @media (max-width: 800px) {

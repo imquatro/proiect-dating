@@ -75,8 +75,9 @@ ob_start();
 <div class="mini-cards-row">
     <div class="mini-card helpers-card" id="helpersCard"></div>
     <div class="mini-profile" id="miniProfile">
-        <div id="helper-effect" class="helper-effect">
+        <div id="helper-effect" class="helper-effect mini-card">
             <img src="" alt="Helper">
+            <div class="combo-count"></div>
         </div>
         <div class="avatar-wrapper">
             <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
@@ -142,7 +143,8 @@ $pageCss = 'vizitfarm/vizitfarm.css';
       $extraJs .= '<script src="assets_js/not-friends-card.js"></script>';
   }
   $extraJs .= '<script src="assets_js/farm-slots.js"></script>'
-           . '<script src="assets_js/slot-items.js"></script>';
+           . '<script src="assets_js/slot-items.js"></script>'
+           . '<script src="assets_js/helper-effect.js"></script>';
 $activePage = '';
 $baseHref = '../';
 chdir('..');

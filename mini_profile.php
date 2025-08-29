@@ -36,8 +36,9 @@ if (isset($_SESSION['user_id'])) {
 <div class="mini-cards-row">
     <div class="mini-card helpers-card" id="helpersCard"></div>
     <div class="mini-profile" id="miniProfile">
-        <div id="helper-effect" class="helper-effect">
+        <div id="helper-effect" class="helper-effect mini-card">
             <img src="" alt="Helper">
+            <div class="combo-count"></div>
         </div>
         <div class="avatar-wrapper">
             <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
