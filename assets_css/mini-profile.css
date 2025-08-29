@@ -179,7 +179,8 @@
 
 .helper-effect {
     position: fixed;
-    bottom: 80px;
+    top: auto;
+    bottom: calc(60px + 10px);
     left: 50%;
     transform: translateX(-50%);
     width: var(--slot-size, 60px);

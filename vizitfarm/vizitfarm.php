@@ -75,10 +75,6 @@ ob_start();
 <div class="mini-cards-row">
     <div class="mini-card helpers-card" id="helpersCard"></div>
     <div class="mini-profile" id="miniProfile">
-        <div id="helper-effect" class="helper-effect mini-card">
-            <img src="" alt="Helper">
-            <div class="combo-count"></div>
-        </div>
         <div class="avatar-wrapper">
             <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
         </div>
@@ -90,6 +86,10 @@ ob_start();
         <img src="<?= htmlspecialchars($frameImg) ?>" alt="Frame" class="mini-profile-frame" />
     </div>
     <div class="mini-card achievements-card" id="achievementsCard"></div>
+    <div id="helper-effect" class="helper-effect mini-card">
+        <img src="" alt="Helper">
+        <div class="combo-count"></div>
+    </div>
 </div>
 <hr class="farm-divider">
 <div class="farm-slots">
