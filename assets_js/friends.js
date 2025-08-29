@@ -5,7 +5,7 @@
     var tabButtons = document.querySelectorAll('.tab-btn');
     var contentEl = document.querySelector('.content');
 
-    var currentTab = 'online';
+    var currentTab = localStorage.getItem('friendsActiveTab') || 'online';
     var visibleCount = 10;
     var online = Array.isArray(window.onlineUsers) ? window.onlineUsers : [];
     var requests = Array.isArray(window.friendRequests) ? window.friendRequests : [];
@@ -20,23 +20,24 @@
 
     function buttonsHtml(tab, id, requested, isFriend) {
         if (tab === 'online') {
+            var html = '<a class="btn-farm" href="vizitfarm/vizitfarm.php?id=' + encodeURIComponent(id) + '" title="Visit farm"><i class="fas fa-seedling"></i></a>';
             if (isFriend) {
-                return '<a class="btn-farm" href="vizitfarm/vizitfarm.php?id=' + encodeURIComponent(id) + '" title="Visit farm"><i class="fas fa-seedling"></i></a>' +
-                    '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>' +
+                html += '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>' +
                     '<button class="btn-msg" data-id="' + id + '" title="Message"><i class="fas fa-envelope"></i></button>' +
                     '<button class="btn-del" data-id="' + id + '" title="Delete"><i class="fas fa-trash"></i></button>' +
                     '<button class="btn-block" data-id="' + id + '" title="Block"><i class="fas fa-ban"></i></button>';
+            } else {
+                if (!requested) {
+                    html += '<button class="btn-add" data-id="' + id + '" title="Add friend"><i class="fas fa-user-plus"></i></button>';
+                }
+                html += '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>' +
+                    '<button class="btn-block" data-id="' + id + '" title="Block"><i class="fas fa-ban"></i></button>';
             }
-            var html = '';
-            if (!requested) {
-                html += '<button class="btn-add" data-id="' + id + '" title="Add friend"><i class="fas fa-user-plus"></i></button>';
-            }
-            html += '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>';
-            html += '<button class="btn-block" data-id="' + id + '" title="Block"><i class="fas fa-ban"></i></button>';
             return html;
         }
         if (tab === 'requests') {
-            return '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>' +
+            return '<a class="btn-farm" href="vizitfarm/vizitfarm.php?id=' + encodeURIComponent(id) + '" title="Visit farm"><i class="fas fa-seedling"></i></a>' +
+                '<button class="btn-view" data-id="' + id + '" title="View profile"><i class="fas fa-eye"></i></button>' +
                 '<button class="btn-accept" data-id="' + id + '" title="Accept"><i class="fas fa-check"></i></button>' +
                 '<button class="btn-refuse" data-id="' + id + '" title="Decline"><i class="fas fa-times"></i></button>' +
                 '<button class="btn-block" data-id="' + id + '" title="Block"><i class="fas fa-ban"></i></button>';
@@ -61,7 +62,7 @@
             div.innerHTML =
                 '<span class="status-dot ' + statusClass(u.status) + '"></span>' +
                 '<img src="' + u.avatar + '" class="user-card-avatar" alt="">' +
-                '<div class="user-card-name">' + u.username + '</div>' +
+                '<div class="user-card-name' + (u.vip ? ' gold-shimmer' : '') + '">' + u.username + '</div>' +
                 '<div class="user-card-buttons">' + buttonsHtml(currentTab, u.id, u.requestSent, u.isFriend) + '</div>';
             cardContainer.appendChild(div);
         }
@@ -85,6 +86,7 @@
             currentList = friends.slice();
             searchInput.disabled = true;
         }
+        localStorage.setItem('friendsActiveTab', tab);
         render();
     }
 
@@ -255,5 +257,5 @@
         });
     }
 
-    render();
+    setTab(currentTab);
 })();
