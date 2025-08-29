@@ -82,6 +82,14 @@ function initSlotPanel(container) {
                         if (content) {
                             content.classList.remove('no-scroll');
                         }
+                    } else if (data.error === 'barn_full') {
+                        const msgOverlay = document.createElement('div');
+                        msgOverlay.className = 'barn-full-overlay';
+                        msgOverlay.innerHTML = '<div class="barn-full-card">Barn full</div>';
+                        document.body.appendChild(msgOverlay);
+                        msgOverlay.addEventListener('click', e => {
+                            if (e.target === msgOverlay) msgOverlay.remove();
+                        });
                     } else {
                         alert('Harvest failed');
                     }

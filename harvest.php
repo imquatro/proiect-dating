@@ -67,6 +67,22 @@ try {
         }
     }
 
+    // Calculate total available space for this item in the barn
+    $available = 0;
+    foreach ($existingSlots as $es) {
+        $available += max(0, $maxPerSlot - (int)$es['quantity']);
+    }
+    $freeSlots = $capacity - count($usedSlots);
+    if ($freeSlots > 0) {
+        $available += $freeSlots * $maxPerSlot;
+    }
+
+    if ($available < $qty) {
+        $db->rollBack();
+        echo json_encode(['success' => false, 'error' => 'barn_full']);
+        exit;
+    }
+
     $remaining = $qty;
     if ($qty > 1) {
         foreach ($existingSlots as $es) {
