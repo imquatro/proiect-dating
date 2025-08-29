@@ -96,8 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.farm-slot:not(.locked)').forEach(slot => {
         slot.addEventListener('click', () => {
             const canInteract = window.canInteract !== false;
-            if (window.isVisitor && !canInteract) {
-                if (window.showFriendRequestCard) window.showFriendRequestCard();
+            if (window.isVisitor) {
+                if (!canInteract && window.showFriendRequestCard) {
+                    window.showFriendRequestCard();
+                }
                 return;
             }
             if (!canInteract) return;
