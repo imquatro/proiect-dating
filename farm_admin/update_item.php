@@ -28,9 +28,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $imgName = substr($imgName, 4);
     }
     $imgFile = basename($imgName);
-    $imgPlant = $imgFile !== '' ? 'img/' . $imgFile : '';
-    $imgReady = $imgPlant;
-    $imgProduct = $imgPlant;
+    if ($imgFile !== '') {
+        $imgPlant = 'img/' . $imgFile;
+        $imgReady = $imgPlant;
+        $imgProduct = $imgPlant;
+    } else {
+        $stmtImg = $db->prepare('SELECT image_plant,image_ready,image_product FROM farm_items WHERE id=?');
+        $stmtImg->execute([$id]);
+        $existing = $stmtImg->fetch(PDO::FETCH_ASSOC);
+        $imgPlant = $existing['image_plant'] ?? '';
+        $imgReady = $existing['image_ready'] ?? '';
+        $imgProduct = $existing['image_product'] ?? '';
+    }
     if ($item_type === 'plant') {
         $feed_interval = 0;
         $feed_times = 0;

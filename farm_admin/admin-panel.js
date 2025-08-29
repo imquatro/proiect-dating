@@ -1,3 +1,9 @@
+function normalizeImg(path){
+    if(!path) return '';
+    path = path.replace(/^\/+/, '');
+    return path.startsWith('img/') ? path : 'img/' + path;
+}
+
 function initAdminPanel(panel){
     const imgPrefix = panel.dataset.prefix || '';
     // tab switching
