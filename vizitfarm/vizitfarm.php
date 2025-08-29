@@ -80,9 +80,9 @@ ob_start();
         </div>
         <div class="avatar-wrapper">
             <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
-            <div class="level-circle"><?= htmlspecialchars($level) ?></div>
         </div>
         <div class="mini-profile-card">
+            <div class="level-circle"><?= htmlspecialchars($level) ?></div>
             <div class="username<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($username) ?></div>
             <div class="divider"></div>
         </div>
