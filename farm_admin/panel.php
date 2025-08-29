@@ -183,21 +183,18 @@ ob_start();
 
         <div class="fa-tab-content" id="fa-tab-vip">
             <h2>Add VIP Frames/Cards</h2>
-            <form id="fa-vip-form" action="farm_admin/save_vip.php" method="post" enctype="multipart/form-data">
+            <form id="fa-vip-form" action="farm_admin/save_vip.php" method="post">
                 <label>Type
                     <select name="vip_type">
                         <option value="frame">Frame</option>
                         <option value="card">Card</option>
                     </select>
                 </label>
-                <label>Image File
-                    <input type="file" name="vip_image" accept=".png,.gif,.jpg,.jpeg" required>
-                </label>
                 <label>Image Name
                     <input type="text" name="image_name" required>
                 </label>
                 <div class="fa-form-actions">
-                    <button type="submit">Upload</button>
+                    <button type="submit">Add</button>
                 </div>
             </form>
         </div>

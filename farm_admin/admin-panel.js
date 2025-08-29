@@ -108,7 +108,7 @@ function initAdminPanel(panel){
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert('VIP item uploaded');
+                    alert('VIP item added');
                     vipForm.reset();
                 }
             })
