@@ -13,7 +13,7 @@ if ($visitId <= 0) {
     exit;
 }
 
-$stmt = $db->prepare('SELECT username, gallery, level, vip FROM users WHERE id = ?');
+$stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame FROM users WHERE id = ?');
 $stmt->execute([$visitId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$user) {
@@ -34,15 +34,29 @@ if (!empty($user['gallery'])) {
 $username = $user['username'];
 $level = isset($user['level']) ? (int)$user['level'] : 1;
 $isVip = !empty($user['vip']);
+$frameImg = 'img/frames/defaultframe.png';
+if (!empty($user['vip_frame'])) {
+    $candidate = __DIR__ . '/../img/vip_frames/' . $user['vip_frame'];
+    if (is_file($candidate)) {
+        $frameImg = 'img/vip_frames/' . $user['vip_frame'];
+    }
+}
 
-// Check if the visiting user is friends with the profile owner
+// Check friendship and pending requests
 $isFriend = false;
-if (isset($_SESSION['user_id'])) {
-    $currentId = (int)$_SESSION['user_id'];
+$pendingRequest = false;
+$currentId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
+if ($currentId) {
     $friendStmt = $db->prepare('SELECT 1 FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = \'accepted\'');
     $friendStmt->execute([$currentId, $visitId, $visitId, $currentId]);
     $isFriend = (bool)$friendStmt->fetchColumn();
+    if (!$isFriend) {
+        $pendingStmt = $db->prepare('SELECT 1 FROM friend_requests WHERE sender_id = ? AND receiver_id = ? AND status = \'pending\'');
+        $pendingStmt->execute([$currentId, $visitId]);
+        $pendingRequest = (bool)$pendingStmt->fetchColumn();
+    }
 }
+
 
 $slotData = [];
 $slotStmt = $db->prepare('SELECT ds.slot_number,
@@ -68,10 +82,11 @@ ob_start();
             <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
             <div class="level-circle"><?= htmlspecialchars($level) ?></div>
         </div>
-            <div class="mini-profile-card">
+        <div class="mini-profile-card">
             <div class="username<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($username) ?></div>
             <div class="divider"></div>
         </div>
+        <img src="<?= htmlspecialchars($frameImg) ?>" alt="Frame" class="mini-profile-frame" />
     </div>
     <div class="mini-card achievements-card" id="achievementsCard"></div>
 </div>
@@ -121,10 +136,12 @@ if ($total_slots % $slots_per_row !== 0) echo '</div>';
 <?php
 $content = ob_get_clean();
 $pageCss = 'vizitfarm/vizitfarm.css';
-  $extraJs = '<script>window.isVisitor = true; window.visitId = ' . $visitId . '; window.canInteract = ' . ($isFriend ? 'true' : 'false') . '; window.visitUsername = ' . json_encode($username) . ';</script>'
-           . '<script src="assets_js/mini-profile.js"></script>'
-           . '<script src="assets_js/not-friends-card.js"></script>'
-           . '<script src="assets_js/farm-slots.js"></script>'
+  $extraJs = '<script>window.isVisitor = true; window.visitId = ' . $visitId . '; window.canInteract = ' . ($isFriend ? 'true' : 'false') . '; window.requestPending = ' . ($pendingRequest ? 'true' : 'false') . '; window.visitUsername = ' . json_encode($username) . ';</script>'
+           . '<script src="assets_js/mini-profile.js"></script>';
+  if (!$isFriend) {
+      $extraJs .= '<script src="assets_js/not-friends-card.js"></script>';
+  }
+  $extraJs .= '<script src="assets_js/farm-slots.js"></script>'
            . '<script src="assets_js/slot-items.js"></script>';
 $activePage = '';
 $baseHref = '../';
