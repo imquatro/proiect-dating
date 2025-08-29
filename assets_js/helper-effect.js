@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageLoadTime = Date.now();
     let currentHelper = null;
     let lastTimestamp = 0;
+    let lastClicks = 0;
     let combo = 0;
     let fadeTimer = null;
     let hideTimer = null;
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showHelper(data) {
         currentHelper = data.helper_id;
-        combo = 1;
+        combo = data.clicks || 1;
         img.src = data.photo;
         effect.style.display = 'flex';
         effect.style.opacity = '0';
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleEvent(data) {
         const helperId = data.helper_id;
         if (currentHelper === helperId) {
-            combo += 1;
+            combo = data.clicks || combo + 1;
             effect.style.display = 'flex';
             effect.style.opacity = '1';
             updateCombo();
@@ -100,8 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (!data.helper_id) return;
                 const ts = new Date(data.helped_at).getTime();
-                if (ts <= pageLoadTime || ts === lastTimestamp) return;
+                const clicks = data.clicks || 1;
+                if (ts <= pageLoadTime || (ts === lastTimestamp && clicks === lastClicks)) return;
                 lastTimestamp = ts;
+                lastClicks = clicks;
                 handleEvent(data);
             })
             .catch(() => {});

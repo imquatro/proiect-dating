@@ -34,11 +34,16 @@ $db->exec('CREATE TABLE IF NOT EXISTS user_last_helpers (
     owner_id INT PRIMARY KEY,
     helper_id INT NOT NULL,
     action ENUM("water","feed") NOT NULL,
-    helped_at DATETIME NOT NULL
+    helped_at DATETIME NOT NULL,
+    clicks INT NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
-$stmt = $db->prepare('INSERT INTO user_last_helpers (owner_id, helper_id, action, helped_at) VALUES (?, ?, ?, NOW())
-    ON DUPLICATE KEY UPDATE helper_id = VALUES(helper_id), action = VALUES(action), helped_at = VALUES(helped_at)');
+// Ensure clicks column exists for older installations
+@$db->exec('ALTER TABLE user_last_helpers ADD COLUMN IF NOT EXISTS clicks INT NOT NULL DEFAULT 1');
+
+$stmt = $db->prepare('INSERT INTO user_last_helpers (owner_id, helper_id, action, helped_at, clicks) VALUES (?, ?, ?, NOW(), 1)
+    ON DUPLICATE KEY UPDATE helper_id = VALUES(helper_id), action = VALUES(action), helped_at = VALUES(helped_at),
+    clicks = IF(helper_id = VALUES(helper_id) AND action = VALUES(action), clicks + 1, 1)');
 $stmt->execute([$ownerId, $userId, $action]);
 
 $db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (
