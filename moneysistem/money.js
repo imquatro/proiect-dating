@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const moneyEl = document.getElementById('moneyAmount');
     const goldEl = document.getElementById('goldAmount');
+    const moneyIcon = moneyEl?.previousElementSibling;
+    const goldIcon = goldEl?.previousElementSibling;
 
     let currentMoney = parseInt(moneyEl?.textContent.replace(/\./g, '') || '0', 10);
     let currentGold = parseInt(goldEl?.textContent.replace(/\./g, '') || '0', 10);
@@ -9,9 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    function animateValue(el, start, end) {
-        const duration = 800;
+    function animateValue(el, start, end, icon) {
+        const duration = 3000;
         const startTime = performance.now();
+
+        if (icon) {
+            icon.classList.add('pulse');
+            icon.addEventListener('animationend', () => icon.classList.remove('pulse'), { once: true });
+        }
 
         function frame(now) {
             const progress = Math.min((now - startTime) / duration, 1);
@@ -27,11 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setValues(money, gold) {
         if (typeof money === 'number' && !isNaN(money) && money !== currentMoney) {
-            animateValue(moneyEl, currentMoney, money);
+            animateValue(moneyEl, currentMoney, money, moneyIcon);
             currentMoney = money;
         }
         if (typeof gold === 'number' && !isNaN(gold) && gold !== currentGold) {
-            animateValue(goldEl, currentGold, gold);
+            animateValue(goldEl, currentGold, gold, goldIcon);
             currentGold = gold;
         }
     }
