@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastTimestamp = 0;
     let combo = 0;
     let fadeTimer = null;
+    let hideTimer = null;
     const queue = [];
 
     function getColor(ratio) {
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCombo() {
-        if (combo > 1) {
+        if (combo > 0) {
             comboEl.textContent = combo;
             comboEl.style.display = 'flex';
             comboEl.style.color = getColor(Math.min(combo / totalSlots, 1));
@@ -44,14 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
     function scheduleFade() {
         if (fadeTimer) clearTimeout(fadeTimer);
+        if (hideTimer) clearTimeout(hideTimer);
         fadeTimer = setTimeout(() => {
             effect.style.opacity = '0';
-            setTimeout(() => {
+            hideTimer = setTimeout(() => {
                 effect.style.display = 'none';
                 currentHelper = null;
                 combo = 0;
+                updateCombo();
                 if (queue.length) {
                     const next = queue.shift();
                     showHelper(next);
@@ -77,6 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const helperId = data.helper_id;
         if (currentHelper === helperId) {
             combo += 1;
+            effect.style.display = 'flex';
+            effect.style.opacity = '1';
             updateCombo();
             scheduleFade();
             return;
