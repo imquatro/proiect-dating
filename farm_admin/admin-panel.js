@@ -115,6 +115,30 @@ function initAdminPanel(panel){
             .catch(err => console.error(err));
         });
     }
+
+    const delVipForm = panel.querySelector('#fa-delete-vip-form');
+    if (delVipForm) {
+        delVipForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const formData = new FormData(delVipForm);
+            fetch('farm_admin/delete_vip.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Frame deleted');
+                    const select = delVipForm.querySelector('select[name="vip_name"]');
+                    const val = formData.get('vip_name');
+                    const opt = select.querySelector(`option[value="${val}"]`);
+                    if (opt) opt.remove();
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    }
     initEditItems(panel);
     initDeleteItems(panel);
 

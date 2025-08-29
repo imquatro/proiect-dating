@@ -13,6 +13,8 @@ $slotTypes = [
 require_once '../includes/db.php';
 $items = $db->query('SELECT id,name,image_plant,price FROM farm_items ORDER BY name')
     ->fetchAll(PDO::FETCH_ASSOC);
+$frameDir = __DIR__ . '/../img/vip_frames';
+$vipFrames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 
 $versionFile = __DIR__ . '/../version.txt';
 $currentVersion = is_file($versionFile) ? trim(file_get_contents($versionFile)) : 'unknown';
@@ -195,6 +197,20 @@ ob_start();
                 </label>
                 <div class="fa-form-actions">
                     <button type="submit">Add</button>
+                </div>
+            </form>
+            <h2>Delete VIP Frames</h2>
+            <form id="fa-delete-vip-form" action="farm_admin/delete_vip.php" method="post">
+                <input type="hidden" name="vip_type" value="frame">
+                <label>Frame Name
+                    <select name="vip_name">
+                        <?php foreach ($vipFrames as $f): ?>
+                        <option value="<?= htmlspecialchars($f); ?>"><?= htmlspecialchars($f); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <div class="fa-form-actions">
+                    <button type="submit">Delete</button>
                 </div>
             </form>
         </div>

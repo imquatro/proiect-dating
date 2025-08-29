@@ -7,9 +7,10 @@ $mini_avatar = 'default-avatar.png';
 $user_name = 'Vizitator';
 $user_level = 1;
 $isVip = false;
+$frame = 'img/frames/defaultframe.png';
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $stmt = $db->prepare('SELECT username, gallery, level, vip FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame FROM users WHERE id = ?');
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($user) {
@@ -23,6 +24,12 @@ if (isset($_SESSION['user_id'])) {
         $user_name = $user['username'] ?? $user_name;
         $user_level = isset($user['level']) ? (int)$user['level'] : $user_level;
         $isVip = !empty($user['vip']);
+        if (!empty($user['vip_frame'])) {
+            $candidate = 'img/vip_frames/' . $user['vip_frame'];
+            if (is_file($candidate)) {
+                $frame = $candidate;
+            }
+        }
     }
 }
 ?>
@@ -40,7 +47,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="username<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($user_name) ?></div>
             <div class="divider"></div>
         </div>
-        <img src="img/frames/defaultframe.png" alt="Frame" class="mini-profile-frame" />
+        <img src="<?= htmlspecialchars($frame) ?>" alt="Frame" class="mini-profile-frame" />
     </div>
     <div class="mini-card achievements-card" id="achievementsCard"></div>
 </div>

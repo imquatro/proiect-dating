@@ -19,4 +19,42 @@ document.addEventListener('DOMContentLoaded', function () {
     panel.querySelectorAll('.vip-sub-tabs').forEach(sub => {
         initTabs(sub.parentElement, '.sub-tab-btn', '.subtab-content', 'data-subtab');
     });
+
+    const grid = panel.querySelector('.vip-frame-grid');
+    if (grid) {
+        grid.addEventListener('click', e => {
+            const btn = e.target.closest('.apply-frame-btn');
+            if (!btn) return;
+            const frame = btn.dataset.frame;
+            fetch('apply_frame.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'frame=' + encodeURIComponent(frame),
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) location.reload();
+                else alert(data.error || 'Error');
+            })
+            .catch(err => console.error(err));
+        });
+    }
+
+    const removeBtn = panel.querySelector('#removeFrameBtn');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+            fetch('apply_frame.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'frame=',
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) location.reload();
+            })
+            .catch(err => console.error(err));
+        });
+    }
 });

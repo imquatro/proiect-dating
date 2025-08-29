@@ -1,8 +1,21 @@
 <?php
+session_start();
+require_once __DIR__ . '/includes/db.php';
 $activePage = 'vip';
 ob_start();
+$isVip = false;
+$currentFrame = '';
+if (isset($_SESSION['user_id'])) {
+    $stmt = $db->prepare('SELECT vip, vip_frame FROM users WHERE id = ?');
+    $stmt->execute([$_SESSION['user_id']]);
+    $u = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($u) {
+        $isVip = !empty($u['vip']);
+        $currentFrame = $u['vip_frame'] ?? '';
+    }
+}
 $frameDir = 'img/vip_frames';
-$frames = array_filter(glob($frameDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE));
+$frames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 ?>
 <div class="vip-container">
     <div id="vipPanel" class="vip-panel">
@@ -17,10 +30,20 @@ $frames = array_filter(glob($frameDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE));
                 </div>
                 <div class="vip-subtab-content">
                     <div class="subtab-content active" id="frames">
+                        <?php if (!$isVip): ?>
+                        <div class="mini-card vip-warning">You need VIP to use frames</div>
+                        <?php else: ?>
+                            <?php if ($currentFrame): ?>
+                                <button id="removeFrameBtn" class="remove-frame">Remove Frame</button>
+                            <?php endif; ?>
+                        <?php endif; ?>
                         <div class="vip-frame-grid">
                             <?php foreach ($frames as $img): ?>
                             <div class="vip-frame-item">
-                                <img src="<?= htmlspecialchars($img) ?>" alt="VIP Frame">
+                                <img src="<?= htmlspecialchars($frameDir . '/' . $img) ?>" alt="VIP Frame">
+                                <?php if ($isVip): ?>
+                                <button class="apply-frame-btn" data-frame="<?= htmlspecialchars($img) ?>">Apply</button>
+                                <?php endif; ?>
                             </div>
                             <?php endforeach; ?>
                         </div>
