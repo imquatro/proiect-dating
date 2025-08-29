@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const totalSlots = document.querySelectorAll('.farm-slot').length || 1;
     const DURATION = 500; // ms
+    const COMBO_TIMEOUT = 5000; // 5 seconds
     const pageLoadTime = Date.now();
     let currentHelper = null;
     let lastTimestamp = 0;
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let fadeTimer = null;
     let hideTimer = null;
     const queue = [];
+    const combos = {};
 
     function getColor(ratio) {
         // ratio 0..1 -> white -> orange -> red
