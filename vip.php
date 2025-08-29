@@ -25,11 +25,15 @@ $frames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,jpe
         <div class="vip-tab-content">
             <div class="tab-content active" id="vip">
                 <div class="vip-sub-tabs">
-                    <button class="sub-tab-btn active" data-subtab="frames">Frames</button>
+                    <button class="sub-tab-btn" data-subtab="benefits">Benefits</button>
+                    <button class="sub-tab-btn" data-subtab="frames">Frames</button>
                     <button class="sub-tab-btn" data-subtab="cards">Cards</button>
                 </div>
                 <div class="vip-subtab-content">
-                    <div class="subtab-content active" id="frames">
+                    <div class="subtab-content" id="benefits">
+                        <p style="color:#fff;">VIP membership provides exclusive bonuses and features.</p>
+                    </div>
+                    <div class="subtab-content" id="frames">
                         <?php if (!$isVip): ?>
                         <div class="mini-card vip-warning">You need VIP to use frames</div>
                         <?php else: ?>
