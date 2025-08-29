@@ -11,6 +11,10 @@ $stmt = $db->prepare('SELECT ulh.helper_id, ulh.action, ulh.helped_at, ulh.click
 $stmt->execute([$userId]);
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 if ($row) {
+    if (time() - strtotime($row['helped_at']) > 5) {
+        echo json_encode([]);
+        exit;
+    }
     $gallery = !empty($row['gallery']) ? array_filter(explode(',', $row['gallery'])) : [];
     $photo = 'default-avatar.png';
     if (!empty($gallery)) {

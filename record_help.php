@@ -41,9 +41,20 @@ $db->exec('CREATE TABLE IF NOT EXISTS user_last_helpers (
 // Ensure clicks column exists for older installations
 @$db->exec('ALTER TABLE user_last_helpers ADD COLUMN IF NOT EXISTS clicks INT NOT NULL DEFAULT 1');
 
-$stmt = $db->prepare('INSERT INTO user_last_helpers (owner_id, helper_id, action, helped_at, clicks) VALUES (?, ?, ?, NOW(), 1)
-    ON DUPLICATE KEY UPDATE helper_id = VALUES(helper_id), action = VALUES(action), helped_at = VALUES(helped_at),
-    clicks = IF(helper_id = VALUES(helper_id) AND action = VALUES(action), clicks + 1, 1)');
+$stmt = $db->prepare(
+    'INSERT INTO user_last_helpers (owner_id, helper_id, action, helped_at, clicks) VALUES (?, ?, ?, NOW(), 1)
+        ON DUPLICATE KEY UPDATE
+            clicks = IF(
+                helper_id = VALUES(helper_id)
+                AND action = VALUES(action)
+                AND TIMESTAMPDIFF(SECOND, helped_at, NOW()) <= 5,
+                clicks + 1,
+                1
+            ),
+            helper_id = VALUES(helper_id),
+            action = VALUES(action),
+            helped_at = NOW()'
+);
 $stmt->execute([$ownerId, $userId, $action]);
 
 $db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (
