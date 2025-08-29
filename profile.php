@@ -41,13 +41,6 @@ ob_start();
 <div class="profile-container">
         <div class="photo-frame profile-photo-frame">
             <img src="<?= htmlspecialchars($profile_photo) ?>" class="profile-img" alt="Profile photo">
-            <?php
-            $frameImg = 'img/frames/defaultframe.png';
-            if (!empty($user['vip_frame']) && is_file('img/vip_frames/' . $user['vip_frame'])) {
-                $frameImg = 'img/vip_frames/' . $user['vip_frame'];
-            }
-            ?>
-            <img src="<?= htmlspecialchars($frameImg) ?>" class="profile-frame" alt="Frame">
         </div>
     </div>
     <div class="profile-info-list">

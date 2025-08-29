@@ -15,7 +15,7 @@ if ($profile_id <= 0) {
     exit;
 }
 
-$stmt = $db->prepare('SELECT username, gender, city, created_at, gallery, vip FROM users WHERE id = ?');
+$stmt = $db->prepare('SELECT username, gender, description, created_at, gallery, vip FROM users WHERE id = ?');
 $stmt->execute([$profile_id]);
 $profile = $stmt->fetch(PDO::FETCH_ASSOC);
 $isVip = !empty($profile['vip']);
@@ -58,9 +58,12 @@ ob_start();
     <div class="profile-info-list">
         <div class="info-row"><span class="profile-label">Name:</span><span class="profile-value<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($profile['username']) ?></span></div>
         <div class="info-row"><span class="profile-label">Gender:</span><span class="profile-value"><?= htmlspecialchars($profile['gender']) ?></span></div>
-        <div class="info-row"><span class="profile-label">City:</span><span class="profile-value"><?= htmlspecialchars($profile['city']) ?></span></div>
         <div class="info-row"><span class="profile-label">Registered:</span><span class="profile-value"><?= htmlspecialchars(date('Y-m-d', strtotime($profile['created_at']))) ?></span></div>
     </div>
+    <div class="desc-title-row">
+        <span style="font-weight:600;color:#7c4dff;">Description</span>
+    </div>
+    <div class="desc-field"><?= !empty($profile['description']) ? htmlspecialchars($profile['description']) : '<span style="color:#aaa">No description</span>' ?></div>
 </div>
 <?php
 $content = ob_get_clean();
