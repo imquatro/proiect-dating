@@ -18,10 +18,8 @@ ob_start();
                     <button class="sub-tab-btn logout-init-btn" id="logoutBtn">Logout</button>
                 </div>
                 <div class="vip-subtab-content">
-                </div>
-                <div class="vip-subtab-content">
                     <div class="subtab-content" id="admin">
-                        <button class="apply-frame-btn" onclick="location.href='farm_admin/panel.php';">Go to Admin Panel</button>
+                        <iframe src="farm_admin/panel.php" class="admin-frame" title="Admin Panel" scrolling="no"></iframe>
                     </div>
                     <div class="subtab-content" id="bank">
                         <p style="color:#fff;">Bank coming soon</p>

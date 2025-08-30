@@ -19,6 +19,17 @@ document.addEventListener('DOMContentLoaded', function () {
     panel.querySelectorAll('.vip-sub-tabs').forEach(sub => {
         initTabs(sub.parentElement, '.sub-tab-btn:not(.logout-init-btn)', '.subtab-content', 'data-subtab');
     });
+    const adminFrame = document.querySelector('.admin-frame');
+    if (adminFrame) {
+        adminFrame.addEventListener('load', () => {
+            try {
+                const doc = adminFrame.contentWindow.document;
+                adminFrame.style.height = doc.documentElement.scrollHeight + 'px';
+            } catch (e) {
+                // ignore cross-origin errors
+            }
+        });
+    }
     const logoutBtn = document.getElementById('logoutBtn');
     const overlay = document.getElementById('logoutOverlay');
     const confirmLogout = document.getElementById('confirmLogout');
