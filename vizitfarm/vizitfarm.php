@@ -13,7 +13,7 @@ if ($visitId <= 0) {
     exit;
 }
 
-$stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame FROM users WHERE id = ?');
+$stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame, vip_card FROM users WHERE id = ?');
 $stmt->execute([$visitId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$user) {
@@ -35,10 +35,17 @@ $username = $user['username'];
 $level = isset($user['level']) ? (int)$user['level'] : 1;
 $isVip = !empty($user['vip']);
 $frameImg = 'img/frames/defaultframe.png';
+$cardBg = 'img/bg2.png';
 if (!empty($user['vip_frame'])) {
     $candidate = __DIR__ . '/../img/vip_frames/' . $user['vip_frame'];
     if (is_file($candidate)) {
         $frameImg = 'img/vip_frames/' . $user['vip_frame'];
+    }
+}
+if (!empty($user['vip_card'])) {
+    $candidate = __DIR__ . '/../img/vip_cards/' . $user['vip_card'];
+    if (is_file($candidate)) {
+        $cardBg = 'img/vip_cards/' . $user['vip_card'];
     }
 }
 
@@ -78,7 +85,7 @@ ob_start();
         <div class="avatar-wrapper">
             <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
         </div>
-        <div class="mini-profile-card">
+        <div class="mini-profile-card" style="background: url('<?= htmlspecialchars($cardBg) ?>') center/cover no-repeat;">
             <div class="level-circle"><?= htmlspecialchars($level) ?></div>
             <div class="username<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($username) ?></div>
             <div class="divider"></div>
