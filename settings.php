@@ -14,6 +14,7 @@ ob_start();
                     <button class="sub-tab-btn" data-subtab="admin">Admin Panel</button>
                     <button class="sub-tab-btn" data-subtab="bank">Bank</button>
                     <button class="sub-tab-btn" data-subtab="leaderboard">Leaderboard</button>
+                    <button class="sub-tab-btn" onclick="location.href='profile.php';">Profile</button>
                     <button class="sub-tab-btn logout-init-btn" id="logoutBtn">Logout</button>
                 </div>
                 <div class="vip-subtab-content">

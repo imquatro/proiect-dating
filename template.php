@@ -59,7 +59,6 @@ require_once __DIR__ . '/includes/cache_buster.php';
             <div class="profile-box"><img src="<?= htmlspecialchars($profilePhoto) ?>" alt="Profile"></div>
         </div>
     </div>
-    <a href="logout.php" class="nav-btn top-btn logout-btn"><i class="fas fa-right-from-bracket"></i></a>
     <div class="content">
         <?= $content ?>
     </div>
@@ -67,11 +66,8 @@ require_once __DIR__ . '/includes/cache_buster.php';
     <nav class="bottom-nav">
         <a href="welcome.php" class="nav-btn <?php if($activePage==='welcome') echo 'active';?>"><i class="fas fa-seedling"></i></a>
         <a href="barn.php" class="nav-btn <?php if($activePage==='barn') echo 'active';?>"><i class="fas fa-warehouse"></i></a>
-        <a href="profile.php" class="nav-btn <?php if($activePage==='profile') echo 'active';?>"><i class="fas fa-user"></i></a>
         <a href="friends.php" class="nav-btn <?php if($activePage==='friends') echo 'active';?>"><i class="fas fa-user-friends"></i></a>
-        <a href="shop.php" class="nav-btn <?php if($activePage==='shop') echo 'active';?>"><i class="fas fa-store"></i></a>
         <a href="vip.php" class="nav-btn <?php if($activePage==='vip') echo 'active';?>"><i class="fas fa-crown"></i></a>
-        <a href="diverse.php" class="nav-btn <?php if($activePage==='diverse') echo 'active';?>"><i class="fas fa-table-cells-large"></i></a>
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>
     <?php endif; ?>
