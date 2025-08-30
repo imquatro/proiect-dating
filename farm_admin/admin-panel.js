@@ -175,7 +175,25 @@ function initAdminPanel(panel){
             });
         }
     }
+
+    const versionBtn = panel.querySelector('#fa-update-version');
+    if (versionBtn) {
+        versionBtn.addEventListener('click', () => {
+            fetch('farm_admin/bump_version.php', { credentials: 'same-origin' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const span = panel.querySelector('#fa-current-version');
+                        if (span) span.textContent = data.version;
+                    }
+                })
+                .catch(err => console.error(err));
+        });
+    }
+
+    initEditItems(panel);
 }
+
 
 function initEditItems(panel){
     const grid = panel.querySelector('.fa-edit-grid');
