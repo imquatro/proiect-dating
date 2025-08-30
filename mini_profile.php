@@ -8,9 +8,10 @@ $user_name = 'Vizitator';
 $user_level = 1;
 $isVip = false;
 $frame = 'img/frames/defaultframe.png';
+$cardBg = 'img/bg2.png';
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame, vip_card FROM users WHERE id = ?');
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($user) {
@@ -30,6 +31,12 @@ if (isset($_SESSION['user_id'])) {
                 $frame = $candidate;
             }
         }
+        if (!empty($user['vip_card'])) {
+            $candidate = 'img/vip_cards/' . $user['vip_card'];
+            if (is_file($candidate)) {
+                $cardBg = $candidate;
+            }
+        }
     }
 }
 ?>
@@ -39,7 +46,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="avatar-wrapper">
             <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
         </div>
-        <div class="mini-profile-card">
+        <div class="mini-profile-card" style="background: url('<?= htmlspecialchars($cardBg) ?>') center/cover no-repeat;">
             <div class="level-circle"><?= htmlspecialchars($user_level) ?></div>
             <div class="username<?= $isVip ? ' gold-shimmer' : '' ?>"><?= htmlspecialchars($user_name) ?></div>
             <div class="divider"></div>

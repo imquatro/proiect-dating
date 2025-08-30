@@ -5,17 +5,21 @@ $activePage = 'vip';
 ob_start();
 $isVip = false;
 $currentFrame = '';
+$currentCard = '';
 if (isset($_SESSION['user_id'])) {
-    $stmt = $db->prepare('SELECT vip, vip_frame FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT vip, vip_frame, vip_card FROM users WHERE id = ?');
     $stmt->execute([$_SESSION['user_id']]);
     $u = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($u) {
         $isVip = !empty($u['vip']);
         $currentFrame = $u['vip_frame'] ?? '';
+        $currentCard = $u['vip_card'] ?? '';
     }
 }
 $frameDir = 'img/vip_frames';
 $frames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
+$cardDir = 'img/vip_cards';
+$cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 ?>
 <div class="vip-container">
     <div id="vipPanel" class="vip-panel">
@@ -60,7 +64,23 @@ $frames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,jpe
                         </div>
                     </div>
                     <div class="subtab-content" id="cards">
-                        <p style="color:#fff;">Coming soon</p>
+                        <?php if (!$isVip): ?>
+                        <div class="mini-card vip-warning">You need VIP to use frames and cards</div>
+                        <?php else: ?>
+                            <?php if ($currentCard): ?>
+                                <button id="removeCardBtn" class="remove-frame">Remove Card</button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <div class="vip-card-grid">
+                            <?php foreach ($cards as $img): ?>
+                            <div class="vip-card-item">
+                                <img src="<?= htmlspecialchars($cardDir . '/' . $img) ?>" alt="VIP Card">
+                                <?php if ($isVip): ?>
+                                <button class="apply-card-btn" data-card="<?= htmlspecialchars($img) ?>">Apply</button>
+                                <?php endif; ?>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
                 </div>
             </div>
