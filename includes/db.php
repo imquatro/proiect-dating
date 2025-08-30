@@ -21,3 +21,19 @@ try {
 } catch (PDOException $e) {
     // ignore if insufficient privileges or other errors
 }
+
+// Ensure `money` column has default 10000 and update existing users
+try {
+    $col = $db->query("SHOW COLUMNS FROM users LIKE 'money'")->fetch(PDO::FETCH_ASSOC);
+    if (!$col) {
+        $db->exec("ALTER TABLE users ADD COLUMN money INT(11) NOT NULL DEFAULT 10000");
+    } else {
+        $default = isset($col['Default']) ? (int)$col['Default'] : null;
+        if ($default !== 10000) {
+            $db->exec("ALTER TABLE users MODIFY money INT(11) NOT NULL DEFAULT 10000");
+        }
+    }
+    $db->exec("UPDATE users SET money = 10000 WHERE money IS NULL OR money < 10000");
+} catch (PDOException $e) {
+    // ignore if insufficient privileges or other errors
+}
