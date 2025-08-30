@@ -1,6 +1,6 @@
 function normalizeImg(path){
     if(!path) return '';
-    path = path.replace(/^\//+, '');
+    path = path.replace(/^\/+/,'');
     return path.startsWith('img/') ? path : 'img/' + path;
 }
 
@@ -273,25 +273,35 @@ function initEditItems(panel){
 
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('open-admin-panel');
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-        fetch('farm_admin/panel.php?ajax=1', { credentials: 'same-origin' })
-            .then(res => res.text())
-            .then(html => {
-                const temp = document.createElement('div');
-                temp.innerHTML = html.trim();
-                const panel = temp.firstElementChild;
-                if (!panel) {
-                    alert(html.trim());
-                    return;
-                }
-                panel.addEventListener('click', e => {
-                    if (e.target === panel) {
-                        panel.remove();
+    if (btn) {
+        btn.addEventListener('click', () => {
+            fetch('farm_admin/panel.php?ajax=1', { credentials: 'same-origin' })
+                .then(res => res.text())
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html.trim();
+                    const panel = temp.firstElementChild;
+                    if (!panel) {
+                        alert(html.trim());
+                        return;
                     }
+                    panel.addEventListener('click', e => {
+                        if (e.target === panel) {
+                            panel.remove();
+                        }
+                    });
+                    document.body.appendChild(panel);
+                    initAdminPanel(panel);
                 });
-                document.body.appendChild(panel);
-                initAdminPanel(panel);
-            });
-    });
+        });
+    }
+    const panel = document.getElementById('fa-admin-panel');
+    if (panel) {
+        panel.addEventListener('click', e => {
+            if (e.target === panel) {
+                panel.remove();
+            }
+        });
+        initAdminPanel(panel);
+    }
 });
