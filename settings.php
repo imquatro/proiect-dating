@@ -19,7 +19,7 @@ ob_start();
                 </div>
                 <div class="vip-subtab-content">
                     <div class="subtab-content active" id="admin">
-                        <iframe src="farm_admin/panel.php" class="admin-frame" title="Admin Panel" scrolling="no"></iframe>
+                        <div id="adminPanelContainer"></div>
                     </div>
                     <div class="subtab-content" id="bank">
                         <p style="color:#fff;">Bank coming soon</p>
@@ -42,7 +42,8 @@ ob_start();
 $content = ob_get_clean();
 
 $pageCss = 'assets_css/settings.css';
-$extraJs = '<script src="assets_js/settings.js"></script>';
+$extraCss = ['farm_admin/admin-panel.css'];
+$extraJs = ['assets_js/settings.js', 'farm_admin/admin-panel.js'];
 
 include 'template.php';
 ?>

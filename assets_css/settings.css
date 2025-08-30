@@ -88,16 +88,17 @@
     display: block;
 }
 
-.admin-frame {
+#adminPanelContainer #fa-admin-panel {
+    position: static;
     width: 100%;
-    border: none;
-    overflow: hidden;
+    height: auto;
+    background: none;
+    display: block;
 }
 
-.admin-frame {
+#adminPanelContainer .fa-panel-window {
     width: 100%;
-    height: 100%;
-    border: none;
+    max-width: none;
 }
 
 .vip-frame-grid {
@@ -162,9 +163,9 @@
     margin: 0;
 }
 
-@media (max-width: 480px) {␊
-    .tab-btn, .sub-tab-btn {␊
-        padding: 5px 2px;␊
-        font-size: 12px;␊
-    }␊
+@media (max-width: 480px) {
+    .tab-btn, .sub-tab-btn {
+        padding: 5px 2px;
+        font-size: 12px;
+    }
 }

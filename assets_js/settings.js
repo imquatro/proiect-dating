@@ -19,16 +19,17 @@ document.addEventListener('DOMContentLoaded', function () {
     panel.querySelectorAll('.vip-sub-tabs').forEach(sub => {
         initTabs(sub.parentElement, '.sub-tab-btn[data-subtab]', '.subtab-content', 'data-subtab');
     });
-    const adminFrame = document.querySelector('.admin-frame');
-    if (adminFrame) {
-        adminFrame.addEventListener('load', () => {
-            try {
-                const doc = adminFrame.contentWindow.document;
-                adminFrame.style.height = doc.documentElement.scrollHeight + 'px';
-            } catch (e) {
-                // ignore cross-origin errors
-            }
-        });
+    const adminContainer = document.getElementById('adminPanelContainer');
+    if (adminContainer) {
+        fetch('farm_admin/panel.php?ajax=1')
+            .then(res => res.text())
+            .then(html => {
+                adminContainer.innerHTML = html;
+                if (typeof initAdminPanel === 'function') {
+                    const panelEl = adminContainer.querySelector('#fa-admin-panel');
+                    if (panelEl) initAdminPanel(panelEl);
+                }
+            });
     }
     const logoutBtn = document.getElementById('logoutBtn');
     const overlay = document.getElementById('logoutOverlay');
