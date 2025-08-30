@@ -1,5 +1,13 @@
 <?php
 $activePage = 'settings';
+session_start();
+$isAdmin = false;
+if (isset($_SESSION['user_id'])) {
+    require_once __DIR__ . '/includes/db.php';
+    $stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
+    $stmt->execute([$_SESSION['user_id']]);
+    $isAdmin = $stmt->fetchColumn() == 1;
+}
 
 ob_start();
 ?>
@@ -11,16 +19,20 @@ ob_start();
         <div class="vip-tab-content">
             <div class="tab-content active" id="settings">
                 <div class="vip-sub-tabs">
+                    <?php if ($isAdmin): ?>
                     <button class="sub-tab-btn" data-subtab="admin">Admin Panel</button>
+                    <?php endif; ?>
                     <button class="sub-tab-btn" data-subtab="bank">Bank</button>
                     <button class="sub-tab-btn" data-subtab="leaderboard">Leaderboard</button>
                     <button class="sub-tab-btn" data-subtab="profile">Profile</button>
                     <button class="sub-tab-btn logout-init-btn" id="logoutBtn">Logout</button>
                 </div>
                 <div class="vip-subtab-content">
+                    <?php if ($isAdmin): ?>
                     <div class="subtab-content" id="admin">
                         <div id="adminPanelContainer"></div>
                     </div>
+                    <?php endif; ?>
                     <div class="subtab-content" id="bank">
                         <p style="color:#fff;">Bank coming soon</p>
                     </div>
@@ -45,8 +57,11 @@ ob_start();
 $content = ob_get_clean();
 
 $pageCss = 'assets_css/settings.css';
-$extraCss = ['farm_admin/admin-panel.css', 'assets_css/profile.css'];
-$extraJs = ['assets_js/settings.js', 'farm_admin/admin-panel.js', 'assets_js/profile.js'];
+$extraCss = $isAdmin ? ['farm_admin/admin-panel.css', 'assets_css/profile.css'] : ['assets_css/profile.css'];
+$extraJs = ['assets_js/settings.js', 'assets_js/profile.js'];
+if ($isAdmin) {
+    $extraJs[] = 'farm_admin/admin-panel.js';
+}
 
 include 'template.php';
 ?>

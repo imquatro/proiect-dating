@@ -3,6 +3,12 @@ session_start();
 if (!isset($_SESSION['user_id'])) {
     exit('Access denied');
 }
+require_once '../includes/db.php';
+$stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
+$stmt->execute([$_SESSION['user_id']]);
+if (!$stmt->fetchColumn()) {
+    exit('Access denied');
+}
 
 $slotTypes = [
     ['id' => 'crop', 'name' => 'Crop Plot'],
@@ -10,7 +16,6 @@ $slotTypes = [
     ['id' => 'pool', 'name' => 'Pool Plot'],
 ];
 
-require_once '../includes/db.php';
 $items = $db->query('SELECT id,name,image_plant,price FROM farm_items ORDER BY name')
     ->fetchAll(PDO::FETCH_ASSOC);
 $frameDir = __DIR__ . '/../img/vip_frames';
