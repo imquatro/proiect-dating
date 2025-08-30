@@ -3,15 +3,31 @@ $activePage = 'settings';
 
 ob_start();
 ?>
-<button id="open-settings-panel" class="settings-open-btn">Setări</button>
-
-<div id="settings-panel-overlay">
-    <div id="settings-panel">
-        <h2>Setările jocului</h2>
-        <p>Ajustează opțiunile jocului după preferințe.</p>
-        <?php for ($i = 1; $i <= 20; $i++): ?>
-            <p>Opțiune de setare <?php echo $i; ?></p>
-        <?php endfor; ?>
+<div class="vip-container">
+    <div id="settingsPanel" class="vip-panel">
+        <div class="vip-tabs">
+            <button class="tab-btn active" data-tab="settings">Settings</button>
+        </div>
+        <div class="vip-tab-content">
+            <div class="tab-content active" id="settings">
+                <div class="vip-sub-tabs">
+                    <button class="sub-tab-btn" data-subtab="admin">Admin Panel</button>
+                    <button class="sub-tab-btn" data-subtab="bank">Bank</button>
+                    <button class="sub-tab-btn" data-subtab="leaderboard">Leaderboard</button>
+                </div>
+                <div class="vip-subtab-content">
+                    <div class="subtab-content" id="admin">
+                        <button class="apply-frame-btn" onclick="location.href='farm_admin/panel.php';">Go to Admin Panel</button>
+                    </div>
+                    <div class="subtab-content" id="bank">
+                        <p style="color:#fff;">Bank coming soon</p>
+                    </div>
+                    <div class="subtab-content" id="leaderboard">
+                        <p style="color:#fff;">Leaderboard coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <?php
@@ -21,3 +37,4 @@ $pageCss = 'assets_css/settings.css';
 $extraJs = '<script src="assets_js/settings.js"></script>';
 
 include 'template.php';
+?>

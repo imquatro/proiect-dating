@@ -1,25 +1,22 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('open-settings-panel');
-    const overlay = document.getElementById('settings-panel-overlay');
-    const content = document.querySelector('.content');
-
-    if (btn && overlay) {
-        btn.addEventListener('click', () => {
-            overlay.classList.add('active');
-            if (content) {
-                content.classList.add('no-scroll');
-            }
+document.addEventListener('DOMContentLoaded', function () {
+    function initTabs(container, btnSelector, contentSelector, attr) {
+        const btns = container.querySelectorAll(btnSelector);
+        const contents = container.querySelectorAll(contentSelector);
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btns.forEach(b => b.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const target = btn.getAttribute(attr);
+                const el = container.querySelector('#' + target);
+                if (el) el.classList.add('active');
+            });
         });
     }
-
-    if (overlay) {
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.classList.remove('active');
-                if (content) {
-                    content.classList.remove('no-scroll');
-                }
-            }
-        });
-    }
+    const panel = document.getElementById('settingsPanel');
+    if (!panel) return;
+    initTabs(panel, '.tab-btn', '.tab-content', 'data-tab');
+    panel.querySelectorAll('.vip-sub-tabs').forEach(sub => {
+        initTabs(sub.parentElement, '.sub-tab-btn', '.subtab-content', 'data-subtab');
+    });
 });
