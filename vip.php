@@ -31,11 +31,18 @@ $frames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,jpe
                 </div>
                 <div class="vip-subtab-content">
                     <div class="subtab-content" id="benefits">
-                        <p style="color:#fff;">VIP membership provides exclusive bonuses and features.</p>
+                        <h1 class="vip-benefit-title">Unlock the VIP Experience</h1>
+                        <p class="vip-benefit-text">VIP status unlocks in-game advantages and dazzling style:</p>
+                        <ul class="vip-benefit-list">
+                            <li>Gain 5 extra farming slots available only to VIPs</li>
+                            <li>Plant multiple crops at once for faster progress</li>
+                            <li>Unlock exclusive profile frames and cards to set on your farm profile</li>
+                            <li>Shine with a shimmering name like <span class="gold-shimmer">username</span></li>
+                        </ul>
                     </div>
                     <div class="subtab-content" id="frames">
                         <?php if (!$isVip): ?>
-                        <div class="mini-card vip-warning">You need VIP to use frames</div>
+                        <div class="mini-card vip-warning">You need VIP to use frames and cards</div>
                         <?php else: ?>
                             <?php if ($currentFrame): ?>
                                 <button id="removeFrameBtn" class="remove-frame">Remove Frame</button>
