@@ -39,7 +39,13 @@
 
 .vip-tab-content {
     flex: 1;
-    overflow-y: hidden;
+    overflow-y: auto;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;    /* Firefox */
+}
+
+.vip-tab-content::-webkit-scrollbar {
+    display: none;            /* Chrome, Safari, Opera */
 }
 
 .tab-content {
