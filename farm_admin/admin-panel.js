@@ -1,6 +1,6 @@
 function normalizeImg(path){
     if(!path) return '';
-    path = path.replace(/^\/+/, '');
+    path = path.replace(/^\//+, '');
     return path.startsWith('img/') ? path : 'img/' + path;
 }
 
@@ -116,8 +116,7 @@ function initAdminPanel(panel){
         });
     }
 
-    const delVipForm = panel.querySelector('#fa-delete-vip-form');
-    if (delVipForm) {
+    panel.querySelectorAll('.fa-delete-vip-form').forEach(delVipForm => {
         delVipForm.addEventListener('submit', e => {
             e.preventDefault();
             const formData = new FormData(delVipForm);
@@ -129,7 +128,7 @@ function initAdminPanel(panel){
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert('Frame deleted');
+                    alert('VIP item deleted');
                     const select = delVipForm.querySelector('select[name="vip_name"]');
                     const val = formData.get('vip_name');
                     const opt = select.querySelector(`option[value="${val}"]`);
@@ -138,70 +137,44 @@ function initAdminPanel(panel){
             })
             .catch(err => console.error(err));
         });
-    }
-    initEditItems(panel);
-    initDeleteItems(panel);
+    });
 
-    const verBtn = panel.querySelector('#fa-update-version');
-    const verDisplay = panel.querySelector('#fa-current-version');
-    if (verBtn) {
-        verBtn.addEventListener('click', () => {
-            fetch('farm_admin/bump_version.php', {
-                method: 'POST',
-                credentials: 'same-origin'
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    if (verDisplay) verDisplay.textContent = data.version;
-                    alert('Version updated to ' + data.version);
-                }
-            });
+    const grid = panel.querySelector('.fa-delete-grid');
+    if (grid) {
+        let selectedId = null;
+        grid.addEventListener('click', e => {
+            const it = e.target.closest('.fa-delete-item');
+            if (!it) return;
+            grid.querySelectorAll('.fa-delete-item').forEach(i => i.classList.remove('selected'));
+            it.classList.add('selected');
+            selectedId = it.dataset.id;
+            const btn = panel.querySelector('#fa-delete-item-btn');
+            if (btn) btn.disabled = false;
         });
+
+        const btn = panel.querySelector('#fa-delete-item-btn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                if (!selectedId) return;
+                fetch('farm_admin/delete_item.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'id=' + encodeURIComponent(selectedId),
+                    credentials: 'same-origin'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = grid.querySelector(`.fa-delete-item[data-id="${selectedId}"]`);
+                        if (item) item.remove();
+                        btn.disabled = true;
+                        selectedId = null;
+                    }
+                })
+                .catch(err => console.error(err));
+            });
+        }
     }
-}
-
-function initDeleteItems(panel){
-    const grid = panel.querySelector('#fa-tab-delete .fa-delete-grid');
-    const delBtn = panel.querySelector('#fa-delete-item-btn');
-    if (!grid || !delBtn) return;
-    let selectedId = null;
-
-    grid.addEventListener('click', e => {
-        const it = e.target.closest('.fa-delete-item');
-        if (!it) return;
-        grid.querySelectorAll('.fa-delete-item').forEach(i => i.classList.remove('selected'));
-        it.classList.add('selected');
-        selectedId = it.dataset.id;
-        delBtn.disabled = false;
-    });
-
-    delBtn.addEventListener('click', () => {
-        if (!selectedId) return;
-        fetch('farm_admin/delete_item.php', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id: selectedId})
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                const delItem = grid.querySelector(`.fa-delete-item[data-id="${selectedId}"]`);
-                if (delItem) delItem.remove();
-                const editItem = panel.querySelector(`#fa-tab-edit .fa-edit-item[data-id="${selectedId}"]`);
-                if (editItem) editItem.remove();
-                const qsPanel = document.getElementById('quickshop-panel');
-                if (qsPanel) {
-                    const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${selectedId}"]`);
-                    if (qsItem) qsItem.remove();
-                }
-                delBtn.disabled = true;
-                selectedId = null;
-            }
-        })
-        .catch(err => console.error(err));
-    });
 }
 
 function initEditItems(panel){

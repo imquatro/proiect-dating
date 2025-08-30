@@ -15,6 +15,8 @@ $items = $db->query('SELECT id,name,image_plant,price FROM farm_items ORDER BY n
     ->fetchAll(PDO::FETCH_ASSOC);
 $frameDir = __DIR__ . '/../img/vip_frames';
 $vipFrames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
+$cardDir = __DIR__ . '/../img/vip_cards';
+$vipCards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 
 $versionFile = __DIR__ . '/../version.txt';
 $currentVersion = is_file($versionFile) ? trim(file_get_contents($versionFile)) : 'unknown';
@@ -133,7 +135,7 @@ ob_start();
                         <div class="time-input">
                             <input type="number" name="water_hours" min="0" placeholder="h">
                             <input type="number" name="water_minutes" min="0" max="59" placeholder="m">
-                            <input type="number" name="water_seconds" min="0" max="59" placeholder="s">
+                            <input to="number" name="water_seconds" min="0" max="59" placeholder="s">
                         </div>
                     </label>
                 </div>
@@ -151,8 +153,8 @@ ob_start();
                 </label>
                 <label class="feed-field">Feed times
                     <input type="number" name="feed_times" min="0" value="0">
-                </label>
-                <label>Price
+                </label
+                ><label>Price
                     <input type="number" name="price" min="0" value="0">
                 </label>
                 <label>Sell Price
@@ -200,12 +202,26 @@ ob_start();
                 </div>
             </form>
             <h2>Delete VIP Frames</h2>
-            <form id="fa-delete-vip-form" action="farm_admin/delete_vip.php" method="post">
+            <form class="fa-delete-vip-form" action="farm_admin/delete_vip.php" method="post">
                 <input type="hidden" name="vip_type" value="frame">
                 <label>Frame Name
                     <select name="vip_name">
                         <?php foreach ($vipFrames as $f): ?>
                         <option value="<?= htmlspecialchars($f); ?>"><?= htmlspecialchars($f); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <div class="fa-form-actions">
+                    <button type="submit">Delete</button>
+                </div>
+            </form>
+            <h2>Delete VIP Cards</h2>
+            <form class="fa-delete-vip-form" action="farm_admin/delete_vip.php" method="post">
+                <input type="hidden" name="vip_type" value="card">
+                <label>Card Name
+                    <select name="vip_name">
+                        <?php foreach ($vipCards as $c): ?>
+                        <option value="<?= htmlspecialchars($c); ?>"><?= htmlspecialchars($c); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </label>
