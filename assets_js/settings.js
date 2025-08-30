@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!panel) return;
     initTabs(panel, '.tab-btn', '.tab-content', 'data-tab');
     panel.querySelectorAll('.vip-sub-tabs').forEach(sub => {
-        initTabs(sub.parentElement, '.sub-tab-btn:not(.logout-init-btn)', '.subtab-content', 'data-subtab');
+        initTabs(sub.parentElement, '.sub-tab-btn[data-subtab]', '.subtab-content', 'data-subtab');
     });
     const adminFrame = document.querySelector('.admin-frame');
     if (adminFrame) {

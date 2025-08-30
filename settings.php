@@ -11,14 +11,14 @@ ob_start();
         <div class="vip-tab-content">
             <div class="tab-content active" id="settings">
                 <div class="vip-sub-tabs">
-                    <button class="sub-tab-btn" data-subtab="admin">Admin Panel</button>
+                    <button class="sub-tab-btn active" data-subtab="admin">Admin Panel</button>
                     <button class="sub-tab-btn" data-subtab="bank">Bank</button>
                     <button class="sub-tab-btn" data-subtab="leaderboard">Leaderboard</button>
                     <button class="sub-tab-btn" onclick="location.href='profile.php';">Profile</button>
                     <button class="sub-tab-btn logout-init-btn" id="logoutBtn">Logout</button>
                 </div>
                 <div class="vip-subtab-content">
-                    <div class="subtab-content" id="admin">
+                    <div class="subtab-content active" id="admin">
                         <iframe src="farm_admin/panel.php" class="admin-frame" title="Admin Panel" scrolling="no"></iframe>
                     </div>
                     <div class="subtab-content" id="bank">
