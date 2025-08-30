@@ -52,13 +52,21 @@
 }
 
 .vip-sub-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 4px;
     margin-bottom: 10px;
 }
 
+.logout-btn-container {
+    margin-bottom: 10px;
+}
+
+.logout-btn-container .sub-tab-btn {
+    width: 100%;
+}
+
 .sub-tab-btn {
-    flex: 1;
     padding: 6px 4px;
     background: #ffe9a3;
     border: 1px solid #f6cf49;
@@ -150,3 +158,4 @@
         padding: 5px 2px;
         font-size: 12px;
     }
+}
