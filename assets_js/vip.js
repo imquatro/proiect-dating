@@ -41,6 +41,27 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    const cardGrid = panel.querySelector('.vip-card-grid');
+    if (cardGrid) {
+        cardGrid.addEventListener('click', e => {
+            const btn = e.target.closest('.apply-card-btn');
+            if (!btn) return;
+            const card = btn.dataset.card;
+            fetch('apply_card.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'card=' + encodeURIComponent(card),
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) location.reload();
+                else alert(data.error || 'Error');
+            })
+            .catch(err => console.error(err));
+        });
+    }
+
     const removeBtn = panel.querySelector('#removeFrameBtn');
     if (removeBtn) {
         removeBtn.addEventListener('click', () => {
@@ -48,6 +69,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 body: 'frame=',
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) location.reload();
+            })
+            .catch(err => console.error(err));
+        });
+    }
+
+    const removeCardBtn = panel.querySelector('#removeCardBtn');
+    if (removeCardBtn) {
+        removeCardBtn.addEventListener('click', () => {
+            fetch('apply_card.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'card=',
                 credentials: 'same-origin'
             })
             .then(res => res.json())
