@@ -17,6 +17,22 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!panel) return;
     initTabs(panel, '.tab-btn', '.tab-content', 'data-tab');
     panel.querySelectorAll('.vip-sub-tabs').forEach(sub => {
-        initTabs(sub.parentElement, '.sub-tab-btn', '.subtab-content', 'data-subtab');
+        initTabs(sub.parentElement, '.sub-tab-btn:not(.logout-init-btn)', '.subtab-content', 'data-subtab');
     });
+    const logoutBtn = document.getElementById('logoutBtn');
+    const overlay = document.getElementById('logoutOverlay');
+    const confirmLogout = document.getElementById('confirmLogout');
+    if (logoutBtn && overlay && confirmLogout) {
+        logoutBtn.addEventListener('click', () => {
+            overlay.style.display = 'flex';
+        });
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+            }
+        });
+        confirmLogout.addEventListener('click', () => {
+            window.location.href = 'logout.php';
+        });
+    }
 });

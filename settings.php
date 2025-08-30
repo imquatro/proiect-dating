@@ -14,6 +14,7 @@ ob_start();
                     <button class="sub-tab-btn" data-subtab="admin">Admin Panel</button>
                     <button class="sub-tab-btn" data-subtab="bank">Bank</button>
                     <button class="sub-tab-btn" data-subtab="leaderboard">Leaderboard</button>
+                    <button class="sub-tab-btn logout-init-btn" id="logoutBtn">Logout</button>
                 </div>
                 <div class="vip-subtab-content">
                     <div class="subtab-content" id="admin">
@@ -28,6 +29,12 @@ ob_start();
                 </div>
             </div>
         </div>
+    </div>
+</div>
+<div id="logoutOverlay" class="logout-overlay" style="display:none;">
+    <div class="logout-card">
+        <p>Are you sure you want to log out?</p>
+        <button id="confirmLogout" class="apply-frame-btn">Logout</button>
     </div>
 </div>
 <?php
