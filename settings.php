@@ -11,14 +11,14 @@ ob_start();
         <div class="vip-tab-content">
             <div class="tab-content active" id="settings">
                 <div class="vip-sub-tabs">
-                    <button class="sub-tab-btn active" data-subtab="admin">Admin Panel</button>
+                    <button class="sub-tab-btn" data-subtab="admin">Admin Panel</button>
                     <button class="sub-tab-btn" data-subtab="bank">Bank</button>
                     <button class="sub-tab-btn" data-subtab="leaderboard">Leaderboard</button>
-                    <button class="sub-tab-btn" onclick="location.href='profile.php';">Profile</button>
+                    <button class="sub-tab-btn" data-subtab="profile">Profile</button>
                     <button class="sub-tab-btn logout-init-btn" id="logoutBtn">Logout</button>
                 </div>
                 <div class="vip-subtab-content">
-                    <div class="subtab-content active" id="admin">
+                    <div class="subtab-content" id="admin">
                         <div id="adminPanelContainer"></div>
                     </div>
                     <div class="subtab-content" id="bank">
@@ -26,6 +26,9 @@ ob_start();
                     </div>
                     <div class="subtab-content" id="leaderboard">
                         <p style="color:#fff;">Leaderboard coming soon</p>
+                    </div>
+                    <div class="subtab-content" id="profile">
+                        <div id="profileContainer"></div>
                     </div>
                 </div>
             </div>
@@ -42,8 +45,8 @@ ob_start();
 $content = ob_get_clean();
 
 $pageCss = 'assets_css/settings.css';
-$extraCss = ['farm_admin/admin-panel.css'];
-$extraJs = ['assets_js/settings.js', 'farm_admin/admin-panel.js'];
+$extraCss = ['farm_admin/admin-panel.css', 'assets_css/profile.css'];
+$extraJs = ['assets_js/settings.js', 'farm_admin/admin-panel.js', 'assets_js/profile.js'];
 
 include 'template.php';
 ?>

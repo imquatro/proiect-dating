@@ -36,6 +36,8 @@ if (isset($_GET['error']) && $_GET['error'] === 'max_photos') {
     echo '<p style="color:red; font-weight:bold; text-align:center;">You have reached the maximum limit of 10 photos.</p>';
 }
 
+$ajax = isset($_GET['ajax']);
+
 ob_start();
 ?>
 <div class="profile-container">
@@ -54,7 +56,7 @@ ob_start();
     <div class="desc-edit-wrap">
         <div class="desc-title-row">
             <span style="font-weight:600;color:#7c4dff;">Description</span>
-            <button type="button" class="desc-action-btn edit" onclick="toggleDescEdit()" id="descEditBtn">
+            <button type="button" class="desc-action-btn edit" id="descEditBtn">
                 <i class="fas fa-edit"></i> Edit
             </button>
         </div>
@@ -84,30 +86,14 @@ ob_start();
 </div>
 <?php
 $content = ob_get_clean();
-$activePage = 'profile';
-$pageCss = 'assets_css/profile.css';
-$extraJs = <<<'JS'
-<script>
-function toggleDescEdit() {
-    let editDiv = document.getElementById('desc-edit-div');
-    let viewDiv = document.getElementById('desc-view-div');
-    editDiv.style.display = (editDiv.style.display==='none'||editDiv.style.display==='') ? 'block':'none';
-    viewDiv.style.display = (viewDiv.style.display==='none'||viewDiv.style.display==='') ? 'block':'none';
+if ($ajax) {
+    echo $content;
+    exit;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const selectBtn = document.getElementById('select-btn');
-    const input = document.getElementById('profile-photo-input');
-    const uploadBtn = document.getElementById('upload-btn');
-    selectBtn.addEventListener('click', function() {
-        input.click();
-    });
-    input.addEventListener('change', function() {
-        uploadBtn.style.display = input.files.length > 0 ? 'inline-block' : 'none';
-    });
-});
-</script>
-JS;
+$activePage = 'profile';
+$pageCss = 'assets_css/profile.css';
+$extraJs = '<script src="assets_js/profile.js"></script>';
 $profilePhoto = $profile_photo;
 include 'template.php';
 ?>

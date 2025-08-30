@@ -31,6 +31,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
     }
+    const profileContainer = document.getElementById('profileContainer');
+    if (profileContainer) {
+        fetch('profile.php?ajax=1')
+            .then(res => res.text())
+            .then(html => {
+                profileContainer.innerHTML = html;
+                if (typeof initProfile === 'function') initProfile();
+            });
+    }
     const logoutBtn = document.getElementById('logoutBtn');
     const overlay = document.getElementById('logoutOverlay');
     const confirmLogout = document.getElementById('confirmLogout');
