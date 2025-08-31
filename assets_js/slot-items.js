@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionEl.innerHTML = '<span class="action-icon water-icon" aria-label="Water">💧</span>';
             actionEl.classList.remove('harvest');
             actionEl.style.display = 'flex';
+            actionEl.style.pointerEvents = 'auto';
         } else if (state.feedRemaining > 0) {
             actionEl.dataset.action = 'feed';
             actionEl.innerHTML = '<span class="action-icon feed-icon" aria-label="Feed">🍖</span>';
