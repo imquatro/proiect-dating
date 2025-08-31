@@ -267,7 +267,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function loadStates() {
-        const res = await fetch(fetchUrl);
+        // Bypass any HTTP caching to ensure we always have up-to-date
+        // slot information after interactions like watering/feeding.
+        const res = await fetch(fetchUrl, { cache: 'no-store' });
         const data = await res.json();
 
         // Remove states that no longer exist on the server
@@ -322,6 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 slotStates[id].timerEnd = null;
                 slotStates[id].timeLeft = 0;
+                if (timerEl) timerEl.style.display = 'none';
                 checkNextAction(id);
             }
         });
