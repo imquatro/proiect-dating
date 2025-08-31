@@ -47,6 +47,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     <link rel="stylesheet" href="<?= asset('moneysistem/money.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/xp-float.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/level-up.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets_css/user-level-card.css') ?>">
     <?php if ($pageCss): ?>
     <link rel="stylesheet" href="<?= asset($pageCss) ?>">
     <?php endif; ?>
@@ -78,7 +79,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     </nav>
     <?php endif; ?>
 </div>
-<div id="level-up-card" class="mini-card"></div>
+<div id="level-up-card"></div>
 <?php if (!$noScroll): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
