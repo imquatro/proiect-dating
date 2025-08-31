@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function checkNextAction(slotId) {
+     function checkNextAction(slotId) {
         const state = slotStates[slotId];
         const slot = document.getElementById(`slot-${slotId}`);
         if (!state || !slot) return;
@@ -109,6 +109,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionEl.style.pointerEvents = 'auto';
             }
         }
+    }
+
+    function bindActionHandler(actionEl) {
+        if (!actionEl) return;
+        if (actionEl.dataset.bound) return;
+        actionEl.addEventListener('click', handleActionClick);
+        actionEl.dataset.bound = 'true';
     }
 
     function startTimer(slotId, type, resume = false) {
@@ -262,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const itemImg = slot.querySelector('.slot-item');
         if (itemImg) { itemImg.src = image; itemImg.style.display = 'block'; }
         const actionEl = slot.querySelector('.slot-action');
-        if (actionEl) { actionEl.addEventListener('click', handleActionClick); }
+        if (actionEl) { bindActionHandler(actionEl); }
 
         const existing = slotStates[slotId] || {};
         const merged = {
@@ -342,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 itemImg.style.display = 'block';
             }
             if (actionEl) {
-                actionEl.addEventListener('click', handleActionClick);
+                bindActionHandler(actionEl);
             }
             if (slotStates[id].timerEnd && slotStates[id].timerEnd > Date.now()) {
                 slotStates[id].timeLeft = Math.round((slotStates[id].timerEnd - Date.now()) / 1000);
