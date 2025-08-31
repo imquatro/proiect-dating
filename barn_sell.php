@@ -76,7 +76,9 @@ try {
         'money' => isset($wallet['money']) ? (int)$wallet['money'] : 0,
         'gold' => isset($wallet['gold']) ? (int)$wallet['gold'] : 0,
         'levelUp' => $xpResult['levelUp'],
-        'newLevel' => $xpResult['newLevel']
+        'newLevel' => $xpResult['newLevel'],
+        'xpGain' => $xpResult['xpGain'],
+        'moneyGain' => $total
     ]);
 } catch (Exception $e) {
     if ($db->inTransaction()) {

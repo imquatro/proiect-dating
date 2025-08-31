@@ -13,12 +13,13 @@ if (!isset($baseHref)) {
 if (!isset($hideNav)) { $hideNav = false; }
 require_once __DIR__ . '/includes/cache_buster.php';
     $profilePhoto = 'default-avatar.png';
+    $userLevel = 1;
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
     if (isset($_SESSION['user_id'])) {
         require_once __DIR__ . '/includes/db.php';
-        $stmt = $db->prepare('SELECT gallery FROM users WHERE id = ?');
+        $stmt = $db->prepare('SELECT gallery, level FROM users WHERE id = ?');
         $stmt->execute([$_SESSION['user_id']]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($user) {
@@ -28,6 +29,9 @@ require_once __DIR__ . '/includes/cache_buster.php';
                 if (is_file($candidate)) {
                     $profilePhoto = $candidate;
                 }
+            }
+            if (isset($user['level'])) {
+                $userLevel = (int)$user['level'];
             }
         }
     }
@@ -41,6 +45,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     <link rel="stylesheet" href="<?= asset('assets_css/template.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/message-notification.css') ?>">
     <link rel="stylesheet" href="<?= asset('moneysistem/money.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets_css/xp-float.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/level-up.css') ?>">
     <?php if ($pageCss): ?>
     <link rel="stylesheet" href="<?= asset($pageCss) ?>">
@@ -121,9 +126,10 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="<?= asset('assets_js/message-notification.js') ?>"></script>
   <script src="<?= asset('moneysistem/money.js') ?>"></script>
   <script src="<?= asset('assets_js/interaction-blocker.js') ?>"></script>
+  <script src="<?= asset('assets_js/xp-float.js') ?>"></script>
   <script src="<?= asset('assets_js/level-up.js') ?>"></script>
   <?php if (isset($_SESSION['user_id'])): ?>
-  <script>window.userId = <?= (int)$_SESSION['user_id']; ?>;</script>
+  <script>window.userId = <?= (int)$_SESSION['user_id']; ?>; window.currentLevel = <?= $userLevel; ?>;</script>
   <?php endif; ?>
   <?php
   if ($extraJs) {
