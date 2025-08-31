@@ -24,11 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
             Object.keys(slotStates).forEach(id => dirtySlots.add(String(id)));
         }
         const body = JSON.stringify(payload);
-        if (navigator.sendBeacon) {
+        // Use sendBeacon only when saving all states (e.g., on unload)
+        if (slotId === null && navigator.sendBeacon) {
             const blob = new Blob([body], { type: 'application/json' });
             navigator.sendBeacon(fetchUrl, blob);
-            if (slotId !== null) dirtySlots.delete(String(slotId));
-            else dirtySlots.clear();
+            dirtySlots.clear();
             return Promise.resolve();
         }
         return fetch(fetchUrl, {
