@@ -22,6 +22,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('click', hideHandler);
     };
+
+        hideHandler = function(e) {
+            if (!card.contains(e.target)) {
+                card.style.opacity = '0';
+                setTimeout(() => { card.style.display = 'none'; }, 500);
+                document.removeEventListener('click', hideHandler);
+                hideHandler = null;
+            }
+        };
+
+        document.addEventListener('click', hideHandler);
+    };
     const stored = parseInt(localStorage.getItem('userLevel') || '0', 10);
     if (window.currentLevel && window.currentLevel > stored) {
         window.showLevelUp(window.currentLevel);

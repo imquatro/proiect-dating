@@ -78,4 +78,5 @@ if ($action === 'water') {
 }
 $hstmt->execute([$ownerId, $slotId, $userId]);
 
-echo json_encode(['status' => 'ok', 'levelUp' => false]);
+$result = add_xp($db, $userId, 5);
+echo json_encode(array_merge(['status' => 'ok'], $result));
