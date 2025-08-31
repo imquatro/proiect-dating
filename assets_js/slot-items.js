@@ -44,9 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function recordHelp(slotId, action) {
         const owner = (isVisitor && visitId) ? visitId : (window.userId || null);
-        if (!owner) return;
+        if (!owner) return Promise.resolve({});
         const url = (window.baseUrl || '') + 'record_help.php';
-        fetch(url, {
+        return fetch(url, {
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -55,7 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.levelUp && window.showLevelUp) {
                 window.showLevelUp(data.newLevel);
             }
-        }).catch(() => {});
+            return data;
+        }).catch(() => ({}));
     }
 
     function formatTime(sec) {
@@ -196,7 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkNextAction(slotId);
                 }
                 saveStates(slotId);
-                recordHelp(slotId, 'water');
+                recordHelp(slotId, 'water').then(data => {
+                    if (window.showFloatingText && data.xpGain) {
+                        window.showFloatingText(slot, { xp: data.xpGain });
+                    }
+                });
             }
         } else if (action === 'feed') {
             if (state.feedRemaining > 0) {
@@ -207,7 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkNextAction(slotId);
                 }
                 saveStates(slotId);
-                recordHelp(slotId, 'feed');
+                recordHelp(slotId, 'feed').then(data => {
+                    if (window.showFloatingText && data.xpGain) {
+                        window.showFloatingText(slot, { xp: data.xpGain });
+                    }
+                });
             }
         } else if (action === 'harvest') {
             // No direct harvest here; the slot's click handler will

@@ -69,6 +69,10 @@ function initSlotPanel(container) {
                 .then(data => {
                     if (data.success) {
                         const overlay = container.parentElement;
+                        const slotEl = document.getElementById(`slot-${slotNum}`);
+                        if (data.xpGain && window.showFloatingText && slotEl) {
+                            window.showFloatingText(slotEl, { xp: data.xpGain });
+                        }
                         document.dispatchEvent(new CustomEvent('barnAddItem', { detail: data.item }));
                         document.dispatchEvent(new CustomEvent('barnUpdated'));
                         const evt = new CustomEvent('slotUpdated', {

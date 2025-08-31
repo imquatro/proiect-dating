@@ -116,6 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     overlay.remove();
                     document.dispatchEvent(new Event('barnUpdated'));
+                    if (window.showFloatingText) {
+                        window.showFloatingText(slot, { money: data.moneyGain, xp: data.xpGain });
+                    }
                     if (data.levelUp && window.showLevelUp) {
                         window.showLevelUp(data.newLevel);
                     }

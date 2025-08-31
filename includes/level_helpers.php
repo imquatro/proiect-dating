@@ -80,6 +80,7 @@ function add_xp(PDO $db, int $userId, int $amount): array {
         'newLevel' => $newLevel,
         'reward' => $reward,
         'money' => $moneyAfter,
+        'xpGain' => $amount,
         'xp' => $xp,
     ];
 }
