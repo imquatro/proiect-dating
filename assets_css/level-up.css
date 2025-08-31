@@ -1,0 +1,32 @@
+#level-up-card {
+    position: fixed;
+    bottom: calc(60px + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
+    background: url('../img/bg2.png') center/cover no-repeat;
+    border: 1px solid #000;
+    box-shadow: none;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.5s;
+    box-sizing: border-box;
+}
+
+#level-up-card .level-number {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #6c4e09;
+    line-height: 1;
+}
+
+#level-up-card .level-text {
+    font-size: 0.7em;
+    color: #6c4e09;
+    text-align: center;
+}

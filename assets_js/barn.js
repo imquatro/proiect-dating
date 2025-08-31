@@ -116,6 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     overlay.remove();
                     document.dispatchEvent(new Event('barnUpdated'));
+                    if (data.levelUp && window.showLevelUp) {
+                        window.showLevelUp(data.newLevel);
+                    }
                 }
             } catch (err) {
                 console.error('Sell failed', err);

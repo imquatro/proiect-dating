@@ -82,6 +82,9 @@ function initSlotPanel(container) {
                         if (content) {
                             content.classList.remove('no-scroll');
                         }
+                        if (data.levelUp && window.showLevelUp) {
+                            window.showLevelUp(data.newLevel);
+                        }
                     } else if (data.error === 'barn_full') {
                         const msgOverlay = document.createElement('div');
                         msgOverlay.className = 'barn-full-overlay';

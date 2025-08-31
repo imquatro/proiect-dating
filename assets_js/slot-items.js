@@ -43,14 +43,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function recordHelp(slotId, action) {
-        if (!isVisitor || !visitId) return;
+        const owner = (isVisitor && visitId) ? visitId : (window.userId || null);
+        if (!owner) return;
         const url = (window.baseUrl || '') + 'record_help.php';
         fetch(url, {
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `owner_id=${visitId}&slot_id=${slotId}&action=${encodeURIComponent(action)}`
-        });
+            body: `owner_id=${owner}&slot_id=${slotId}&action=${encodeURIComponent(action)}`
+        }).then(res => res.json()).then(data => {
+            if (data.levelUp && window.showLevelUp) {
+                window.showLevelUp(data.newLevel);
+            }
+        }).catch(() => {});
     }
 
     function formatTime(sec) {

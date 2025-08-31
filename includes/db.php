@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/level_helpers.php';
 
 try {
     $db = new PDO(
@@ -17,6 +18,15 @@ try {
     $col = $db->query("SHOW COLUMNS FROM users LIKE 'level'")->fetch();
     if (!$col) {
         $db->exec("ALTER TABLE users ADD COLUMN level INT(11) NOT NULL DEFAULT 1");
+    }
+} catch (PDOException $e) {
+    // ignore if insufficient privileges or other errors
+}
+// Ensure `xp` column exists in `users` table
+try {
+    $col = $db->query("SHOW COLUMNS FROM users LIKE 'xp'")->fetch();
+    if (!$col) {
+        $db->exec("ALTER TABLE users ADD COLUMN xp INT(11) NOT NULL DEFAULT 0");
     }
 } catch (PDOException $e) {
     // ignore if insufficient privileges or other errors
