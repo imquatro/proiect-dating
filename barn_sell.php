@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/level_helpers.php';
 
 $userId = (int)$_SESSION['user_id'];
 $itemId = isset($_POST['item_id']) ? (int)$_POST['item_id'] : 0;
@@ -55,6 +56,14 @@ try {
     $moneyUpd = $db->prepare('UPDATE users SET money = money + ? WHERE id = ?');
     $moneyUpd->execute([$total, $userId]);
 
+    // XP gain: 50 XP per stack sold (stack size 1000 or 1)
+    $prodStmt = $db->prepare('SELECT production FROM farm_items WHERE id = ?');
+    $prodStmt->execute([$itemId]);
+    $production = (int)$prodStmt->fetchColumn();
+    $stackSize = ($production === 1) ? 1 : 1000;
+    $xpGain = 50 * (int)ceil($quantity / $stackSize);
+    $xpResult = add_xp($db, $userId, $xpGain);
+
     $walletStmt = $db->prepare('SELECT money, gold FROM users WHERE id = ?');
     $walletStmt->execute([$userId]);
     $wallet = $walletStmt->fetch(PDO::FETCH_ASSOC);
@@ -65,7 +74,9 @@ try {
         'success' => true,
         'remaining' => $remaining,
         'money' => isset($wallet['money']) ? (int)$wallet['money'] : 0,
-        'gold' => isset($wallet['gold']) ? (int)$wallet['gold'] : 0
+        'gold' => isset($wallet['gold']) ? (int)$wallet['gold'] : 0,
+        'levelUp' => $xpResult['levelUp'],
+        'newLevel' => $xpResult['newLevel']
     ]);
 } catch (Exception $e) {
     if ($db->inTransaction()) {

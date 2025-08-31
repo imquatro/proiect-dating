@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/slot_helpers.php';
 require_once __DIR__ . '/includes/barn_helpers.php';
+require_once __DIR__ . '/includes/level_helpers.php';
 
 ensureBarnSchema($db);
 
@@ -128,11 +129,15 @@ try {
     $basePath = __DIR__ . '/' . $base;
     $baseImage = $base . '?v=' . (file_exists($basePath) ? filemtime($basePath) : time());
 
+    $xpResult = add_xp($db, $userId, 10);
     $db->commit();
     echo json_encode([
         'success' => true,
         'item' => ['item_id' => (int)$itemId, 'quantity' => $qty, 'image' => $img],
-        'slotImage' => $baseImage
+        'slotImage' => $baseImage,
+        'levelUp' => $xpResult['levelUp'],
+        'newLevel' => $xpResult['newLevel'],
+        'money' => $xpResult['money']
     ]);
 } catch (Exception $e) {
     $db->rollBack();

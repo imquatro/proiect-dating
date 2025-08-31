@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/level_helpers.php';
 $userId = (int)$_SESSION['user_id'];
 $ownerId = isset($_POST['owner_id']) ? (int)$_POST['owner_id'] : 0;
 $slotId = isset($_POST['slot_id']) ? (int)$_POST['slot_id'] : 0;
@@ -18,7 +19,8 @@ if (!$ownerId || !$action || !$slotId) {
 }
 
 if ($ownerId === $userId) {
-    echo json_encode(['status' => 'ok']);
+    $result = add_xp($db, $userId, 5);
+    echo json_encode(array_merge(['status' => 'ok'], $result));
     exit;
 }
 
@@ -76,4 +78,4 @@ if ($action === 'water') {
 }
 $hstmt->execute([$ownerId, $slotId, $userId]);
 
-echo json_encode(['status' => 'ok']);
+echo json_encode(['status' => 'ok', 'levelUp' => false]);

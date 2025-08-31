@@ -41,6 +41,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     <link rel="stylesheet" href="<?= asset('assets_css/template.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/message-notification.css') ?>">
     <link rel="stylesheet" href="<?= asset('moneysistem/money.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets_css/level-up.css') ?>">
     <?php if ($pageCss): ?>
     <link rel="stylesheet" href="<?= asset($pageCss) ?>">
     <?php endif; ?>
@@ -72,6 +73,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     </nav>
     <?php endif; ?>
 </div>
+<div id="level-up-card" class="mini-card"></div>
 <?php if (!$noScroll): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -119,6 +121,10 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="<?= asset('assets_js/message-notification.js') ?>"></script>
   <script src="<?= asset('moneysistem/money.js') ?>"></script>
   <script src="<?= asset('assets_js/interaction-blocker.js') ?>"></script>
+  <script src="<?= asset('assets_js/level-up.js') ?>"></script>
+  <?php if (isset($_SESSION['user_id'])): ?>
+  <script>window.userId = <?= (int)$_SESSION['user_id']; ?>;</script>
+  <?php endif; ?>
   <?php
   if ($extraJs) {
       if (is_array($extraJs)) {
