@@ -117,12 +117,12 @@ try {
     }
 
     $delPlant = $db->prepare('DELETE FROM user_plants WHERE user_id = ? AND slot_number = ?');
-    $delPlant->execute([$userId, $slotId]);
+    $delPlant.execute([$userId, $slotId]);
 
     $tableCheck = $db->query("SHOW TABLES LIKE 'user_slot_states'");
     if ($tableCheck && $tableCheck->rowCount() > 0) {
         $delState = $db->prepare('DELETE FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
-        $delState->execute([$userId, $slotId]);
+        $delState.execute([$userId, $slotId]);
     }
 
     $base = get_slot_image($slotId, $userId);
@@ -137,7 +137,8 @@ try {
         'slotImage' => $baseImage,
         'levelUp' => $xpResult['levelUp'],
         'newLevel' => $xpResult['newLevel'],
-        'money' => $xpResult['money']
+        'money' => $xpResult['money'],
+        'xpGain' => $xpResult['xpGain']
     ]);
 } catch (Exception $e) {
     $db->rollBack();
