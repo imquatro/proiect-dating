@@ -9,11 +9,13 @@
 }
 
 .xp-float .xp {
-    color: #2196f3;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
 }
 
 .xp-float .money {
     color: #4caf50;
+    text-shadow: 1px 1px 2px #000;
 }
 
 @keyframes xpFloatUp {
