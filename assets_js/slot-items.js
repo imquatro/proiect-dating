@@ -225,7 +225,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     document.addEventListener('slotUpdated', e => {
-        const { slotId, image, waterInterval, feedInterval, waterTimes, feedTimes, type } = e.detail || {};
+        const {
+            slotId,
+            image,
+            waterInterval,
+            feedInterval,
+            waterTimes,
+            feedTimes,
+            timerType,
+            timerEnd,
+            type
+        } = e.detail || {};
         if (!slotId) return;
 
         // Slot type change should clear existing item state
@@ -252,18 +262,34 @@ document.addEventListener('DOMContentLoaded', () => {
         if (itemImg) { itemImg.src = image; itemImg.style.display = 'block'; }
         const actionEl = slot.querySelector('.slot-action');
         if (actionEl) { actionEl.addEventListener('click', handleActionClick); }
-        slotStates[slotId] = {
+
+        const existing = slotStates[slotId] || {};
+        const merged = {
             image,
-            waterInterval: parseInt(waterInterval) || 0,
-            feedInterval: parseInt(feedInterval) || 0,
-            waterRemaining: parseInt(waterTimes) || 0,
-            feedRemaining: parseInt(feedTimes) || 0,
-            timerType: null,
-            timeLeft: 0,
-            timerEnd: null
+            waterInterval: parseInt(waterInterval) || existing.waterInterval || 0,
+            feedInterval: parseInt(feedInterval) || existing.feedInterval || 0,
+            waterRemaining: parseInt(waterTimes) || existing.waterRemaining || 0,
+            feedRemaining: parseInt(feedTimes) || existing.feedRemaining || 0,
+            timerType: timerType || existing.timerType || null,
+            timerEnd: timerEnd || existing.timerEnd || null,
+            timeLeft: existing.timeLeft || 0
         };
+        slotStates[slotId] = merged;
+
+        const timerEl = slot.querySelector('.slot-timer');
+        if (merged.timerEnd && merged.timerEnd > Date.now()) {
+            merged.timeLeft = Math.round((merged.timerEnd - Date.now()) / 1000);
+            if (timerEl) timerEl.style.display = 'block';
+            if (actionEl) actionEl.style.display = 'none';
+            updateTimer(slotId);
+            activeTimers.add(slotId);
+        } else {
+            merged.timerEnd = null;
+            merged.timeLeft = 0;
+            if (timerEl) timerEl.style.display = 'none';
+            checkNextAction(slotId);
+        }
         saveStates(slotId);
-        checkNextAction(slotId);
     });
 
     async function loadStates() {
@@ -297,15 +323,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemImg = slot.querySelector('.slot-item');
             const actionEl = slot.querySelector('.slot-action');
             const timerEl = slot.querySelector('.slot-timer');
+
+            const existing = slotStates[id] || {};
             slotStates[id] = {
                 image: incoming.image,
-                waterInterval: parseInt(incoming.waterInterval) || 0,
-                feedInterval: parseInt(incoming.feedInterval) || 0,
-                waterRemaining: parseInt(incoming.waterRemaining) || 0,
-                feedRemaining: parseInt(incoming.feedRemaining) || 0,
-                timerType: incoming.timerType || null,
-                timerEnd: incoming.timerEnd || null,
-                timeLeft: 0
+                waterInterval: parseInt(incoming.waterInterval) || existing.waterInterval || 0,
+                feedInterval: parseInt(incoming.feedInterval) || existing.feedInterval || 0,
+                waterRemaining: parseInt(incoming.waterRemaining) || existing.waterRemaining || 0,
+                feedRemaining: parseInt(incoming.feedRemaining) || existing.feedRemaining || 0,
+                timerType: incoming.timerType || existing.timerType || null,
+                timerEnd: incoming.timerEnd || existing.timerEnd || null,
+                timeLeft: existing.timeLeft || 0
             };
 
             if (itemImg && incoming.image) {
@@ -325,6 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 slotStates[id].timerEnd = null;
                 slotStates[id].timeLeft = 0;
                 if (timerEl) timerEl.style.display = 'none';
+                activeTimers.delete(id);
                 checkNextAction(id);
             }
         });
