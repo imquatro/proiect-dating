@@ -32,8 +32,9 @@ $allAchievements = $db->query('SELECT * FROM achievements')->fetchAll(PDO::FETCH
                     <?php foreach ($myAchievements as $ach): ?>
                     <div class="ach-item" data-id="<?= htmlspecialchars($ach['id']); ?>">
                         <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
+                        <button class="ach-btn ach-apply-btn"<?= $ach['selected'] ? ' style="display:none;"' : ''; ?>>Apply</button>
+                        <button class="ach-btn ach-remove-btn"<?= $ach['selected'] ? '' : ' style="display:none;"'; ?>>Remove</button>
                         <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
-                        <button class="apply-ach-btn"<?= $ach['selected'] ? ' disabled' : ''; ?>><?= $ach['selected'] ? 'Selected' : 'Apply'; ?></button>
                     </div>
                     <?php endforeach; ?>
                     <?php endif; ?>

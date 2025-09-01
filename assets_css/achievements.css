@@ -62,6 +62,7 @@
     width: 100px;
     text-align: center;
     background: transparent;
+    position: relative;
 }
 
 .ach-item img {
@@ -74,8 +75,22 @@
     font-size: 14px;
 }
 
-.apply-ach-btn {
-    margin-top: 5px;
+.ach-btn {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+.ach-apply-btn {
+    top: 0;
+}
+
+.ach-remove-btn {
+    bottom: 0;
 }
 
 .achievements-overlay {
