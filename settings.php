@@ -61,6 +61,7 @@ $extraCss = $isAdmin ? ['farm_admin/admin-panel.css', 'assets_css/profile.css'] 
 $extraJs = ['assets_js/settings.js', 'assets_js/profile.js'];
 if ($isAdmin) {
     $extraJs[] = 'farm_admin/admin-panel.js';
+    $extraJs[] = 'farm_admin/achievements.js';
 }
 
 include 'template.php';

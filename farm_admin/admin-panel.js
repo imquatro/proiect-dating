@@ -141,6 +141,10 @@ function initAdminPanel(panel){
         });
     }
 
+    if (typeof initAchievementDelete === 'function') {
+        initAchievementDelete(panel);
+    }
+
     panel.querySelectorAll('.fa-delete-vip-form').forEach(delVipForm => {
         delVipForm.addEventListener('submit', e => {
             e.preventDefault();

@@ -1,9 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const select = document.getElementById('achievementSelect');
-    const btn = document.getElementById('deleteAchievement');
+function initAchievementDelete(root = document) {
+    const select = root.getElementById('achievementSelect');
+    const btn = root.getElementById('deleteAchievement');
     if (select && btn) {
         select.addEventListener('change', () => {
             btn.disabled = !select.value;
         });
     }
-});
+}
+
+document.addEventListener('DOMContentLoaded', () => initAchievementDelete());
