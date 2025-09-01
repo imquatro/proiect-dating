@@ -28,7 +28,7 @@ function check_and_award_achievements(PDO $db, int $userId): void
     $owned = $ownedStmt->fetchAll(PDO::FETCH_COLUMN);
     $owned = array_flip($owned);
 
-    // Fetch all achievements with level or years requirement
+    // Fetch all achievements along with their requirements
     $achStmt = $db->query('SELECT id, level, years, harvest, sales, xp, item_id FROM achievements');
     $achievements = $achStmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -51,7 +51,7 @@ function check_and_award_achievements(PDO $db, int $userId): void
         }
 
         // Skip achievements with no defined requirements
-        if ($reqLevel === 0 && $reqYears === 0) {
+        if ($reqLevel === 0 && $reqYears === 0 && $reqXp === 0 && !$reqItem) {
             continue;
         }
 
