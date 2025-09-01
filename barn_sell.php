@@ -50,6 +50,8 @@ try {
     } else {
         $del = $db->prepare('DELETE FROM user_barn WHERE user_id = ? AND slot_number = ?');
         $del->execute([$userId, $slot]);
+        $shift = $db->prepare('UPDATE user_barn SET slot_number = slot_number - 1 WHERE user_id = ? AND slot_number > ? ORDER BY slot_number');
+        $shift->execute([$userId, $slot]);
         $remaining = 0;
     }
 
