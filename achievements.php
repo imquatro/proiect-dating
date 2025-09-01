@@ -19,24 +19,30 @@ $allAchievements = $db->query('SELECT * FROM achievements')->fetchAll(PDO::FETCH
 ?>
 <div class="achievements-container">
     <div class="achievements-panel">
-        <h2 class="ach-section-title">My Achievements</h2>
-        <div class="ach-list" id="myAchievements">
-            <?php foreach ($myAchievements as $ach): ?>
-            <div class="ach-item" data-id="<?= htmlspecialchars($ach['id']); ?>">
-                <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
-                <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
-                <button class="apply-ach-btn"<?= $ach['selected'] ? ' disabled' : ''; ?>><?= $ach['selected'] ? 'Selected' : 'Apply'; ?></button>
+        <div class="ach-columns">
+            <div class="ach-column">
+                <h2 class="ach-section-title">My Achievements</h2>
+                <div class="ach-list" id="myAchievements">
+                    <?php foreach ($myAchievements as $ach): ?>
+                    <div class="ach-item" data-id="<?= htmlspecialchars($ach['id']); ?>">
+                        <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
+                        <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
+                        <button class="apply-ach-btn"<?= $ach['selected'] ? ' disabled' : ''; ?>><?= $ach['selected'] ? 'Selected' : 'Apply'; ?></button>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
-            <?php endforeach; ?>
-        </div>
-        <h2 class="ach-section-title">All Achievements</h2>
-        <div class="ach-list" id="allAchievements">
-            <?php foreach ($allAchievements as $ach): ?>
-            <div class="ach-item" data-id="<?= htmlspecialchars($ach['id']); ?>">
-                <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
-                <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
+            <div class="ach-column">
+                <h2 class="ach-section-title">All Achievements</h2>
+                <div class="ach-list" id="allAchievements">
+                    <?php foreach ($allAchievements as $ach): ?>
+                    <div class="ach-item" data-id="<?= htmlspecialchars($ach['id']); ?>">
+                        <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
+                        <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
-            <?php endforeach; ?>
         </div>
     </div>
 </div>

@@ -1,44 +1,126 @@
 .achievements-container {
+    padding: 10px;
     display: flex;
     justify-content: center;
-    padding: 20px;
 }
+
 .achievements-panel {
-    width: 80%;
-    max-width: 800px;
-    background: rgba(255,255,255,0.9);
+    width: 90%;
+    max-width: 600px;
+    height: 90vh;
+    max-height: 570px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    background: url('../img/bg2.png') center/cover no-repeat;
+    color: #fff;
 }
+
+.ach-columns {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ach-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ach-column + .ach-column {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 10px;
+}
+
 .ach-section-title {
     text-align: center;
     font-size: 24px;
     margin: 10px 0;
 }
+
 .ach-list {
-    max-height: 200px;
+    flex: 1;
     overflow-y: auto;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
     scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+
 .ach-list::-webkit-scrollbar {
     display: none;
 }
+
 .ach-item {
     width: 100px;
     text-align: center;
+    background: transparent;
 }
+
 .ach-item img {
     width: 100px;
     height: 100px;
     object-fit: cover;
 }
+
 .ach-item .ach-name {
     font-size: 14px;
 }
+
 .apply-ach-btn {
     margin-top: 5px;
+}
+
+.achievements-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.achievements-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.achievements-column {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.achievements-column::-webkit-scrollbar {
+    display: none;
+}
+
+.achievements-column + .achievements-column {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 10px;
+}
+
+.achievement-item {
+    padding: 4px 0;
+}
+
+.achievements-close {
+    margin-top: 10px;
+    align-self: center;
+    padding: 4px 8px;
+    cursor: pointer;
 }
