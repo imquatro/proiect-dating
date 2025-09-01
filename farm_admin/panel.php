@@ -259,6 +259,9 @@ ob_start();
                 <label>XP
                     <input type="number" name="xp" min="0" value="0">
                 </label>
+                <label>Account Age (years)
+                    <input type="number" name="years" min="0" value="0">
+                </label>
                 <label>Item
                     <select name="item_id">
                         <option value="">None</option>

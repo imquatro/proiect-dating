@@ -11,8 +11,9 @@ $frame = 'img/frames/defaultframe.png';
 $cardBg = 'img/bg2.png';
 $selectedAchievements = [];
 if (isset($_SESSION['user_id'])) {
+if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame, vip_card FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame, vip_card, created_at FROM users WHERE id = ?');
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($user) {
@@ -38,6 +39,9 @@ if (isset($_SESSION['user_id'])) {
                 $cardBg = $candidate;
             }
         }
+
+        // Check for newly earned achievements
+        check_and_award_achievements($db, $user_id);
 
         $achStmt = $db->prepare('SELECT a.image FROM achievements a JOIN user_achievements ua ON ua.achievement_id = a.id WHERE ua.user_id = ? AND ua.selected = 1');
         $achStmt->execute([$user_id]);
