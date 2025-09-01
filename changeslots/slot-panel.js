@@ -8,9 +8,11 @@ function initSlotPanel(container) {
     const shopBtn = container.querySelector('#cs-slot-shop');
     const removeBtn = container.querySelector('#cs-slot-remove');
     const harvestBtn = container.querySelector('#cs-slot-harvest');
+    const harvestAllBtn = container.querySelector('#cs-slot-harvest-all');
     const slotImage = container.querySelector('#cs-slot-image');
     const slotId = slotImage ? slotImage.alt.replace(/\D/g, '') : '';
     const slotNum = parseInt(slotId, 10);
+    const isVip = container.dataset.isVip === '1';
 
     if (changeBtn) {
         changeBtn.addEventListener('click', () => {
@@ -105,6 +107,68 @@ function initSlotPanel(container) {
         });
     }
 
+    if (harvestAllBtn && slotNum) {
+        harvestAllBtn.addEventListener('click', () => {
+            if (!isVip) {
+                const msgOverlay = document.createElement('div');
+                msgOverlay.className = 'barn-full-overlay';
+                msgOverlay.innerHTML = '<div class="barn-full-card">You are not VIP</div>';
+                document.body.appendChild(msgOverlay);
+                msgOverlay.addEventListener('click', e => {
+                    if (e.target === msgOverlay) msgOverlay.remove();
+                });
+                return;
+            }
+            fetch('harvest_bulk.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slot: slotNum })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const overlay = container.parentElement;
+                        if (Array.isArray(data.slots)) {
+                            data.slots.forEach(s => {
+                                const slotEl = document.getElementById(`slot-${s.slot}`);
+                                if (slotEl && data.xpPerSlot && window.showFloatingText) {
+                                    window.showFloatingText(slotEl, { xp: data.xpPerSlot });
+                                }
+                                const evt = new CustomEvent('slotUpdated', {
+                                    detail: { slotId: s.slot, image: s.image, type: 'remove' }
+                                });
+                                document.dispatchEvent(evt);
+                            });
+                        }
+                        document.dispatchEvent(new CustomEvent('barnAddItem', { detail: data.item }));
+                        document.dispatchEvent(new CustomEvent('barnUpdated'));
+                        if (overlay) {
+                            overlay.classList.remove('active');
+                            overlay.innerHTML = '';
+                        }
+                        if (content) {
+                            content.classList.remove('no-scroll');
+                        }
+                        if (data.levelUp && window.showLevelUp) {
+                            window.showLevelUp(data.newLevel);
+                        }
+                    } else if (data.error === 'barn_full') {
+                        const msgOverlay = document.createElement('div');
+                        msgOverlay.className = 'barn-full-overlay';
+                        msgOverlay.innerHTML = '<div class="barn-full-card">Barn full</div>';
+                        document.body.appendChild(msgOverlay);
+                        msgOverlay.addEventListener('click', e => {
+                            if (e.target === msgOverlay) msgOverlay.remove();
+                        });
+                    } else {
+                        alert('Harvest failed');
+                    }
+                })
+                .catch(() => alert('Harvest request failed'));
+        });
+    }
+
     if (removeBtn && slotNum) {
         removeBtn.addEventListener('click', () => {
             fetch('quickshop/remove_item.php', {
@@ -141,7 +205,7 @@ function initSlotPanel(container) {
     }
 
     container.querySelectorAll('.cs-slot-btn').forEach(btn => {
-        if (btn !== changeBtn && btn !== shopBtn && btn !== removeBtn && btn !== harvestBtn) {
+        if (btn !== changeBtn && btn !== shopBtn && btn !== removeBtn && btn !== harvestBtn && btn !== harvestAllBtn) {
             btn.addEventListener('click', () => {
                 alert('Functionality coming soon');
             });

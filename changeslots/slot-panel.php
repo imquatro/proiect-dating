@@ -25,7 +25,7 @@ if (strpos($basePath, 'img/') !== 0) {
 $slotImage = $basePath . '?v=' . filemtime(__DIR__ . '/../' . $basePath);
 
 // Plant details and remaining tasks
-$stmt = $db->prepare('SELECT f.image_plant, f.water_times, f.feed_times, uss.water_remaining, uss.feed_remaining
+$stmt = $db->prepare('SELECT up.item_id, f.image_plant, f.water_times, f.feed_times, uss.water_remaining, uss.feed_remaining
                       FROM user_plants up
                       JOIN farm_items f ON f.id = up.item_id
                       LEFT JOIN user_slot_states uss ON uss.user_id = up.user_id AND uss.slot_number = up.slot_number
@@ -50,6 +50,54 @@ if ($hasPlant) {
 }
 
 $isHarvestReady = $hasPlant && $waterRemaining <= 0 && $feedRemaining <= 0;
+
+$bulkHarvestCount = 0;
+if ($isHarvestReady) {
+    $itemId = (int)$plantRow['item_id'];
+    // Count ready slots with the same item
+    $countStmt = $db->prepare('SELECT COUNT(*)
+                               FROM user_plants up
+                               JOIN farm_items f ON f.id = up.item_id
+                               LEFT JOIN user_slot_states uss ON uss.user_id = up.user_id AND uss.slot_number = up.slot_number
+                               WHERE up.user_id = ? AND up.item_id = ?
+                                 AND IFNULL(uss.water_remaining, f.water_times) <= 0
+                                 AND IFNULL(uss.feed_remaining, f.feed_times) <= 0');
+    $countStmt->execute([$userId, $itemId]);
+    $readyCount = (int)$countStmt->fetchColumn();
+
+    $prodStmt = $db->prepare('SELECT production FROM farm_items WHERE id = ?');
+    $prodStmt->execute([$itemId]);
+    $qtyPerSlot = (int)$prodStmt->fetchColumn();
+    $maxPerSlot = ($qtyPerSlot === 1) ? 1 : 1000;
+
+    $capStmt = $db->prepare('SELECT capacity FROM user_barn_info WHERE user_id = ?');
+    $capStmt->execute([$userId]);
+    $capacity = (int)$capStmt->fetchColumn();
+    if (!$capacity) { $capacity = 16; }
+
+    $slotStmt = $db->prepare('SELECT slot_number, item_id, quantity FROM user_barn WHERE user_id = ? ORDER BY slot_number');
+    $slotStmt->execute([$userId]);
+    $rows = $slotStmt->fetchAll(PDO::FETCH_ASSOC);
+    $usedSlots = [];
+    $existingSlots = [];
+    foreach ($rows as $r) {
+        $usedSlots[] = (int)$r['slot_number'];
+        if ((int)$r['item_id'] === $itemId) {
+            $existingSlots[] = $r;
+        }
+    }
+
+    $available = 0;
+    foreach ($existingSlots as $es) {
+        $available += max(0, $maxPerSlot - (int)$es['quantity']);
+    }
+    $freeSlots = $capacity - count($usedSlots);
+    if ($freeSlots > 0) {
+        $available += $freeSlots * $maxPerSlot;
+    }
+
+    $bulkHarvestCount = min($readyCount, intdiv($available, max(1, $qtyPerSlot)));
+}
 
 $helpers = [];
 if ($hasPlant) {
@@ -86,9 +134,8 @@ $bgImage = $bgImagePath . '?v=' . filemtime(__DIR__ . '/../' . $bgImagePath);
 $ajax = isset($_GET['ajax']);
 ob_start();
 ?>
-<div id="cs-slot-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" style="background:
+<div id="cs-slot-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" data-is-vip="<?php echo $isVip; ?>" style="background:
  url('<?php echo $bgImage; ?>') no-repeat center/cover;">
-    <div class="cs-image-wrapper">
         <img src="<?php echo $slotImage; ?>" alt="Slot <?php echo $slotId; ?>" id="cs-slot-image">
         <?php if ($hasPlant && $plantImage): ?>
             <img src="<?php echo $plantImage; ?>" alt="Plant" id="cs-plant-image">
@@ -119,6 +166,7 @@ ob_start();
         <?php if ($hasPlant): ?>
             <?php if ($isHarvestReady): ?>
                 <button class="cs-slot-btn" id="cs-slot-harvest"><i class="fas fa-seedling"></i><span>Harvest</span></button>
+                <button class="cs-slot-btn" id="cs-slot-harvest-all"><i class="fas fa-layer-group"></i><span>Harvest x<?php echo $bulkHarvestCount; ?></span></button>
             <?php endif; ?>
             <button class="cs-slot-btn" id="cs-slot-remove"><i class="fas fa-trash"></i><span>Remove</span></button>
         <?php else: ?>
