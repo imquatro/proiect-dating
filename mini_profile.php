@@ -3,6 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/achievement_helpers.php';
 $mini_avatar = 'default-avatar.png';
 $user_name = 'Vizitator';
 $user_level = 1;
@@ -10,7 +11,6 @@ $isVip = false;
 $frame = 'img/frames/defaultframe.png';
 $cardBg = 'img/bg2.png';
 $selectedAchievements = [];
-if (isset($_SESSION['user_id'])) {
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     $stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame, vip_card, created_at FROM users WHERE id = ?');
