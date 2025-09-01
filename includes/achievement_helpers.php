@@ -3,12 +3,12 @@
 
 /**
  * Check achievements for the given user and award any that meet the criteria.
- * Currently supports level based achievements and account age (years).
+ * Currently supports level, account age (years), XP and item-based achievements.
  */
 function check_and_award_achievements(PDO $db, int $userId): void
 {
-    // Fetch user info: level and registration date
-    $stmt = $db->prepare('SELECT level, created_at FROM users WHERE id = ?');
+    // Fetch user info: level, xp and registration date
+    $stmt = $db->prepare('SELECT level, xp, created_at FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$user) {
@@ -16,6 +16,7 @@ function check_and_award_achievements(PDO $db, int $userId): void
     }
 
     $level = (int)($user['level'] ?? 1);
+    $xp = (int)($user['xp'] ?? 0);
     $createdAt = new DateTime($user['created_at'] ?? 'now');
     $now = new DateTime();
     // Calculate account age in days to allow precise year-based achievements
@@ -44,8 +45,8 @@ function check_and_award_achievements(PDO $db, int $userId): void
         $reqXp = (int)($ach['xp'] ?? 0);
         $reqItem = $ach['item_id'] ?? null;
 
-        // Only award achievements that rely solely on level/years
-        if ($reqHarvest > 0 || $reqSales > 0 || $reqXp > 0 || $reqItem) {
+        // Skip achievements requiring harvest or sales (not yet supported)
+        if ($reqHarvest > 0 || $reqSales > 0) {
             continue;
         }
 
@@ -56,8 +57,17 @@ function check_and_award_achievements(PDO $db, int $userId): void
 
         // Convert required years to days for comparison
         $requiredDays = $reqYears > 0 ? $reqYears * 365 : 0;
+        $hasItem = true;
+        if ($reqItem) {
+            $itemStmt = $db->prepare('SELECT 1 FROM user_barn WHERE user_id = ? AND item_id = ? LIMIT 1');
+            $itemStmt->execute([$userId, $reqItem]);
+            $hasItem = (bool)$itemStmt->fetchColumn();
+        }
+
         if (($reqLevel > 0 && $level < $reqLevel) ||
-            ($requiredDays > 0 && $accountAgeDays < $requiredDays)) {
+            ($requiredDays > 0 && $accountAgeDays < $requiredDays) ||
+            ($reqXp > 0 && $xp < $reqXp) ||
+            ($reqItem && !$hasItem)) {
             continue;
         }
 

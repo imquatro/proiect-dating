@@ -30,6 +30,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0; /* allow inner list to scroll instead of overflowing */
 }
 
 .ach-column + .ach-column {
@@ -45,6 +46,7 @@
 
 .ach-list {
     flex: 1;
+    max-height: 100%;
     overflow-y: auto;
     display: flex;
     flex-wrap: wrap;
@@ -111,7 +113,8 @@
     bottom: 0;
 }
 
-.achievements-overlay {
+/* Detail overlay for clicking achievements */
+.ach-detail-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -124,36 +127,53 @@
     z-index: 1000;
 }
 
-.achievements-content {
-    flex: 1;
+.ach-detail-card {
+    background: url('../img/bg2.png') center/cover no-repeat;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    width: 220px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
 }
 
-.achievements-column {
-    flex: 1;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+.ach-detail-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
 }
 
-.achievements-column::-webkit-scrollbar {
-    display: none;
+.ach-progress-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    overflow: hidden;
 }
 
-.achievements-column + .achievements-column {
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    padding-top: 10px;
+.ach-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #4caf50;
 }
 
-.achievement-item {
-    padding: 4px 0;
+.ach-progress-text {
+    font-size: 12px;
 }
 
-.achievements-close {
-    margin-top: 10px;
-    align-self: center;
+.ach-detail-text {
+    text-align: center;
+    font-size: 14px;
+}
+
+.ach-detail-close {
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: #fff;
     padding: 4px 8px;
+    border-radius: 4px;
     cursor: pointer;
 }
