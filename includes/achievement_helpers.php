@@ -18,7 +18,8 @@ function check_and_award_achievements(PDO $db, int $userId): void
     $level = (int)($user['level'] ?? 1);
     $createdAt = new DateTime($user['created_at'] ?? 'now');
     $now = new DateTime();
-    $years = (int)$createdAt->diff($now)->y;
+    // Calculate account age in days to allow precise year-based achievements
+    $accountAgeDays = (int)$createdAt->diff($now)->days;
 
     // Achievements already owned by the user
     $ownedStmt = $db->prepare('SELECT achievement_id FROM user_achievements WHERE user_id = ?');
@@ -53,8 +54,10 @@ function check_and_award_achievements(PDO $db, int $userId): void
             continue;
         }
 
+        // Convert required years to days for comparison
+        $requiredDays = $reqYears > 0 ? $reqYears * 365 : 0;
         if (($reqLevel > 0 && $level < $reqLevel) ||
-            ($reqYears > 0 && $years < $reqYears)) {
+            ($requiredDays > 0 && $accountAgeDays < $requiredDays)) {
             continue;
         }
 
