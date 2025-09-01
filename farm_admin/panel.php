@@ -24,6 +24,7 @@ $cardDir = __DIR__ . '/../img/vip_cards';
 $vipCards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 
 $nextAchId = (int)$db->query('SELECT COALESCE(MAX(id),0)+1 FROM achievements')->fetchColumn();
+$achievements = $db->query('SELECT id, title FROM achievements ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
 
 $versionFile = __DIR__ . '/../version.txt';
 $currentVersion = is_file($versionFile) ? trim(file_get_contents($versionFile)) : 'unknown';
@@ -277,6 +278,20 @@ ob_start();
                     <button type="submit">Save</button>
                 </div>
             </form>
+            <h2>Delete Achievement</h2>
+            <form id="fa-delete-achievement" action="farm_admin/delete_achievement.php" method="post">
+                <label>Select Achievement
+                    <select name="id" id="achievementSelect">
+                        <option value="">Select</option>
+                        <?php foreach ($achievements as $a): ?>
+                        <option value="<?= htmlspecialchars($a['id']); ?>"><?= htmlspecialchars($a['title']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <div class="fa-form-actions">
+                    <button type="submit" id="deleteAchievement" disabled>Delete</button>
+                </div>
+            </form>
         </div>
         <div class="fa-tab-content" id="fa-tab-version">
             <h2>Cache Version</h2>
@@ -293,7 +308,7 @@ if ($ajax) {
 }
 $activePage = 'diverse';
 $pageCss = 'farm_admin/admin-panel.css';
-$extraJs = '<script src="farm_admin/admin-panel.js"></script>';
+$extraJs = '<script src="farm_admin/admin-panel.js"></script><script src="farm_admin/achievements.js"></script>';
 $hideNav = true;
 chdir('..');
 include 'template.php';

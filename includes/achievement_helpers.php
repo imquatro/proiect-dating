@@ -48,6 +48,11 @@ function check_and_award_achievements(PDO $db, int $userId): void
             continue;
         }
 
+        // Skip achievements with no defined requirements
+        if ($reqLevel === 0 && $reqYears === 0) {
+            continue;
+        }
+
         if (($reqLevel > 0 && $level < $reqLevel) ||
             ($reqYears > 0 && $years < $reqYears)) {
             continue;
