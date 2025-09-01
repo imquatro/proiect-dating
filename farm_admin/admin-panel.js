@@ -130,7 +130,11 @@ function initAdminPanel(panel){
             .then(data => {
                 if (data.success) {
                     alert('Achievement added');
+                    const idInput = achForm.querySelector('input[name="id"]');
+                    const next = parseInt(idInput.value, 10) + 1;
                     achForm.reset();
+                    idInput.value = next;
+                    idInput.defaultValue = next;
                 }
             })
             .catch(err => console.error(err));

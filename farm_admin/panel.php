@@ -23,6 +23,8 @@ $vipFrames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,
 $cardDir = __DIR__ . '/../img/vip_cards';
 $vipCards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 
+$nextAchId = (int)$db->query('SELECT COALESCE(MAX(id),0)+1 FROM achievements')->fetchColumn();
+
 $versionFile = __DIR__ . '/../version.txt';
 $currentVersion = is_file($versionFile) ? trim(file_get_contents($versionFile)) : 'unknown';
 
@@ -240,7 +242,7 @@ ob_start();
             <h2>Add Achievement</h2>
             <form id="fa-achievement-form" action="farm_admin/save_achievement.php" method="post">
                 <label>ID
-                    <input type="number" name="id" required>
+                    <input type="number" name="id" value="<?= htmlspecialchars($nextAchId); ?>" readonly>
                 </label>
                 <label>Title
                     <input type="text" name="title" required>
@@ -265,8 +267,8 @@ ob_start();
                         <?php endforeach; ?>
                     </select>
                 </label>
-                <label>Image Path
-                    <input type="text" name="image" required>
+                <label>Image Name
+                    <input type="text" name="image_name" required>
                 </label>
                 <div class="fa-form-actions">
                     <button type="submit">Save</button>

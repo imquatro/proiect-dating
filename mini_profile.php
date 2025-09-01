@@ -44,6 +44,10 @@ if (isset($_SESSION['user_id'])) {
         $selectedAchievements = $achStmt->fetchAll(PDO::FETCH_COLUMN);
     }
 }
+
+if (empty($selectedAchievements)) {
+    $selectedAchievements[] = 'img/achievements/default.png';
+}
 ?>
 <div class="mini-cards-row">
     <div class="mini-card helpers-card" id="helpersCard"></div>

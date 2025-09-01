@@ -10,8 +10,21 @@ $sales = $_POST['sales'] ?? 0;
 $level = $_POST['level'] ?? 0;
 $xp = $_POST['xp'] ?? 0;
 $item_id = $_POST['item_id'] !== '' ? $_POST['item_id'] : null;
-$image = $_POST['image'] ?? '';
-if (!$id || !$title || !$image) { echo json_encode(['success'=>false]); exit; }
+$imageName = $_POST['image_name'] ?? '';
+
+if (!$id || !$title || !$imageName) { echo json_encode(['success'=>false]); exit; }
+
+$imgDir = __DIR__ . '/../img/achievements';
+$image = '';
+foreach (['png','gif','jpg','jpeg'] as $ext) {
+    $candidate = "$imgDir/$imageName.$ext";
+    if (is_file($candidate)) {
+        $image = 'img/achievements/' . $imageName . '.' . $ext;
+        break;
+    }
+}
+if (!$image) { $image = 'img/achievements/default.png'; }
+
 $stmt = $db->prepare('INSERT INTO achievements (id, title, harvest, sales, level, xp, item_id, image) VALUES (?,?,?,?,?,?,?,?)');
 $ok = $stmt->execute([$id, $title, $harvest, $sales, $level, $xp, $item_id, $image]);
 echo json_encode(['success'=>$ok]);
