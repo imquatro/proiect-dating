@@ -135,10 +135,12 @@ $ajax = isset($_GET['ajax']);
 ob_start();
 ?>
 <div id="cs-slot-panel" data-slot-id="<?php echo $slotId; ?>" data-planted="<?php echo $hasPlant; ?>" data-is-vip="<?php echo $isVip; ?>" style="background: url('<?php echo $bgImage; ?>') no-repeat center/cover;">
-    <img src="<?php echo $slotImage; ?>" alt="Slot <?php echo $slotId; ?>" id="cs-slot-image">
-    <?php if ($hasPlant && $plantImage): ?>
-        <img src="<?php echo $plantImage; ?>" alt="Plant" id="cs-plant-image">
-    <?php endif; ?>
+    <div class="cs-image-wrapper">
+        <img src="<?php echo $slotImage; ?>" alt="Slot <?php echo $slotId; ?>" id="cs-slot-image">
+        <?php if ($hasPlant && $plantImage): ?>
+            <img src="<?php echo $plantImage; ?>" alt="Plant" id="cs-plant-image">
+        <?php endif; ?>
+    </div>
     <?php if ($isGoldSlot && $isVip): ?>
         <div class="cs-vip-badge"><img src="img/gold.png" alt="Gold"><span>VIP</span></div>
     <?php endif; ?>
