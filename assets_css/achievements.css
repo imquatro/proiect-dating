@@ -75,6 +75,10 @@
     font-size: 14px;
 }
 
+.ach-item.achieved {
+    opacity: 0.5;
+}
+
 .ach-btn {
     position: absolute;
     left: 0;

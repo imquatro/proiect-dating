@@ -12,26 +12,51 @@ if ($userId) {
     $stmt->execute([$userId]);
     $myAchievements = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+$allAchievements = $db->query('SELECT * FROM achievements')->fetchAll(PDO::FETCH_ASSOC);
+$achievedIds = array_column($myAchievements, 'id');
 ?>
 <div class="achievements-container">
     <div class="achievements-panel">
-        <h2 class="ach-section-title">My Achievements</h2>
-        <div class="ach-list" id="myAchievements">
-            <?php if (empty($myAchievements)): ?>
-            <div class="ach-item">
-                <img src="img/achievements/default.png" alt="No achievement">
-                <div class="ach-name">No achievements</div>
+        <div class="ach-columns">
+            <div class="ach-column">
+                <h2 class="ach-section-title">My Achievements</h2>
+                <div class="ach-list" id="myAchievements">
+                    <?php if (empty($myAchievements)): ?>
+                    <div class="ach-item">
+                        <img src="img/achievements/default.png" alt="No achievement">
+                        <div class="ach-name">No achievements</div>
+                    </div>
+                    <?php else: ?>
+                    <?php foreach ($myAchievements as $ach): ?>
+                    <div class="ach-item" data-id="<?= htmlspecialchars($ach['id']); ?>">
+                        <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
+                        <button class="ach-btn ach-apply-btn"<?= $ach['selected'] ? ' style="display:none;"' : ''; ?>>Apply</button>
+                        <button class="ach-btn ach-remove-btn"<?= $ach['selected'] ? '' : ' style="display:none;"'; ?>>Remove</button>
+                        <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
+                    </div>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </div>
-            <?php else: ?>
-            <?php foreach ($myAchievements as $ach): ?>
-            <div class="ach-item" data-id="<?= htmlspecialchars($ach['id']); ?>">
-                <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
-                <button class="ach-btn ach-apply-btn"<?= $ach['selected'] ? ' style="display:none;"' : ''; ?>>Apply</button>
-                <button class="ach-btn ach-remove-btn"<?= $ach['selected'] ? '' : ' style="display:none;"'; ?>>Remove</button>
-                <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
+            <div class="ach-column">
+                <h2 class="ach-section-title">All Achievements</h2>
+                <div class="ach-list" id="allAchievements">
+                    <?php if (empty($allAchievements)): ?>
+                    <div class="ach-item">
+                        <img src="img/achievements/default.png" alt="No achievement">
+                        <div class="ach-name">No achievements</div>
+                    </div>
+                    <?php else: ?>
+                    <?php foreach ($allAchievements as $ach): ?>
+                    <div class="ach-item<?= in_array($ach['id'], $achievedIds) ? ' achieved' : ''; ?>">
+                        <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
+                        <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
+                    </div>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </div>
-            <?php endforeach; ?>
-            <?php endif; ?>
         </div>
     </div>
 </div>
