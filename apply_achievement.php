@@ -15,4 +15,7 @@ if ($stmt->rowCount() === 0) {
     echo json_encode(['success' => false]);
     exit;
 }
-echo json_encode(['success' => true]);
+$imgStmt = $db->prepare('SELECT image FROM achievements WHERE id = ?');
+$imgStmt->execute([$achId]);
+$image = $imgStmt->fetchColumn();
+echo json_encode(['success' => true, 'image' => $image]);

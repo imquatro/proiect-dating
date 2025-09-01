@@ -12,6 +12,7 @@ $level = $_POST['level'] ?? 0;
 $xp = $_POST['xp'] ?? 0;
 $item_id = $_POST['item_id'] !== '' ? $_POST['item_id'] : null;
 $years = $_POST['years'] ?? 0;
+$year = $_POST['year'] ?? 0;
 $imageName = $_POST['image_name'] ?? '';
 
 if (!$id || !$title || !$imageName) { echo json_encode(['success'=>false]); exit; }
@@ -27,6 +28,6 @@ foreach (['png','gif','jpg','jpeg'] as $ext) {
 }
 if (!$image) { $image = 'img/achievements/default.png'; }
 
-$stmt = $db->prepare('INSERT INTO achievements (id, title, harvest, sales, level, xp, item_id, years, image) VALUES (?,?,?,?,?,?,?,?,?)');
-$ok = $stmt->execute([$id, $title, $harvest, $sales, $level, $xp, $item_id, $years, $image]);
+$stmt = $db->prepare('INSERT INTO achievements (id, title, harvest, sales, level, xp, item_id, years, year, image) VALUES (?,?,?,?,?,?,?,?,?,?)');
+$ok = $stmt->execute([$id, $title, $harvest, $sales, $level, $xp, $item_id, $years, $year, $image]);
 echo json_encode(['success'=>$ok]);

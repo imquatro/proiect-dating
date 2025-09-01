@@ -8,6 +8,6 @@ if (empty($_SESSION['user_id']) || empty($_POST['id'])) {
 }
 $userId = $_SESSION['user_id'];
 $achId = (int)$_POST['id'];
-$stmt = $db->prepare('UPDATE user_achievements SET selected = 0 WHERE user_id = ? AND achievement_id = ?');
-$stmt->execute([$userId, $achId]);
-echo json_encode(['success' => true]);
+$stmt = $db->prepare('UPDATE user_achievements SET selected = 0 WHERE user_id = ? AND achievement_id = ?');␊
+$stmt->execute([$userId, $achId]);␊
+echo json_encode(['success' => true, 'image' => 'img/achievements/default.png']);

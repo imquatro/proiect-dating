@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const achievementsCard = document.getElementById('achievementsCard');
+    const updateMiniCard = (img) => {
+        if (!achievementsCard) return;
+        achievementsCard.innerHTML = '';
+        const imageEl = document.createElement('img');
+        imageEl.src = img || 'img/achievements/default.png';
+        imageEl.alt = 'Achievement';
+        achievementsCard.appendChild(imageEl);
+    };
     const updateButtons = (selectedId) => {
         document.querySelectorAll('.ach-item').forEach(item => {
             const applyBtn = item.querySelector('.ach-apply-btn');
@@ -26,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).then(res => res.json()).then(data => {
                 if (data.success) {
                     updateButtons(id);
+                    updateMiniCard(data.image);
                 }
             });
         });
@@ -44,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).then(res => res.json()).then(data => {
                 if (data.success) {
                     updateButtons(null);
+                    updateMiniCard(data.image);
                 }
             });
         });
