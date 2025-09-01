@@ -1,0 +1,44 @@
+.achievements-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+.achievements-panel {
+    width: 80%;
+    max-width: 800px;
+    background: rgba(255,255,255,0.9);
+    padding: 20px;
+    border-radius: 10px;
+}
+.ach-section-title {
+    text-align: center;
+    font-size: 24px;
+    margin: 10px 0;
+}
+.ach-list {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    scrollbar-width: none;
+}
+.ach-list::-webkit-scrollbar {
+    display: none;
+}
+.ach-item {
+    width: 100px;
+    text-align: center;
+}
+.ach-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+.ach-item .ach-name {
+    font-size: 14px;
+}
+.apply-ach-btn {
+    margin-top: 5px;
+}

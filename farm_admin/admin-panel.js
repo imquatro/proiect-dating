@@ -116,6 +116,27 @@ function initAdminPanel(panel){
         });
     }
 
+    const achForm = panel.querySelector('#fa-achievement-form');
+    if (achForm) {
+        achForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const formData = new FormData(achForm);
+            fetch('farm_admin/save_achievement.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Achievement added');
+                    achForm.reset();
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    }
+
     panel.querySelectorAll('.fa-delete-vip-form').forEach(delVipForm => {
         delVipForm.addEventListener('submit', e => {
             e.preventDefault();

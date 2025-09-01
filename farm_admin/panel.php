@@ -38,6 +38,7 @@ ob_start();
             <button data-tab="delete">Delete Items</button>
             <button data-tab="vip">VIP Items</button>
             <button data-tab="version">Update Version</button>
+            <button data-tab="ach">Achievements</button>
         </div>
         <div class="fa-tab-content active" id="fa-tab-add">
             <h2>Add Plants & Animals</h2>
@@ -232,6 +233,43 @@ ob_start();
                 </label>
                 <div class="fa-form-actions">
                     <button type="submit">Delete</button>
+                </div>
+            </form>
+        </div>
+        <div class="fa-tab-content" id="fa-tab-ach">
+            <h2>Add Achievement</h2>
+            <form id="fa-achievement-form" action="farm_admin/save_achievement.php" method="post">
+                <label>ID
+                    <input type="number" name="id" required>
+                </label>
+                <label>Title
+                    <input type="text" name="title" required>
+                </label>
+                <label>Harvest Count
+                    <input type="number" name="harvest" min="0" value="0">
+                </label>
+                <label>Sales Count
+                    <input type="number" name="sales" min="0" value="0">
+                </label>
+                <label>Level
+                    <input type="number" name="level" min="0" value="0">
+                </label>
+                <label>XP
+                    <input type="number" name="xp" min="0" value="0">
+                </label>
+                <label>Item
+                    <select name="item_id">
+                        <option value="">None</option>
+                        <?php foreach ($items as $item): ?>
+                        <option value="<?= htmlspecialchars($item['id']); ?>"><?= htmlspecialchars($item['name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label>Image Path
+                    <input type="text" name="image" required>
+                </label>
+                <div class="fa-form-actions">
+                    <button type="submit">Save</button>
                 </div>
             </form>
         </div>

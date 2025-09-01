@@ -9,6 +9,7 @@ $user_level = 1;
 $isVip = false;
 $frame = 'img/frames/defaultframe.png';
 $cardBg = 'img/bg2.png';
+$selectedAchievements = [];
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     $stmt = $db->prepare('SELECT username, gallery, level, vip, vip_frame, vip_card FROM users WHERE id = ?');
@@ -37,6 +38,10 @@ if (isset($_SESSION['user_id'])) {
                 $cardBg = $candidate;
             }
         }
+
+        $achStmt = $db->prepare('SELECT a.image FROM achievements a JOIN user_achievements ua ON ua.achievement_id = a.id WHERE ua.user_id = ? AND ua.selected = 1');
+        $achStmt->execute([$user_id]);
+        $selectedAchievements = $achStmt->fetchAll(PDO::FETCH_COLUMN);
     }
 }
 ?>
@@ -53,7 +58,11 @@ if (isset($_SESSION['user_id'])) {
         </div>
         <img src="<?= htmlspecialchars($frame) ?>" alt="Frame" class="mini-profile-frame" />
     </div>
-    <div class="mini-card achievements-card" id="achievementsCard"></div>
+    <div class="mini-card achievements-card" id="achievementsCard">
+        <?php foreach ($selectedAchievements as $img): ?>
+        <img src="<?= htmlspecialchars($img) ?>" alt="Achievement">
+        <?php endforeach; ?>
+    </div>
     <div id="helper-effect" class="helper-effect mini-card">
         <img src="" alt="Helper">
         <div class="combo-count"></div>

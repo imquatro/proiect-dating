@@ -10,6 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const helpersUrl = (window.baseUrl || '') + 'recent_helpers.php' +
         (window.isVisitor && window.visitId ? ('?user_id=' + window.visitId) : '');
 
+    const achievementsCard = document.getElementById('achievementsCard');
+    if (achievementsCard) {
+        achievementsCard.addEventListener('click', () => {
+            window.location.href = (window.baseUrl || '') + 'achievements.php';
+        });
+    }
+
     let slideTimeout;
     let snapTimeout;
     let animationFrame;
