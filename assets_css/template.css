@@ -65,7 +65,7 @@ img {
 .center-btn {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
+    margin-left: -20px; /* keep centered even if transforms are applied elsewhere */
 }
 
 .profile-box {
