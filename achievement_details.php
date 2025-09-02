@@ -3,14 +3,17 @@ session_start();
 header('Content-Type: application/json');
 require_once __DIR__ . '/includes/db.php';
 
-if (empty($_SESSION['user_id']) || empty($_GET['id'])) {
+// Validate input and determine target user
+$achId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if (empty($_SESSION['user_id']) || $achId <= 0) {
     echo json_encode(['success' => false]);
     exit;
 }
 
-$userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : (int)$_SESSION['user_id'];
+// When visiting another profile use the provided user id, otherwise use current user
 $userId = isset($_GET['user']) ? (int)$_GET['user'] : (int)$_SESSION['user_id'];
 
+// Fetch achievement details
 $stmt = $db->prepare('SELECT * FROM achievements WHERE id = ?');
 $stmt->execute([$achId]);
 $ach = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -19,6 +22,7 @@ if (!$ach) {
     exit;
 }
 
+// Fetch user data for progress calculation
 $uStmt = $db->prepare('SELECT * FROM users WHERE id = ?');
 $uStmt->execute([$userId]);
 $user = $uStmt->fetch(PDO::FETCH_ASSOC);
