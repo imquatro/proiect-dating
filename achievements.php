@@ -69,7 +69,7 @@ $achievedIds = array_column($myAchievements, 'id');
         <div class="ach-progress-bar"><div id="achProgressFill" class="ach-progress-fill"></div></div>
         <div id="achProgressText" class="ach-progress-text"></div>
         <div id="achDetailText" class="ach-detail-text"></div>
-        <button id="achDetailClose" class="ach-detail-close">Close</button>
+        <button id="achDetailClose" class="ach-detail-close" aria-label="Close">&times;</button>
     </div>
 </div>
 <?php

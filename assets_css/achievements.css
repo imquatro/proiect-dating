@@ -180,46 +180,63 @@
 }
 
 .ach-detail-card {
-    background: #fff;
-    color: #000;
-    padding: 20px;
-    border-radius: 10px;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    color: #333;
+    padding: 25px;
+    border-radius: 15px;
     text-align: center;
-    max-width: 300px;
+    max-width: 320px;
     width: 90%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
 }
 
 .ach-detail-card img {
-    max-width: 100%;
-    height: auto;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
 }
 
 .ach-progress-bar {
     width: 100%;
-    height: 10px;
-    background: #ccc;
-    border-radius: 5px;
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
     overflow: hidden;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .ach-progress-fill {
     height: 100%;
     width: 0%;
     background: #4caf50;
+    border-radius: inherit;
 }
 
 .ach-progress-text {
-    margin-top: 5px;
+    margin-top: 8px;
     font-weight: bold;
+    color: #333;
 }
 
 .ach-detail-text {
-    margin-top: 10px;
+    margin-top: 12px;
+    line-height: 1.4;
 }
 
 .ach-detail-close {
-    margin-top: 10px;
-    padding: 5px 10px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 20px;
     cursor: pointer;
+}
+
+.ach-detail-close:hover {
+    color: #000;
 }
