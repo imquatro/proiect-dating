@@ -4,6 +4,16 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/achievement_helpers.php';
+
+$mini_defaults = [
+    'show_helpers' => true,
+    'show_profile' => true,
+    'show_achievements' => true,
+    'show_helper_effect' => true,
+    'center_single' => false,
+];
+$mini_profile_config = array_merge($mini_defaults, isset($mini_profile_config) && is_array($mini_profile_config) ? $mini_profile_config : []);
+
 $mini_avatar = 'default-avatar.png';
 $user_name = 'Vizitator';
 $user_level = 1;
@@ -53,8 +63,12 @@ if (empty($selectedAchievements)) {
     $selectedAchievements[] = 'img/achievements/default.png';
 }
 ?>
-<div class="mini-cards-row">
+<div class="mini-cards-row<?= $mini_profile_config['center_single'] ? ' single-achievement' : '' ?>">
+    <?php if ($mini_profile_config['show_helpers']): ?>
     <div class="mini-card helpers-card" id="helpersCard"></div>
+    <?php endif; ?>
+
+    <?php if ($mini_profile_config['show_profile']): ?>
     <div class="mini-profile" id="miniProfile">
         <div class="avatar-wrapper">
             <img src="<?= htmlspecialchars($mini_avatar) ?>" alt="Avatar" class="mini-profile-avatar" />
@@ -66,14 +80,21 @@ if (empty($selectedAchievements)) {
         </div>
         <img src="<?= htmlspecialchars($frame) ?>" alt="Frame" class="mini-profile-frame" />
     </div>
+    <?php endif; ?>
+
+    <?php if ($mini_profile_config['show_achievements']): ?>
     <div class="mini-card achievements-card" id="achievementsCard">
         <?php foreach ($selectedAchievements as $img): ?>
         <img src="<?= htmlspecialchars($img) ?>" alt="Achievement">
         <?php endforeach; ?>
     </div>
+    <?php endif; ?>
+
+    <?php if ($mini_profile_config['show_helper_effect']): ?>
     <div id="helper-effect" class="helper-effect mini-card">
         <img src="" alt="Helper">
         <div class="combo-count"></div>
     </div>
+    <?php endif; ?>
 </div>
 <script src="assets_js/mini-profile.js"></script>

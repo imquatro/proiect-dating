@@ -3,6 +3,12 @@ session_start();
 require_once __DIR__ . '/includes/db.php';
 $activePage = 'achievements';
 ob_start();
+$mini_profile_config = [
+    'show_helpers' => false,
+    'show_profile' => false,
+    'show_helper_effect' => false,
+    'center_single' => true,
+];
 include 'mini_profile.php';
 
 $userId = $_SESSION['user_id'] ?? null;
