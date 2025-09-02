@@ -309,6 +309,7 @@ if ($ajax) {
 $activePage = 'diverse';
 $pageCss = 'farm_admin/admin-panel.css';
 $extraJs = '<script src="farm_admin/admin-panel.js"></script><script src="farm_admin/achievements.js"></script>';
+$baseHref = '../';
 $hideNav = true;
 chdir('..');
 include 'template.php';

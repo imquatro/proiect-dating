@@ -37,6 +37,7 @@ if ($ajax) {
 $activePage = 'diverse';
 $pageCss = 'farm_admin/admin-panel.css';
 $extraJs = '<script src="farm_admin/manage-items.js"></script>';
+$baseHref = '../';
 chdir('..');
 include 'template.php';
 ?>
