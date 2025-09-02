@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const achievementsCard = document.getElementById('achievementsCard');
     if (achievementsCard) {
         achievementsCard.addEventListener('click', () => {
-            const achUrl = (window.baseUrl || '') + 'achievements.php' +
-                (window.isVisitor && window.visitId ? ('?id=' + window.visitId) : '');
+            const achUrl = (window.baseUrl || '') +
+                (window.isVisitor && window.visitId
+                    ? ('view_achievements.php?id=' + window.visitId)
+                    : 'achievements.php');
             window.location.href = achUrl;
         });
     }

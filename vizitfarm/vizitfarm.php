@@ -77,6 +77,14 @@ foreach ($slotStmt as $row) {
     $slotData[(int)$row['slot_number']] = $row;
 }
 
+// Load selected achievement images for the visited user
+$achStmt = $db->prepare('SELECT a.image FROM achievements a JOIN user_achievements ua ON ua.achievement_id = a.id WHERE ua.user_id = ? AND ua.selected = 1');
+$achStmt->execute([$visitId]);
+$achImages = $achStmt->fetchAll(PDO::FETCH_COLUMN);
+if (empty($achImages)) {
+    $achImages[] = 'img/achievements/default.png';
+}
+
 ob_start();
 ?>
 <div class="mini-cards-row">
@@ -92,7 +100,11 @@ ob_start();
         </div>
         <img src="<?= htmlspecialchars($frameImg) ?>" alt="Frame" class="mini-profile-frame" />
     </div>
-    <div class="mini-card achievements-card" id="achievementsCard"></div>
+    <div class="mini-card achievements-card" id="achievementsCard">
+        <?php foreach ($achImages as $img): ?>
+        <img src="<?= htmlspecialchars($img) ?>" alt="Achievement">
+        <?php endforeach; ?>
+    </div>
     <div id="helper-effect" class="helper-effect mini-card">
         <img src="" alt="Helper">
         <div class="combo-count"></div>
