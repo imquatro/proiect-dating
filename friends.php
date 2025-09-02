@@ -125,7 +125,7 @@ ob_start();
 <div class="matches-container">
     <div class="matches-tabs">
         <button class="tab-btn active" data-tab="online">Online Users</button>
-        <button class="tab-btn" data-tab="requests">Friend Requests</button>
+        <button class="tab-btn" data-tab="requests">Friend Requests <span id="friendRequestsIndicator" class="friend-indicator"></span></button>
         <button class="tab-btn" data-tab="friends">Friends</button>
     </div>
     <div class="matches-search">

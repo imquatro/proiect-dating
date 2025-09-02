@@ -203,8 +203,11 @@
                 } else if (currentTab === 'online') {
                     currentList = online.slice();
                 }
-                render();
-            } else {
+                  render();
+                  if (window.updateFriendRequestIndicators) {
+                      window.updateFriendRequestIndicators(requests.length);
+                  }
+              } else {
                 alert(d.message || 'Error');
             }
         });
@@ -221,11 +224,14 @@
                 if (d.user) {
                     online.push(d.user);
                 }
-                if (currentTab === 'requests') {
-                    currentList = requests.slice();
-                    render();
-                }
-            } else {
+                  if (currentTab === 'requests') {
+                      currentList = requests.slice();
+                      render();
+                  }
+                  if (window.updateFriendRequestIndicators) {
+                      window.updateFriendRequestIndicators(requests.length);
+                  }
+              } else {
                 alert(d.message || 'Error');
             }
         });
@@ -257,5 +263,8 @@
         });
     }
 
-    setTab(currentTab);
-})();
+      setTab(currentTab);
+      if (window.updateFriendRequestIndicators) {
+          window.updateFriendRequestIndicators(requests.length);
+      }
+  })();

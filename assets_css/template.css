@@ -102,6 +102,7 @@ img {
     overflow: hidden;
 }
 .nav-btn {
+    position: relative;
     color: #fff;
     font-size: 1.7rem;
     opacity: 0.85;

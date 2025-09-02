@@ -1,14 +1,15 @@
-.message-indicator {
+.message-indicator,
+.friend-indicator {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 14px;
-    height: 14px;
+    top: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
     background-color: #2ecc71;
     border-radius: 50%;
     display: none;
     animation: message-blink 1s infinite;
+    pointer-events: none;
 }
 
 @keyframes message-blink {
