@@ -16,6 +16,7 @@
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
     background: url('../img/bg2.png') center/cover no-repeat;
     color: #fff;
+    overflow: hidden;
 }
 
 .ach-columns {
@@ -23,12 +24,14 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-height: 0;
 }
 
 .ach-column {
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     min-height: 0; /* allow inner list to scroll instead of overflowing */
 }
 
@@ -47,11 +50,11 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 100px);
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-    align-content: start;
+    align-content: flex-start;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -61,21 +64,21 @@
 }
 
 .ach-item {
-    width: 100px;
+    width: 80px;
     text-align: center;
     background: transparent;
 }
 
 .ach-item > img {
     width: 100%;
-    height: 100px;
+    height: 80px;
     object-fit: cover;
 }
 
 .ach-img-wrapper {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
 }
 
 .ach-img-wrapper img {
@@ -129,8 +132,9 @@
 .achievements-content {
     flex: 1;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
+    min-height: 0;
 }
 
 .achievements-column {
@@ -138,6 +142,7 @@
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    min-height: 0;
 }
 
 .achievements-column::-webkit-scrollbar {
