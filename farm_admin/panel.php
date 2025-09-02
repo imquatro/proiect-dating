@@ -144,7 +144,7 @@ ob_start();
                         <div class="time-input">
                             <input type="number" name="water_hours" min="0" placeholder="h">
                             <input type="number" name="water_minutes" min="0" max="59" placeholder="m">
-                            <input to="number" name="water_seconds" min="0" max="59" placeholder="s">
+                            <input type="number" name="water_seconds" min="0" max="59" placeholder="s">
                         </div>
                     </label>
                 </div>
@@ -162,8 +162,8 @@ ob_start();
                 </label>
                 <label class="feed-field">Feed times
                     <input type="number" name="feed_times" min="0" value="0">
-                </label
-                ><label>Price
+                </label>
+                <label>Price
                     <input type="number" name="price" min="0" value="0">
                 </label>
                 <label>Sell Price

@@ -14,7 +14,7 @@ ob_start();
         <h2>Manage Items</h2>
         <select id="fa-item-select">
             <option value="">Select item</option>
-            <?php foreach ($items as $item):            <?php foreach ($items as $item):
+            <?php foreach ($items as $item):
                 $img = 'img/' . basename($item['image_plant']);
             ?>
             <option value="<?= htmlspecialchars($item['id']); ?>" data-image="<?= htmlspecialchars($img); ?>">
