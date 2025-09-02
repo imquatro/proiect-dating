@@ -1,5 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     const achievementsCard = document.getElementById('achievementsCard');
+    const overlay = document.getElementById('achDetailOverlay');
+    const overlayImg = document.getElementById('achDetailImage');
+        achievementsCard.innerHTML = '';
+        const imageEl = document.createElement('img');
+        imageEl.src = img || 'img/achievements/default.png';
+        imageEl.alt = 'Achievement';
+        imageEl.style.width = '100%';
+        imageEl.style.height = '100%';
+        imageEl.style.objectFit = 'cover';
+        achievementsCard.appendChild(imageEl);
+    };
+            if (overlay) overlay.style.display = 'none';
+        });
+    }
     const updateMiniCard = (img) => {
         if (!achievementsCard) return;
         achievementsCard.innerHTML = '';
@@ -57,6 +71,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     updateMiniCard(data.image);
                 }
             });
+        });
+    });
+
+    // Clicking any achievement to show details
+    document.querySelectorAll('.ach-item[data-id]').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.ach-btn')) return; // ignore button clicks
+            const id = item.dataset.id;
+            if (!id || !overlay) return;
+            fetch('achievement_details.php?id=' + encodeURIComponent(id), { credentials: 'same-origin' })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) return;
+                    overlayImg.src = data.image || '';
+                    progressFill.style.width = (data.progress || 0) + '%';
+                    progressText.textContent = Math.round(data.progress || 0) + '%';
+                    detailText.textContent = data.detail || '';
+                    overlay.style.display = 'flex';
+                });
         });
     });
 });
