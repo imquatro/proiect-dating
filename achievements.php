@@ -5,20 +5,11 @@ $activePage = 'achievements';
 ob_start();
 include 'mini_profile.php';
 
-$sessionId = $_SESSION['user_id'] ?? null;
-$viewId = isset($_GET['id']) ? (int)$_GET['id'] : $sessionId;
-$isVisitor = $sessionId && $viewId && $viewId !== $sessionId;
-$username = '';
-if ($isVisitor) {
-    $uStmt = $db->prepare('SELECT username FROM users WHERE id = ?');
-    $uStmt->execute([$viewId]);
-    $uRow = $uStmt->fetch(PDO::FETCH_ASSOC);
-    $username = $uRow['username'] ?? '';
-}
+$userId = $_SESSION['user_id'] ?? null;
 $myAchievements = [];
-if ($viewId) {
+if ($userId) {
     $stmt = $db->prepare('SELECT a.*, ua.selected FROM achievements a JOIN user_achievements ua ON ua.achievement_id = a.id WHERE ua.user_id = ?');
-    $stmt->execute([$viewId]);
+    $stmt->execute([$userId]);
     $myAchievements = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -29,7 +20,7 @@ $achievedIds = array_column($myAchievements, 'id');
     <div class="achievements-panel">
         <div class="ach-columns">
             <div class="ach-column">
-                <h2 class="ach-section-title"><?= $isVisitor ? htmlspecialchars($username) . "'s Achievements" : 'My Achievements'; ?></h2>
+                <h2 class="ach-section-title">My Achievements</h2>
                 <div class="ach-list" id="myAchievements">
                     <?php if (empty($myAchievements)): ?>
                     <div class="ach-item">
@@ -41,10 +32,8 @@ $achievedIds = array_column($myAchievements, 'id');
                     <div class="ach-item" data-id="<?= htmlspecialchars($ach['id']); ?>">
                         <div class="ach-img-wrapper">
                             <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
-                            <?php if (!$isVisitor): ?>
                             <button class="ach-btn ach-apply-btn"<?= $ach['selected'] ? ' style="display:none;"' : ''; ?>>Apply</button>
                             <button class="ach-btn ach-remove-btn"<?= $ach['selected'] ? '' : ' style="display:none;"'; ?>>Remove</button>
-                            <?php endif; ?>
                         </div>
                         <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
                     </div>
@@ -87,6 +76,6 @@ $achievedIds = array_column($myAchievements, 'id');
 $content = ob_get_clean();
 $pageCss = 'assets_css/achievements.css';
 $extraCss = ['assets_css/mini-profile.css'];
-$extraJs = '<script>window.isVisitor = ' . ($isVisitor ? 'true' : 'false') . '; window.visitId = ' . ($isVisitor ? $viewId : 'null') . ';</script><script src="assets_js/achievements.js"></script>';
+$extraJs = '<script src="assets_js/achievements.js"></script>';
 include 'template.php';
 ?>
