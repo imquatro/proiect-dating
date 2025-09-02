@@ -51,7 +51,7 @@ $achievedIds = array_column($myAchievements, 'id');
                     </div>
                     <?php else: ?>
                     <?php foreach ($allAchievements as $ach): ?>
-                    <div class="ach-item<?= in_array($ach['id'], $achievedIds) ? ' achieved' : ''; ?>">
+                    <div class="ach-item<?= in_array($ach['id'], $achievedIds) ? ' achieved' : ''; ?>" data-id="<?= htmlspecialchars($ach['id']); ?>">
                         <img src="<?= htmlspecialchars($ach['image']); ?>" alt="<?= htmlspecialchars($ach['title']); ?>">
                         <div class="ach-name"><?= htmlspecialchars($ach['title']); ?></div>
                     </div>
@@ -60,6 +60,16 @@ $achievedIds = array_column($myAchievements, 'id');
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="achDetailOverlay" class="ach-detail-overlay" style="display:none;">
+    <div class="ach-detail-card">
+        <img id="achDetailImage" src="" alt="Achievement">
+        <div class="ach-progress-bar"><div id="achProgressFill" class="ach-progress-fill"></div></div>
+        <div id="achProgressText" class="ach-progress-text"></div>
+        <div id="achDetailText" class="ach-detail-text"></div>
+        <button id="achDetailClose" class="ach-detail-close">Close</button>
     </div>
 </div>
 <?php
