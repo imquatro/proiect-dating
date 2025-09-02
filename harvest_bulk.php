@@ -10,6 +10,7 @@ require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/slot_helpers.php';
 require_once __DIR__ . '/includes/barn_helpers.php';
 require_once __DIR__ . '/includes/level_helpers.php';
+require_once __DIR__ . '/includes/achievement_helpers.php';
 
 ensureBarnSchema($db);
 
@@ -155,7 +156,15 @@ try {
     }
 
     $xpResult = add_xp($db, $userId, 10 * $maxHarvestableSlots);
+    // Update total harvest count
+    $db->prepare('UPDATE users SET harvests = harvests + ? WHERE id = ?')
+       ->execute([$totalQty, $userId]);
+
     $db->commit();
+
+    // Award achievements after harvest
+    check_and_award_achievements($db, $userId);
+
     echo json_encode([
         'success' => true,
         'item' => ['item_id' => (int)$itemId, 'quantity' => $totalQty, 'image' => $img],

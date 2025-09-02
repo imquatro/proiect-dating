@@ -3,12 +3,12 @@
 
 /**
  * Check achievements for the given user and award any that meet the criteria.
- * Currently supports level, account age (years), XP and item-based achievements.
+ * Supports level, account age, XP, harvest count, sales count and item-based achievements.
  */
 function check_and_award_achievements(PDO $db, int $userId): void
 {
-    // Fetch user info: level, xp and registration date
-    $stmt = $db->prepare('SELECT level, xp, created_at FROM users WHERE id = ?');
+    // Fetch user info including counters for harvests and sales
+    $stmt = $db->prepare('SELECT level, xp, created_at, harvests, sales FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$user) {
@@ -17,6 +17,8 @@ function check_and_award_achievements(PDO $db, int $userId): void
 
     $level = (int)($user['level'] ?? 1);
     $xp = (int)($user['xp'] ?? 0);
+    $harvests = (int)($user['harvests'] ?? 0);
+    $sales = (int)($user['sales'] ?? 0);
     $createdAt = new DateTime($user['created_at'] ?? 'now');
     $now = new DateTime();
     // Calculate account age in days to allow precise year-based achievements
@@ -45,13 +47,9 @@ function check_and_award_achievements(PDO $db, int $userId): void
         $reqXp = (int)($ach['xp'] ?? 0);
         $reqItem = $ach['item_id'] ?? null;
 
-        // Skip achievements requiring harvest or sales (not yet supported)
-        if ($reqHarvest > 0 || $reqSales > 0) {
-            continue;
-        }
-
         // Skip achievements with no defined requirements
-        if ($reqLevel === 0 && $reqYears === 0 && $reqXp === 0 && !$reqItem) {
+        if ($reqLevel === 0 && $reqYears === 0 && $reqHarvest === 0 &&
+            $reqSales === 0 && $reqXp === 0 && !$reqItem) {
             continue;
         }
 
@@ -67,6 +65,8 @@ function check_and_award_achievements(PDO $db, int $userId): void
         if (($reqLevel > 0 && $level < $reqLevel) ||
             ($requiredDays > 0 && $accountAgeDays < $requiredDays) ||
             ($reqXp > 0 && $xp < $reqXp) ||
+            ($reqHarvest > 0 && $harvests < $reqHarvest) ||
+            ($reqSales > 0 && $sales < $reqSales) ||
             ($reqItem && !$hasItem)) {
             continue;
         }

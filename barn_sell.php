@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/level_helpers.php';
+require_once __DIR__ . '/includes/achievement_helpers.php';
 
 $userId = (int)$_SESSION['user_id'];
 $itemId = isset($_POST['item_id']) ? (int)$_POST['item_id'] : 0;
@@ -55,8 +56,8 @@ try {
         $remaining = 0;
     }
 
-    $moneyUpd = $db->prepare('UPDATE users SET money = money + ? WHERE id = ?');
-    $moneyUpd->execute([$total, $userId]);
+    $moneyUpd = $db->prepare('UPDATE users SET money = money + ?, sales = sales + ? WHERE id = ?');
+    $moneyUpd->execute([$total, $quantity, $userId]);
 
     // XP gain: 50 XP per stack sold (stack size 1000 or 1)
     $prodStmt = $db->prepare('SELECT production FROM farm_items WHERE id = ?');
@@ -71,6 +72,9 @@ try {
     $wallet = $walletStmt->fetch(PDO::FETCH_ASSOC);
 
     $db->commit();
+
+    // Award achievements after successful sale
+    check_and_award_achievements($db, $userId);
 
     echo json_encode([
         'success' => true,
