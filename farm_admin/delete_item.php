@@ -1,12 +1,12 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
-    echo json_encode(['success' => false]);
+    echo json_encode(['success' => false, 'error' => 'Access denied']);
     exit;
 }
 
-header('Content-Type: application/json');
 require_once '../includes/db.php';
 
 // Accept both JSON payloads and form-encoded requests
@@ -22,7 +22,8 @@ if (isset($_POST['id'])) {
 }
 
 if (!$id) {
-    echo json_encode(['success' => false]);
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Invalid id']);
     exit;
 }
 
@@ -35,4 +36,3 @@ try {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 exit;
-?>
