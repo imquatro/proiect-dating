@@ -9,6 +9,14 @@ if (!isset($_SESSION['user_id'])) {
 header('Content-Type: application/json');
 require_once __DIR__ . '/../includes/db.php';
 
+$stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
+$stmt->execute([$_SESSION['user_id']]);
+if (!$stmt->fetchColumn()) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'Access denied']);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = intval($_POST['id'] ?? 0);
     $name = trim($_POST['name'] ?? '');

@@ -191,7 +191,10 @@ function initAdminPanel(panel){
                     body: 'id=' + encodeURIComponent(selectedId),
                     credentials: 'same-origin'
                 })
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
+                    return res.json();
+                })
                 .then(data => {
                     if (data.success) {
                         const item = grid.querySelector(`.fa-delete-item[data-id="${selectedId}"]`);
@@ -252,7 +255,10 @@ function initEditItems(panel){
         it.classList.add('selected');
         const id = it.dataset.id;
         fetch(`farm_admin/get_item.php?id=${id}`, { credentials: 'same-origin' })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
+                return res.json();
+            })
             .then(item => {
                 form.style.display = 'block';
                 form.querySelector('input[name="id"]').value = item.id;
@@ -273,7 +279,8 @@ function initEditItems(panel){
                 form.querySelector('input[name="image_name"]').value = normalizeImg(item.image_plant).replace(/^img\//, '');
                 form.querySelector('input[name="barn_capacity"]').value = item.barn_capacity;
                 toggleFields();
-            });
+            })
+            .catch(err => console.error(err));
     });
 
     toggleFields();
@@ -286,7 +293,10 @@ function initEditItems(panel){
             body: formData,
             credentials: 'same-origin'
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
+            return res.json();
+        })
         .then(data => {
             if (data.success) {
                 const item = data.item;
