@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const achievementsCard = document.getElementById('achievementsCard');
+    const isVisitor = window.isVisitor || false;
+    const visitId = window.visitId || null;
     const overlay = document.getElementById('achDetailOverlay');
     const overlayImg = document.getElementById('achDetailImage');
     const progressFill = document.getElementById('achProgressFill');
@@ -44,50 +46,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    document.querySelectorAll('.ach-apply-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const item = btn.closest('.ach-item');
-            if (!item) return;
-            const id = item.dataset.id;
-            fetch('apply_achievement.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'id=' + encodeURIComponent(id),
-                credentials: 'same-origin'
-            }).then(res => res.json()).then(data => {
-                if (data.success) {
-                    updateButtons(id);
-                    updateMiniCard(data.image);
-                }
+    if (!isVisitor) {
+        document.querySelectorAll('.ach-apply-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.ach-item');
+                if (!item) return;
+                const id = item.dataset.id;
+                fetch('apply_achievement.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id=' + encodeURIComponent(id),
+                    credentials: 'same-origin'
+                }).then(res => res.json()).then(data => {
+                    if (data.success) {
+                        updateButtons(id);
+                        updateMiniCard(data.image);
+                    }
+                });
             });
         });
-    });
 
-    document.querySelectorAll('.ach-remove-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const item = btn.closest('.ach-item');
-            if (!item) return;
-            const id = item.dataset.id;
-            fetch('remove_achievement.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'id=' + encodeURIComponent(id),
-                credentials: 'same-origin'
-            }).then(res => res.json()).then(data => {
-                if (data.success) {
-                    updateButtons(null);
-                    updateMiniCard(data.image);
-                }
+        document.querySelectorAll('.ach-remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.ach-item');
+                if (!item) return;
+                const id = item.dataset.id;
+                fetch('remove_achievement.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id=' + encodeURIComponent(id),
+                    credentials: 'same-origin'
+                }).then(res => res.json()).then(data => {
+                    if (data.success) {
+                        updateButtons(null);
+                        updateMiniCard(data.image);
+                    }
+                });
             });
         });
-    });
+    }
 
     document.querySelectorAll('.ach-item[data-id]').forEach(item => {
         item.addEventListener('click', (e) => {
             if (e.target.closest('.ach-btn')) return; // ignore button clicks
             const id = item.dataset.id;
             if (!id || !overlay) return;
-            fetch('achievement_details.php?id=' + encodeURIComponent(id), { credentials: 'same-origin' })
+            const url = 'achievement_details.php?id=' + encodeURIComponent(id) +
+                (isVisitor && visitId ? '&user=' + encodeURIComponent(visitId) : '');
+            fetch(url, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(data => {
                     if (!data.success) return;

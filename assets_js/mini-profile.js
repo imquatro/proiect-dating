@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const achievementsCard = document.getElementById('achievementsCard');
     if (achievementsCard) {
         achievementsCard.addEventListener('click', () => {
-            window.location.href = (window.baseUrl || '') + 'achievements.php';
+            const achUrl = (window.baseUrl || '') + 'achievements.php' +
+                (window.isVisitor && window.visitId ? ('?id=' + window.visitId) : '');
+            window.location.href = achUrl;
         });
     }
 

@@ -8,8 +8,8 @@ if (empty($_SESSION['user_id']) || empty($_GET['id'])) {
     exit;
 }
 
-$userId = (int)$_SESSION['user_id'];
 $achId = (int)$_GET['id'];
+$userId = isset($_GET['user']) ? (int)$_GET['user'] : (int)$_SESSION['user_id'];
 
 $stmt = $db->prepare('SELECT * FROM achievements WHERE id = ?');
 $stmt->execute([$achId]);
