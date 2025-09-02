@@ -251,7 +251,7 @@ function initEditItems(panel){
         grid.querySelectorAll('.fa-edit-item').forEach(i => i.classList.remove('selected'));
         it.classList.add('selected');
         const id = it.dataset.id;
-        fetch(`farm_admin/get_item.php?id=${id}`)
+        fetch(`farm_admin/get_item.php?id=${id}`, { credentials: 'same-origin' })
             .then(res => res.json())
             .then(item => {
                 form.style.display = 'block';

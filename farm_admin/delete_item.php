@@ -9,8 +9,18 @@ if (!isset($_SESSION['user_id'])) {
 header('Content-Type: application/json');
 require_once '../includes/db.php';
 
-$data = json_decode(file_get_contents('php://input'), true);
-$id = intval($data['id'] ?? 0);
+// Accept both JSON payloads and form-encoded requests
+$id = 0;
+
+// Try standard POST first
+if (isset($_POST['id'])) {
+    $id = intval($_POST['id']);
+} else {
+    // Fallback to JSON body
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = intval($data['id'] ?? 0);
+}
+
 if (!$id) {
     echo json_encode(['success' => false]);
     exit;
