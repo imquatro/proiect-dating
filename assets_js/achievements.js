@@ -2,6 +2,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const achievementsCard = document.getElementById('achievementsCard');
     const overlay = document.getElementById('achDetailOverlay');
     const overlayImg = document.getElementById('achDetailImage');
+    const progressFill = document.getElementById('achProgressFill');
+    const progressText = document.getElementById('achProgressText');
+    const detailText = document.getElementById('achDetailText');
+    const overlayClose = document.getElementById('achDetailClose');
+
+    if (overlayClose && overlay) {
+        overlayClose.addEventListener('click', () => {
+            overlay.style.display = 'none';
+        });
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+            }
+        });
+    }
+
+    const updateMiniCard = (img) => {
+        if (!achievementsCard) return;
         achievementsCard.innerHTML = '';
         const imageEl = document.createElement('img');
         imageEl.src = img || 'img/achievements/default.png';
@@ -11,17 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imageEl.style.objectFit = 'cover';
         achievementsCard.appendChild(imageEl);
     };
-            if (overlay) overlay.style.display = 'none';
-        });
-    }
-    const updateMiniCard = (img) => {
-        if (!achievementsCard) return;
-        achievementsCard.innerHTML = '';
-        const imageEl = document.createElement('img');
-        imageEl.src = img || 'img/achievements/default.png';
-        imageEl.alt = 'Achievement';
-        achievementsCard.appendChild(imageEl);
-    };
+
     const updateButtons = (selectedId) => {
         document.querySelectorAll('.ach-item').forEach(item => {
             const applyBtn = item.querySelector('.ach-apply-btn');
@@ -43,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = item.dataset.id;
             fetch('apply_achievement.php', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'id=' + encodeURIComponent(id),
                 credentials: 'same-origin'
             }).then(res => res.json()).then(data => {
@@ -62,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = item.dataset.id;
             fetch('remove_achievement.php', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'id=' + encodeURIComponent(id),
                 credentials: 'same-origin'
             }).then(res => res.json()).then(data => {
@@ -74,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Clicking any achievement to show details
     document.querySelectorAll('.ach-item[data-id]').forEach(item => {
         item.addEventListener('click', (e) => {
             if (e.target.closest('.ach-btn')) return; // ignore button clicks
