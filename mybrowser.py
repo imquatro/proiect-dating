@@ -172,7 +172,25 @@ def build_startpage(cfg):
     cards = "\n".join(cards_html) or "<div class='empty'>N-ai bookmarks încă. Apasă ★ pentru a adăuga.</div>"
 
     accent = cfg.get("accent_color", DEFAULT_CONFIG["accent_color"])
-    html = f"""<!doctype html>
+
+    script = """
+  function tick() {
+    const d = new Date();
+    document.getElementById('clock').textContent = d.toLocaleString();
+  }
+  setInterval(tick, 1000); tick();
+  const q = document.getElementById('q');
+  q.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter') {
+      const s = q.value.trim(); if(!s) return;
+      const url = s.startsWith('http') ? s : 'https://www.google.com/search?q=' + encodeURIComponent(s);
+      location.href = url;
+    }
+  });
+"""
+
+    html = f"""
+<!doctype html>
 <html>
 <head>
 <meta charset='utf-8'/>
@@ -193,8 +211,8 @@ def build_startpage(cfg):
   .clock {{ font-variant-numeric: tabular-nums; opacity:.9; }}
   .search {{ padding:8px; }}
   .search input {{ width:100%; padding:16px 18px; border-radius:16px; border:1px solid rgba(255,255,255,.15); background:rgba(0,0,0,.35); color:#fff; outline:none; font-size:16px; }}
-  .grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:20px; padding:20px; }}
-  .card {{ text-decoration:none; color:#fff; padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.04); backdrop-filter:blur(12px); transition:.2s; }}
+  .grid {{ display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:16px; padding:20px; }}
+  .card {{ display:block; padding:16px; border-radius:16px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.12); text-decoration:none; color:#f0f0f0; transition: transform .18s ease, background .18s ease, border-color .18s ease; }}
   .card:hover {{ transform: translateY(-3px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.25); }}
   .icon img {{ width:28px; height:28px; border-radius:6px; }}
   .title {{ margin-top:10px; font-weight:600; }}
@@ -221,19 +239,7 @@ def build_startpage(cfg):
   </div>
 </section>
 <script>
-  function tick() {{
-    const d = new Date();
-    document.getElementById('clock').textContent = d.toLocaleString();
-  }}
-  setInterval(tick, 1000); tick();
-  const q = document.getElementById('q');
-  q.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter') {{
-      const s = q.value.trim(); if(!s) return;
-      const url = s.startsWith('http') ? s : 'https://www.google.com/search?q=' + encodeURIComponent(s);
-      location.href = url;
-    }}
-  });
+{script}
 </script>
 </body>
 </html>
