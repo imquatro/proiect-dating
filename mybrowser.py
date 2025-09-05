@@ -1,3 +1,7 @@
+# Necesită: PyQt5 și PyQtWebEngine
+# pip install PyQt5 PyQtWebEngine
+# Rulează: python mybrowser.py
+
 import json
 import os
 import sys
@@ -29,6 +33,7 @@ DEFAULT_CONFIG = {
     "auto_import_chrome": True,
     "session": {"tabs": [], "current_index": 0},
     "popup_whitelist": [],
+    "popup_blacklist": [],
     "adblock_whitelist": [],
     "accent_color": "#6aa0ff",
     "features": {
@@ -294,6 +299,33 @@ class MyWebEnginePage(QWebEnginePage):
             self.popupRequested.emit(url)
 
 
+class PopupDialog(QDialog):
+    def __init__(self, host, parent=None):
+        super().__init__(parent)
+        self.host = host
+        self.decision = None
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Tool)
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(f"Site-ul {host} vrea să deschidă un popup."))
+        btns = QHBoxLayout()
+        allow = QPushButton("Allow")
+        allow.clicked.connect(lambda: self._finish("allow"))
+        allow_all = QPushButton("Allow Always")
+        allow_all.clicked.connect(lambda: self._finish("allow_all"))
+        deny = QPushButton("Deny")
+        deny.clicked.connect(lambda: self._finish("deny"))
+        deny_all = QPushButton("Deny Always")
+        deny_all.clicked.connect(lambda: self._finish("deny_all"))
+        for b in (allow, allow_all, deny, deny_all):
+            btns.addWidget(b)
+        layout.addLayout(btns)
+        self.setStyleSheet("background:#333; color:#fff; padding:12px; border-radius:8px;")
+
+    def _finish(self, res):
+        self.decision = res
+        self.accept()
+
+
 class SettingsTab(QWidget):
     def __init__(self, parent, cfg, on_import_click):
         super().__init__(parent)
@@ -383,12 +415,22 @@ class Browser(QMainWindow):
         self.tabs.tabBar().customContextMenuRequested.connect(self.on_tab_context_menu)
         self.setCentralWidget(self.tabs)
 
-        # plus pe bara de taburi
-        plus = QToolButton(self)
+        # plus și listă de taburi pe bara de taburi
+        corner = QWidget()
+        c_lay = QHBoxLayout(corner)
+        c_lay.setContentsMargins(0, 0, 0, 0)
+        c_lay.setSpacing(0)
+        plus = QToolButton(corner)
         plus.setText("＋")
         plus.setToolTip("Tab nou (Ctrl+T)")
         plus.clicked.connect(self.open_start_in_new_tab)
-        self.tabs.setCornerWidget(plus, Qt.TopRightCorner)
+        self.list_tabs_btn = QToolButton(corner)
+        self.list_tabs_btn.setText("▾")
+        self.list_tabs_btn.setToolTip("Selectează tabul")
+        self.list_tabs_btn.clicked.connect(self.show_tab_list)
+        c_lay.addWidget(plus)
+        c_lay.addWidget(self.list_tabs_btn)
+        self.tabs.setCornerWidget(corner, Qt.TopRightCorner)
 
         # Toolbars (modern look / glass)
         self.nav = QToolBar("Navigare")
@@ -575,18 +617,28 @@ class Browser(QMainWindow):
         allow_all = not feats.get("block_popups", True)
         ask = feats.get("ask_on_popup", True)
         wl = [h.lower() for h in self.cfg.get("popup_whitelist", [])]
+        bl = [h.lower() for h in self.cfg.get("popup_blacklist", [])]
         if allow_all or host in wl:
             self.create_tab(url.toString())
             return
+        if host in bl:
+            return
         if ask:
-            btn = QMessageBox.question(self, "Popup blocat", f"Site-ul {host} vrea să deschidă un popup. Permiți?",
-                                       QMessageBox.Yes | QMessageBox.No | QMessageBox.YesToAll)
-            if btn == QMessageBox.Yes:
+            dlg = PopupDialog(host, self)
+            size = dlg.sizeHint()
+            geo = self.geometry()
+            dlg.move(geo.x() + geo.width() - size.width() - 20, geo.y() + 20)
+            dlg.exec_()
+            decision = dlg.decision
+            if decision == "allow":
                 self.create_tab(url.toString())
-            elif btn == QMessageBox.YesToAll:
-                self.cfg["popup_whitelist"].append(host)
+            elif decision == "allow_all":
+                self.cfg.setdefault("popup_whitelist", []).append(host)
                 save_config(self.cfg)
                 self.create_tab(url.toString())
+            elif decision == "deny_all":
+                self.cfg.setdefault("popup_blacklist", []).append(host)
+                save_config(self.cfg)
             else:
                 pass
 
@@ -599,6 +651,15 @@ class Browser(QMainWindow):
     def open_start_in_new_tab(self):
         url = QUrl.fromLocalFile(os.path.abspath(STARTPAGE_FILE)).toString()
         self.create_tab(url)
+
+    def show_tab_list(self):
+        menu = QMenu(self)
+        for i in range(self.tabs.count()):
+            title = self.tabs.tabText(i) or f"Tab {i+1}"
+            act = QAction(title, self)
+            act.triggered.connect(lambda _, ix=i: self.tabs.setCurrentIndex(ix))
+            menu.addAction(act)
+        menu.exec_(self.list_tabs_btn.mapToGlobal(self.list_tabs_btn.rect().bottomRight()))
 
     def close_tab(self, index):
         if self.tabs.count() > 1:
@@ -819,11 +880,21 @@ class Browser(QMainWindow):
         wl = self.cfg.setdefault("adblock_whitelist", [])
         if host in wl:
             wl.remove(host)
-            QMessageBox.information(self, "AdBlock", f"AdBlock activat pentru {host}")
+            self.cfg["popup_whitelist"] = [h for h in self.cfg.get("popup_whitelist", []) if h != host]
+            self.cfg["popup_blacklist"] = [h for h in self.cfg.get("popup_blacklist", []) if h != host]
+            msg = f"AdBlock activat pentru {host}"
         else:
             wl.append(host)
-            QMessageBox.information(self, "AdBlock", f"AdBlock dezactivat pentru {host}")
+            msg = f"AdBlock dezactivat pentru {host}"
         save_config(self.cfg)
+        box = QMessageBox(self)
+        box.setWindowTitle("AdBlock")
+        box.setText(msg)
+        box.setStandardButtons(QMessageBox.Ok)
+        size = box.sizeHint()
+        geo = self.geometry()
+        box.move(geo.x() + geo.width() - size.width() - 20, geo.y() + 20)
+        box.exec_()
         self.update_adblock_action()
         v.reload()
 
