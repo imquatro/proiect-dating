@@ -1,7 +1,3 @@
-# Necesită: PyQt5 și PyQtWebEngine
-# pip install PyQt5 PyQtWebEngine
-# Rulează: python mybrowser.py
-
 import json
 import os
 import sys
@@ -14,7 +10,8 @@ from PyQt5.QtGui import QIcon, QFont, QPalette, QColor
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QToolBar, QAction, QLineEdit, QFileDialog,
     QMessageBox, QInputDialog, QWidget, QVBoxLayout, QDialog, QLabel, QSpinBox,
-    QPushButton, QHBoxLayout, QTabWidget, QCheckBox, QFormLayout, QToolButton
+    QPushButton, QHBoxLayout, QTabWidget, QCheckBox, QFormLayout, QToolButton,
+    QColorDialog, QMenu
 )
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEngineSettings, QWebEnginePage
 from PyQt5.QtWebEngineCore import QWebEngineUrlRequestInterceptor
@@ -32,6 +29,8 @@ DEFAULT_CONFIG = {
     "auto_import_chrome": True,
     "session": {"tabs": [], "current_index": 0},
     "popup_whitelist": [],
+    "adblock_whitelist": [],
+    "accent_color": "#6aa0ff",
     "features": {
         "block_ads": True,
         "block_popups": True,
@@ -172,15 +171,15 @@ def build_startpage(cfg):
         """)
     cards = "\n".join(cards_html) or "<div class='empty'>N-ai bookmarks încă. Apasă ★ pentru a adăuga.</div>"
 
-    html = f"""
-<!doctype html>
+    accent = cfg.get("accent_color", DEFAULT_CONFIG["accent_color"])
+    html = f"""<!doctype html>
 <html>
 <head>
 <meta charset='utf-8'/>
 <meta name='viewport' content='width=device-width, initial-scale=1'/>
 <title>Start</title>
 <style>
-  :root {{ --bg: rgba(20,20,20,.75); --fg: #ffffff; --accent: #7aa2ff; --glass: rgba(255,255,255,.08); }}
+  :root {{ --bg: rgba(20,20,20,.75); --fg: #ffffff; --accent: {accent}; --glass: rgba(255,255,255,.08); }}
   * {{ box-sizing: border-box; }}
   body {{ margin: 0; font-family: -apple-system, Segoe UI, Roboto, Inter, sans-serif; color: var(--fg);
          min-height:100vh; background: #0e0e0e; }}
@@ -194,8 +193,8 @@ def build_startpage(cfg):
   .clock {{ font-variant-numeric: tabular-nums; opacity:.9; }}
   .search {{ padding:8px; }}
   .search input {{ width:100%; padding:16px 18px; border-radius:16px; border:1px solid rgba(255,255,255,.15); background:rgba(0,0,0,.35); color:#fff; outline:none; font-size:16px; }}
-  .grid {{ display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:16px; padding:20px; }}
-  .card {{ display:block; padding:16px; border-radius:16px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.12); text-decoration:none; color:#f0f0f0; transition: transform .18s ease, background .18s ease, border-color .18s ease; }}
+  .grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:20px; padding:20px; }}
+  .card {{ text-decoration:none; color:#fff; padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.04); backdrop-filter:blur(12px); transition:.2s; }}
   .card:hover {{ transform: translateY(-3px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.25); }}
   .icon img {{ width:28px; height:28px; border-radius:6px; }}
   .title {{ margin-top:10px; font-weight:600; }}
@@ -228,13 +227,13 @@ def build_startpage(cfg):
   }}
   setInterval(tick, 1000); tick();
   const q = document.getElementById('q');
-  q.addEventListener('keydown', (e)=>{{
+  q.addEventListener('keydown', (e)=>{
     if(e.key==='Enter') {{
       const s = q.value.trim(); if(!s) return;
       const url = s.startsWith('http') ? s : 'https://www.google.com/search?q=' + encodeURIComponent(s);
       location.href = url;
     }}
-  }});
+  });
 </script>
 </body>
 </html>
@@ -254,6 +253,13 @@ class AdBlocker(QWebEngineUrlRequestInterceptor):
     def interceptRequest(self, info):
         try:
             if not self.cfg_ref.get("features", {}).get("block_ads", True):
+                return
+            fp = ""
+            try:
+                fp = info.firstPartyUrl().host().lower()
+            except Exception:
+                pass
+            if fp and fp in [h.lower() for h in self.cfg_ref.get("adblock_whitelist", [])]:
                 return
             url = info.requestUrl().toString().lower()
             host = info.requestUrl().host().lower()
@@ -314,6 +320,11 @@ class SettingsTab(QWidget):
         self.chk_import.setChecked(self.cfg.get("auto_import_chrome", True))
         form.addRow(self.chk_import)
 
+        self.btn_accent = QPushButton()
+        self.btn_accent.clicked.connect(self._pick_accent)
+        self._update_accent_btn()
+        form.addRow("Culoare accent", self.btn_accent)
+
         lay.addLayout(form)
 
         btns = QHBoxLayout()
@@ -332,7 +343,21 @@ class SettingsTab(QWidget):
         self.cfg["features"]["ask_on_popup"] = self.chk_ask.isChecked()
         self.cfg["auto_import_chrome"] = self.chk_import.isChecked()
         save_config(self.cfg)
+        self.parent().update_stylesheet()
+        self.parent().apply_theme(self.cfg.get("dark_mode", True))
+        build_startpage(self.cfg)
         QMessageBox.information(self, "Salvat", "Setările au fost salvate.")
+
+    def _update_accent_btn(self):
+        c = self.cfg.get("accent_color", DEFAULT_CONFIG["accent_color"])
+        self.btn_accent.setText(c)
+        self.btn_accent.setStyleSheet(f"background:{c}; color:#000;")
+
+    def _pick_accent(self):
+        col = QColorDialog.getColor(QColor(self.cfg.get("accent_color", DEFAULT_CONFIG["accent_color"])), self, "Alege culoare")
+        if col.isValid():
+            self.cfg["accent_color"] = col.name()
+            self._update_accent_btn()
 
 
 class Browser(QMainWindow):
@@ -348,6 +373,8 @@ class Browser(QMainWindow):
         self.tabs.setTabsClosable(True)
         self.tabs.tabCloseRequested.connect(self.close_tab)
         self.tabs.currentChanged.connect(self.on_tab_changed)
+        self.tabs.tabBar().setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tabs.tabBar().customContextMenuRequested.connect(self.on_tab_context_menu)
         self.setCentralWidget(self.tabs)
 
         # plus pe bara de taburi
@@ -362,26 +389,7 @@ class Browser(QMainWindow):
         self.nav.setMovable(False)
         self.addToolBar(Qt.TopToolBarArea, self.nav)
 
-        self.setStyleSheet("""
-            QMainWindow { background-color: #0b0b0d; }
-            QToolBar {
-              background: rgba(255,255,255,0.04);
-              border: 1px solid rgba(255,255,255,0.08);
-              padding: 8px; spacing: 8px; border-radius: 14px;
-            }
-            QLineEdit {
-              background: rgba(255,255,255,0.06); color: #eaeaea; border: 1px solid rgba(255,255,255,0.1);
-              padding: 12px 14px; border-radius: 12px; min-width: 400px;
-            }
-            QLineEdit:focus { border-color: #6aa0ff; }
-            QTabBar::tab {
-              background: rgba(255,255,255,0.05); color: #d9d9d9; padding: 10px 14px; border-radius: 10px; margin: 6px 6px 2px 6px;
-            }
-            QTabBar::tab:selected { background: rgba(108,160,255,0.18); color: #ffffff; }
-            QTabBar::close-button { image: none; }
-            QToolButton { color: #f0f0f0; }
-            QToolButton:hover { color: #ffffff; }
-        """)
+        self.update_stylesheet()
 
         # Actions
         self.back_act = QAction("◀", self)
@@ -444,6 +452,11 @@ class Browser(QMainWindow):
         self.dark_act.triggered.connect(self.toggle_dark_mode)
         self.nav.addAction(self.dark_act)
 
+        self.adblock_act = QAction("⛔", self)
+        self.adblock_act.setToolTip("Toggle AdBlock pentru site-ul curent")
+        self.adblock_act.triggered.connect(self.toggle_adblock_site)
+        self.nav.addAction(self.adblock_act)
+
         # Bookmark toolbar
         self.bm_toolbar = QToolBar("Bookmarks")
         self.bm_toolbar.setMovable(False)
@@ -477,6 +490,7 @@ class Browser(QMainWindow):
         # Fonturi + temă
         self.apply_fonts()
         self.apply_theme(self.cfg.get("dark_mode", True))
+        self.update_adblock_action()
 
         # Shortcuts
         self.back_act.setShortcut("Alt+Left")
@@ -588,6 +602,60 @@ class Browser(QMainWindow):
         else:
             self.open_start_in_new_tab()
 
+    def pin_tab(self, index):
+        data = self.tabs.tabData(index) or {}
+        pinned = data.get("pinned", False)
+        if pinned:
+            data["pinned"] = False
+            self.tabs.setTabData(index, data)
+            pinned_count = sum(
+                1
+                for i in range(self.tabs.count())
+                if self.tabs.tabData(i) and self.tabs.tabData(i).get("pinned")
+            )
+            self.tabs.tabBar().moveTab(index, pinned_count)
+        else:
+            data["pinned"] = True
+            self.tabs.setTabData(index, data)
+            pinned_count = sum(
+                1
+                for i in range(self.tabs.count())
+                if self.tabs.tabData(i) and self.tabs.tabData(i).get("pinned")
+            )
+            self.tabs.tabBar().moveTab(index, max(0, pinned_count - 1))
+
+    def duplicate_tab(self, index):
+        w = self.tabs.widget(index)
+        if isinstance(w, QWebEngineView):
+            url = w.url().toString()
+            view = self.create_view(url)
+            self.tabs.insertTab(index + 1, view, self.tabs.tabText(index))
+            self.tabs.setCurrentIndex(index + 1)
+
+    def close_other_tabs(self, index):
+        for i in reversed(range(self.tabs.count())):
+            if i != index and not (self.tabs.tabData(i) and self.tabs.tabData(i).get("pinned")):
+                self.close_tab(i)
+
+    def on_tab_context_menu(self, pos):
+        bar = self.tabs.tabBar()
+        index = bar.tabAt(pos)
+        if index < 0:
+            return
+        data = self.tabs.tabData(index) or {}
+        pinned = data.get("pinned", False)
+        menu = QMenu(self)
+        pin_act = QAction("Unpin" if pinned else "Pin", self)
+        pin_act.triggered.connect(lambda: self.pin_tab(index))
+        dup_act = QAction("Duplicate", self)
+        dup_act.triggered.connect(lambda: self.duplicate_tab(index))
+        close_others_act = QAction("Close others", self)
+        close_others_act.triggered.connect(lambda: self.close_other_tabs(index))
+        menu.addAction(pin_act)
+        menu.addAction(dup_act)
+        menu.addAction(close_others_act)
+        menu.exec_(bar.mapToGlobal(pos))
+
     def current_view(self) -> QWebEngineView:
         w = self.tabs.currentWidget()
         return w if isinstance(w, QWebEngineView) else None
@@ -596,6 +664,7 @@ class Browser(QMainWindow):
         view = self.current_view()
         if view:
             self.sync_urlbar(view.url())
+        self.update_adblock_action()
 
     # ========== Navigare ==========
     def navigate(self):
@@ -735,6 +804,34 @@ class Browser(QMainWindow):
                 except Exception as e:
                     QMessageBox.critical(self, "Eroare", str(e))
 
+    # ========== Adblock ==========
+    def toggle_adblock_site(self):
+        v = self.current_view()
+        if not v:
+            return
+        host = v.url().host().lower()
+        wl = self.cfg.setdefault("adblock_whitelist", [])
+        if host in wl:
+            wl.remove(host)
+            QMessageBox.information(self, "AdBlock", f"AdBlock activat pentru {host}")
+        else:
+            wl.append(host)
+            QMessageBox.information(self, "AdBlock", f"AdBlock dezactivat pentru {host}")
+        save_config(self.cfg)
+        self.update_adblock_action()
+        v.reload()
+
+    def update_adblock_action(self):
+        v = self.current_view()
+        host = v.url().host().lower() if v else ""
+        wl = [h.lower() for h in self.cfg.get("adblock_whitelist", [])]
+        if host in wl:
+            self.adblock_act.setText("🚫")
+            self.adblock_act.setToolTip("AdBlock dezactivat - clic pentru activare")
+        else:
+            self.adblock_act.setText("⛔")
+            self.adblock_act.setToolTip("AdBlock activ - clic pentru dezactivare pe acest site")
+
     # ========== Settings Tab ==========
     def open_settings_tab(self):
         tab = SettingsTab(self, self.cfg, self.on_import_bookmarks_click)
@@ -764,6 +861,30 @@ class Browser(QMainWindow):
         app_font.setPointSize(ui_px)
         QApplication.instance().setFont(app_font)
 
+    def update_stylesheet(self):
+        accent = self.cfg.get("accent_color", DEFAULT_CONFIG["accent_color"])
+        acc = QColor(accent)
+        tab_sel_bg = f"rgba({acc.red()}, {acc.green()}, {acc.blue()}, 0.18)"
+        self.setStyleSheet(f"""
+            QMainWindow {{ background-color: #0b0b0d; }}
+            QToolBar {{
+              background: rgba(255,255,255,0.04);
+              border: 1px solid rgba(255,255,255,0.08);
+              padding: 8px; spacing: 8px; border-radius: 14px;
+            }}
+            QLineEdit {{
+              background: rgba(255,255,255,0.06); color: #eaeaea; border: 1px solid rgba(255,255,255,0.1);
+              padding: 12px 14px; border-radius: 12px; min-width: 400px;
+            }}
+            QLineEdit:focus {{ border-color: {accent}; }}
+            QTabBar::tab {{
+              background: rgba(255,255,255,0.05); color: #d9d9d9; padding: 10px 14px; border-radius: 10px; margin: 6px 6px 2px 6px;
+            }}
+            QTabBar::tab:selected {{ background: {tab_sel_bg}; color: #ffffff; }}
+            QToolButton {{ color: #f0f0f0; }}
+            QToolButton:hover {{ color: #ffffff; }}
+        """)
+
     def apply_theme(self, dark: bool):
         self.cfg["dark_mode"] = bool(dark)
         save_config(self.cfg)
@@ -779,7 +900,7 @@ class Browser(QMainWindow):
             pal.setColor(QPalette.Button, QColor(26, 26, 30))
             pal.setColor(QPalette.ButtonText, QColor(230, 230, 230))
             pal.setColor(QPalette.BrightText, Qt.red)
-            pal.setColor(QPalette.Highlight, QColor(90, 150, 255))
+            pal.setColor(QPalette.Highlight, QColor(self.cfg.get("accent_color", DEFAULT_CONFIG["accent_color"])))
             pal.setColor(QPalette.HighlightedText, Qt.white)
         else:
             pal = QApplication.style().standardPalette()
