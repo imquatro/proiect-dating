@@ -28,7 +28,7 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
         </div>
         <div class="vip-tab-content">
             <div class="tab-content active" id="vip">
-                 <div class="vip-sub-tabs">
+                <div class="vip-sub-tabs">
                     <button class="sub-tab-btn active" data-subtab="benefits">Benefits</button>
                     <button class="sub-tab-btn" data-subtab="frames">Frames</button>
                     <button class="sub-tab-btn" data-subtab="cards">Cards</button>
@@ -54,7 +54,7 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
                         <?php endif; ?>
                         <div class="vip-frame-grid">
                             <?php foreach ($frames as $img): ?>
-                            <div class="vip-frame-item" data-frame="<?= htmlspecialchars($frameDir . '/' . $img) ?>">
+                            <div class="vip-frame-item<?= $currentFrame === $img ? ' selected' : '' ?>" data-frame="<?= htmlspecialchars($frameDir . '/' . $img) ?>">
                                 <img src="<?= htmlspecialchars($frameDir . '/' . $img) ?>" alt="VIP Frame">
                                 <?php if ($isVip): ?>
                                 <button class="apply-frame-btn" data-frame="<?= htmlspecialchars($img) ?>">Apply</button>
@@ -73,7 +73,7 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
                         <?php endif; ?>
                         <div class="vip-card-grid">
                             <?php foreach ($cards as $img): ?>
-                            <div class="vip-card-item" data-card="<?= htmlspecialchars($cardDir . '/' . $img) ?>">
+                            <div class="vip-card-item<?= $currentCard === $img ? ' selected' : '' ?>" data-card="<?= htmlspecialchars($cardDir . '/' . $img) ?>">
                                 <img src="<?= htmlspecialchars($cardDir . '/' . $img) ?>" alt="VIP Card">
                                 <?php if ($isVip): ?>
                                 <button class="apply-card-btn" data-card="<?= htmlspecialchars($img) ?>">Apply</button>
@@ -100,6 +100,7 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
 <?php
 $content = ob_get_clean();
 $pageCss = 'assets_css/vip.css';
+$extraCss = ['assets_css/mini-profile.css'];
 $extraJs = '<script src="assets_js/vip.js"></script>';
 include 'template.php';
 ?>

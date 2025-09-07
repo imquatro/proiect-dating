@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedCard = null;
 
     const frameItems = panel.querySelectorAll('.vip-frame-item');
+    const initialFrame = panel.querySelector('.vip-frame-item.selected');
+    if (initialFrame) {
+        selectedFrame = initialFrame.dataset.frame;
+    }
     frameItems.forEach(item => {
         item.addEventListener('click', e => {
             if (e.target.closest('button')) return;
@@ -50,6 +54,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const cardItems = panel.querySelectorAll('.vip-card-item');
+    const initialCard = panel.querySelector('.vip-card-item.selected');
+    if (initialCard) {
+        selectedCard = initialCard.dataset.card;
+    }
     cardItems.forEach(item => {
         item.addEventListener('click', e => {
             if (e.target.closest('button')) return;
