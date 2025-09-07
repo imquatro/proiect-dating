@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/includes/db.php';
 $userId   = (int)$_SESSION['user_id'];
 $targetId = isset($_REQUEST['user_id']) ? (int)$_REQUEST['user_id'] : $userId;
+$since    = isset($_GET['since']) ? (int)$_GET['since'] : 0;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($targetId !== $userId) {
@@ -34,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $db->prepare(
         'INSERT INTO user_slot_states
            (user_id, slot_number, image, water_interval, feed_interval,
-            water_remaining, feed_remaining, timer_type, timer_end)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            water_remaining, feed_remaining, timer_type, timer_end, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
          ON DUPLICATE KEY UPDATE
            image          = VALUES(image),
            water_interval = VALUES(water_interval),
@@ -43,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            water_remaining = VALUES(water_remaining),
            feed_remaining  = VALUES(feed_remaining),
            timer_type      = VALUES(timer_type),
-           timer_end       = VALUES(timer_end)'
+           timer_end       = VALUES(timer_end),
+           updated_at      = NOW()'
     );
-    $delStmt = $db->prepare(
         'DELETE FROM user_slot_states WHERE user_id = ? AND slot_number = ?'
     );
 
@@ -92,22 +93,28 @@ if ($targetId === $userId) {
     )->execute([$targetId, $targetId]);
 }
 
-$stmt = $db->prepare(
-    'SELECT COALESCE(us.slot_number, up.slot_number) AS slot_number,
-            COALESCE(ss.image, f.image_plant) AS image,
-            COALESCE(ss.water_interval, us.water_interval) AS water_interval,
-            COALESCE(ss.feed_interval, us.feed_interval) AS feed_interval,
-            COALESCE(ss.water_remaining, us.water_remaining) AS water_remaining,
-            COALESCE(ss.feed_remaining, us.feed_remaining) AS feed_remaining,
-            COALESCE(ss.timer_type, us.timer_type) AS timer_type,
-            COALESCE(ss.timer_end, us.timer_end) AS timer_end
-       FROM user_plants up
-       JOIN farm_items f ON f.id = up.item_id
-       LEFT JOIN user_slot_states ss ON ss.user_id = up.user_id AND ss.slot_number = up.slot_number
-       LEFT JOIN user_slots us ON us.user_id = up.user_id AND us.slot_number = up.slot_number
-      WHERE up.user_id = ?'
-);
-$stmt->execute([$targetId]);
+$query = 'SELECT COALESCE(us.slot_number, up.slot_number) AS slot_number,
+                 COALESCE(ss.image, f.image_plant) AS image,
+                 COALESCE(ss.water_interval, us.water_interval) AS water_interval,
+                 COALESCE(ss.feed_interval, us.feed_interval) AS feed_interval,
+                 COALESCE(ss.water_remaining, us.water_remaining) AS water_remaining,
+                 COALESCE(ss.feed_remaining, us.feed_remaining) AS feed_remaining,
+                 COALESCE(ss.timer_type, us.timer_type) AS timer_type,
+                 COALESCE(ss.timer_end, us.timer_end) AS timer_end,
+                 ss.updated_at
+            FROM user_plants up
+            JOIN farm_items f ON f.id = up.item_id
+            LEFT JOIN user_slot_states ss ON ss.user_id = up.user_id AND ss.slot_number = up.slot_number
+            LEFT JOIN user_slots us ON us.user_id = up.user_id AND us.slot_number = up.slot_number
+           WHERE up.user_id = ?';
+if ($since) {
+    $query .= ' AND ss.updated_at > ?';
+    $stmt = $db->prepare($query);
+    $stmt->execute([$targetId, date('Y-m-d H:i:s', $since / 1000)]);
+} else {
+    $stmt = $db->prepare($query);
+    $stmt->execute([$targetId]);
+}
 $states = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $slot = (int)$row['slot_number'];
@@ -123,7 +130,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'waterRemaining' => (int)$row['water_remaining'],
         'feedRemaining'  => (int)$row['feed_remaining'],
         'timerType'      => $row['timer_type'],
-        'timerEnd'       => $timerEnd
+        'timerEnd'       => $timerEnd,
+        'updatedAt'      => $row['updated_at'] ? (strtotime($row['updated_at']) * 1000) : null
     ];
 }
 
