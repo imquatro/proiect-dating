@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!select.dataset.bound) {
             select.addEventListener('change', updatePreview);
             select.dataset.bound = '1';
+       
         }
         updatePreview();
         const btn = document.getElementById('depositBtn');
@@ -207,11 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.deposits.forEach(dep => {
                     const div = document.createElement('div');
                     div.className = 'active-deposit';
-                    const final = dep.amount + dep.interest;
+                    const moneyIcon = '<img src="img/money.png" alt="Money" class="money-icon">';
                     div.innerHTML = `
-                        <div>Deposit: ${numberFormat(dep.amount)}</div>
-                        <div>Final: ${numberFormat(final)}</div>
-                        <div class="countdown" data-end="${dep.end_ts * 1000}"></div>
+                        <div>Depozit: ${moneyIcon} ${numberFormat(dep.amount)}</div>
+                        <div>Dobanda castig: ${moneyIcon} ${numberFormat(dep.interest)}</div>
+                        <div class="countdown" data-end="${dep.end_ts * 1000}" data-interest="${dep.interest}"></div>
                         <button class="cancel-btn" data-id="${dep.id}">Cancel</button>
                     `;
                     container.appendChild(div);
@@ -244,17 +245,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const depEls = container.querySelectorAll('.countdown');
         depEls.forEach(el => {
             const end = parseInt(el.dataset.end, 10);
+            const interest = parseInt(el.dataset.interest, 10) || 0;
             function tick() {
                 const now = Date.now();
-                let diff = Math.max(0, end - now);
-                const h = Math.floor(diff / 3600000);
-                diff %= 3600000;
-                const m = Math.floor(diff / 60000);
-                diff %= 60000;
-                const s = Math.floor(diff / 1000);
+                const diff = Math.max(0, end - now);
+                const totalSeconds = diff > 0 ? Math.ceil(diff / 1000) : 0;
+                const h = Math.floor(totalSeconds / 3600);
+                const m = Math.floor((totalSeconds % 3600) / 60);
+                const s = totalSeconds % 60;
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
                 if (now >= end) {
                     clearInterval(interval);
+                    const msg = document.getElementById('depositMessage');
+                    if (msg) {
+                        msg.style.color = '#fff';
+                        msg.innerHTML = `Dobanda castig: <img src="img/money.png" alt="Money" class="money-icon"> ${numberFormat(interest)}`;
+                    }
                     loadActive(container.id);
                 }
             }
