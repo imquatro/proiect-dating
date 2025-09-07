@@ -175,11 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTimers.delete(slotId);
     }
 
-    async function handleActionClick(e) {
+    function handleActionClick(e) {
         const actionEl = e.currentTarget;
+        const action   = actionEl.dataset.action;
         const slot     = actionEl.closest('.farm-slot');
         const slotId   = slot.id.replace('slot-', '');
-        let action     = actionEl.dataset.action;
 
         // For watering/feeding we prevent the slot click handler
         // from opening the management panel. Harvest actions should
@@ -193,24 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.showFriendRequestCard) window.showFriendRequestCard();
             return;
         }
-
-        // Refresh slot states before handling the action so helpers
-        // do not act on stale data when another user has already
-        // completed the current step.
-        if (action !== 'harvest') {
-            await loadStates();
-            const updated = slotStates[slotId];
-            if (!updated) return;
-            if (action === 'water' && updated.waterRemaining <= 0) {
-                checkNextAction(slotId);
-                return;
-            }
-            if (action === 'feed' && updated.feedRemaining <= 0) {
-                checkNextAction(slotId);
-                return;
-            }
-        }
-
         const state = slotStates[slotId];
         if (!state) return;
 

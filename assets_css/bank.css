@@ -3,11 +3,6 @@
     height: auto;
     margin-bottom: 8px;
 }
-
-/* Ensure bank content isn't obscured by the bottom navigation on mobile */
-#bank {
-    padding-bottom: 60px;
-}
 .bank-buttons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -79,11 +74,4 @@
 .cancel-btn:disabled {
     opacity: 0.5;
     cursor: default;
-}
-
-.money-icon {
-    width: 16px;
-    height: 16px;
-    vertical-align: middle;
-    margin-right: 2px;
 }

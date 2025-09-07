@@ -59,68 +59,53 @@ document.addEventListener('DOMContentLoaded', () => {
     function initDeposit() {
         const select = document.getElementById('depositHours');
         if (select && !select.options.length) {
-            [6, 12, 24].forEach(h => {
+            for (let i = 1; i <= 24; i++) {
                 const opt = document.createElement('option');
-                opt.value = h;
-                opt.textContent = `${h}h`;
+                opt.value = i;
+                opt.textContent = `${i}h`;
                 select.appendChild(opt);
-            });
-            select.value = '6';
-        }
-        if (!select.dataset.bound) {
-            select.addEventListener('change', updatePreview);
-            select.dataset.bound = '1';
-       
+            }
         }
         updatePreview();
+        select.addEventListener('change', updatePreview);
         const btn = document.getElementById('depositBtn');
-        if (!btn.dataset.bound) {
-            btn.addEventListener('click', handleDeposit);
-            btn.dataset.bound = '1';
-        }
-        loadActive('activeDeposits');
-    }
-
-    function handleDeposit() {
-        const select = document.getElementById('depositHours');
-        const btn = document.getElementById('depositBtn');
-        const hours = parseInt(select.value, 10);
-        if (btn.disabled) return;
-        btn.disabled = true;
-        fetch('bank_api.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `action=deposit&hours=${hours}`
-        })
-            .then(r => r.json())
-            .then(data => {
-                const msg = document.getElementById('depositMessage');
-                if (data.error) {
-                    if (data.error === 'Not enough funds') {
-                        msg.textContent = 'You need 1,000,000 coins to deposit.';
-                    } else {
-                        msg.textContent = data.error;
-                    }
-                } else {
-                    msg.style.color = '#fff';
-                    msg.textContent = 'Deposit successful';
-                    loadActive('activeDeposits');
-                }
-                updateLimit(data.remaining);
+        btn.addEventListener('click', () => {
+            const hours = parseInt(select.value, 10);
+            btn.disabled = true;
+            fetch('bank_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=deposit&hours=${hours}`
             })
-            .catch(() => {
-                btn.disabled = false;
-            });
+                .then(r => r.json())
+                .then(data => {
+                    const msg = document.getElementById('depositMessage');
+                    if (data.error) {
+                        if (data.error === 'Not enough funds') {
+                            msg.textContent = 'You need 1,000,000 coins to deposit.';
+                        } else {
+                            msg.textContent = data.error;
+                        }
+                    } else {
+                        msg.style.color = '#fff';
+                        msg.textContent = 'Deposit successful';
+                        loadActive('activeDeposits');
+                    }
+                    updateLimit(data.remaining);
+                })
+                .catch(() => {
+                    btn.disabled = false;
+                });
+        });
+        loadActive('activeDeposits');
     }
 
     function updatePreview() {
         const hours = parseInt(document.getElementById('depositHours').value, 10);
         const amount = 1000000;
-        const interestMap = {6: 10000, 12: 15000, 24: 30000};
-        const interest = interestMap[hours] || 0;
+        const interest = hours * 100;
         const final = amount + interest;
-        document.getElementById('depositPreview').textContent =
-            `Deposit: ${numberFormat(amount)} | Interest: ${numberFormat(interest)} | Final after ${hours}h: ${numberFormat(final)}`;
+        document.getElementById('depositPreview').textContent = `Deposit: ${numberFormat(amount)} | Interest: ${numberFormat(interest)} | Final after ${hours}h: ${numberFormat(final)}`;
     }
 
     function initLoan() {
@@ -208,11 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.deposits.forEach(dep => {
                     const div = document.createElement('div');
                     div.className = 'active-deposit';
-                    const moneyIcon = '<img src="img/money.png" alt="Money" class="money-icon">';
+                    const final = dep.amount + dep.interest;
                     div.innerHTML = `
-                        <div>Depozit: ${moneyIcon} ${numberFormat(dep.amount)}</div>
-                        <div>Dobanda castig: ${moneyIcon} ${numberFormat(dep.interest)}</div>
-                        <div class="countdown" data-end="${dep.end_ts * 1000}" data-interest="${dep.interest}"></div>
+                        <div>Deposit: ${numberFormat(dep.amount)}</div>
+                        <div>Final: ${numberFormat(final)}</div>
+                        <div class="countdown" data-end="${dep.end_time}"></div>
                         <button class="cancel-btn" data-id="${dep.id}">Cancel</button>
                     `;
                     container.appendChild(div);
@@ -243,30 +228,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startCountdown(container) {
         const depEls = container.querySelectorAll('.countdown');
-        depEls.forEach(el => {
-            const end = parseInt(el.dataset.end, 10);
-            const interest = parseInt(el.dataset.interest, 10) || 0;
-            function tick() {
-                const now = Date.now();
-                const diff = Math.max(0, end - now);
-                const totalSeconds = diff > 0 ? Math.ceil(diff / 1000) : 0;
-                const h = Math.floor(totalSeconds / 3600);
-                const m = Math.floor((totalSeconds % 3600) / 60);
-                const s = totalSeconds % 60;
+        function tick() {
+            const now = Date.now();
+            depEls.forEach(el => {
+                const end = new Date(el.dataset.end).getTime();
+                let diff = Math.max(0, end - now);
+                const h = Math.floor(diff / 3600000);
+                diff %= 3600000;
+                const m = Math.floor(diff / 60000);
+                diff %= 60000;
+                const s = Math.floor(diff / 1000);
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                if (now >= end) {
-                    clearInterval(interval);
-                    const msg = document.getElementById('depositMessage');
-                    if (msg) {
-                        msg.style.color = '#fff';
-                        msg.innerHTML = `Dobanda castig: <img src="img/money.png" alt="Money" class="money-icon"> ${numberFormat(interest)}`;
-                    }
-                    loadActive(container.id);
-                }
-            }
-            tick();
-            const interval = setInterval(tick, 1000);
-        });
+            });
+        }
+        tick();
+        setInterval(tick, 1000);
     }
 
     function loadHistory() {
