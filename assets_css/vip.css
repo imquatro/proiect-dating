@@ -139,9 +139,35 @@
     margin-top: 15px;
     justify-content: center;
 }
+
+.vip-preview .mini-cards-row {
+    --slot-size: 100px;
+}
 @media (max-width: 480px) {
     .tab-btn, .sub-tab-btn {
         padding: 5px 2px;
         font-size: 12px;
+    }
+
+    .content {
+        overflow: hidden;
+    }
+
+    .vip-container {
+        height: 100%;
+        flex-direction: column;
+    }
+
+    .vip-panel {
+        flex: 1;
+        width: 100%;
+        max-width: none;
+        height: auto;
+        max-height: none;
+        margin-top: 0;
+    }
+
+    .vip-preview {
+        margin-top: 10px;
     }
 }
