@@ -34,15 +34,17 @@ if ($action === 'deposit') {
     $hours = max(1, min(24, (int)($_REQUEST['hours'] ?? 1)));
     $amount = 1000000;
     $money = getMoney($db, $userId);
-    if ($money < $amount) {
-        echo json_encode(['error' => 'Not enough funds', 'money' => $money]);
-        exit;
-    }
     $today = date('Y-m-d 00:00:00');
     $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
     $stmt->execute([$userId, $today]);
-    if ($stmt->fetchColumn() >= 10) {
-        echo json_encode(['error' => 'Daily deposit limit reached', 'money' => $money]);
+    $count = (int)$stmt->fetchColumn();
+    $remaining = max(0, 10 - $count);
+    if ($money < $amount) {
+        echo json_encode(['error' => 'Not enough funds', 'money' => $money, 'remaining' => $remaining]);
+        exit;
+    }
+    if ($count >= 10) {
+        echo json_encode(['error' => 'Daily deposit limit reached', 'money' => $money, 'remaining' => 0]);
         exit;
     }
     $interest = $hours * 100;
@@ -54,7 +56,35 @@ if ($action === 'deposit') {
         ->execute([$userId, $amount, $interest, $hours, $start, $end]);
     $db->commit();
     $money -= $amount;
-    echo json_encode(['success' => true, 'money' => $money, 'deposit' => ['amount' => $amount, 'interest' => $interest, 'hours' => $hours, 'start_time' => $start, 'end_time' => $end]]);
+    $remaining = max(0, 10 - ($count + 1));
+    echo json_encode(['success' => true, 'money' => $money, 'deposit' => ['amount' => $amount, 'interest' => $interest, 'hours' => $hours, 'start_time' => $start, 'end_time' => $end], 'remaining' => $remaining]);
+    exit;
+}
+
+if ($action === 'cancel') {
+    $id = (int)($_POST['id'] ?? 0);
+    $stmt = $db->prepare('SELECT amount, end_time FROM bank_deposits WHERE id = ? AND user_id = ? AND claimed = 0');
+    $stmt->execute([$id, $userId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        echo json_encode(['error' => 'Invalid deposit']);
+        exit;
+    }
+    if (time() >= strtotime($row['end_time'])) {
+        echo json_encode(['error' => 'Deposit already matured']);
+        exit;
+    }
+    $amount = (int)$row['amount'];
+    $db->beginTransaction();
+    $db->prepare('DELETE FROM bank_deposits WHERE id = ?')->execute([$id]);
+    $db->prepare('UPDATE users SET money = money + ? WHERE id = ?')->execute([$amount, $userId]);
+    $db->commit();
+    $money = getMoney($db, $userId);
+    $today = date('Y-m-d 00:00:00');
+    $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
+    $stmt->execute([$userId, $today]);
+    $remaining = max(0, 10 - (int)$stmt->fetchColumn());
+    echo json_encode(['success' => true, 'money' => $money, 'remaining' => $remaining]);
     exit;
 }
 
@@ -74,17 +104,21 @@ if ($action === 'active' || $action === 'history') {
         }
     }
     $money = getMoney($db, $userId);
+    $today = date('Y-m-d 00:00:00');
+    $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
+    $stmt->execute([$userId, $today]);
+    $remaining = max(0, 10 - (int)$stmt->fetchColumn());
     if ($action === 'active') {
         $stmt = $db->prepare('SELECT id, amount, interest, hours, start_time, end_time FROM bank_deposits WHERE user_id = ? AND claimed = 0 ORDER BY end_time');
         $stmt->execute([$userId]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(['deposits' => $rows, 'money' => $money]);
+        echo json_encode(['deposits' => $rows, 'money' => $money, 'remaining' => $remaining]);
         exit;
     } else {
         $stmt = $db->prepare('SELECT amount, interest, hours, start_time, end_time FROM bank_deposits WHERE user_id = ? AND claimed = 1 ORDER BY end_time DESC LIMIT 50');
         $stmt->execute([$userId]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(['history' => $rows, 'money' => $money]);
+        echo json_encode(['history' => $rows, 'money' => $money, 'remaining' => $remaining]);
         exit;
     }
 }

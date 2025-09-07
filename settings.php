@@ -34,7 +34,7 @@ ob_start();
                     </div>
                     <?php endif; ?>
                     <div class="subtab-content" id="bank">
-                        <img src="img/bg2.png" alt="Bank" class="bank-header-img">
+                        <img src="img/bank.png" alt="Bank" class="bank-header-img">
                         <h3>Welcome to our bank!</h3>
                         <p>What can we do for you?</p>
                         <div class="bank-buttons">
