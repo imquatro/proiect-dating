@@ -31,6 +31,11 @@
     display: block;
     margin: 8px 0;
 }
+
+.loan-form label {
+    display: block;
+    margin: 8px 0;
+}
 .deposit-preview {
     margin: 6px 0;
     font-weight: bold;
