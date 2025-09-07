@@ -27,12 +27,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 adminContainer.innerHTML = html;
                 const panelEl = adminContainer.querySelector('#fa-admin-panel');
                 if (panelEl) {
-                    if (typeof initAdminPanel === 'function') {
-                        initAdminPanel(panelEl);
-                    } else {
-                        if (typeof initDeleteItems === 'function') initDeleteItems(panelEl);
-                        if (typeof initEditItems === 'function') initEditItems(panelEl);
-                    }
+                    const boot = () => {
+                        if (typeof initAdminPanel === 'function') {
+                            initAdminPanel(panelEl);
+                        } else if (typeof initDeleteItems === 'function' || typeof initEditItems === 'function') {
+                            if (typeof initDeleteItems === 'function') initDeleteItems(panelEl);
+                            if (typeof initEditItems === 'function') initEditItems(panelEl);
+                        } else {
+                            setTimeout(boot, 50);
+                        }
+                    };
+                    boot();
                 }
             });
     }
