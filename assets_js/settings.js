@@ -21,13 +21,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     const adminContainer = document.getElementById('adminPanelContainer');
     if (adminContainer) {
-        fetch('farm_admin/panel.php?ajax=1')
+        fetch('farm_admin/panel.php?ajax=1', { credentials: 'same-origin' })
             .then(res => res.text())
             .then(html => {
                 adminContainer.innerHTML = html;
-                if (typeof initAdminPanel === 'function') {
-                    const panelEl = adminContainer.querySelector('#fa-admin-panel');
-                    if (panelEl) initAdminPanel(panelEl);
+                const panelEl = adminContainer.querySelector('#fa-admin-panel');
+                if (panelEl) {
+                    if (typeof initAdminPanel === 'function') {
+                        initAdminPanel(panelEl);
+                    } else {
+                        if (typeof initDeleteItems === 'function') initDeleteItems(panelEl);
+                        if (typeof initEditItems === 'function') initEditItems(panelEl);
+                    }
                 }
             });
     }
