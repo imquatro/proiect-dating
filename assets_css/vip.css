@@ -139,6 +139,10 @@
     margin-top: 15px;
     justify-content: center;
 }
+
+.vip-preview .mini-cards-row {
+    --slot-size: 100px;
+}
 @media (max-width: 480px) {
     .tab-btn, .sub-tab-btn {
         padding: 5px 2px;
