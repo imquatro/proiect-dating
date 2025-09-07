@@ -3,6 +3,11 @@
     height: auto;
     margin-bottom: 8px;
 }
+
+/* Ensure bank content isn't obscured by the bottom navigation on mobile */
+#bank {
+    padding-bottom: 60px;
+}
 .bank-buttons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
