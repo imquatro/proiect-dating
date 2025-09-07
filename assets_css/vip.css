@@ -95,6 +95,7 @@
     gap: 8px;
 }
 
+
 .vip-frame-item img, .vip-card-item img {
     width: 80px;
     height: 80px;
@@ -105,13 +106,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    cursor: pointer;
 }
 
-.apply-frame-btn, .apply-card-btn {
-    margin-top: 4px;
-    padding: 2px 6px;
-    font-size: 12px;
-    cursor: pointer;
+.vip-frame-item.selected img,
+.vip-card-item.selected img {
+    outline: 3px solid #f6cf49;
 }
 
 .remove-frame {
@@ -133,6 +133,12 @@
 .vip-benefit-list {
     list-style: disc;
     margin-left: 1.2em;
+}
+
+.vip-preview {
+    display: none;
+    margin-top: 15px;
+    justify-content: center;
 }
 @media (max-width: 480px) {
     .tab-btn, .sub-tab-btn {

@@ -13,22 +13,90 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
     const panel = document.getElementById('vipPanel');
     if (!panel) return;
+
     initTabs(panel, '.tab-btn', '.tab-content', 'data-tab');
-    panel.querySelectorAll('.vip-sub-tabs').forEach(sub => {
-        initTabs(sub.parentElement, '.sub-tab-btn', '.subtab-content', 'data-subtab');
+    initTabs(panel, '.sub-tab-btn', '.subtab-content', 'data-subtab');
+
+    const preview = document.getElementById('vipPreview');
+    const previewProfile = preview ? preview.querySelector('#miniProfile') : null;
+    const previewFrame = previewProfile ? previewProfile.querySelector('.mini-profile-frame') : null;
+    const previewCard = previewProfile ? previewProfile.querySelector('.mini-profile-card') : null;
+    const originalFrameSrc = previewFrame ? previewFrame.src : '';
+    const originalCardBg = previewCard ? previewCard.style.backgroundImage : '';
+
+    let selectedFrame = null;
+    let selectedCard = null;
+
+    const frameItems = panel.querySelectorAll('.vip-frame-item');
+    frameItems.forEach(item => {
+        item.addEventListener('click', e => {
+            if (e.target.closest('button')) return;
+            const frame = item.dataset.frame;
+            if (!frame || !previewFrame) return;
+            if (selectedFrame === frame) {
+                selectedFrame = null;
+                item.classList.remove('selected');
+                previewFrame.src = originalFrameSrc;
+            } else {
+                selectedFrame = frame;
+                frameItems.forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                previewFrame.src = frame;
+            }
+        });
     });
 
-    const grid = panel.querySelector('.vip-frame-grid');
-    if (grid) {
-        grid.addEventListener('click', e => {
+    const cardItems = panel.querySelectorAll('.vip-card-item');
+    cardItems.forEach(item => {
+        item.addEventListener('click', e => {
+            if (e.target.closest('button')) return;
+            const card = item.dataset.card;
+            if (!card || !previewCard) return;
+            if (selectedCard === card) {
+                selectedCard = null;
+                item.classList.remove('selected');
+                previewCard.style.backgroundImage = originalCardBg;
+            } else {
+                selectedCard = card;
+                cardItems.forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                previewCard.style.backgroundImage = `url('${card}')`;
+            }
+        });
+    });
+
+    function updatePreviewVisibility(tab) {
+        if (!preview) return;
+        if (tab === 'frames' || tab === 'cards') {
+            preview.style.display = 'flex';
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    const subTabBtns = panel.querySelectorAll('.sub-tab-btn');
+    subTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            updatePreviewVisibility(btn.dataset.subtab);
+        });
+    });
+    const activeBtn = panel.querySelector('.sub-tab-btn.active');
+    if (activeBtn) {
+        updatePreviewVisibility(activeBtn.dataset.subtab);
+    }
+
+    const frameGrid = panel.querySelector('.vip-frame-grid');
+    if (frameGrid) {
+        frameGrid.addEventListener('click', e => {
             const btn = e.target.closest('.apply-frame-btn');
             if (!btn) return;
             const frame = btn.dataset.frame;
             fetch('apply_frame.php', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'frame=' + encodeURIComponent(frame),
                 credentials: 'same-origin'
             })
@@ -49,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const card = btn.dataset.card;
             fetch('apply_card.php', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'card=' + encodeURIComponent(card),
                 credentials: 'same-origin'
             })
@@ -67,14 +135,12 @@ document.addEventListener('DOMContentLoaded', function () {
         removeBtn.addEventListener('click', () => {
             fetch('apply_frame.php', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'frame=',
                 credentials: 'same-origin'
             })
             .then(res => res.json())
-            .then(data => {
-                if (data.success) location.reload();
-            })
+            .then(data => { if (data.success) location.reload(); })
             .catch(err => console.error(err));
         });
     }
@@ -84,14 +150,12 @@ document.addEventListener('DOMContentLoaded', function () {
         removeCardBtn.addEventListener('click', () => {
             fetch('apply_card.php', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'card=',
                 credentials: 'same-origin'
             })
             .then(res => res.json())
-            .then(data => {
-                if (data.success) location.reload();
-            })
+            .then(data => { if (data.success) location.reload(); })
             .catch(err => console.error(err));
         });
     }

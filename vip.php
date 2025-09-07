@@ -28,13 +28,13 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
         </div>
         <div class="vip-tab-content">
             <div class="tab-content active" id="vip">
-                <div class="vip-sub-tabs">
-                    <button class="sub-tab-btn" data-subtab="benefits">Benefits</button>
+                 <div class="vip-sub-tabs">
+                    <button class="sub-tab-btn active" data-subtab="benefits">Benefits</button>
                     <button class="sub-tab-btn" data-subtab="frames">Frames</button>
                     <button class="sub-tab-btn" data-subtab="cards">Cards</button>
                 </div>
                 <div class="vip-subtab-content">
-                    <div class="subtab-content" id="benefits">
+                    <div class="subtab-content active" id="benefits">
                         <h1 class="vip-benefit-title">Unlock the VIP Experience</h1>
                         <p class="vip-benefit-text">VIP status unlocks in-game advantages and dazzling style:</p>
                         <ul class="vip-benefit-list">
@@ -54,7 +54,7 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
                         <?php endif; ?>
                         <div class="vip-frame-grid">
                             <?php foreach ($frames as $img): ?>
-                            <div class="vip-frame-item">
+                            <div class="vip-frame-item" data-frame="<?= htmlspecialchars($frameDir . '/' . $img) ?>">
                                 <img src="<?= htmlspecialchars($frameDir . '/' . $img) ?>" alt="VIP Frame">
                                 <?php if ($isVip): ?>
                                 <button class="apply-frame-btn" data-frame="<?= htmlspecialchars($img) ?>">Apply</button>
@@ -73,7 +73,7 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
                         <?php endif; ?>
                         <div class="vip-card-grid">
                             <?php foreach ($cards as $img): ?>
-                            <div class="vip-card-item">
+                            <div class="vip-card-item" data-card="<?= htmlspecialchars($cardDir . '/' . $img) ?>">
                                 <img src="<?= htmlspecialchars($cardDir . '/' . $img) ?>" alt="VIP Card">
                                 <?php if ($isVip): ?>
                                 <button class="apply-card-btn" data-card="<?= htmlspecialchars($img) ?>">Apply</button>
@@ -86,6 +86,16 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
             </div>
         </div>
     </div>
+</div>
+<div id="vipPreview" class="vip-preview">
+    <?php
+    $mini_profile_config = [
+        'show_helpers' => false,
+        'show_achievements' => false,
+        'show_helper_effect' => false
+    ];
+    include 'mini_profile.php';
+    ?>
 </div>
 <?php
 $content = ob_get_clean();
