@@ -123,7 +123,19 @@ if ($action === 'deposit') {
     $db->commit();
     $money -= $amount;
     $remaining = max(0, 10 - ($count + 1));
-    echo json_encode(['success' => true, 'money' => $money, 'deposit' => ['amount' => $amount, 'interest' => $interest, 'hours' => $hours, 'start_time' => $start, 'end_time' => $end], 'remaining' => $remaining]);
+    echo json_encode([
+        'success' => true,
+        'money' => $money,
+        'deposit' => [
+            'amount'      => $amount,
+            'interest'    => $interest,
+            'hours'       => $hours,
+            'start_time'  => $start,
+            'end_time'    => $end,
+            'end_ts'      => strtotime($end)
+        ],
+        'remaining' => $remaining
+    ]);
     exit;
 }
 
@@ -174,7 +186,7 @@ if ($action === 'active') {
     $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
     $stmt->execute([$userId, $today]);
     $remaining = max(0, 10 - (int)$stmt->fetchColumn());
-    $stmt = $db->prepare('SELECT id, amount, interest, hours, start_time, end_time FROM bank_deposits WHERE user_id = ? AND claimed = 0 ORDER BY end_time');
+    $stmt = $db->prepare('SELECT id, amount, interest, hours, start_time, end_time, UNIX_TIMESTAMP(end_time) AS end_ts FROM bank_deposits WHERE user_id = ? AND claimed = 0 ORDER BY end_time');
     $stmt->execute([$userId]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode(['deposits' => $rows, 'money' => $money, 'remaining' => $remaining]);

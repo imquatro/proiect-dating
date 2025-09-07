@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     div.innerHTML = `
                         <div>Deposit: ${numberFormat(dep.amount)}</div>
                         <div>Final: ${numberFormat(final)}</div>
-                        <div class="countdown" data-end="${dep.end_time}"></div>
+                        <div class="countdown" data-end="${dep.end_ts * 1000}"></div>
                         <button class="cancel-btn" data-id="${dep.id}">Cancel</button>
                     `;
                     container.appendChild(div);
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function startCountdown(container) {
         const depEls = container.querySelectorAll('.countdown');
         depEls.forEach(el => {
-            const end = new Date(el.dataset.end).getTime();
+            const end = parseInt(el.dataset.end, 10);
             function tick() {
                 const now = Date.now();
                 let diff = Math.max(0, end - now);
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 diff %= 60000;
                 const s = Math.floor(diff / 1000);
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                if (end <= now) {
+                if (now >= end) {
                     clearInterval(interval);
                     loadActive(container.id);
                 }
