@@ -8,6 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
+    function updateLimit(n) {
+        const el = document.getElementById('depositLimit');
+        const btn = document.getElementById('depositBtn');
+        if (!el || !btn || typeof n !== 'number') return;
+        if (n > 0) {
+            el.textContent = `Deposits remaining today: ${n}`;
+            btn.disabled = false;
+        } else {
+            el.textContent = 'Daily deposit limit reached';
+            btn.disabled = true;
+        }
+    }
+
     function switchTab(target) {
         buttons.forEach(b => b.classList.remove('active'));
         tabs.forEach(t => t.classList.remove('active'));
@@ -41,8 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updatePreview();
         select.addEventListener('change', updatePreview);
-        document.getElementById('depositBtn').addEventListener('click', () => {
+        const btn = document.getElementById('depositBtn');
+        btn.addEventListener('click', () => {
             const hours = parseInt(select.value, 10);
+            btn.disabled = true;
             fetch('bank_api.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -52,12 +67,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     const msg = document.getElementById('depositMessage');
                     if (data.error) {
-                        msg.textContent = data.error;
+                        if (data.error === 'Not enough funds') {
+                            msg.textContent = 'You need 1,000,000 coins to deposit.';
+                        } else {
+                            msg.textContent = data.error;
+                        }
                     } else {
                         msg.style.color = '#fff';
                         msg.textContent = 'Deposit successful';
                         loadActive('activeDeposits');
                     }
+                    updateLimit(data.remaining);
+                })
+                .catch(() => {
+                    btn.disabled = false;
                 });
         });
         loadActive('activeDeposits');
@@ -65,16 +88,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updatePreview() {
         const hours = parseInt(document.getElementById('depositHours').value, 10);
+        const amount = 1000000;
         const interest = hours * 100;
-        const final = 1000000 + interest;
-        document.getElementById('depositPreview').textContent = `After ${hours}h you receive ${numberFormat(final)}`;
+        const final = amount + interest;
+        document.getElementById('depositPreview').textContent = `Deposit: ${numberFormat(amount)} | Interest: ${numberFormat(interest)} | Final after ${hours}h: ${numberFormat(final)}`;
     }
 
     function loadActive(containerId) {
         fetch('bank_api.php?action=active')
             .then(r => r.json())
             .then(data => {
+                updateLimit(data.remaining);
                 const container = document.getElementById(containerId);
+                const msg = document.getElementById('depositMessage');
+                if (msg) msg.textContent = '';
                 container.innerHTML = '';
                 if (!data.deposits || data.deposits.length === 0) {
                     container.innerHTML = '<p>No active deposits.</p>';
@@ -88,18 +115,39 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div>Deposit: ${numberFormat(dep.amount)}</div>
                         <div>Final: ${numberFormat(final)}</div>
                         <div class="countdown" data-end="${dep.end_time}"></div>
+                        <button class="cancel-btn" data-id="${dep.id}">Cancel</button>
                     `;
                     container.appendChild(div);
+                    const cancelBtn = div.querySelector('.cancel-btn');
+                    cancelBtn.addEventListener('click', () => {
+                        cancelBtn.disabled = true;
+                        fetch('bank_api.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `action=cancel&id=${dep.id}`
+                        })
+                            .then(r => r.json())
+                            .then(res => {
+                                if (res.error) {
+                                    const m = document.getElementById('depositMessage');
+                                    if (m) m.textContent = res.error;
+                                    cancelBtn.disabled = false;
+                                } else {
+                                    updateLimit(res.remaining);
+                                    loadActive(containerId);
+                                }
+                            });
+                    });
                 });
                 startCountdown(container);
             });
     }
 
     function startCountdown(container) {
-        const els = container.querySelectorAll('.countdown');
+        const depEls = container.querySelectorAll('.countdown');
         function tick() {
             const now = Date.now();
-            els.forEach(el => {
+            depEls.forEach(el => {
                 const end = new Date(el.dataset.end).getTime();
                 let diff = Math.max(0, end - now);
                 const h = Math.floor(diff / 3600000);
