@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(['read_and_close' => true]);
 header('Content-Type: application/json');
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
