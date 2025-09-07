@@ -112,27 +112,5 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => {});
     }
 
-    function initSSE() {
-        if (!window.EventSource) {
-            setInterval(poll, 500);
-            return;
-        }
-        const es = new EventSource((window.baseUrl || '') + 'helper_stream.php');
-        es.onmessage = e => {
-            try {
-                const data = JSON.parse(e.data);
-                const ts = new Date(data.helped_at).getTime();
-                if (ts <= pageLoadTime) return;
-                lastTimestamp = ts;
-                lastClicks = data.clicks || 1;
-                handleEvent(data);
-            } catch {}
-        };
-        es.onerror = () => {
-            es.close();
-            setInterval(poll, 500);
-        };
-    }
-
-    initSSE();
+    setInterval(poll, 500);
 });
