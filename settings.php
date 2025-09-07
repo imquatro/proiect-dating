@@ -46,6 +46,7 @@ ob_start();
                         <div class="bank-tab active" id="bank-deposit">
                             <div class="deposit-form">
                                 <p>You can deposit <strong>1,000,000</strong> coins. Interest increases by 100 coins per hour.</p>
+                                <p id="depositLimit" class="deposit-limit"></p>
                                 <label>Duration:
                                     <select id="depositHours"></select>
                                 </label>
@@ -56,13 +57,24 @@ ob_start();
                             <div id="activeDeposits"></div>
                         </div>
                         <div class="bank-tab" id="bank-loan">
-                            <p style="color:#fff;">Loans coming soon</p>
+                            <div class="loan-form">
+                                <p>You can borrow up to <strong>10,000</strong> coins. Payback is twice the borrowed amount and 70% of barn sales go toward repayment.</p>
+                                <p id="loanLimit" class="deposit-limit"></p>
+                                <label>Amount:
+                                    <input type="range" id="loanAmount" min="1000" max="10000" step="1000">
+                                </label>
+                                <div id="loanPreview" class="deposit-preview"></div>
+                                <button id="loanBtn" class="bank-action-btn">Borrow</button>
+                                <div id="loanMessage" class="deposit-message"></div>
+                            </div>
+                            <div id="activeLoans"></div>
                         </div>
                         <div class="bank-tab" id="bank-account">
                             <div id="accountDeposits"></div>
                         </div>
                         <div class="bank-tab" id="bank-history">
                             <div id="historyDeposits"></div>
+                            <div id="historyLoans"></div>
                         </div>
                     </div>
                     <div class="subtab-content" id="leaderboard">

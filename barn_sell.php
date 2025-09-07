@@ -38,11 +38,23 @@ try {
         exit;
     }
 
-    $priceStmt = $db->prepare('SELECT sell_price FROM farm_items WHERE id = ?');
+    $priceStmt = $db->prepare('SELECT sell_price, name FROM farm_items WHERE id = ?');
     $priceStmt->execute([$itemId]);
-    $sellPrice = (int)$priceStmt->fetchColumn();
+    $priceRow = $priceStmt->fetch(PDO::FETCH_ASSOC);
+    $sellPrice = (int)$priceRow['sell_price'];
+    $itemName = $priceRow['name'];
 
     $total = $sellPrice * $quantity;
+
+    $loanStmt = $db->prepare('SELECT id, amount_due, amount_repaid FROM bank_loans WHERE user_id = ? AND repaid_time IS NULL ORDER BY start_time FOR UPDATE');
+    $loanStmt->execute([$userId]);
+    $loans = $loanStmt->fetchAll(PDO::FETCH_ASSOC);
+    $outstanding = 0;
+    foreach ($loans as $ln) {
+        $outstanding += ($ln['amount_due'] - $ln['amount_repaid']);
+    }
+    $repayTotal = min((int)floor($total * 0.7), $outstanding);
+    $userGain = $total - $repayTotal;
 
     if ($currentQty - $quantity > 0) {
         $upd = $db->prepare('UPDATE user_barn SET quantity = ? WHERE user_id = ? AND slot_number = ?');
@@ -57,7 +69,22 @@ try {
     }
 
     $moneyUpd = $db->prepare('UPDATE users SET money = money + ?, sales = sales + ? WHERE id = ?');
-    $moneyUpd->execute([$total, $quantity, $userId]);
+    $moneyUpd->execute([$userGain, $quantity, $userId]);
+
+    if ($repayTotal > 0 && $loans) {
+        $remainingRepay = $repayTotal;
+        foreach ($loans as $ln) {
+            if ($remainingRepay <= 0) break;
+            $loanRemaining = $ln['amount_due'] - $ln['amount_repaid'];
+            if ($loanRemaining <= 0) continue;
+            $apply = min($loanRemaining, $remainingRepay);
+            $db->prepare('UPDATE bank_loans SET amount_repaid = amount_repaid + ?, repaid_time = IF(amount_repaid + ? >= amount_due, NOW(), repaid_time) WHERE id = ?')
+                ->execute([$apply, $apply, $ln['id']]);
+            $db->prepare('INSERT INTO bank_loan_payments (loan_id, item_id, item_name, quantity, sale_total, applied, created_at) VALUES (?,?,?,?,?,?,NOW())')
+                ->execute([$ln['id'], $itemId, $itemName, $quantity, $total, $apply]);
+            $remainingRepay -= $apply;
+        }
+    }
 
     // XP gain: 50 XP per stack sold (stack size 1000 or 1)
     $prodStmt = $db->prepare('SELECT production FROM farm_items WHERE id = ?');
@@ -84,7 +111,7 @@ try {
         'levelUp' => $xpResult['levelUp'],
         'newLevel' => $xpResult['newLevel'],
         'xpGain' => $xpResult['xpGain'],
-        'moneyGain' => $total
+        'moneyGain' => $userGain
     ]);
 } catch (Exception $e) {
     if ($db->inTransaction()) {
