@@ -1,6 +1,6 @@
 function normalizeImg(path){
     if(!path) return '';
-    path = path.replace(/^\/+/,'');
+    path = path.replace(/^\/*/,'');
     return path.startsWith('img/') ? path : 'img/' + path;
 }
 
@@ -46,7 +46,7 @@ function initAdminPanel(panel){
             fetch('farm_admin/save_item.php', {
                 method: 'POST',
                 body: formData,
-                credentials: 'same-origin'
+                credentials: 'include'
             })
             .then(res => res.json())
             .then(data => {
@@ -103,7 +103,7 @@ function initAdminPanel(panel){
             fetch('farm_admin/save_vip.php', {
                 method: 'POST',
                 body: formData,
-                credentials: 'same-origin'
+                credentials: 'include'
             })
             .then(res => res.json())
             .then(data => {
@@ -124,7 +124,7 @@ function initAdminPanel(panel){
             fetch('farm_admin/save_achievement.php', {
                 method: 'POST',
                 body: formData,
-                credentials: 'same-origin'
+                credentials: 'include'
             })
             .then(res => res.json())
             .then(data => {
@@ -152,7 +152,7 @@ function initAdminPanel(panel){
             fetch('farm_admin/delete_vip.php', {
                 method: 'POST',
                 body: formData,
-                credentials: 'same-origin'
+                credentials: 'include'
             })
             .then(res => res.json())
             .then(data => {
@@ -167,10 +167,51 @@ function initAdminPanel(panel){
             .catch(err => console.error(err));
         });
     });
+
+    const grid = panel.querySelector('.fa-delete-grid');
+    if (grid) {
+        let selectedId = null;
+        grid.addEventListener('click', e => {
+            const it = e.target.closest('.fa-delete-item');
+            if (!it) return;
+            grid.querySelectorAll('.fa-delete-item').forEach(i => i.classList.remove('selected'));
+            it.classList.add('selected');
+            selectedId = it.dataset.id;
+            const btn = panel.querySelector('#fa-delete-item-btn');
+            if (btn) btn.disabled = false;
+        });
+
+        const btn = panel.querySelector('#fa-delete-item-btn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                if (!selectedId) return;
+                fetch('farm_admin/delete_item.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'id=' + encodeURIComponent(selectedId),
+                    credentials: 'include'
+                })
+                .then(res => {
+                    if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const item = grid.querySelector(`.fa-delete-item[data-id="${selectedId}"]`);
+                        if (item) item.remove();
+                        btn.disabled = true;
+                        selectedId = null;
+                    }
+                })
+                .catch(err => console.error(err));
+            });
+        }
+    }
+
     const versionBtn = panel.querySelector('#fa-update-version');
     if (versionBtn) {
         versionBtn.addEventListener('click', () => {
-            fetch('farm_admin/bump_version.php', { credentials: 'same-origin' })
+            fetch('farm_admin/bump_version.php', { credentials: 'include' })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -181,10 +222,9 @@ function initAdminPanel(panel){
                 .catch(err => console.error(err));
         });
     }
-    initDeleteItems(panel);
+
     initEditItems(panel);
 }
-
 
 function initEditItems(panel){
     const grid = panel.querySelector('.fa-edit-grid');
@@ -208,22 +248,13 @@ function initEditItems(panel){
     typeSel.addEventListener('change', toggleFields);
 
     grid.addEventListener('click', e => {
-        let it = e.target;
-        while (it && it !== grid && !it.classList.contains('fa-edit-item')) {
-            it = it.parentElement;
-        }
-        if (!it || it === grid) return;
-        const items = grid.querySelectorAll('.fa-edit-item');
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove('selected');
-        }
+        const it = e.target.closest('.fa-edit-item');
+        if (!it) return;
+        grid.querySelectorAll('.fa-edit-item').forEach(i => i.classList.remove('selected'));
         it.classList.add('selected');
         const id = it.dataset.id;
-        fetch(`farm_admin/get_item.php?id=${id}`, { credentials: 'same-origin' })
-            .then(res => {
-                if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
-                return res.json();
-            })
+        fetch(`farm_admin/get_item.php?id=${id}`, { credentials: 'include' })
+            .then(res => res.json())
             .then(item => {
                 form.style.display = 'block';
                 form.querySelector('input[name="id"]').value = item.id;
@@ -245,7 +276,7 @@ function initEditItems(panel){
                 form.querySelector('input[name="barn_capacity"]').value = item.barn_capacity;
                 toggleFields();
             })
-            .catch(err => console.error(err));
+            .catch(err => alert(err));
     });
 
     toggleFields();
@@ -256,12 +287,9 @@ function initEditItems(panel){
         fetch('farm_admin/update_item.php', {
             method: 'POST',
             body: formData,
-            credentials: 'same-origin'
+            credentials: 'include'
         })
-        .then(res => {
-            if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
-            return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
             if (data.success) {
                 const item = data.item;
@@ -275,7 +303,7 @@ function initEditItems(panel){
                     delItem.querySelector('img').src = imgPrefix + normalizeImg(item.image_plant);
                     delItem.querySelector('.qs-price').textContent = item.price;
                 }
-                 const qsPanel = document.getElementById('quickshop-panel');
+                const qsPanel = document.getElementById('quickshop-panel');
                 if (qsPanel) {
                     const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${item.id}"]`);
                     if (qsItem) {
@@ -287,67 +315,19 @@ function initEditItems(panel){
                 }
                 form.reset();
                 form.style.display = 'none';
+            } else {
+                alert(data.error || 'Update failed');
             }
         })
-        .catch(err => console.error(err));
+        .catch(err => alert(err));
     });
 }
-
-function initDeleteItems(panel){
-    const grid = panel.querySelector('.fa-delete-grid');
-    const btn = panel.querySelector('#fa-delete-item-btn');
-    if (!grid || !btn) return;
-
-    let selectedId = null;
-
-    grid.addEventListener('click', e => {
-        let it = e.target;
-        while (it && it !== grid && !it.classList.contains('fa-delete-item')) {
-            it = it.parentElement;
-        }
-        if (!it || it === grid) return;
-        const items = grid.querySelectorAll('.fa-delete-item');
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove('selected');
-        }
-        it.classList.add('selected');
-        selectedId = it.dataset.id;
-        btn.disabled = false;
-    });
-
-    btn.addEventListener('click', () => {
-        if (!selectedId) return;
-        fetch('farm_admin/delete_item.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ id: selectedId }),
-            credentials: 'same-origin'
-        })
-        .then(res => {
-            if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
-            return res.json();
-        })
-        .then(data => {
-            if (data.success) {
-                const item = grid.querySelector(`.fa-delete-item[data-id="${selectedId}"]`);
-                if (item) item.remove();
-                btn.disabled = true;
-                selectedId = null;
-            }
-        })
-        .catch(err => console.error(err));
-    });
-}
-
-window.initAdminPanel = initAdminPanel;
-window.initEditItems = initEditItems;
-window.initDeleteItems = initDeleteItems;
 
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('open-admin-panel');
     if (btn) {
         btn.addEventListener('click', () => {
-            fetch('farm_admin/panel.php?ajax=1', { credentials: 'same-origin' })
+            fetch('farm_admin/panel.php?ajax=1', { credentials: 'include' })
                 .then(res => res.text())
                 .then(html => {
                     const temp = document.createElement('div');

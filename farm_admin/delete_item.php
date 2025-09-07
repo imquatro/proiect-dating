@@ -38,7 +38,12 @@ if (!$id) {
 try {
     $stmt = $db->prepare('DELETE FROM farm_items WHERE id = ?');
     $stmt->execute([$id]);
-    echo json_encode(['success' => $stmt->rowCount() > 0]);
+    if ($stmt->rowCount() === 0) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'error' => 'Not found']);
+        exit;
+    }
+    echo json_encode(['success' => true]);
 } catch (Throwable $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);

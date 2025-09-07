@@ -32,3 +32,4 @@ if (!$item) {
     exit;
 }
 echo json_encode($item);
+exit;
