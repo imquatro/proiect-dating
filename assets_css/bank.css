@@ -51,3 +51,22 @@
     font-weight: bold;
     margin-top: 4px;
 }
+
+.deposit-limit {
+    margin-top: 4px;
+    color: #fff;
+}
+
+.cancel-btn {
+    margin-top: 6px;
+    padding: 4px 6px;
+    background: #ff8080;
+    border: 1px solid #ff4d4d;
+    color: #fff;
+    cursor: pointer;
+}
+
+.cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
