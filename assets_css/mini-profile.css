@@ -20,7 +20,6 @@
     align-items: stretch;
     background: url('../img/bg2.png') center/cover no-repeat;
     padding: 0;
-    border: 1px solid #000;
     box-shadow: none;
     width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
     height: var(--slot-size, 60px);
