@@ -99,6 +99,8 @@
     box-shadow:0 2px 6px rgba(0,0,0,0.3);
     overflow:hidden;
     cursor:pointer;
+    box-sizing:border-box;
+    border:3px solid transparent;
 }
 .fa-edit-item img,
 .fa-delete-item img{
@@ -110,7 +112,7 @@
 }
 .fa-edit-item.selected,
 .fa-delete-item.selected{
-    outline:3px solid #4caf50;
+    border-color:#4caf50;
 }
 .fa-edit-item .qs-info,
 .fa-delete-item .qs-info{
