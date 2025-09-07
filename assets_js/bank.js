@@ -67,9 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         updatePreview();
-        select.addEventListener('change', updatePreview);
+        // Use property assignments to avoid stacking event listeners
+        select.onchange = updatePreview;
         const btn = document.getElementById('depositBtn');
-        btn.addEventListener('click', () => {
+        btn.onclick = () => {
             const hours = parseInt(select.value, 10);
             btn.disabled = true;
             fetch('bank_api.php', {
@@ -96,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(() => {
                     btn.disabled = false;
                 });
-        });
+        };
         loadActive('activeDeposits');
     }
 
