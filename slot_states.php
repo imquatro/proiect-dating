@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            timer_end       = VALUES(timer_end),
            updated_at      = NOW()'
     );
+    $delStmt = $db->prepare(
         'DELETE FROM user_slot_states WHERE user_id = ? AND slot_number = ?'
     );
 
