@@ -34,7 +34,36 @@ ob_start();
                     </div>
                     <?php endif; ?>
                     <div class="subtab-content" id="bank">
-                        <p style="color:#fff;">Bank coming soon</p>
+                        <img src="img/bg2.png" alt="Bank" class="bank-header-img">
+                        <h3>Welcome to our bank!</h3>
+                        <p>What can we do for you?</p>
+                        <div class="bank-buttons">
+                            <button class="bank-btn active" data-banktab="deposit">Deposit</button>
+                            <button class="bank-btn" data-banktab="loan">Loan</button>
+                            <button class="bank-btn" data-banktab="account">My Account</button>
+                            <button class="bank-btn" data-banktab="history">History</button>
+                        </div>
+                        <div class="bank-tab active" id="bank-deposit">
+                            <div class="deposit-form">
+                                <p>You can deposit <strong>1,000,000</strong> coins. Interest increases by 100 coins per hour.</p>
+                                <label>Duration:
+                                    <select id="depositHours"></select>
+                                </label>
+                                <div id="depositPreview" class="deposit-preview"></div>
+                                <button id="depositBtn" class="bank-action-btn">Deposit</button>
+                                <div id="depositMessage" class="deposit-message"></div>
+                            </div>
+                            <div id="activeDeposits"></div>
+                        </div>
+                        <div class="bank-tab" id="bank-loan">
+                            <p style="color:#fff;">Loans coming soon</p>
+                        </div>
+                        <div class="bank-tab" id="bank-account">
+                            <div id="accountDeposits"></div>
+                        </div>
+                        <div class="bank-tab" id="bank-history">
+                            <div id="historyDeposits"></div>
+                        </div>
                     </div>
                     <div class="subtab-content" id="leaderboard">
                         <p style="color:#fff;">Leaderboard coming soon</p>
@@ -57,8 +86,8 @@ ob_start();
 $content = ob_get_clean();
 
 $pageCss = 'assets_css/settings.css';
-$extraCss = $isAdmin ? ['farm_admin/admin-panel.css', 'assets_css/profile.css'] : ['assets_css/profile.css'];
-$extraJs = ['assets_js/settings.js', 'assets_js/profile.js'];
+$extraCss = $isAdmin ? ['farm_admin/admin-panel.css', 'assets_css/profile.css', 'assets_css/bank.css'] : ['assets_css/profile.css', 'assets_css/bank.css'];
+$extraJs = ['assets_js/settings.js', 'assets_js/profile.js', 'assets_js/bank.js'];
 if ($isAdmin) {
     $extraJs[] = 'farm_admin/admin-panel.js';
     $extraJs[] = 'farm_admin/achievements.js';
