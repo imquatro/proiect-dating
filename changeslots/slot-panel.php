@@ -49,11 +49,12 @@ if ($hasPlant) {
     $feedDone = $feedTimes - $feedRemaining;
 }
 
+$itemId = $hasPlant ? (int)$plantRow['item_id'] : 0;
+
 $isHarvestReady = $hasPlant && $waterRemaining <= 0 && $feedRemaining <= 0;
 
 $bulkHarvestCount = 0;
 if ($isHarvestReady) {
-    $itemId = (int)$plantRow['item_id'];
     // Count ready slots with the same item
     $countStmt = $db->prepare('SELECT COUNT(*)
                                FROM user_plants up
@@ -97,6 +98,13 @@ if ($isHarvestReady) {
     }
 
     $bulkHarvestCount = min($readyCount, intdiv($available, max(1, $qtyPerSlot)));
+}
+
+$removeCount = 0;
+if ($hasPlant && $itemId) {
+    $delCountStmt = $db->prepare('SELECT COUNT(*) FROM user_plants WHERE user_id = ? AND item_id = ?');
+    $delCountStmt->execute([$userId, $itemId]);
+    $removeCount = (int)$delCountStmt->fetchColumn();
 }
 
 $helpers = [];
@@ -171,6 +179,9 @@ ob_start();
                 <button class="cs-slot-btn" id="cs-slot-harvest-all"><i class="fas fa-layer-group"></i><span>Harvest x<?php echo $bulkHarvestCount; ?></span></button>
             <?php endif; ?>
             <button class="cs-slot-btn" id="cs-slot-remove"><i class="fas fa-trash"></i><span>Remove</span></button>
+            <?php if ($isVip && $removeCount > 1): ?>
+                <button class="cs-slot-btn" id="cs-slot-remove-all"><i class="fas fa-trash-alt"></i><span>Remove x<?php echo $removeCount; ?></span></button>
+            <?php endif; ?>
         <?php else: ?>
             <button class="cs-slot-btn" id="cs-slot-shop"><i class="fas fa-store"></i><span>SHOP</span></button>
             <button class="cs-slot-btn" id="cs-slot-change"><i class="fas fa-random"></i><span>Change Plot Type</span></button>

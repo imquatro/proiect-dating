@@ -163,6 +163,26 @@
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
 }
 
+.confirm-card {
+    width: 220px;
+}
+
+.confirm-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.confirm-actions button {
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 
 .cs-vip-badge {
     position: absolute;
