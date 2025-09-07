@@ -21,6 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function updateLoanLimit(n) {
+        const el = document.getElementById('loanLimit');
+        const btn = document.getElementById('loanBtn');
+        if (!el || !btn || typeof n !== 'number') return;
+        if (n > 0) {
+            el.textContent = `Loans remaining today: ${n}`;
+            btn.disabled = false;
+        } else {
+            el.textContent = 'Daily loan limit reached';
+            btn.disabled = true;
+        }
+    }
+
     function switchTab(target) {
         buttons.forEach(b => b.classList.remove('active'));
         tabs.forEach(t => t.classList.remove('active'));
@@ -37,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const target = btn.getAttribute('data-banktab');
             switchTab(target);
             if (target === 'deposit') initDeposit();
+            if (target === 'loan') initLoan();
             if (target === 'account') loadActive('accountDeposits');
             if (target === 'history') loadHistory();
         });
@@ -92,6 +106,75 @@ document.addEventListener('DOMContentLoaded', () => {
         const interest = hours * 100;
         const final = amount + interest;
         document.getElementById('depositPreview').textContent = `Deposit: ${numberFormat(amount)} | Interest: ${numberFormat(interest)} | Final after ${hours}h: ${numberFormat(final)}`;
+    }
+
+    function initLoan() {
+        const slider = document.getElementById('loanAmount');
+        slider.addEventListener('input', updateLoanPreview);
+        updateLoanPreview();
+        const btn = document.getElementById('loanBtn');
+        btn.addEventListener('click', () => {
+            const amount = parseInt(slider.value, 10);
+            btn.disabled = true;
+            fetch('bank_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=loan&amount=${amount}`
+            })
+                .then(r => r.json())
+                .then(data => {
+                    const msg = document.getElementById('loanMessage');
+                    if (data.error) {
+                        msg.textContent = data.error;
+                    } else {
+                        msg.style.color = '#fff';
+                        msg.textContent = 'Loan granted';
+                        loadLoans();
+                    }
+                    updateLoanLimit(data.remaining);
+                })
+                .catch(() => {
+                    btn.disabled = false;
+                });
+        });
+        loadLoans();
+    }
+
+    function updateLoanPreview() {
+        const amount = parseInt(document.getElementById('loanAmount').value, 10);
+        const due = amount * 2;
+        document.getElementById('loanPreview').textContent = `Borrow: ${numberFormat(amount)} | Payback: ${numberFormat(due)}`;
+    }
+
+    function loadLoans() {
+        fetch('bank_api.php?action=loan_active')
+            .then(r => r.json())
+            .then(data => {
+                updateLoanLimit(data.remaining);
+                const container = document.getElementById('activeLoans');
+                const msg = document.getElementById('loanMessage');
+                if (msg) msg.textContent = '';
+                container.innerHTML = '';
+                if (!data.loans || data.loans.length === 0) {
+                    container.innerHTML = '<p>No active loans.</p>';
+                    return;
+                }
+                data.loans.forEach(loan => {
+                    const div = document.createElement('div');
+                    div.className = 'active-deposit';
+                    const remaining = loan.amount_due - loan.amount_repaid;
+                    let html = `<div>Borrowed: ${numberFormat(loan.amount)}</div><div>Remaining: ${numberFormat(remaining)}</div>`;
+                    if (loan.payments && loan.payments.length) {
+                        html += '<ul>';
+                        loan.payments.forEach(p => {
+                            html += `<li>${p.quantity}x ${p.item_name} - ${numberFormat(p.applied)}</li>`;
+                        });
+                        html += '</ul>';
+                    }
+                    div.innerHTML = html;
+                    container.appendChild(div);
+                });
+            });
     }
 
     function loadActive(containerId) {
@@ -166,20 +249,42 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('bank_api.php?action=history')
             .then(r => r.json())
             .then(data => {
-                const container = document.getElementById('historyDeposits');
-                container.innerHTML = '';
+                const depContainer = document.getElementById('historyDeposits');
+                depContainer.innerHTML = '';
                 if (!data.history || data.history.length === 0) {
-                    container.innerHTML = '<p>No history.</p>';
-                    return;
+                    depContainer.innerHTML = '<p>No deposit history.</p>';
+                } else {
+                    const ul = document.createElement('ul');
+                    data.history.forEach(dep => {
+                        const final = dep.amount + dep.interest;
+                        const li = document.createElement('li');
+                        li.textContent = `${new Date(dep.start_time).toLocaleString()} - ${new Date(dep.end_time).toLocaleString()} : ${numberFormat(final)}`;
+                        ul.appendChild(li);
+                    });
+                    depContainer.appendChild(ul);
                 }
-                const ul = document.createElement('ul');
-                data.history.forEach(dep => {
-                    const final = dep.amount + dep.interest;
-                    const li = document.createElement('li');
-                    li.textContent = `${new Date(dep.start_time).toLocaleString()} - ${new Date(dep.end_time).toLocaleString()} : ${numberFormat(final)}`;
-                    ul.appendChild(li);
-                });
-                container.appendChild(ul);
+                const loanContainer = document.getElementById('historyLoans');
+                loanContainer.innerHTML = '';
+                if (!data.loan_history || data.loan_history.length === 0) {
+                    loanContainer.innerHTML = '<p>No loan history.</p>';
+                } else {
+                    const ulL = document.createElement('ul');
+                    data.loan_history.forEach(l => {
+                        const li = document.createElement('li');
+                        const start = new Date(l.start_time);
+                        const end = new Date(l.repaid_time);
+                        const duration = end - start;
+                        const sec = Math.floor(duration / 1000);
+                        const years = Math.floor(sec / 31536000);
+                        const days = Math.floor((sec % 31536000) / 86400);
+                        const hours = Math.floor((sec % 86400) / 3600);
+                        const mins = Math.floor((sec % 3600) / 60);
+                        const secs = sec % 60;
+                        li.textContent = `${start.toLocaleString()} - ${end.toLocaleString()} | Borrowed: ${numberFormat(l.amount)} | Sales: ${l.payments} | Duration: ${years}y ${days}d ${hours}h ${mins}m ${secs}s`;
+                        ulL.appendChild(li);
+                    });
+                    loanContainer.appendChild(ulL);
+                }
             });
     }
 
