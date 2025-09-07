@@ -66,39 +66,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 select.appendChild(opt);
             }
         }
+        if (!select.dataset.bound) {
+            select.addEventListener('change', updatePreview);
+            select.dataset.bound = '1';
+        }
         updatePreview();
-        // Use property assignments to avoid stacking event listeners
-        select.onchange = updatePreview;
         const btn = document.getElementById('depositBtn');
-        btn.onclick = () => {
-            const hours = parseInt(select.value, 10);
-            btn.disabled = true;
-            fetch('bank_api.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=deposit&hours=${hours}`
-            })
-                .then(r => r.json())
-                .then(data => {
-                    const msg = document.getElementById('depositMessage');
-                    if (data.error) {
-                        if (data.error === 'Not enough funds') {
-                            msg.textContent = 'You need 1,000,000 coins to deposit.';
-                        } else {
-                            msg.textContent = data.error;
-                        }
-                    } else {
-                        msg.style.color = '#fff';
-                        msg.textContent = 'Deposit successful';
-                        loadActive('activeDeposits');
-                    }
-                    updateLimit(data.remaining);
-                })
-                .catch(() => {
-                    btn.disabled = false;
-                });
-        };
+        if (!btn.dataset.bound) {
+            btn.addEventListener('click', handleDeposit);
+            btn.dataset.bound = '1';
+        }
         loadActive('activeDeposits');
+    }
+
+    function handleDeposit() {
+        const select = document.getElementById('depositHours');
+        const btn = document.getElementById('depositBtn');
+        const hours = parseInt(select.value, 10);
+        if (btn.disabled) return;
+        btn.disabled = true;
+        fetch('bank_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=deposit&hours=${hours}`
+        })
+            .then(r => r.json())
+            .then(data => {
+                const msg = document.getElementById('depositMessage');
+                if (data.error) {
+                    if (data.error === 'Not enough funds') {
+                        msg.textContent = 'You need 1,000,000 coins to deposit.';
+                    } else {
+                        msg.textContent = data.error;
+                    }
+                } else {
+                    msg.style.color = '#fff';
+                    msg.textContent = 'Deposit successful';
+                    loadActive('activeDeposits');
+                }
+                updateLimit(data.remaining);
+            })
+            .catch(() => {
+                btn.disabled = false;
+            });
     }
 
     function updatePreview() {
@@ -227,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-     function startCountdown(container) {
+    function startCountdown(container) {
         const depEls = container.querySelectorAll('.countdown');
         depEls.forEach(el => {
             const end = new Date(el.dataset.end).getTime();
