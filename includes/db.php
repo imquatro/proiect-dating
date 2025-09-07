@@ -47,17 +47,3 @@ try {
 } catch (PDOException $e) {
     // ignore if insufficient privileges or other errors
 }
-
-// Ensure `updated_at` column and useful index exist for `user_slot_states`
-try {
-    $col = $db->query("SHOW COLUMNS FROM user_slot_states LIKE 'updated_at'")->fetch();
-    if (!$col) {
-        $db->exec("ALTER TABLE user_slot_states ADD COLUMN updated_at TIMESTAMP NULL DEFAULT NULL");
-    }
-    $idx = $db->query("SHOW INDEX FROM user_slot_states WHERE Key_name = 'idx_user_slot'")->fetch();
-    if (!$idx) {
-        $db->exec("CREATE INDEX idx_user_slot ON user_slot_states (user_id, slot_number)");
-    }
-} catch (PDOException $e) {
-    // ignore if insufficient privileges or other errors
-}
