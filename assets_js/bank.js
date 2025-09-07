@@ -227,12 +227,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    function startCountdown(container) {
+     function startCountdown(container) {
         const depEls = container.querySelectorAll('.countdown');
-        function tick() {
-            const now = Date.now();
-            depEls.forEach(el => {
-                const end = new Date(el.dataset.end).getTime();
+        depEls.forEach(el => {
+            const end = new Date(el.dataset.end).getTime();
+            function tick() {
+                const now = Date.now();
                 let diff = Math.max(0, end - now);
                 const h = Math.floor(diff / 3600000);
                 diff %= 3600000;
@@ -240,10 +240,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 diff %= 60000;
                 const s = Math.floor(diff / 1000);
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            });
-        }
-        tick();
-        setInterval(tick, 1000);
+                if (end <= now) {
+                    clearInterval(interval);
+                    loadActive(container.id);
+                }
+            }
+            tick();
+            const interval = setInterval(tick, 1000);
+        });
     }
 
     function loadHistory() {
