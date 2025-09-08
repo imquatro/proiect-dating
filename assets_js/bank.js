@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
+    function moneyHtml(n) {
+        return `<span class="money-amount"><img src="img/money.png" class="money-icon" alt="">${numberFormat(n)}</span>`;
+    }
+
     function updateLimit(n) {
         const el = document.getElementById('depositLimit');
         const btn = document.getElementById('depositBtn');
@@ -105,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const amount = 1000000;
         const interest = hours * 100;
         const final = amount + interest;
-        document.getElementById('depositPreview').textContent = `Deposit: ${numberFormat(amount)} | Interest: ${numberFormat(interest)} | Final after ${hours}h: ${numberFormat(final)}`;
+        document.getElementById('depositPreview').innerHTML = `Deposit: ${moneyHtml(amount)} | Interest: ${moneyHtml(interest)} | Final after ${hours}h: ${moneyHtml(final)}`;
     }
 
     function initLoan() {
@@ -143,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateLoanPreview() {
         const amount = parseInt(document.getElementById('loanAmount').value, 10);
         const due = amount * 2;
-        document.getElementById('loanPreview').textContent = `Borrow: ${numberFormat(amount)} | Payback: ${numberFormat(due)}`;
+        document.getElementById('loanPreview').innerHTML = `Borrow: ${moneyHtml(amount)} | Payback: ${moneyHtml(due)}`;
     }
 
     function loadLoans() {
@@ -163,11 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const div = document.createElement('div');
                     div.className = 'active-deposit';
                     const remaining = loan.amount_due - loan.amount_repaid;
-                    let html = `<div>Borrowed: ${numberFormat(loan.amount)}</div><div>Remaining: ${numberFormat(remaining)}</div>`;
+                    let html = `<div>Borrowed: ${moneyHtml(loan.amount)}</div><div>Remaining: ${moneyHtml(remaining)}</div>`;
                     if (loan.payments && loan.payments.length) {
                         html += '<ul>';
                         loan.payments.forEach(p => {
-                            html += `<li>${p.quantity}x ${p.item_name} - ${numberFormat(p.applied)}</li>`;
+                            html += `<li>${p.quantity}x ${p.item_name} - ${moneyHtml(p.applied)}</li>`;
                         });
                         html += '</ul>';
                     }
@@ -195,9 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     div.className = 'active-deposit';
                     const final = dep.amount + dep.interest;
                     div.innerHTML = `
-                        <div>Deposit: ${numberFormat(dep.amount)}</div>
-                        <div>Final: ${numberFormat(final)}</div>
-                        <div class="countdown" data-end="${dep.end_time}"></div>
+                        <div>Deposit: ${moneyHtml(dep.amount)}</div>
+                        <div>Final: ${moneyHtml(final)}</div>
+                        <div class="countdown" data-end="${dep.display_end}" data-id="${dep.id}"></div>
                         <button class="cancel-btn" data-id="${dep.id}">Cancel</button>
                     `;
                     container.appendChild(div);
@@ -228,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startCountdown(container) {
         const depEls = container.querySelectorAll('.countdown');
+        let interval;
         function tick() {
             const now = Date.now();
             depEls.forEach(el => {
@@ -239,10 +244,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 diff %= 60000;
                 const s = Math.floor(diff / 1000);
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                if (h === 0 && m === 0 && s === 0 && !el.dataset.done) {
+                    el.dataset.done = '1';
+                    clearInterval(interval);
+                    const id = el.dataset.id;
+                    fetch('bank_api.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `action=force&id=${id}`
+                    }).then(() => {
+                        loadActive(container.id);
+                    });
+                }
             });
         }
         tick();
-        setInterval(tick, 1000);
+        interval = setInterval(tick, 1000);
     }
 
     function loadHistory() {
@@ -258,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     data.history.forEach(dep => {
                         const final = dep.amount + dep.interest;
                         const li = document.createElement('li');
-                        li.textContent = `${new Date(dep.start_time).toLocaleString()} - ${new Date(dep.end_time).toLocaleString()} : ${numberFormat(final)}`;
+                        li.innerHTML = `${new Date(dep.start_time).toLocaleString()} - ${new Date(dep.display_end).toLocaleString()} : ${moneyHtml(final)}`;
                         ul.appendChild(li);
                     });
                     depContainer.appendChild(ul);
@@ -280,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const hours = Math.floor((sec % 86400) / 3600);
                         const mins = Math.floor((sec % 3600) / 60);
                         const secs = sec % 60;
-                        li.textContent = `${start.toLocaleString()} - ${end.toLocaleString()} | Borrowed: ${numberFormat(l.amount)} | Sales: ${l.payments} | Duration: ${years}y ${days}d ${hours}h ${mins}m ${secs}s`;
+                        li.innerHTML = `${start.toLocaleString()} - ${end.toLocaleString()} | Borrowed: ${moneyHtml(l.amount)} | Sales: ${l.payments} | Duration: ${years}y ${days}d ${hours}h ${mins}m ${secs}s`;
                         ulL.appendChild(li);
                     });
                     loanContainer.appendChild(ulL);

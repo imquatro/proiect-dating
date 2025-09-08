@@ -75,3 +75,15 @@
     opacity: 0.5;
     cursor: default;
 }
+
+.money-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+.money-amount {
+    display: inline-flex;
+    align-items: center;
+}
