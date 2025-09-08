@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!bank) return;
     const buttons = bank.querySelectorAll('.bank-btn');
     const tabs = bank.querySelectorAll('.bank-tab');
-    const isAdmin = bank.dataset.admin === '1';
 
     function numberFormat(n) {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -60,12 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function initDeposit() {
         const select = document.getElementById('depositHours');
         if (select && !select.options.length) {
-            [6, 12, 24].forEach(i => {
+            for (let i = 1; i <= 24; i++) {
                 const opt = document.createElement('option');
                 opt.value = i;
                 opt.textContent = `${i}h`;
                 select.appendChild(opt);
-            });
+            }
         }
         updatePreview();
         select.addEventListener('change', updatePreview);
@@ -104,10 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePreview() {
         const hours = parseInt(document.getElementById('depositHours').value, 10);
         const amount = 1000000;
-        const interestMap = {6: 10000, 12: 20000, 24: 30000};
-        const interest = interestMap[hours] || 0;
+        const interest = hours * 100;
         const final = amount + interest;
-        document.getElementById('depositPreview').innerHTML = `Deposit: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(amount)}</span> | Interest: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(interest)}</span> | Interest earned ${hours}h: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(final)}</span>`;
+        document.getElementById('depositPreview').textContent = `Deposit: ${numberFormat(amount)} | Interest: ${numberFormat(interest)} | Final after ${hours}h: ${numberFormat(final)}`;
     }
 
     function initLoan() {
@@ -145,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateLoanPreview() {
         const amount = parseInt(document.getElementById('loanAmount').value, 10);
         const due = amount * 2;
-        document.getElementById('loanPreview').innerHTML = `Borrow: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(amount)}</span> | Payback: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(due)}</span>`;
+        document.getElementById('loanPreview').textContent = `Borrow: ${numberFormat(amount)} | Payback: ${numberFormat(due)}`;
     }
 
     function loadLoans() {
@@ -195,168 +193,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.deposits.forEach(dep => {
                     const div = document.createElement('div');
                     div.className = 'active-deposit';
-                    const countdown = dep.matured ? '<div class="countdown">00:00:00</div>' : `<div class="countdown" data-end="${dep.end_time}"></div>`;
-                    const button = dep.matured ? `<button class="claim-btn" data-id="${dep.id}">Claim</button>` : `<button class="cancel-btn" data-id="${dep.id}">Cancel</button>`;
-                    let adminSlider = '';
-                    if (!dep.matured && isAdmin) {
-                        const remainingSec = Math.max(0, Math.floor((new Date(dep.end_time).getTime() - Date.now()) / 1000));
-                        div.dataset.remaining = remainingSec;
-                        adminSlider = `<label class="admin-slider">Admin only: <input type="range" class="admin-time-slider" data-id="${dep.id}" min="0" max="100" value="0"></label>`;
-                    }
+                    const final = dep.amount + dep.interest;
                     div.innerHTML = `
-                        <div class="money-line"><img src="img/money.png" class="money-icon">Deposit: ${numberFormat(dep.amount)}</div>
-                        <div class="money-line"><img src="img/money.png" class="money-icon">Interest: ${numberFormat(dep.interest)}</div>
-                        ${countdown}
-                        ${button}
-                        ${adminSlider}
+                        <div>Deposit: ${numberFormat(dep.amount)}</div>
+                        <div>Final: ${numberFormat(final)}</div>
+                        <div class="countdown" data-end="${dep.end_time}"></div>
+                        <button class="cancel-btn" data-id="${dep.id}">Cancel</button>
                     `;
- 
-                    if (dep.matured) {
-                        const claimBtn = div.querySelector('.claim-btn');
-                        claimBtn.addEventListener('click', () => {
-                            claimBtn.disabled = true;
-                            fetch('bank_api.php', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body: `action=claim&id=${dep.id}`
-                            })
-                                .then(r => r.json())
-                                .then(res => {
-                                    if (res.error) {
-                                        const m = document.getElementById('depositMessage');
-                                        if (m) m.textContent = res.error;
-                                        claimBtn.disabled = false;
-                                    } else {
-                                        if (window.showFloatingText) {
-                                            window.showFloatingText(claimBtn, { money: res.interest });
-                                        }
-                                        updateLimit(res.remaining);
-                                        loadActive(containerId);
-                                    }
-                                });
-                        });
-                    } else {
-                        const cancelBtn = div.querySelector('.cancel-btn');
-                        cancelBtn.addEventListener('click', () => {
-                            cancelBtn.disabled = true;
-                            fetch('bank_api.php', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body: `action=cancel&id=${dep.id}`
-                            })
-                                .then(r => r.json())
-                                .then(res => {
-                                    if (res.error) {
-                                        const m = document.getElementById('depositMessage');
-                                        if (m) m.textContent = res.error;
-                                        cancelBtn.disabled = false;
-                                    } else {
-                                        updateLimit(res.remaining);
-                                        loadActive(containerId);
-                                    }
-                                });
-                        });
-                        if (isAdmin) {
-                            const slider = div.querySelector('.admin-time-slider');
-                            const countdownEl = div.querySelector('.countdown');
-                            slider.addEventListener('input', () => {
-                                countdownEl.dataset.manual = '1';
-                                const base = parseInt(div.dataset.remaining, 10);
-                                const newRemaining = Math.max(59, Math.floor(base * (1 - slider.value / 100)));
-                                const h = Math.floor(newRemaining / 3600);
-                                const m = Math.floor((newRemaining % 3600) / 60);
-                                const s = newRemaining % 60;
-                                countdownEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                    container.appendChild(div);
+                    const cancelBtn = div.querySelector('.cancel-btn');
+                    cancelBtn.addEventListener('click', () => {
+                        cancelBtn.disabled = true;
+                        fetch('bank_api.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `action=cancel&id=${dep.id}`
+                        })
+                            .then(r => r.json())
+                            .then(res => {
+                                if (res.error) {
+                                    const m = document.getElementById('depositMessage');
+                                    if (m) m.textContent = res.error;
+                                    cancelBtn.disabled = false;
+                                } else {
+                                    updateLimit(res.remaining);
+                                    loadActive(containerId);
+                                }
                             });
-                            slider.addEventListener('change', () => {
-                                const base = parseInt(div.dataset.remaining, 10);
-                                const newRemaining = Math.max(59, Math.floor(base * (1 - slider.value / 100)));
-                                fetch('bank_api.php', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                    body: `action=fastforward&id=${dep.id}&remaining=${newRemaining}`
-                                })
-                                    .then(r => r.json())
-                                    .then(res => {
-                                        if (res.error) {
-                                            const m = document.getElementById('depositMessage');
-                                            if (m) m.textContent = res.error;
-                                        } else {
-                                            div.dataset.remaining = newRemaining;
-                                            countdownEl.dataset.end = res.new_end;
-                                            const h = Math.floor(newRemaining / 3600);
-                                            const m = Math.floor((newRemaining % 3600) / 60);
-                                            const s = newRemaining % 60;
-                                            countdownEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                                            slider.value = 0;
-                                        }
-                                    })
-                                    .finally(() => {
-                                        delete countdownEl.dataset.manual;
-                                    });
-                            });
-                        }
-                    }
-                });
-                startCountdown(container, containerId);
-            });
-    }
-
-    function switchToClaim(countdownEl, containerId) {
-        countdownEl.removeAttribute('data-end');
-        countdownEl.textContent = '00:00:00';
-        const parent = countdownEl.closest('.active-deposit');
-        if (!parent) return;
-        const cancelBtn = parent.querySelector('.cancel-btn');
-        if (cancelBtn) {
-            const id = cancelBtn.dataset.id;
-            const claimBtn = document.createElement('button');
-            claimBtn.className = 'claim-btn';
-            claimBtn.textContent = 'Claim';
-            claimBtn.dataset.id = id;
-            cancelBtn.replaceWith(claimBtn);
-            claimBtn.addEventListener('click', () => {
-                claimBtn.disabled = true;
-                fetch('bank_api.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `action=claim&id=${id}`
-                })
-                    .then(r => r.json())
-                    .then(res => {
-                        if (res.error) {
-                            const m = document.getElementById('depositMessage');
-                            if (m) m.textContent = res.error;
-                            claimBtn.disabled = false;
-                        } else {
-                            if (window.showFloatingText) {
-                                window.showFloatingText(claimBtn, { money: res.interest });
-                            }
-                            updateLimit(res.remaining);
-                            loadActive(containerId);
-                        }
                     });
+                });
+                startCountdown(container);
             });
-        }
     }
 
-    function startCountdown(container, containerId) {
-        const depEls = container.querySelectorAll('.countdown[data-end]');
-        if (!depEls.length) return;
-        let timer;
-        function update() {
+    function startCountdown(container) {
+        const depEls = container.querySelectorAll('.countdown');
+        function tick() {
             const now = Date.now();
             depEls.forEach(el => {
-                if (el.dataset.manual === '1' || !el.dataset.end) return;
                 const end = new Date(el.dataset.end).getTime();
-                let diff = end - now;
-                if (diff <= 0) {
-                    diff = 0;
-                    if (!el.dataset.matured) {
-                        el.dataset.matured = '1';
-                        switchToClaim(el, containerId);
-                    }
-                }
+                let diff = Math.max(0, end - now);
                 const h = Math.floor(diff / 3600000);
                 diff %= 3600000;
                 const m = Math.floor(diff / 60000);
@@ -365,8 +241,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             });
         }
-        update();
-        timer = setInterval(update, 1000);
+        tick();
+        setInterval(tick, 1000);
     }
 
     function loadHistory() {
