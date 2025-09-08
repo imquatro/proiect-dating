@@ -6,9 +6,8 @@
         div.className = 'xp-float';
         let html = '';
         if (opts.money) {
-            html += `<div class="money">+${opts.money}</div>`;
+            html += `<div class="money"><img src="img/gold.png" alt="">+${opts.money}</div>`;
         }
-        if (opts.xp) {
             html += `<div class="xp">+${opts.xp} XP</div>`;
         }
         div.innerHTML = html;

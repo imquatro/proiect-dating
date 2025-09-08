@@ -154,21 +154,36 @@ if ($action === 'cancel') {
     exit;
 }
 
-if ($action === 'active') {
-    $now = date('Y-m-d H:i:s');
-    $stmt = $db->prepare('SELECT id, amount, interest FROM bank_deposits WHERE user_id = ? AND claimed = 0 AND end_time <= ?');
-    $stmt->execute([$userId, $now]);
-    $matured = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    if ($matured) {
-        $sum = 0;
-        foreach ($matured as $m) {
-            $sum += $m['amount'] + $m['interest'];
-            $db->prepare('UPDATE bank_deposits SET claimed = 1 WHERE id = ?')->execute([$m['id']]);
-        }
-        if ($sum > 0) {
-            $db->prepare('UPDATE users SET money = money + ? WHERE id = ?')->execute([$sum, $userId]);
-        }
+if ($action === 'claim') {
+    $id = (int)($_POST['id'] ?? 0);
+    $stmt = $db->prepare('SELECT amount, interest, end_time FROM bank_deposits WHERE id = ? AND user_id = ? AND claimed = 0');
+    $stmt->execute([$id, $userId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        echo json_encode(['error' => 'Invalid deposit']);
+        exit;
     }
+    if (time() < strtotime($row['end_time'])) {
+        echo json_encode(['error' => 'Deposit not matured']);
+        exit;
+    }
+    $amount = (int)$row['amount'];
+    $interest = (int)$row['interest'];
+    $final = $amount + $interest;
+    $db->beginTransaction();
+    $db->prepare('UPDATE users SET money = money + ? WHERE id = ?')->execute([$final, $userId]);
+    $db->prepare('UPDATE bank_deposits SET claimed = 1 WHERE id = ?')->execute([$id]);
+    $db->commit();
+    $money = getMoney($db, $userId);
+    $today = date('Y-m-d 00:00:00');
+    $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
+    $stmt->execute([$userId, $today]);
+    $remaining = max(0, 10 - (int)$stmt->fetchColumn());
+    echo json_encode(['success' => true, 'money' => $money, 'interest' => $interest, 'final' => $final, 'remaining' => $remaining]);
+    exit;
+}
+
+if ($action === 'active') {
     $money = getMoney($db, $userId);
     $today = date('Y-m-d 00:00:00');
     $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
@@ -177,25 +192,15 @@ if ($action === 'active') {
     $stmt = $db->prepare('SELECT id, amount, interest, hours, start_time, end_time FROM bank_deposits WHERE user_id = ? AND claimed = 0 ORDER BY end_time');
     $stmt->execute([$userId]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $now = time();
+    foreach ($rows as &$row) {
+        $row['matured'] = $now >= strtotime($row['end_time']);
+    }
     echo json_encode(['deposits' => $rows, 'money' => $money, 'remaining' => $remaining]);
     exit;
 }
 
 if ($action === 'history') {
-    $now = date('Y-m-d H:i:s');
-    $stmt = $db->prepare('SELECT id, amount, interest FROM bank_deposits WHERE user_id = ? AND claimed = 0 AND end_time <= ?');
-    $stmt->execute([$userId, $now]);
-    $matured = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    if ($matured) {
-        $sum = 0;
-        foreach ($matured as $m) {
-            $sum += $m['amount'] + $m['interest'];
-            $db->prepare('UPDATE bank_deposits SET claimed = 1 WHERE id = ?')->execute([$m['id']]);
-        }
-        if ($sum > 0) {
-            $db->prepare('UPDATE users SET money = money + ? WHERE id = ?')->execute([$sum, $userId]);
-        }
-    }
     $money = getMoney($db, $userId);
     $stmt = $db->prepare('SELECT amount, interest, hours, start_time, end_time FROM bank_deposits WHERE user_id = ? AND claimed = 1 ORDER BY end_time DESC LIMIT 50');
     $stmt->execute([$userId]);

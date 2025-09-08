@@ -18,6 +18,13 @@
     text-shadow: 1px 1px 2px #000;
 }
 
+.xp-float .money img {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 2px;
+}
+
 @keyframes xpFloatUp {
     from {
         opacity: 1;

@@ -194,45 +194,80 @@ document.addEventListener('DOMContentLoaded', () => {
                     const div = document.createElement('div');
                     div.className = 'active-deposit';
                     const final = dep.amount + dep.interest;
+                    const countdown = dep.matured ? '<div class="countdown">00:00:00</div>' : `<div class="countdown" data-end="${dep.end_time}"></div>`;
+                    const button = dep.matured ? `<button class="claim-btn" data-id="${dep.id}">Claim</button>` : `<button class="cancel-btn" data-id="${dep.id}">Cancel</button>`;
                     div.innerHTML = `
                         <div>Deposit: ${numberFormat(dep.amount)}</div>
                         <div>Final: ${numberFormat(final)}</div>
-                        <div class="countdown" data-end="${dep.end_time}"></div>
-                        <button class="cancel-btn" data-id="${dep.id}">Cancel</button>
+                        ${countdown}
+                        ${button}
                     `;
                     container.appendChild(div);
-                    const cancelBtn = div.querySelector('.cancel-btn');
-                    cancelBtn.addEventListener('click', () => {
-                        cancelBtn.disabled = true;
-                        fetch('bank_api.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: `action=cancel&id=${dep.id}`
-                        })
-                            .then(r => r.json())
-                            .then(res => {
-                                if (res.error) {
-                                    const m = document.getElementById('depositMessage');
-                                    if (m) m.textContent = res.error;
-                                    cancelBtn.disabled = false;
-                                } else {
-                                    updateLimit(res.remaining);
-                                    loadActive(containerId);
-                                }
-                            });
-                    });
+                    if (dep.matured) {
+                        const claimBtn = div.querySelector('.claim-btn');
+                        claimBtn.addEventListener('click', () => {
+                            claimBtn.disabled = true;
+                            fetch('bank_api.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: `action=claim&id=${dep.id}`
+                            })
+                                .then(r => r.json())
+                                .then(res => {
+                                    if (res.error) {
+                                        const m = document.getElementById('depositMessage');
+                                        if (m) m.textContent = res.error;
+                                        claimBtn.disabled = false;
+                                    } else {
+                                        if (window.showFloatingText) {
+                                            window.showFloatingText(claimBtn, { money: res.interest });
+                                        }
+                                        updateLimit(res.remaining);
+                                        loadActive(containerId);
+                                    }
+                                });
+                        });
+                    } else {
+                        const cancelBtn = div.querySelector('.cancel-btn');
+                        cancelBtn.addEventListener('click', () => {
+                            cancelBtn.disabled = true;
+                            fetch('bank_api.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: `action=cancel&id=${dep.id}`
+                            })
+                                .then(r => r.json())
+                                .then(res => {
+                                    if (res.error) {
+                                        const m = document.getElementById('depositMessage');
+                                        if (m) m.textContent = res.error;
+                                        cancelBtn.disabled = false;
+                                    } else {
+                                        updateLimit(res.remaining);
+                                        loadActive(containerId);
+                                    }
+                                });
+                        });
+                    }
                 });
-                startCountdown(container);
+                startCountdown(container, containerId);
             });
     }
 
-    function startCountdown(container) {
-        const depEls = container.querySelectorAll('.countdown');
-        function tick() {
+    function startCountdown(container, containerId) {
+        const depEls = container.querySelectorAll('.countdown[data-end]');
+        if (!depEls.length) return;
+        let timer;
+        function update() {
             const now = Date.now();
+            let reload = false;
             depEls.forEach(el => {
                 const end = new Date(el.dataset.end).getTime();
-                let diff = Math.max(0, end - now);
+                let diff = end - now;
+                if (diff <= 0) {
+                    diff = 0;
+                    reload = true;
+                }
                 const h = Math.floor(diff / 3600000);
                 diff %= 3600000;
                 const m = Math.floor(diff / 60000);
@@ -240,9 +275,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const s = Math.floor(diff / 1000);
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             });
+            if (reload) {
+                clearInterval(timer);
+                loadActive(containerId);
+            }
         }
-        tick();
-        setInterval(tick, 1000);
+        update();
+        timer = setInterval(update, 1000);
     }
 
     function loadHistory() {
