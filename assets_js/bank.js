@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         fetch('bank_api.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: `action=claim&id=${dep.id}`
+                            body: `action=claim&id=${dep.id}&force=1`
                         })
                             .then(r => r.json())
                             .then(res => {

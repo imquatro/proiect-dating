@@ -209,6 +209,7 @@ if ($action === 'cancel') {
 
 if ($action === 'claim') {
     $id = (int)($_POST['id'] ?? 0);
+    $force = !empty($_POST['force']);
     $stmt = $db->prepare('SELECT amount, interest, end_time FROM bank_deposits WHERE id = ? AND user_id = ? AND claimed = 0');
     $stmt->execute([$id, $userId]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -216,7 +217,7 @@ if ($action === 'claim') {
         echo json_encode(['error' => 'Invalid deposit']);
         exit;
     }
-    if (time() < strtotime($row['end_time'])) {
+    if (!$force && time() < strtotime($row['end_time'])) {
         echo json_encode(['error' => 'Deposit not matured yet']);
         exit;
     }
