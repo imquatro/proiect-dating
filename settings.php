@@ -25,6 +25,7 @@ ob_start();
                     <button class="sub-tab-btn" data-subtab="bank">Bank</button>
                     <button class="sub-tab-btn" data-subtab="leaderboard">Leaderboard</button>
                     <button class="sub-tab-btn" data-subtab="profile">Profile</button>
+                    <button class="sub-tab-btn" data-subtab="helperi">Helperi</button>
                     <button class="sub-tab-btn logout-init-btn" id="logoutBtn">Logout</button>
                 </div>
                 <div class="vip-subtab-content">
@@ -83,6 +84,9 @@ ob_start();
                     <div class="subtab-content" id="profile">
                         <div id="profileContainer"></div>
                     </div>
+                    <div class="subtab-content" id="helperi">
+                        <div id="helpersList"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,8 +102,8 @@ ob_start();
 $content = ob_get_clean();
 
 $pageCss = 'assets_css/settings.css';
-$extraCss = $isAdmin ? ['farm_admin/admin-panel.css', 'assets_css/profile.css', 'assets_css/bank.css'] : ['assets_css/profile.css', 'assets_css/bank.css'];
-$extraJs = ['assets_js/settings.js', 'assets_js/profile.js', 'assets_js/bank.js'];
+$extraCss = $isAdmin ? ['farm_admin/admin-panel.css', 'assets_css/profile.css', 'assets_css/bank.css', 'assets_css/helperi.css'] : ['assets_css/profile.css', 'assets_css/bank.css', 'assets_css/helperi.css'];
+$extraJs = ['assets_js/settings.js', 'assets_js/profile.js', 'assets_js/bank.js', 'assets_js/helpers.js'];
 if ($isAdmin) {
     $extraJs[] = 'farm_admin/admin-panel.js';
     $extraJs[] = 'farm_admin/achievements.js';
