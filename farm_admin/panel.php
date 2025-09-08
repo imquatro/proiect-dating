@@ -2,8 +2,9 @@
 session_start();
 if (!isset($_SESSION['user_id'])) {
     exit('Access denied');
-}
 require_once '../includes/db.php';
+require_once '../includes/helper_images.php';
+$stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
 $stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
 $stmt->execute([$_SESSION['user_id']]);
 if (!$stmt->fetchColumn()) {
@@ -23,7 +24,11 @@ $vipFrames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,
 $cardDir = __DIR__ . '/../img/vip_cards';
 $vipCards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 
-$helpers = $db->query('SELECT id,name,image,message_file FROM helpers ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
+ $helpers = $db->query('SELECT id,name,image,message_file FROM helpers ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
+ foreach ($helpers as &$h) {
+     $h['image_src'] = resolve_helper_image($h['image']);
+ }
+ unset($h);
 
 $nextAchId = (int)$db->query('SELECT COALESCE(MAX(id),0)+1 FROM achievements')->fetchColumn();
 $achievements = $db->query('SELECT id, title FROM achievements ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
@@ -319,7 +324,7 @@ ob_start();
             <div class="fa-edit-helper-grid">
                 <?php foreach ($helpers as $h): ?>
                 <div class="fa-helper-item" data-id="<?= htmlspecialchars($h['id']); ?>" data-name="<?= htmlspecialchars($h['name']); ?>" data-image="<?= htmlspecialchars($h['image']); ?>" data-message="<?= htmlspecialchars($h['message_file']); ?>">
-                    <img src="<?= htmlspecialchars($imagePrefix . $h['image']); ?>" alt="<?= htmlspecialchars($h['name']); ?>">
+                    <img src="<?= htmlspecialchars($imagePrefix . $h['image_src']); ?>" alt="<?= htmlspecialchars($h['name']); ?>">
                     <span><?= htmlspecialchars($h['name']); ?></span>
                 </div>
                 <?php endforeach; ?>

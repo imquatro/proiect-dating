@@ -298,6 +298,14 @@ function initEditHelpers(panel){
     if (!grid) return;
     const form = panel.querySelector('#fa-helper-edit-form');
     const imgPrefix = panel.dataset.prefix || '';
+    const helperImg = name => {
+        if (!name) return '';
+        name = name.replace(/^img\//, '');
+        if (!/\.(png|gif|jpe?g)$/i.test(name)) {
+            name += '.png';
+        }
+        return imgPrefix + 'img/' + name;
+    };
 
     grid.querySelectorAll('.fa-helper-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -327,7 +335,7 @@ function initEditHelpers(panel){
                         div.dataset.name = h.name;
                         div.dataset.image = h.image;
                         div.dataset.message = h.message_file;
-                        div.innerHTML = `<img src="${imgPrefix}${h.image}" alt="${h.name}"><span>${h.name}</span>`;
+                        div.innerHTML = `<img src="${helperImg(h.image)}" alt="${h.name}"><span>${h.name}</span>`;
                         grid.appendChild(div);
                         addForm.reset();
                         initEditHelpers(panel);
@@ -349,7 +357,7 @@ function initEditHelpers(panel){
                             item.dataset.name = fd.get('name');
                             item.dataset.image = fd.get('image');
                             item.dataset.message = fd.get('message_file');
-                            item.querySelector('img').src = imgPrefix + fd.get('image');
+                            item.querySelector('img').src = helperImg(fd.get('image'));
                             item.querySelector('span').textContent = fd.get('name');
                         }
                         form.style.display = 'none';

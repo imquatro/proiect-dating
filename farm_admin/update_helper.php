@@ -11,10 +11,11 @@ if (!$stmt->fetchColumn()) {
     echo json_encode(['success' => false]);
     exit;
 }
-$id = (int)($_POST['id'] ?? 0);
-$name = trim($_POST['name'] ?? '');
-$image = trim($_POST['image'] ?? '');
-$message = trim($_POST['message_file'] ?? '');
+ $id = (int)($_POST['id'] ?? 0);
+ $name = trim($_POST['name'] ?? '');
+ $image = trim($_POST['image'] ?? '');
+ $image = preg_replace('/[^A-Za-z0-9_-]/', '', pathinfo($image, PATHINFO_FILENAME));
+ $message = trim($_POST['message_file'] ?? '');
 if ($id <= 0 || $name === '' || $image === '' || $message === '') {
     echo json_encode(['success' => false]);
     exit;
