@@ -33,7 +33,7 @@ ob_start();
                         <div id="adminPanelContainer"></div>
                     </div>
                     <?php endif; ?>
-                    <div class="subtab-content" id="bank" data-admin="<?= $isAdmin ? 1 : 0 ?>">
+                    <div class="subtab-content" id="bank">
                         <img src="img/bank.png" alt="Bank" class="bank-header-img">
                         <h3>Welcome to our bank!</h3>
                         <p>What can we do for you?</p>
@@ -45,7 +45,7 @@ ob_start();
                         </div>
                         <div class="bank-tab active" id="bank-deposit">
                             <div class="deposit-form">
-                                <p>You can deposit <strong>1,000,000</strong> coins. Interest: 10,000 coins for 6h, 20,000 coins for 12h and 30,000 coins for 24h.</p>
+                                <p>You can deposit <strong>1,000,000</strong> coins. Interest increases by 100 coins per hour.</p>
                                 <p id="depositLimit" class="deposit-limit"></p>
                                 <label>Duration:
                                     <select id="depositHours"></select>
