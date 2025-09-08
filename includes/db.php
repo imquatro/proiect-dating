@@ -47,3 +47,24 @@ try {
 } catch (PDOException $e) {
     // ignore if insufficient privileges or other errors
 }
+
+// Ensure helpers tables exist
+try {
+    $db->exec("CREATE TABLE IF NOT EXISTS helpers (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        image VARCHAR(255) NOT NULL,
+        message_file VARCHAR(255) NOT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $db->exec("CREATE TABLE IF NOT EXISTS user_helpers (
+        user_id INT NOT NULL PRIMARY KEY,
+        helper_id INT NOT NULL,
+        waters INT NOT NULL DEFAULT 0,
+        feeds INT NOT NULL DEFAULT 0,
+        harvests INT NOT NULL DEFAULT 0,
+        FOREIGN KEY (helper_id) REFERENCES helpers(id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+} catch (PDOException $e) {
+    // ignore if insufficient privileges or other errors
+}

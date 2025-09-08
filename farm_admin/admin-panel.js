@@ -183,8 +183,8 @@ function initAdminPanel(panel){
     }
     initDeleteItems(panel);
     initEditItems(panel);
+    initEditHelpers(panel);
 }
-
 
 function initEditItems(panel){
     const grid = panel.querySelector('.fa-edit-grid');
@@ -291,6 +291,72 @@ function initEditItems(panel){
         })
         .catch(err => console.error(err));
     });
+}
+
+function initEditHelpers(panel){
+    const grid = panel.querySelector('.fa-edit-helper-grid');
+    if (!grid) return;
+    const form = panel.querySelector('#fa-helper-edit-form');
+    const imgPrefix = panel.dataset.prefix || '';
+
+    grid.querySelectorAll('.fa-helper-item').forEach(item => {
+        item.addEventListener('click', () => {
+            grid.querySelectorAll('.fa-helper-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            form.style.display = 'block';
+            form.querySelector('input[name="id"]').value = item.dataset.id;
+            form.querySelector('input[name="name"]').value = item.dataset.name;
+            form.querySelector('input[name="image"]').value = item.dataset.image;
+            form.querySelector('input[name="message_file"]').value = item.dataset.message;
+        });
+    });
+
+    const addForm = panel.querySelector('#fa-helper-form');
+    if (addForm) {
+        addForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const fd = new FormData(addForm);
+            fetch('farm_admin/save_helper.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const h = data.helper;
+                        const div = document.createElement('div');
+                        div.className = 'fa-helper-item';
+                        div.dataset.id = h.id;
+                        div.dataset.name = h.name;
+                        div.dataset.image = h.image;
+                        div.dataset.message = h.message_file;
+                        div.innerHTML = `<img src="${imgPrefix}${h.image}" alt="${h.name}"><span>${h.name}</span>`;
+                        grid.appendChild(div);
+                        addForm.reset();
+                        initEditHelpers(panel);
+                    }
+                });
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const fd = new FormData(form);
+            fetch('farm_admin/update_helper.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = grid.querySelector(`.fa-helper-item[data-id="${fd.get('id')}"]`);
+                        if (item) {
+                            item.dataset.name = fd.get('name');
+                            item.dataset.image = fd.get('image');
+                            item.dataset.message = fd.get('message_file');
+                            item.querySelector('img').src = imgPrefix + fd.get('image');
+                            item.querySelector('span').textContent = fd.get('name');
+                        }
+                        form.style.display = 'none';
+                    }
+                });
+        });
+    }
 }
 
 function initDeleteItems(panel){

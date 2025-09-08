@@ -23,6 +23,8 @@ $vipFrames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,
 $cardDir = __DIR__ . '/../img/vip_cards';
 $vipCards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 
+$helpers = $db->query('SELECT id,name,image,message_file FROM helpers ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
+
 $nextAchId = (int)$db->query('SELECT COALESCE(MAX(id),0)+1 FROM achievements')->fetchColumn();
 $achievements = $db->query('SELECT id, title FROM achievements ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
 
@@ -40,8 +42,10 @@ ob_start();
             <button data-tab="edit">Edit Items</button>
             <button data-tab="delete">Delete Items</button>
             <button data-tab="vip">VIP Items</button>
-            <button data-tab="version">Update Version</button>
             <button data-tab="ach">Achievements</button>
+            <button data-tab="add-helper">Add Helper</button>
+            <button data-tab="edit-helper">Edit Helper</button>
+            <button data-tab="version">Update Version</button>
         </div>
         <div class="fa-tab-content active" id="fa-tab-add">
             <h2>Add Plants & Animals</h2>
@@ -290,6 +294,49 @@ ob_start();
                 </label>
                 <div class="fa-form-actions">
                     <button type="submit" id="deleteAchievement" disabled>Delete</button>
+                </div>
+            </form>
+        </div>
+        <div class="fa-tab-content" id="fa-tab-add-helper">
+            <h2>Add Helper</h2>
+            <form id="fa-helper-form" action="farm_admin/save_helper.php" method="post">
+                <label>Name
+                    <input type="text" name="name" required>
+                </label>
+                <label>Image
+                    <input type="text" name="image" required>
+                </label>
+                <label>Message File
+                    <input type="text" name="message_file" required>
+                </label>
+                <div class="fa-form-actions">
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+        <div class="fa-tab-content" id="fa-tab-edit-helper">
+            <h2>Edit Helper</h2>
+            <div class="fa-edit-helper-grid">
+                <?php foreach ($helpers as $h): ?>
+                <div class="fa-helper-item" data-id="<?= htmlspecialchars($h['id']); ?>" data-name="<?= htmlspecialchars($h['name']); ?>" data-image="<?= htmlspecialchars($h['image']); ?>" data-message="<?= htmlspecialchars($h['message_file']); ?>">
+                    <img src="<?= htmlspecialchars($imagePrefix . $h['image']); ?>" alt="<?= htmlspecialchars($h['name']); ?>">
+                    <span><?= htmlspecialchars($h['name']); ?></span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <form id="fa-helper-edit-form" action="farm_admin/update_helper.php" method="post" style="display:none;">
+                <input type="hidden" name="id">
+                <label>Name
+                    <input type="text" name="name" required>
+                </label>
+                <label>Image
+                    <input type="text" name="image" required>
+                </label>
+                <label>Message File
+                    <input type="text" name="message_file" required>
+                </label>
+                <div class="fa-form-actions">
+                    <button type="submit">Save</button>
                 </div>
             </form>
         </div>
