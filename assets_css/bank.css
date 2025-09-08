@@ -84,3 +84,21 @@
 .admin-slider input {
     width: 100%;
 }
+
+.money-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.money-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.money-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}

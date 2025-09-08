@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const interestMap = {6: 10000, 12: 20000, 24: 30000};
         const interest = interestMap[hours] || 0;
         const final = amount + interest;
-        document.getElementById('depositPreview').textContent = `Deposit: ${numberFormat(amount)} | Interest: ${numberFormat(interest)} | Final after ${hours}h: ${numberFormat(final)}`;
+        document.getElementById('depositPreview').innerHTML = `Deposit: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(amount)}</span> | Interest: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(interest)}</span> | Interest earned ${hours}h: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(final)}</span>`;
     }
 
     function initLoan() {
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateLoanPreview() {
         const amount = parseInt(document.getElementById('loanAmount').value, 10);
         const due = amount * 2;
-        document.getElementById('loanPreview').textContent = `Borrow: ${numberFormat(amount)} | Payback: ${numberFormat(due)}`;
+        document.getElementById('loanPreview').innerHTML = `Borrow: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(amount)}</span> | Payback: <span class="money-inline"><img src="img/money.png" class="money-icon"> ${numberFormat(due)}</span>`;
     }
 
     function loadLoans() {
@@ -195,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.deposits.forEach(dep => {
                     const div = document.createElement('div');
                     div.className = 'active-deposit';
-                    const final = dep.amount + dep.interest;
                     const countdown = dep.matured ? '<div class="countdown">00:00:00</div>' : `<div class="countdown" data-end="${dep.end_time}"></div>`;
                     const button = dep.matured ? `<button class="claim-btn" data-id="${dep.id}">Claim</button>` : `<button class="cancel-btn" data-id="${dep.id}">Cancel</button>`;
                     let adminSlider = '';
@@ -205,13 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         adminSlider = `<label class="admin-slider">Admin only: <input type="range" class="admin-time-slider" data-id="${dep.id}" min="0" max="100" value="0"></label>`;
                     }
                     div.innerHTML = `
-                        <div>Deposit: ${numberFormat(dep.amount)}</div>
-                        <div>Final: ${numberFormat(final)}</div>
+                        <div class="money-line"><img src="img/money.png" class="money-icon">Deposit: ${numberFormat(dep.amount)}</div>
+                        <div class="money-line"><img src="img/money.png" class="money-icon">Interest: ${numberFormat(dep.interest)}</div>
                         ${countdown}
                         ${button}
                         ${adminSlider}
                     `;
-                    container.appendChild(div);
+ 
                     if (dep.matured) {
                         const claimBtn = div.querySelector('.claim-btn');
                         claimBtn.addEventListener('click', () => {
@@ -261,17 +260,17 @@ document.addEventListener('DOMContentLoaded', () => {
                             const slider = div.querySelector('.admin-time-slider');
                             const countdownEl = div.querySelector('.countdown');
                             slider.addEventListener('input', () => {
+                                countdownEl.dataset.manual = '1';
                                 const base = parseInt(div.dataset.remaining, 10);
-                                const newRemaining = Math.max(60, Math.floor(base * (1 - slider.value / 100)));
+                                const newRemaining = Math.max(59, Math.floor(base * (1 - slider.value / 100)));
                                 const h = Math.floor(newRemaining / 3600);
                                 const m = Math.floor((newRemaining % 3600) / 60);
                                 const s = newRemaining % 60;
-                                countdownEl.dataset.end = new Date(Date.now() + newRemaining * 1000).toISOString();
                                 countdownEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
                             });
                             slider.addEventListener('change', () => {
                                 const base = parseInt(div.dataset.remaining, 10);
-                                const newRemaining = Math.max(60, Math.floor(base * (1 - slider.value / 100)));
+                                const newRemaining = Math.max(59, Math.floor(base * (1 - slider.value / 100)));
                                 fetch('bank_api.php', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -285,8 +284,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                         } else {
                                             div.dataset.remaining = newRemaining;
                                             countdownEl.dataset.end = res.new_end;
+                                            const h = Math.floor(newRemaining / 3600);
+                                            const m = Math.floor((newRemaining % 3600) / 60);
+                                            const s = newRemaining % 60;
+                                            countdownEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
                                             slider.value = 0;
                                         }
+                                    })
+                                    .finally(() => {
+                                        delete countdownEl.dataset.manual;
                                     });
                             });
                         }
@@ -296,19 +302,60 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
+    function switchToClaim(countdownEl, containerId) {
+        countdownEl.removeAttribute('data-end');
+        countdownEl.textContent = '00:00:00';
+        const parent = countdownEl.closest('.active-deposit');
+        if (!parent) return;
+        const cancelBtn = parent.querySelector('.cancel-btn');
+        if (cancelBtn) {
+            const id = cancelBtn.dataset.id;
+            const claimBtn = document.createElement('button');
+            claimBtn.className = 'claim-btn';
+            claimBtn.textContent = 'Claim';
+            claimBtn.dataset.id = id;
+            cancelBtn.replaceWith(claimBtn);
+            claimBtn.addEventListener('click', () => {
+                claimBtn.disabled = true;
+                fetch('bank_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=claim&id=${id}`
+                })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.error) {
+                            const m = document.getElementById('depositMessage');
+                            if (m) m.textContent = res.error;
+                            claimBtn.disabled = false;
+                        } else {
+                            if (window.showFloatingText) {
+                                window.showFloatingText(claimBtn, { money: res.interest });
+                            }
+                            updateLimit(res.remaining);
+                            loadActive(containerId);
+                        }
+                    });
+            });
+        }
+    }
+
     function startCountdown(container, containerId) {
         const depEls = container.querySelectorAll('.countdown[data-end]');
         if (!depEls.length) return;
         let timer;
         function update() {
             const now = Date.now();
-            let reload = false;
             depEls.forEach(el => {
+                if (el.dataset.manual === '1' || !el.dataset.end) return;
                 const end = new Date(el.dataset.end).getTime();
                 let diff = end - now;
                 if (diff <= 0) {
                     diff = 0;
-                    reload = true;
+                    if (!el.dataset.matured) {
+                        el.dataset.matured = '1';
+                        switchToClaim(el, containerId);
+                    }
                 }
                 const h = Math.floor(diff / 3600000);
                 diff %= 3600000;
@@ -317,10 +364,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const s = Math.floor(diff / 1000);
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             });
-            if (reload) {
-                clearInterval(timer);
-                loadActive(containerId);
-            }
         }
         update();
         timer = setInterval(update, 1000);
