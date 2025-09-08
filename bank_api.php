@@ -51,7 +51,9 @@ $action = $_REQUEST['action'] ?? '';
 $stmt = $db->prepare('SELECT vip FROM users WHERE id = ?');
 $stmt->execute([$userId]);
 $isVip = (int)$stmt->fetchColumn() > 0;
-$maxDeposits = $isVip ? 5 : 2;
+$vipMax = 5;
+$baseMax = 2;
+$maxDeposits = $isVip ? $vipMax : $baseMax;
 
 function getMoney($db, $uid) {
     $stmt = $db->prepare('SELECT money FROM users WHERE id = ?');
@@ -117,11 +119,29 @@ if ($action === 'deposit') {
     $count = (int)$stmt->fetchColumn();
     $remaining = max(0, $maxDeposits - $count);
     if ($money < $amount) {
-        echo json_encode(['error' => 'Not enough funds', 'money' => $money, 'remaining' => $remaining, 'max' => $maxDeposits, 'vip' => $isVip]);
+        echo json_encode([
+            'error' => 'Not enough funds',
+            'money' => $money,
+            'remaining' => $remaining,
+            'max' => $maxDeposits,
+            'vip' => $isVip,
+            'count' => $count,
+            'vip_max' => $vipMax,
+            'base_max' => $baseMax
+        ]);
         exit;
     }
     if ($count >= $maxDeposits) {
-        echo json_encode(['error' => 'Daily deposit limit reached', 'money' => $money, 'remaining' => 0, 'max' => $maxDeposits, 'vip' => $isVip]);
+        echo json_encode([
+            'error' => 'Daily deposit limit reached',
+            'money' => $money,
+            'remaining' => 0,
+            'max' => $maxDeposits,
+            'vip' => $isVip,
+            'count' => $count,
+            'vip_max' => $vipMax,
+            'base_max' => $baseMax
+        ]);
         exit;
     }
     $actualHours = $hours + 1;
@@ -134,14 +154,18 @@ if ($action === 'deposit') {
         ->execute([$userId, $amount, $interest, $hours, $start, $end]);
     $db->commit();
     $money -= $amount;
-    $remaining = max(0, $maxDeposits - ($count + 1));
+    $count++;
+    $remaining = max(0, $maxDeposits - $count);
     echo json_encode([
         'success' => true,
         'money' => $money,
         'deposit' => ['amount' => $amount, 'interest' => $interest, 'hours' => $hours, 'start_time' => $start, 'end_time' => $end],
         'remaining' => $remaining,
         'max' => $maxDeposits,
-        'vip' => $isVip
+        'vip' => $isVip,
+        'count' => $count,
+        'vip_max' => $vipMax,
+        'base_max' => $baseMax
     ]);
     exit;
 }
@@ -168,8 +192,18 @@ if ($action === 'cancel') {
     $today = date('Y-m-d 00:00:00');
     $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
     $stmt->execute([$userId, $today]);
-    $remaining = max(0, $maxDeposits - (int)$stmt->fetchColumn());
-    echo json_encode(['success' => true, 'money' => $money, 'remaining' => $remaining, 'max' => $maxDeposits, 'vip' => $isVip]);
+    $count = (int)$stmt->fetchColumn();
+    $remaining = max(0, $maxDeposits - $count);
+    echo json_encode([
+        'success' => true,
+        'money' => $money,
+        'remaining' => $remaining,
+        'max' => $maxDeposits,
+        'vip' => $isVip,
+        'count' => $count,
+        'vip_max' => $vipMax,
+        'base_max' => $baseMax
+    ]);
     exit;
 }
 
@@ -195,25 +229,44 @@ if ($action === 'claim') {
     $today = date('Y-m-d 00:00:00');
     $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
     $stmt->execute([$userId, $today]);
-    $remaining = max(0, $maxDeposits - (int)$stmt->fetchColumn());
-    echo json_encode(['success' => true, 'money' => $money, 'remaining' => $remaining, 'max' => $maxDeposits, 'vip' => $isVip]);
+    $count = (int)$stmt->fetchColumn();
+    $remaining = max(0, $maxDeposits - $count);
+    echo json_encode([
+        'success' => true,
+        'money' => $money,
+        'remaining' => $remaining,
+        'max' => $maxDeposits,
+        'vip' => $isVip,
+        'count' => $count,
+        'vip_max' => $vipMax,
+        'base_max' => $baseMax
+    ]);
     exit;
 }
-
 
 if ($action === 'active') {
     $money = getMoney($db, $userId);
     $today = date('Y-m-d 00:00:00');
     $stmt = $db->prepare('SELECT COUNT(*) FROM bank_deposits WHERE user_id = ? AND start_time >= ?');
     $stmt->execute([$userId, $today]);
-    $remaining = max(0, $maxDeposits - (int)$stmt->fetchColumn());
+    $count = (int)$stmt->fetchColumn();
+    $remaining = max(0, $maxDeposits - $count);
     $stmt = $db->prepare('SELECT id, amount, interest, hours, start_time, end_time FROM bank_deposits WHERE user_id = ? AND claimed = 0 ORDER BY end_time');
     $stmt->execute([$userId]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach ($rows as &$r) {
         $r['display_end'] = $r['end_time'];
     }
-    echo json_encode(['deposits' => $rows, 'money' => $money, 'remaining' => $remaining, 'max' => $maxDeposits, 'vip' => $isVip]);
+    echo json_encode([
+        'deposits' => $rows,
+        'money' => $money,
+        'remaining' => $remaining,
+        'max' => $maxDeposits,
+        'vip' => $isVip,
+        'count' => $count,
+        'vip_max' => $vipMax,
+        'base_max' => $baseMax
+    ]);
     exit;
 }
 
@@ -237,6 +290,5 @@ if ($action === 'history') {
     echo json_encode(['history' => $depositHistory, 'loan_history' => $loanHistory, 'money' => $money]);
     exit;
 }
-
 
 echo json_encode(['error' => 'Invalid action']);

@@ -16,19 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.getElementById('depositLimit');
         const btn = document.getElementById('depositBtn');
         if (!el || !btn || !info) return;
-        const { remaining = 0, max = 0, vip = false } = info;
-        const used = max - remaining;
-        if (remaining > 0) {
-            el.textContent = vip
-                ? `Deposits today: ${used}/${max}`
-                : `Deposits today: ${used}/${max} (VIP: 5/day)`;
-            btn.disabled = false;
-        } else {
-            el.textContent = vip
-                ? `Deposits today: ${used}/${max}`
-                : `Deposits today: ${used}/${max} (VIP: 5/day)`;
-            btn.disabled = true;
+        const { count = 0, max = 0, vip = false, vip_max = 5, base_max = 2 } = info;
+        const baseCount = Math.min(count, base_max);
+        let text = `Deposits today: ${baseCount}/${base_max}`;
+        if (vip) {
+            text += ` | VIP: ${count}/${vip_max}`;
         }
+        el.textContent = text;
+        btn.disabled = count >= max;
     }
 
     function updateLoanLimit(n) {
@@ -72,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 1; i <= 24; i++) {
                 const opt = document.createElement('option');
                 opt.value = i;
-                opt.textContent = `${i + 1}h`;
+                opt.textContent = `${i}h`;
                 select.appendChild(opt);
             }
         }
