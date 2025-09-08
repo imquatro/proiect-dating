@@ -12,15 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<span class="money-amount"><img src="img/money.png" class="money-icon" alt="">${numberFormat(n)}</span>`;
     }
 
-    function updateLimit(n) {
+    function updateLimit(info) {
         const el = document.getElementById('depositLimit');
         const btn = document.getElementById('depositBtn');
-        if (!el || !btn || typeof n !== 'number') return;
-        if (n > 0) {
-            el.textContent = `Deposits remaining today: ${n}`;
+        if (!el || !btn || !info) return;
+        const { remaining = 0, max = 0, vip = false } = info;
+        const used = max - remaining;
+        if (remaining > 0) {
+            el.textContent = vip
+                ? `Deposits today: ${used}/${max}`
+                : `Deposits today: ${used}/${max} (VIP: 5/day)`;
             btn.disabled = false;
         } else {
-            el.textContent = 'Daily deposit limit reached';
+            el.textContent = vip
+                ? `Deposits today: ${used}/${max}`
+                : `Deposits today: ${used}/${max} (VIP: 5/day)`;
             btn.disabled = true;
         }
     }
@@ -66,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 1; i <= 24; i++) {
                 const opt = document.createElement('option');
                 opt.value = i;
-                opt.textContent = `${i}h`;
+                opt.textContent = `${i + 1}h`;
                 select.appendChild(opt);
             }
         }
@@ -95,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         msg.textContent = 'Deposit successful';
                         loadActive('activeDeposits');
                     }
-                    updateLimit(data.remaining);
+                    updateLimit(data);
                 })
                 .catch(() => {
                     btn.disabled = false;
@@ -106,10 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updatePreview() {
         const hours = parseInt(document.getElementById('depositHours').value, 10);
+        const actualHours = hours + 1;
         const amount = 1000000;
-        const interest = hours * 100;
+        const interest = actualHours * 1000;
         const final = amount + interest;
-        document.getElementById('depositPreview').innerHTML = `Deposit: ${moneyHtml(amount)} | Interest: ${moneyHtml(interest)} | Final after ${hours}h: ${moneyHtml(final)}`;
+        document.getElementById('depositPreview').innerHTML = `Deposit: ${moneyHtml(amount)} | Interest: ${moneyHtml(interest)} | Final after ${actualHours}h: ${moneyHtml(final)}`;
     }
 
     function initLoan() {
@@ -185,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('bank_api.php?action=active')
             .then(r => r.json())
             .then(data => {
-                updateLimit(data.remaining);
+                updateLimit(data);
                 const container = document.getElementById(containerId);
                 const msg = document.getElementById('depositMessage');
                 if (msg) msg.textContent = '';
@@ -203,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div>Final: ${moneyHtml(final)}</div>
                         <div class="countdown" data-end="${dep.display_end}" data-id="${dep.id}"></div>
                         <button class="cancel-btn" data-id="${dep.id}">Cancel</button>
+                        <button class="claim-btn" data-id="${dep.id}" style="display:none;">Claim</button>
                     `;
                     container.appendChild(div);
                     const cancelBtn = div.querySelector('.cancel-btn');
@@ -220,7 +228,27 @@ document.addEventListener('DOMContentLoaded', () => {
                                     if (m) m.textContent = res.error;
                                     cancelBtn.disabled = false;
                                 } else {
-                                    updateLimit(res.remaining);
+                                    updateLimit(res);
+                                    loadActive(containerId);
+                                }
+                            });
+                    });
+                    const claimBtn = div.querySelector('.claim-btn');
+                    claimBtn.addEventListener('click', () => {
+                        claimBtn.disabled = true;
+                        fetch('bank_api.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `action=claim&id=${dep.id}`
+                        })
+                            .then(r => r.json())
+                            .then(res => {
+                                if (res.error) {
+                                    const m = document.getElementById('depositMessage');
+                                    if (m) m.textContent = res.error;
+                                    claimBtn.disabled = false;
+                                } else {
+                                    updateLimit(res);
                                     loadActive(containerId);
                                 }
                             });
@@ -231,35 +259,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startCountdown(container) {
-        const depEls = container.querySelectorAll('.countdown');
-        let interval;
+        const depDivs = container.querySelectorAll('.active-deposit');
         function tick() {
             const now = Date.now();
-            depEls.forEach(el => {
+            depDivs.forEach(div => {
+                const el = div.querySelector('.countdown');
                 const end = new Date(el.dataset.end).getTime();
-                let diff = Math.max(0, end - now);
+                let diff = end - now;
+                if (diff <= 0) {
+                    el.textContent = '00:00:00';
+                    const cancelBtn = div.querySelector('.cancel-btn');
+                    if (cancelBtn) cancelBtn.style.display = 'none';
+                    const claimBtn = div.querySelector('.claim-btn');
+                    if (claimBtn) claimBtn.style.display = 'inline-block';
+                    return;
+                }
+                diff = Math.max(0, diff);
                 const h = Math.floor(diff / 3600000);
                 diff %= 3600000;
                 const m = Math.floor(diff / 60000);
                 diff %= 60000;
                 const s = Math.floor(diff / 1000);
                 el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                if (h === 0 && m === 0 && s === 0 && !el.dataset.done) {
-                    el.dataset.done = '1';
-                    clearInterval(interval);
-                    const id = el.dataset.id;
-                    fetch('bank_api.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: `action=force&id=${id}`
-                    }).then(() => {
-                        loadActive(container.id);
-                    });
-                }
             });
         }
         tick();
-        interval = setInterval(tick, 1000);
+        setInterval(tick, 1000);
     }
 
     function loadHistory() {
