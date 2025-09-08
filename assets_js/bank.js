@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hours = parseInt(document.getElementById('depositHours').value, 10);
         const actualHours = hours + 1;
         const amount = 1000000;
-        const interest = actualHours * 1000;
+        const interest = hours * 1000;
         const final = amount + interest;
         document.getElementById('depositPreview').innerHTML = `Deposit: ${moneyHtml(amount)} | Interest: ${moneyHtml(interest)} | Final after ${actualHours}h: ${moneyHtml(final)}`;
     }

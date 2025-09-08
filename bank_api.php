@@ -145,7 +145,7 @@ if ($action === 'deposit') {
         exit;
     }
     $actualHours = $hours + 1;
-    $interest = $actualHours * 1000;
+    $interest = $hours * 1000;
     $start = date('Y-m-d H:i:s');
     $end = date('Y-m-d H:i:s', time() + $actualHours * 3600);
     $db->beginTransaction();
