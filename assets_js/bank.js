@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!bank) return;
     const buttons = bank.querySelectorAll('.bank-btn');
     const tabs = bank.querySelectorAll('.bank-tab');
+    const isAdmin = bank.dataset.admin === '1';
 
     function numberFormat(n) {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -197,11 +198,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     const final = dep.amount + dep.interest;
                     const countdown = dep.matured ? '<div class="countdown">00:00:00</div>' : `<div class="countdown" data-end="${dep.end_time}"></div>`;
                     const button = dep.matured ? `<button class="claim-btn" data-id="${dep.id}">Claim</button>` : `<button class="cancel-btn" data-id="${dep.id}">Cancel</button>`;
+                    let adminSlider = '';
+                    if (!dep.matured && isAdmin) {
+                        const remainingSec = Math.max(0, Math.floor((new Date(dep.end_time).getTime() - Date.now()) / 1000));
+                        div.dataset.remaining = remainingSec;
+                        adminSlider = `<label class="admin-slider">Admin only: <input type="range" class="admin-time-slider" data-id="${dep.id}" min="0" max="100" value="0"></label>`;
+                    }
                     div.innerHTML = `
                         <div>Deposit: ${numberFormat(dep.amount)}</div>
                         <div>Final: ${numberFormat(final)}</div>
                         ${countdown}
                         ${button}
+                        ${adminSlider}
                     `;
                     container.appendChild(div);
                     if (dep.matured) {
@@ -249,6 +257,39 @@ document.addEventListener('DOMContentLoaded', () => {
                                     }
                                 });
                         });
+                        if (isAdmin) {
+                            const slider = div.querySelector('.admin-time-slider');
+                            const countdownEl = div.querySelector('.countdown');
+                            slider.addEventListener('input', () => {
+                                const base = parseInt(div.dataset.remaining, 10);
+                                const newRemaining = Math.max(60, Math.floor(base * (1 - slider.value / 100)));
+                                const h = Math.floor(newRemaining / 3600);
+                                const m = Math.floor((newRemaining % 3600) / 60);
+                                const s = newRemaining % 60;
+                                countdownEl.dataset.end = new Date(Date.now() + newRemaining * 1000).toISOString();
+                                countdownEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                            });
+                            slider.addEventListener('change', () => {
+                                const base = parseInt(div.dataset.remaining, 10);
+                                const newRemaining = Math.max(60, Math.floor(base * (1 - slider.value / 100)));
+                                fetch('bank_api.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                    body: `action=fastforward&id=${dep.id}&remaining=${newRemaining}`
+                                })
+                                    .then(r => r.json())
+                                    .then(res => {
+                                        if (res.error) {
+                                            const m = document.getElementById('depositMessage');
+                                            if (m) m.textContent = res.error;
+                                        } else {
+                                            div.dataset.remaining = newRemaining;
+                                            countdownEl.dataset.end = res.new_end;
+                                            slider.value = 0;
+                                        }
+                                    });
+                            });
+                        }
                     }
                 });
                 startCountdown(container, containerId);

@@ -46,6 +46,9 @@ $db->exec("CREATE TABLE IF NOT EXISTS bank_loan_payments (
 
 $userId = (int)$_SESSION['user_id'];
 $action = $_REQUEST['action'] ?? '';
+$stmt = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
+$stmt->execute([$userId]);
+$isAdmin = $stmt->fetchColumn() == 1;
 
 function getMoney($db, $uid) {
     $stmt = $db->prepare('SELECT money FROM users WHERE id = ?');
@@ -156,6 +159,32 @@ if ($action === 'cancel') {
     $stmt->execute([$userId, $today]);
     $remaining = max(0, 10 - (int)$stmt->fetchColumn());
     echo json_encode(['success' => true, 'money' => $money, 'remaining' => $remaining]);
+    exit;
+}
+
+if ($action === 'fastforward') {
+    if (!$isAdmin) {
+        echo json_encode(['error' => 'Unauthorized']);
+        exit;
+    }
+    $id = (int)($_POST['id'] ?? 0);
+    $remaining = max(60, (int)($_POST['remaining'] ?? 0));
+    $stmt = $db->prepare('SELECT end_time FROM bank_deposits WHERE id = ? AND user_id = ? AND claimed = 0');
+    $stmt->execute([$id, $userId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        echo json_encode(['error' => 'Invalid deposit']);
+        exit;
+    }
+    $currentEnd = strtotime($row['end_time']);
+    $newEnd = time() + $remaining;
+    if ($newEnd >= $currentEnd) {
+        echo json_encode(['error' => 'Cannot extend deposit']);
+        exit;
+    }
+    $newEndStr = date('Y-m-d H:i:s', $newEnd);
+    $db->prepare('UPDATE bank_deposits SET end_time = ? WHERE id = ?')->execute([$newEndStr, $id]);
+    echo json_encode(['success' => true, 'new_end' => $newEndStr]);
     exit;
 }
 

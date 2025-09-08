@@ -75,3 +75,12 @@
     opacity: 0.5;
     cursor: default;
 }
+
+.admin-slider {
+    margin-top: 6px;
+    color: #ff8080;
+    display: block;
+}
+.admin-slider input {
+    width: 100%;
+}

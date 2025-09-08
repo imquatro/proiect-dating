@@ -33,7 +33,7 @@ ob_start();
                         <div id="adminPanelContainer"></div>
                     </div>
                     <?php endif; ?>
-                    <div class="subtab-content" id="bank">
+                    <div class="subtab-content" id="bank" data-admin="<?= $isAdmin ? 1 : 0 ?>">
                         <img src="img/bank.png" alt="Bank" class="bank-header-img">
                         <h3>Welcome to our bank!</h3>
                         <p>What can we do for you?</p>
