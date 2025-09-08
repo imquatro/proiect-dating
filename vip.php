@@ -40,6 +40,10 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
                         <ul class="vip-benefit-list">
                             <li>Gain 5 extra farming slots available only to VIPs</li>
                             <li>Plant multiple crops at once for faster progress</li>
+                            <li>Harvest several plots in one action and earn 8 XP per plot</li>
+                            <li>Remove items from multiple plots simultaneously</li>
+                            <li>Receive 10 XP for each bulk sale of 1,000 items</li>
+                            <li>Hold up to 5 simultaneous bank deposits</li>
                             <li>Unlock exclusive profile frames and cards to set on your farm profile</li>
                             <li>Shine with a shimmering name like <span class="gold-shimmer">username</span></li>
                         </ul>

@@ -18,6 +18,10 @@
     background: url('../img/bg2.png') center/cover no-repeat;
 }
 
+.vip-panel.benefits-active {
+    max-height: 650px;
+}
+
 .vip-tabs {
     display: flex;
     gap: 4px;
@@ -121,17 +125,25 @@
 
 .vip-benefit-title {
     font-size: 1.8em;
+    font-weight: 700;
     margin-bottom: 0.4em;
 }
 
 .vip-benefit-text,
 .vip-benefit-list {
-    font-size: 1.2em;
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 1.4;
 }
 
 .vip-benefit-list {
     list-style: disc;
     margin-left: 1.2em;
+    padding-bottom: 20px;
+}
+
+#benefits {
+    max-height: none;
 }
 
 .vip-preview {
@@ -170,6 +182,18 @@
         overflow: hidden;
         padding: 20px 20px 0;
         box-sizing: border-box;
+    }
+
+    .vip-panel.benefits-active {
+        height: 55vh;
+        max-height: 55vh;
+    }
+
+    #benefits {
+        height: auto;
+        max-height: none;
+        overflow-y: auto;
+        padding-bottom: 80px;
     }
 
     .vip-preview {

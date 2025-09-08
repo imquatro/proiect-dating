@@ -89,11 +89,13 @@ document.addEventListener('DOMContentLoaded', function () {
     subTabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             updatePreviewVisibility(btn.dataset.subtab);
+            panel.classList.toggle('benefits-active', btn.dataset.subtab === 'benefits');
         });
     });
     const activeBtn = panel.querySelector('.sub-tab-btn.active');
     if (activeBtn) {
         updatePreviewVisibility(activeBtn.dataset.subtab);
+        panel.classList.toggle('benefits-active', activeBtn.dataset.subtab === 'benefits');
     }
 
     const frameGrid = panel.querySelector('.vip-frame-grid');
