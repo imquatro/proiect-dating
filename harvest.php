@@ -21,6 +21,10 @@ if (!$slotId) {
     exit;
 }
 $userId = (int)$_SESSION['user_id'];
+$vipStmt = $db->prepare('SELECT vip FROM users WHERE id = ?');
+$vipStmt->execute([$userId]);
+$isVip = (int)$vipStmt->fetchColumn() > 0;
+$xpPerHarvest = $isVip ? 8 : 2;
 
 try {
     $db->beginTransaction();
@@ -130,7 +134,7 @@ try {
     $basePath = __DIR__ . '/' . $base;
     $baseImage = $base . '?v=' . (file_exists($basePath) ? filemtime($basePath) : time());
 
-    $xpResult = add_xp($db, $userId, 10);
+    $xpResult = add_xp($db, $userId, $xpPerHarvest);
     // Update total harvest count
     $db->prepare('UPDATE users SET harvests = harvests + ? WHERE id = ?')
        ->execute([$qty, $userId]);

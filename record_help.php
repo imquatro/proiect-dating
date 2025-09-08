@@ -13,13 +13,18 @@ $userId = (int)$_SESSION['user_id'];
 $ownerId = isset($_POST['owner_id']) ? (int)$_POST['owner_id'] : 0;
 $slotId = isset($_POST['slot_id']) ? (int)$_POST['slot_id'] : 0;
 $action = isset($_POST['action']) ? $_POST['action'] : '';
+
+$vipStmt = $db->prepare('SELECT vip FROM users WHERE id = ?');
+$vipStmt->execute([$userId]);
+$isVip = (int)$vipStmt->fetchColumn() > 0;
+$xpPerAction = $isVip ? 4 : 1;
 if (!$ownerId || !$action || !$slotId) {
     echo json_encode(['status' => 'error']);
     exit;
 }
 
 if ($ownerId === $userId) {
-    $result = add_xp($db, $userId, 5);
+    $result = add_xp($db, $userId, $xpPerAction);
     echo json_encode(array_merge(['status' => 'ok'], $result));
     exit;
 }
@@ -78,5 +83,5 @@ if ($action === 'water') {
 }
 $hstmt->execute([$ownerId, $slotId, $userId]);
 
-$result = add_xp($db, $userId, 5);
+$result = add_xp($db, $userId, $xpPerAction);
 echo json_encode(array_merge(['status' => 'ok'], $result));

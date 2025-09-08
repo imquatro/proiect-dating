@@ -21,6 +21,10 @@ if (!$slotId) {
     exit;
 }
 $userId = (int)$_SESSION['user_id'];
+$vipStmt = $db->prepare('SELECT vip FROM users WHERE id = ?');
+$vipStmt->execute([$userId]);
+$isVip = (int)$vipStmt->fetchColumn() > 0;
+$xpPerSlot = $isVip ? 8 : 2;
 
 try {
     $db->beginTransaction();
@@ -155,7 +159,7 @@ try {
         ];
     }
 
-    $xpResult = add_xp($db, $userId, 10 * $maxHarvestableSlots);
+    $xpResult = add_xp($db, $userId, $xpPerSlot * $maxHarvestableSlots);
     // Update total harvest count
     $db->prepare('UPDATE users SET harvests = harvests + ? WHERE id = ?')
        ->execute([$totalQty, $userId]);

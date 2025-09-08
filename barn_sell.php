@@ -20,6 +20,10 @@ if ($itemId <= 0 || $slot <= 0 || $quantity <= 0) {
     exit;
 }
 
+$vipStmt = $db->prepare('SELECT vip FROM users WHERE id = ?');
+$vipStmt->execute([$userId]);
+$isVip = (int)$vipStmt->fetchColumn() > 0;
+
 try {
     $db->beginTransaction();
 
@@ -86,13 +90,15 @@ try {
         }
     }
 
-    // XP gain: 50 XP per stack sold (stack size 1000 or 1)
+    // XP gain: VIP members earn 10 XP per full stack of 1000 sold
     $prodStmt = $db->prepare('SELECT production FROM farm_items WHERE id = ?');
     $prodStmt->execute([$itemId]);
     $production = (int)$prodStmt->fetchColumn();
-    $stackSize = ($production === 1) ? 1 : 1000;
-    $xpGain = 50 * (int)ceil($quantity / $stackSize);
-    $xpResult = add_xp($db, $userId, $xpGain);
+    $xpGain = 0;
+    if ($isVip && $production !== 1) {
+        $xpGain = 10 * (int)floor($quantity / 1000);
+    }
+    $xpResult = $xpGain > 0 ? add_xp($db, $userId, $xpGain) : ['levelUp' => false, 'newLevel' => 0, 'xpGain' => 0];
 
     $walletStmt = $db->prepare('SELECT money, gold FROM users WHERE id = ?');
     $walletStmt->execute([$userId]);
