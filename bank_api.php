@@ -97,7 +97,11 @@ if ($action === 'loan_active') {
 }
 
 if ($action === 'deposit') {
-    $hours = max(1, min(24, (int)($_REQUEST['hours'] ?? 1)));
+    $hours = (int)($_REQUEST['hours'] ?? 6);
+    $allowedHours = [6, 12, 24];
+    if (!in_array($hours, $allowedHours, true)) {
+        $hours = 6;
+    }
     $amount = 1000000;
     $money = getMoney($db, $userId);
     $today = date('Y-m-d 00:00:00');
@@ -113,9 +117,10 @@ if ($action === 'deposit') {
         echo json_encode(['error' => 'Daily deposit limit reached', 'money' => $money, 'remaining' => 0]);
         exit;
     }
-    $interest = $hours * 100;
+    $interestMap = [6 => 10000, 12 => 20000, 24 => 30000];
+    $interest = $interestMap[$hours];
     $start = date('Y-m-d H:i:s');
-    $end = date('Y-m-d H:i:s', time() + $hours * 3600);
+    $end = date('Y-m-d H:i:s', time() + ($hours + 1) * 3600);
     $db->beginTransaction();
     $db->prepare('UPDATE users SET money = money - ? WHERE id = ?')->execute([$amount, $userId]);
     $db->prepare('INSERT INTO bank_deposits (user_id, amount, interest, hours, start_time, end_time) VALUES (?,?,?,?,?,?)')

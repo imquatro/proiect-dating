@@ -59,12 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function initDeposit() {
         const select = document.getElementById('depositHours');
         if (select && !select.options.length) {
-            for (let i = 1; i <= 24; i++) {
+            [6, 12, 24].forEach(i => {
                 const opt = document.createElement('option');
                 opt.value = i;
                 opt.textContent = `${i}h`;
                 select.appendChild(opt);
-            }
+            });
         }
         updatePreview();
         select.addEventListener('change', updatePreview);
@@ -103,7 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePreview() {
         const hours = parseInt(document.getElementById('depositHours').value, 10);
         const amount = 1000000;
-        const interest = hours * 100;
+        const interestMap = {6: 10000, 12: 20000, 24: 30000};
+        const interest = interestMap[hours] || 0;
         const final = amount + interest;
         document.getElementById('depositPreview').textContent = `Deposit: ${numberFormat(amount)} | Interest: ${numberFormat(interest)} | Final after ${hours}h: ${numberFormat(final)}`;
     }
