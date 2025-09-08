@@ -73,7 +73,7 @@ try {
     $capStmt->execute([$userId]);
     $capacity = (int)$capStmt->fetchColumn();
     if (!$capacity) {
-        $capacity = 16;
+        $capacity = 4;
         $db->prepare('INSERT INTO user_barn_info (user_id, capacity) VALUES (?, ?)')->execute([$userId, $capacity]);
     }
 

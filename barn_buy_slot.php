@@ -10,8 +10,10 @@ require_once __DIR__ . '/includes/db.php';
 
 $userId = (int)$_SESSION['user_id'];
 $type = $_POST['type'] ?? '';
-$moneyCost = 10000000; // 10 million
-$goldCost = 50;
+
+$baseMoneyCost = 10000000; // 10 million
+$baseGoldCost  = 50;
+$defaultCapacity = 4;
 
 if ($type !== 'money' && $type !== 'gold') {
     echo json_encode(['success' => false, 'error' => 'invalid_type']);
@@ -29,6 +31,19 @@ try {
         echo json_encode(['success' => false, 'error' => 'wallet_not_found']);
         exit;
     }
+
+    $capStmt = $db->prepare('SELECT capacity FROM user_barn_info WHERE user_id = ? FOR UPDATE');
+    $capStmt->execute([$userId]);
+    $capacity = (int)$capStmt->fetchColumn();
+    if (!$capacity) {
+        $capacity = $defaultCapacity;
+        $ins = $db->prepare('INSERT INTO user_barn_info (user_id, capacity) VALUES (?, ?)');
+        $ins->execute([$userId, $capacity]);
+    }
+
+    $slotsPurchased = max(0, $capacity - $defaultCapacity);
+    $moneyCost = $baseMoneyCost * (1 << $slotsPurchased);
+    $goldCost  = $baseGoldCost  * (1 << $slotsPurchased);
 
     if ($type === 'money') {
         if ((int)$wallet['money'] < $moneyCost) {
@@ -48,14 +63,11 @@ try {
         $upd->execute([$goldCost, $userId]);
     }
 
-    $capStmt = $db->prepare('INSERT INTO user_barn_info (user_id, capacity) VALUES (?, 17)
-                              ON DUPLICATE KEY UPDATE capacity = capacity + 1');
-    $capStmt->execute([$userId]);
+    $db->prepare('UPDATE user_barn_info SET capacity = capacity + 1 WHERE user_id = ?')->execute([$userId]);
 
     $walletStmt->execute([$userId]);
     $wallet = $walletStmt->fetch(PDO::FETCH_ASSOC);
 
-    $capStmt = $db->prepare('SELECT capacity FROM user_barn_info WHERE user_id = ?');
     $capStmt->execute([$userId]);
     $capacity = (int)$capStmt->fetchColumn();
 
@@ -74,4 +86,3 @@ try {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'server_error']);
 }
-?>

@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const slotsEl = document.getElementById('barn-slots');
     const settingsBtn = document.getElementById('barn-settings');
     let currentCapacity = 0;
+    const baseMoneyCost = 10000000;
+    const baseGoldCost = 50;
+    const defaultCapacity = 4;
 
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -10,12 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function openSettings() {
         const overlay = document.createElement('div');
         overlay.className = 'sell-overlay';
+
+        const slotsPurchased = Math.max(0, currentCapacity - defaultCapacity);
+        const moneyCost = baseMoneyCost * Math.pow(2, slotsPurchased);
+        const goldCost = baseGoldCost * Math.pow(2, slotsPurchased);
+
         overlay.innerHTML = `
             <div class="settings-card">
                 <div class="settings-title">Slots: <span class="settings-capacity">${currentCapacity}</span></div>
                 <div class="buy-options">
-                    <button class="buy-money"><img src="img/money.png" alt=""><span>10.000.000</span></button>
-                    <button class="buy-gold"><img src="img/gold.png" alt=""><span>50</span></button>
+                    <button class="buy-money"><img src="img/money.png" alt=""><span>${formatNumber(moneyCost)}</span></button>
+                    <button class="buy-gold"><img src="img/gold.png" alt=""><span>${goldCost}</span></button>
                 </div>
             </div>`;
         document.body.appendChild(overlay);
@@ -158,12 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('barn_items.php');
             if (!res.ok) throw new Error('network');
             const data = await res.json();
-            currentCapacity = data.capacity || 16;
+            currentCapacity = data.capacity || defaultCapacity;
             renderSlots(currentCapacity, data.items || []);
         } catch (err) {
             console.error('Failed to load barn data', err);
-            currentCapacity = 16;
-            renderSlots(16, []);
+            currentCapacity = defaultCapacity;
+            renderSlots(defaultCapacity, []);
         }
     }
 

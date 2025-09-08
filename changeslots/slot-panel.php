@@ -74,7 +74,7 @@ if ($isHarvestReady) {
     $capStmt = $db->prepare('SELECT capacity FROM user_barn_info WHERE user_id = ?');
     $capStmt->execute([$userId]);
     $capacity = (int)$capStmt->fetchColumn();
-    if (!$capacity) { $capacity = 16; }
+    if (!$capacity) { $capacity = 4; }
 
     $slotStmt = $db->prepare('SELECT slot_number, item_id, quantity FROM user_barn WHERE user_id = ? ORDER BY slot_number');
     $slotStmt->execute([$userId]);

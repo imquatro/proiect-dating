@@ -18,7 +18,7 @@ $db->exec('CREATE TABLE IF NOT EXISTS user_barn (
 
 $db->exec('CREATE TABLE IF NOT EXISTS user_barn_info (
     user_id INT NOT NULL PRIMARY KEY,
-    capacity INT NOT NULL DEFAULT 16
+    capacity INT NOT NULL DEFAULT 4
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
 $userId = (int)$_SESSION['user_id'];
@@ -27,7 +27,7 @@ $capStmt = $db->prepare('SELECT capacity FROM user_barn_info WHERE user_id = ?')
 $capStmt->execute([$userId]);
 $capacity = (int)$capStmt->fetchColumn();
 if (!$capacity) {
-    $capacity = 16;
+    $capacity = 4;
     $db->prepare('INSERT INTO user_barn_info (user_id, capacity) VALUES (?, ?)')->execute([$userId, $capacity]);
 }
 
