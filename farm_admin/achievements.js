@@ -8,5 +8,4 @@ function initAchievementDelete(root = document) {
         });
     }
 }
-
 document.addEventListener('DOMContentLoaded', () => initAchievementDelete());
