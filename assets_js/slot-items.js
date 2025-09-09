@@ -73,26 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function checkCompletion() {
-        if (!window.helperBuddy || !window.helperBuddy.ready) return;
-        const states = Object.values(slotStates);
-        if (!window.helperBuddy.shown.water && !states.some(s => (s.waterRemaining || 0) > 0)) {
-            window.helperBuddy.showMessage('water');
-            window.helperBuddy.shown.water = true;
-        }
-        if (!window.helperBuddy.shown.feed && !states.some(s => (s.feedRemaining || 0) > 0)) {
-            window.helperBuddy.showMessage('feed');
-            window.helperBuddy.shown.feed = true;
-        }
-        if (!window.helperBuddy.shown.harvest) {
-            const harvestable = states.filter(s => s.image && (s.waterRemaining || 0) <= 0 && (s.feedRemaining || 0) <= 0);
-            if (harvestable.length === 0) {
-                window.helperBuddy.showMessage('harvest');
-                window.helperBuddy.shown.harvest = true;
-            }
-        }
-    }
-
      function checkNextAction(slotId) {
         const state = slotStates[slotId];
         const slot = document.getElementById(`slot-${slotId}`);
@@ -230,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.showFloatingText(slot, { xp: data.xpGain });
                     }
                 });
-                checkCompletion();
             }
         } else if (action === 'feed') {
             if (state.feedRemaining > 0) {
@@ -246,12 +225,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.showFloatingText(slot, { xp: data.xpGain });
                     }
                 });
-                checkCompletion();
             }
         } else if (action === 'harvest') {
             // No direct harvest here; the slot's click handler will
             // open the panel where the user can confirm harvesting.
             return;
+        }
     }
     document.addEventListener('slotUpdated', e => {
         const {
@@ -319,7 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
             checkNextAction(slotId);
         }
         saveStates(slotId);
-        checkCompletion();
     });
 
     async function loadStates() {
@@ -387,7 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkNextAction(id);
             }
         });
-        checkCompletion();
     }
 
     // Initial load and periodic refresh for live updates
