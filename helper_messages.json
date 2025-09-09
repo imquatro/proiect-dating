@@ -7,15 +7,29 @@
     "Hei, bine că ai venit. Plantele te așteptau!",
     "Salutări din partea helperului tău!"
   ],
-  "water": [
+  "need_water": [
+    "Ai plante care așteaptă apă!",
+    "Câteva sloturi sunt însetate – dă-le apă!",
+    "Grădina cere apă chiar acum!"
+  ],
+  "need_feed": [
+    "Animalele tale așteaptă mâncare!",
+    "Se aud stomacuri plângând în fermă – hrănește-le!",
+    "Sloturile de animale au nevoie de hrană!"
+  ],
+  "need_harvest": [
+    "Recolta este gata în unele sloturi!",
+    "Anumite plante așteaptă să fie culese!",
+    "Este momentul să strângi roadele!"
+  ],
+  "all_watered": [
     "Toate plantele sunt udate, bună treabă!",
     "Nu mai e sete pe aici, felicitări!",
     "Plantele zâmbesc - ai terminat udatul!",
     "Ai stins setea grădinii, bravo!",
-    "Nicio plantă însetată, super!",
     "Udatul s-a încheiat, să trecem la restul!"
   ],
-  "feed": [
+  "all_fed": [
     "Toate animalele sunt sătule, mulțumesc!",
     "Ai hrănit totul, fermă fericită!",
     "Burțile sunt pline - misiune îndeplinită!",
@@ -23,7 +37,7 @@
     "Nimeni nu mai roade frunza de foame!",
     "Ai avut grijă de toți, excelent!"
   ],
-  "harvest": [
+  "all_harvested": [
     "Recolta e strânsă, felicitări!",
     "Ai cules totul, hambarul te așteaptă!",
     "Niciun fruct rămas pe câmp, bravo!",

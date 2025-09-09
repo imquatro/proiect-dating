@@ -3,7 +3,6 @@
         messages: {},
         image: null,
         container: null,
-        shown: { water: false, feed: false, harvest: false },
         ready: false,
         hideTimer: null,
         load(){
@@ -20,9 +19,19 @@
                         this.create();
                         this.ready = true;
                         const queue = ['welcome'];
-                        if (info.waterUsed > 0) queue.push('water');
-                        if (info.feedUsed > 0) queue.push('feed');
-                        if (info.harvestUsed > 0) queue.push('harvest');
+                        if (info.needWater > 0) {
+                            queue.push('need_water');
+                        } else {
+                            queue.push('all_watered');
+                        }
+                        if (info.needFeed > 0) {
+                            queue.push('need_feed');
+                        } else {
+                            queue.push('all_fed');
+                        }
+                        if (info.needHarvest > 0) {
+                            queue.push('need_harvest');
+                        }
                         this.playQueue(queue);
                     }
                 })

@@ -156,6 +156,9 @@ function process_helper_actions(int $userId): array {
     }
     $summary['waterUsed'] = $usedWaters;
     $summary['waterLimit'] = $maxWaters;
+    $wCountStmt = $db->prepare('SELECT COUNT(*) FROM user_slot_states WHERE user_id = ? AND water_remaining > 0');
+    $wCountStmt->execute([$userId]);
+    $summary['needWater'] = (int)$wCountStmt->fetchColumn();
 
     // Feeding
     $fStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0');
@@ -175,6 +178,9 @@ function process_helper_actions(int $userId): array {
     }
     $summary['feedUsed'] = $usedFeeds;
     $summary['feedLimit'] = $maxFeeds;
+    $fCountStmt = $db->prepare('SELECT COUNT(*) FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0');
+    $fCountStmt->execute([$userId]);
+    $summary['needFeed'] = (int)$fCountStmt->fetchColumn();
 
     // Harvesting
     $hStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND timer_type = "harvest" AND (timer_end IS NULL OR timer_end <= NOW())');
@@ -194,6 +200,9 @@ function process_helper_actions(int $userId): array {
     }
     $summary['harvestUsed'] = $usedHarvests;
     $summary['harvestLimit'] = $maxHarvests;
+    $hCountStmt = $db->prepare('SELECT COUNT(*) FROM user_slot_states WHERE user_id = ? AND timer_type = "harvest" AND (timer_end IS NULL OR timer_end <= NOW())');
+    $hCountStmt->execute([$userId]);
+    $summary['needHarvest'] = (int)$hCountStmt->fetchColumn();
 
     return $summary;
 }
