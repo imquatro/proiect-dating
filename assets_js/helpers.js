@@ -1,30 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
     const list = document.getElementById('helpersList');
-    const settings = document.getElementById('helperSettings');
-    if (!list || !settings) return;
+    if (!list) return;
 
     function refreshInfo() {
         fetch('helper_info.php', { credentials: 'same-origin' })
             .then(r => r.json())
             .then(info => {
-                if (info.helper) {
-                    settings.innerHTML = `
-                        <div class="applied-helper-card">
-                            <img src="${info.helper.image}" alt="${info.helper.name}">
-                            <div>
-                                <p>Water: ${info.waterUsed}/${info.waterLimit}</p>
-                                <p>Feed: ${info.feedUsed}/${info.feedLimit}</p>
-                                <p>Harvest: ${info.harvestUsed}/${info.harvestLimit}</p>
-                            </div>
-                        </div>`;
-                } else {
-                    settings.innerHTML = '';
-                }
+                list.querySelectorAll('.helper-card').forEach(card => {
+                    const applyBtn = card.querySelector('.apply-helper-btn');
+                    const statsDiv = card.querySelector('.helper-stats');
+                    const baseWater = card.dataset.waters;
+                    const baseFeed = card.dataset.feeds;
+                    const baseHarvest = card.dataset.harvests;
+                    if (info.helper && parseInt(card.dataset.id, 10) === info.helper.id) {
+                        card.classList.add('selected');
+                        statsDiv.innerHTML = `
+                            <span>Water: ${info.waterUsed}/${info.waterLimit}</span>
+                            <span>Feed: ${info.feedUsed}/${info.feedLimit}</span>
+                            <span>Harvest: ${info.harvestUsed}/${info.harvestLimit}</span>
+                        `;
+                        applyBtn.textContent = 'Applied';
+                        applyBtn.disabled = true;
+                    } else {
+                        card.classList.remove('selected');
+                        statsDiv.innerHTML = `
+                            <span>Water: ${baseWater}</span>
+                            <span>Feed: ${baseFeed}</span>
+                            <span>Harvest: ${baseHarvest}</span>
+                        `;
+                        applyBtn.textContent = 'Apply';
+                        applyBtn.disabled = !!info.helper;
+                    }
+                });
             })
-            .catch(() => { settings.innerHTML = ''; });
+            .catch(() => {});
     }
-
-    refreshInfo();
 
     fetch('helpers_list.php', { credentials: 'same-origin' })
         .then(res => res.json())
@@ -33,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = document.createElement('div');
                 card.className = 'helper-card';
                 card.dataset.id = h.id;
+                card.dataset.waters = h.waters;
+                card.dataset.feeds = h.feeds;
+                card.dataset.harvests = h.harvests;
                 card.innerHTML = `
                     <img src="${h.image}" alt="${h.name}">
                     <div class="helper-info">
@@ -58,9 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         .then(r => r.json())
                         .then(resp => {
                             if (resp.success) {
-                                list.querySelectorAll('.helper-card').forEach(c => c.classList.remove('selected'));
-                                card.classList.add('selected');
-
                                 const overlay = document.createElement('div');
                                 overlay.className = 'helper-overlay';
                                 overlay.innerHTML = `
@@ -81,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 list.appendChild(card);
             });
+            refreshInfo();
         })
         .catch(() => {});
 });
