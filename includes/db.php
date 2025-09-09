@@ -75,8 +75,15 @@ try {
         waters INT NOT NULL DEFAULT 0,
         feeds INT NOT NULL DEFAULT 0,
         harvests INT NOT NULL DEFAULT 0,
+        last_action_date DATE DEFAULT CURDATE(),
         FOREIGN KEY (helper_id) REFERENCES helpers(id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    try {
+        $db->exec("ALTER TABLE user_helpers ADD COLUMN IF NOT EXISTS last_action_date DATE DEFAULT CURDATE()");
+    } catch (PDOException $e) {
+        // ignore if insufficient privileges or other errors
+    }
 } catch (PDOException $e) {
     // ignore if insufficient privileges or other errors
 }

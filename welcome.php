@@ -3,11 +3,13 @@ $activePage = 'welcome';
 ob_start();
 include 'mini_profile.php';
 include_once 'includes/slot_helpers.php';
+require_once 'includes/helper_actions.php';
 
 $slotData = [];
 $userId = $_SESSION['user_id'] ?? null;
 $userLevel = 1;
 $isVip = 0;
+$helperSummary = null;
 if ($userId && isset($db)) {
     $stmt = $db->prepare("
         SELECT ds.slot_number,
@@ -26,8 +28,17 @@ if ($userId && isset($db)) {
     $userRow = $lvlStmt->fetch(PDO::FETCH_ASSOC);
     $userLevel = (int)($userRow['level'] ?? 1);
     $isVip = !empty($userRow['vip']);
+    $helperSummary = process_helper_actions($userId);
 }
 ?>
+<?php if ($helperSummary && ($helperSummary['watered'] || $helperSummary['fed'] || $helperSummary['harvested'])): ?>
+<div class="mini-card" style="text-align:center;">
+    <img src="<?= htmlspecialchars($helperSummary['helper']['image']); ?>" alt="helper" style="width:80px;height:80px;display:block;margin:0 auto;">
+    <p>Watered <?= $helperSummary['watered']; ?> / <?= $helperSummary['waterTotal']; ?></p>
+    <p>Fed <?= $helperSummary['fed']; ?> / <?= $helperSummary['feedTotal']; ?></p>
+    <p>Harvested <?= $helperSummary['harvested']; ?> / <?= $helperSummary['harvestTotal']; ?></p>
+</div>
+<?php endif; ?>
 <hr class="farm-divider">
 <div class="farm-slots">
     <?php
