@@ -30,9 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     const boot = () => {
                         if (typeof initAdminPanel === 'function') {
                             initAdminPanel(panelEl);
-                        } else if (typeof initDeleteItems === 'function' || typeof initEditItems === 'function') {
-                            if (typeof initDeleteItems === 'function') initDeleteItems(panelEl);
-                            if (typeof initEditItems === 'function') initEditItems(panelEl);
                         } else {
                             setTimeout(boot, 50);
                         }

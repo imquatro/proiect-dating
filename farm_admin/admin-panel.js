@@ -244,6 +244,9 @@ function initEditItems(panel){
                 form.querySelector('input[name="image_name"]').value = normalizeImg(item.image_plant).replace(/^img\//, '');
                 form.querySelector('input[name="barn_capacity"]').value = item.barn_capacity;
                 toggleFields();
+                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const nameInput = form.querySelector('input[name="name"]');
+                if (nameInput) nameInput.focus();
             })
             .catch(err => console.error(err));
     });
@@ -319,9 +322,11 @@ function initEditHelpers(panel){
             form.querySelector('input[name="waters"]').value = item.dataset.waters || 0;
             form.querySelector('input[name="feeds"]').value = item.dataset.feeds || 0;
             form.querySelector('input[name="harvests"]').value = item.dataset.harvests || 0;
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const nameInput = form.querySelector('input[name="name"]');
+            if (nameInput) nameInput.focus();
         });
     });
-
     const addForm = panel.querySelector('#fa-helper-form');
     if (addForm) {
         addForm.addEventListener('submit', e => {

@@ -86,8 +86,8 @@ ob_start();
                     </div>
                     <div class="subtab-content" id="helperi">
                         <div id="helpersList"></div>
+                        <div id="helperSettings"></div>
                     </div>
-                </div>
             </div>
         </div>
     </div>
@@ -103,11 +103,9 @@ $content = ob_get_clean();
 
 $pageCss = 'assets_css/settings.css';
 $extraCss = $isAdmin ? ['farm_admin/admin-panel.css', 'assets_css/profile.css', 'assets_css/bank.css', 'assets_css/helperi.css'] : ['assets_css/profile.css', 'assets_css/bank.css', 'assets_css/helperi.css'];
-$extraJs = ['assets_js/settings.js', 'assets_js/profile.js', 'assets_js/bank.js', 'assets_js/helpers.js'];
-if ($isAdmin) {
-    $extraJs[] = 'farm_admin/admin-panel.js';
-    $extraJs[] = 'farm_admin/achievements.js';
-}
+$extraJs = $isAdmin
+    ? ['farm_admin/admin-panel.js', 'farm_admin/achievements.js', 'assets_js/profile.js', 'assets_js/bank.js', 'assets_js/helpers.js', 'assets_js/settings.js']
+    : ['assets_js/profile.js', 'assets_js/bank.js', 'assets_js/helpers.js', 'assets_js/settings.js'];
 
 include 'template.php';
 ?>
