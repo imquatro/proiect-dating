@@ -29,7 +29,8 @@
             const div = document.createElement('div');
             div.id = 'helper-buddy';
             div.innerHTML = `<div class="helper-text"></div><img src="${this.image}" alt="helper">`;
-            document.body.appendChild(div);
+            const parent = document.querySelector('.content') || document.body;
+            parent.appendChild(div);
             this.container = div;
         },
         showMessage(type){
