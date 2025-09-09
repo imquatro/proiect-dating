@@ -23,7 +23,7 @@ $vipFrames = array_map('basename', array_filter(glob($frameDir.'/*.{png,gif,jpg,
 $cardDir = __DIR__ . '/../img/vip_cards';
 $vipCards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}', GLOB_BRACE)));
 
- $helpers = $db->query('SELECT id,name,image,message_file FROM helpers ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
+ $helpers = $db->query('SELECT id,name,image,message_file,waters,feeds,harvests FROM helpers ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
  foreach ($helpers as &$h) {
      $h['image_src'] = resolve_helper_image($h['image']);
  }
@@ -313,6 +313,15 @@ ob_start();
                 <label>Message File
                     <input type="text" name="message_file" required>
                 </label>
+                <label>Watering per day
+                    <input type="number" name="waters" min="0" value="0">
+                </label>
+                <label>Feeding per day
+                    <input type="number" name="feeds" min="0" value="0">
+                </label>
+                <label>Harvesting per day
+                    <input type="number" name="harvests" min="0" value="0">
+                </label>
                 <div class="fa-form-actions">
                     <button type="submit">Save</button>
                 </div>
@@ -322,7 +331,7 @@ ob_start();
             <h2>Edit Helper</h2>
             <div class="fa-edit-helper-grid">
                 <?php foreach ($helpers as $h): ?>
-                <div class="fa-helper-item" data-id="<?= htmlspecialchars($h['id']); ?>" data-name="<?= htmlspecialchars($h['name']); ?>" data-image="<?= htmlspecialchars($h['image']); ?>" data-message="<?= htmlspecialchars($h['message_file']); ?>">
+                <div class="fa-helper-item" data-id="<?= htmlspecialchars($h['id']); ?>" data-name="<?= htmlspecialchars($h['name']); ?>" data-image="<?= htmlspecialchars($h['image']); ?>" data-message="<?= htmlspecialchars($h['message_file']); ?>" data-waters="<?= htmlspecialchars($h['waters']); ?>" data-feeds="<?= htmlspecialchars($h['feeds']); ?>" data-harvests="<?= htmlspecialchars($h['harvests']); ?>">
                     <img src="<?= htmlspecialchars($imagePrefix . $h['image_src']); ?>" alt="<?= htmlspecialchars($h['name']); ?>">
                     <span><?= htmlspecialchars($h['name']); ?></span>
                 </div>
@@ -338,6 +347,15 @@ ob_start();
                 </label>
                 <label>Message File
                     <input type="text" name="message_file" required>
+                </label>
+                <label>Watering per day
+                    <input type="number" name="waters" min="0" value="0">
+                </label>
+                <label>Feeding per day
+                    <input type="number" name="feeds" min="0" value="0">
+                </label>
+                <label>Harvesting per day
+                    <input type="number" name="harvests" min="0" value="0">
                 </label>
                 <div class="fa-form-actions">
                     <button type="submit">Save</button>

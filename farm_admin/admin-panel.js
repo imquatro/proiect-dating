@@ -316,6 +316,9 @@ function initEditHelpers(panel){
             form.querySelector('input[name="name"]').value = item.dataset.name;
             form.querySelector('input[name="image"]').value = item.dataset.image;
             form.querySelector('input[name="message_file"]').value = item.dataset.message;
+            form.querySelector('input[name="waters"]').value = item.dataset.waters || 0;
+            form.querySelector('input[name="feeds"]').value = item.dataset.feeds || 0;
+            form.querySelector('input[name="harvests"]').value = item.dataset.harvests || 0;
         });
     });
 
@@ -335,6 +338,9 @@ function initEditHelpers(panel){
                         div.dataset.name = h.name;
                         div.dataset.image = h.image;
                         div.dataset.message = h.message_file;
+                        div.dataset.waters = h.waters;
+                        div.dataset.feeds = h.feeds;
+                        div.dataset.harvests = h.harvests;
                         div.innerHTML = `<img src="${helperImg(h.image)}" alt="${h.name}"><span>${h.name}</span>`;
                         grid.appendChild(div);
                         addForm.reset();
@@ -357,6 +363,9 @@ function initEditHelpers(panel){
                             item.dataset.name = fd.get('name');
                             item.dataset.image = fd.get('image');
                             item.dataset.message = fd.get('message_file');
+                            item.dataset.waters = fd.get('waters');
+                            item.dataset.feeds = fd.get('feeds');
+                            item.dataset.harvests = fd.get('harvests');
                             item.querySelector('img').src = helperImg(fd.get('image'));
                             item.querySelector('span').textContent = fd.get('name');
                         }

@@ -54,8 +54,20 @@ try {
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(50) NOT NULL,
         image VARCHAR(255) NOT NULL,
-        message_file VARCHAR(255) NOT NULL
+        message_file VARCHAR(255) NOT NULL,
+        waters INT NOT NULL DEFAULT 0,
+        feeds INT NOT NULL DEFAULT 0,
+        harvests INT NOT NULL DEFAULT 0
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    // Ensure daily action columns exist
+    try {
+        $db->exec("ALTER TABLE helpers ADD COLUMN IF NOT EXISTS waters INT NOT NULL DEFAULT 0");
+        $db->exec("ALTER TABLE helpers ADD COLUMN IF NOT EXISTS feeds INT NOT NULL DEFAULT 0");
+        $db->exec("ALTER TABLE helpers ADD COLUMN IF NOT EXISTS harvests INT NOT NULL DEFAULT 0");
+    } catch (PDOException $e) {
+        // ignore if insufficient privileges or other errors
+    }
 
     $db->exec("CREATE TABLE IF NOT EXISTS user_helpers (
         user_id INT NOT NULL PRIMARY KEY,

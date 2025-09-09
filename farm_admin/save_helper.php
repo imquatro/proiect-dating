@@ -15,11 +15,14 @@ if (!$stmt->fetchColumn()) {
  $image = trim($_POST['image'] ?? '');
  $image = preg_replace('/[^A-Za-z0-9_-]/', '', pathinfo($image, PATHINFO_FILENAME));
  $message = trim($_POST['message_file'] ?? '');
+ $waters = max(0, (int)($_POST['waters'] ?? 0));
+ $feeds = max(0, (int)($_POST['feeds'] ?? 0));
+ $harvests = max(0, (int)($_POST['harvests'] ?? 0));
 if ($name === '' || $image === '' || $message === '') {
     echo json_encode(['success' => false]);
     exit;
 }
-$stmt = $db->prepare('INSERT INTO helpers (name, image, message_file) VALUES (?, ?, ?)');
-$stmt->execute([$name, $image, $message]);
+$stmt = $db->prepare('INSERT INTO helpers (name, image, message_file, waters, feeds, harvests) VALUES (?, ?, ?, ?, ?, ?)');
+$stmt->execute([$name, $image, $message, $waters, $feeds, $harvests]);
 $id = (int)$db->lastInsertId();
-echo json_encode(['success' => true, 'helper' => ['id' => $id, 'name' => $name, 'image' => $image, 'message_file' => $message]]);
+echo json_encode(['success' => true, 'helper' => ['id' => $id, 'name' => $name, 'image' => $image, 'message_file' => $message, 'waters' => $waters, 'feeds' => $feeds, 'harvests' => $harvests]]);
