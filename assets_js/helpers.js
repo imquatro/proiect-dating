@@ -3,31 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const settings = document.getElementById('helperSettings');
     if (!list || !settings) return;
 
-    const applyBtn = document.createElement('button');
-    applyBtn.id = 'applyHelperBtn';
-    applyBtn.textContent = 'Apply';
-    applyBtn.style.display = 'none';
-    settings.appendChild(applyBtn);
-
-    let selectedId = null;
-
-    applyBtn.addEventListener('click', () => {
-        if (!selectedId) return;
-        fetch('apply_helper.php', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'helper_id=' + encodeURIComponent(selectedId)
-        })
-            .then(r => r.json())
-            .then(resp => {
-                if (resp.success) {
-                    list.querySelectorAll('.helper-card').forEach(c => c.classList.remove('selected'));
-                    const sel = list.querySelector(`.helper-card[data-id="${selectedId}"]`);
-                    if (sel) sel.classList.add('selected');
-                }
-            });
-    });
+    // Remove any previous content inside settings
+    settings.innerHTML = '';
 
     fetch('helpers_list.php', { credentials: 'same-origin' })
         .then(res => res.json())
@@ -36,13 +13,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = document.createElement('div');
                 card.className = 'helper-card';
                 card.dataset.id = h.id;
-                card.innerHTML = `<img src="${h.image}" alt="${h.name}"><span>${h.name}</span>`;
-                card.addEventListener('click', () => {
-                    list.querySelectorAll('.helper-card').forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                    selectedId = h.id;
-                    applyBtn.style.display = 'block';
+                card.innerHTML = `
+                    <img src="${h.image}" alt="${h.name}">
+                    <div class="helper-info">
+                        <span class="helper-name">${h.name}</span>
+                        <div class="helper-stats">
+                            <span>Water: ${h.waters}</span>
+                            <span>Feed: ${h.feeds}</span>
+                            <span>Harvest: ${h.harvests}</span>
+                        </div>
+                        <button class="apply-helper-btn">Apply</button>
+                    </div>
+                `;
+
+                const applyBtn = card.querySelector('.apply-helper-btn');
+                applyBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    fetch('apply_helper.php', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'helper_id=' + encodeURIComponent(h.id)
+                    })
+                        .then(r => r.json())
+                        .then(resp => {
+                            if (resp.success) {
+                                list.querySelectorAll('.helper-card').forEach(c => c.classList.remove('selected'));
+                                card.classList.add('selected');
+
+                                const applied = document.createElement('div');
+                                applied.className = 'applied-helper-card';
+                                applied.innerHTML = `
+                                    <img src="${h.image}" alt="${h.name}">
+                                    <div><strong>${h.name}</strong><br>This helper is now applied to your farm.</div>
+                                `;
+                                settings.innerHTML = '';
+                                settings.appendChild(applied);
+                            }
+                        });
                 });
+
                 list.appendChild(card);
             });
         })
