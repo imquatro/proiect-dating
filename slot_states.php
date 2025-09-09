@@ -93,8 +93,8 @@ if ($targetId === $userId) {
 }
 
 $stmt = $db->prepare(
-    "SELECT COALESCE(us.slot_number, up.slot_number) AS slot_number,
-            COALESCE(NULLIF(TRIM(ss.image), ''), f.image_plant) AS image,
+    'SELECT COALESCE(us.slot_number, up.slot_number) AS slot_number,
+            COALESCE(ss.image, f.image_plant) AS image,
             COALESCE(ss.water_interval, us.water_interval) AS water_interval,
             COALESCE(ss.feed_interval, us.feed_interval) AS feed_interval,
             COALESCE(ss.water_remaining, us.water_remaining) AS water_remaining,
@@ -105,14 +105,14 @@ $stmt = $db->prepare(
        JOIN farm_items f ON f.id = up.item_id
        LEFT JOIN user_slot_states ss ON ss.user_id = up.user_id AND ss.slot_number = up.slot_number
        LEFT JOIN user_slots us ON us.user_id = up.user_id AND us.slot_number = up.slot_number
-      WHERE up.user_id = ?"
+      WHERE up.user_id = ?'
 );
 $stmt->execute([$targetId]);
 $states = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $slot = (int)$row['slot_number'];
-    $img  = trim($row['image']);
-    if ($img !== '' && strpos($img, 'img/') !== 0) {
+    $img  = $row['image'];
+    if ($img && strpos($img, 'img/') !== 0) {
         $img = 'img/' . ltrim($img, '/');
     }
     $timerEnd = $row['timer_end'] ? (strtotime($row['timer_end']) * 1000) : null;
