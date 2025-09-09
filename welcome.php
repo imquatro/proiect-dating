@@ -1,5 +1,6 @@
 <?php
 $activePage = 'welcome';
+$mini_profile_config = ['show_helpers' => false];
 ob_start();
 include 'mini_profile.php';
 include_once 'includes/slot_helpers.php';
@@ -32,12 +33,21 @@ if ($userId && isset($db)) {
 }
 ?>
 <?php if ($helperSummary && ($helperSummary['watered'] || $helperSummary['fed'] || $helperSummary['harvested'])): ?>
-<div class="mini-card" style="text-align:center;">
-    <img src="<?= htmlspecialchars($helperSummary['helper']['image']); ?>" alt="helper" style="width:80px;height:80px;display:block;margin:0 auto;">
-    <p>Watered <?= $helperSummary['watered']; ?> / <?= $helperSummary['waterTotal']; ?></p>
-    <p>Fed <?= $helperSummary['fed']; ?> / <?= $helperSummary['feedTotal']; ?></p>
-    <p>Harvested <?= $helperSummary['harvested']; ?> / <?= $helperSummary['harvestTotal']; ?></p>
+<div id="helper-summary" class="helper-overlay">
+    <div class="applied-helper-card">
+        <img src="<?= htmlspecialchars($helperSummary['helper']['image']); ?>" alt="helper">
+        <div>
+            <p>Watered <?= $helperSummary['watered']; ?> / <?= $helperSummary['waterTotal']; ?></p>
+            <p>Fed <?= $helperSummary['fed']; ?> / <?= $helperSummary['feedTotal']; ?></p>
+            <p>Harvested <?= $helperSummary['harvested']; ?> / <?= $helperSummary['harvestTotal']; ?></p>
+        </div>
+    </div>
 </div>
+<script>
+document.getElementById('helper-summary').addEventListener('click', function(e){
+    if (e.target === this) this.remove();
+});
+</script>
 <?php endif; ?>
 <hr class="farm-divider">
 <div class="farm-slots">

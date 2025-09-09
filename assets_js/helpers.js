@@ -41,14 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                 list.querySelectorAll('.helper-card').forEach(c => c.classList.remove('selected'));
                                 card.classList.add('selected');
 
-                                const applied = document.createElement('div');
-                                applied.className = 'applied-helper-card';
-                                applied.innerHTML = `
-                                    <img src="${h.image}" alt="${h.name}">
-                                    <div><strong>${h.name}</strong><br>This helper is now applied to your farm.</div>
-                                `;
+                                const overlay = document.createElement('div');
+                                overlay.className = 'helper-overlay';
+                                overlay.innerHTML = `
+                                    <div class="applied-helper-card">
+                                        <img src="${h.image}" alt="${h.name}">
+                                        <div><strong>${h.name}</strong><br>This helper is now applied to your farm.</div>
+                                    </div>`;
+                                document.body.appendChild(overlay);
+                                overlay.addEventListener('click', e => {
+                                    if (e.target === overlay) overlay.remove();
+                                });
                                 settings.innerHTML = '';
-                                settings.appendChild(applied);
                             }
                         });
                 });
