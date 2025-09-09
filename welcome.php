@@ -30,6 +30,22 @@ if ($userId && isset($db)) {
     $userLevel = (int)($userRow['level'] ?? 1);
     $isVip = !empty($userRow['vip']);
     $helperSummary = process_helper_actions($userId);
+    if ($helperSummary && (
+        $helperSummary['waterUsed'] ||
+        $helperSummary['feedUsed'] ||
+        $helperSummary['harvestUsed']
+    )) {
+        $cookieName = 'helper_summary_' . $userId;
+        $summaryHash = date('Y-m-d') . ':'
+            . $helperSummary['waterUsed'] . '-'
+            . $helperSummary['feedUsed'] . '-'
+            . $helperSummary['harvestUsed'];
+        if (($_COOKIE[$cookieName] ?? '') === $summaryHash) {
+            $helperSummary = null;
+        } else {
+            setcookie($cookieName, $summaryHash, time() + 86400 * 30, '/');
+        }
+    }
 }
 ?>
 <?php if ($helperSummary && ($helperSummary['waterUsed'] || $helperSummary['feedUsed'] || $helperSummary['harvestUsed'])): ?>
