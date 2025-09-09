@@ -108,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 actionEl.style.pointerEvents = 'auto';
             }
+            state.timerType = 'harvest';
+            state.timerEnd = null;
         }
     }
 

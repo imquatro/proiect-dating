@@ -139,7 +139,7 @@ function process_helper_actions(int $userId): array {
     }
 
     // Watering
-    $wStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND water_remaining > 0');
+    $wStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND water_remaining > 0 AND (timer_type IS NULL OR timer_type != "water" OR timer_end <= NOW())');
     $wStmt->execute([$userId]);
     $wSlots = $wStmt->fetchAll(PDO::FETCH_COLUMN);
     $maxWaters = (int)$row['max_waters'];
@@ -156,12 +156,12 @@ function process_helper_actions(int $userId): array {
     }
     $summary['waterUsed'] = $usedWaters;
     $summary['waterLimit'] = $maxWaters;
-    $wCountStmt = $db->prepare('SELECT COUNT(*) FROM user_slot_states WHERE user_id = ? AND water_remaining > 0');
+    $wCountStmt = $db->prepare('SELECT COUNT(*) FROM user_slot_states WHERE user_id = ? AND water_remaining > 0 AND (timer_type IS NULL OR timer_type != "water" OR timer_end <= NOW())');
     $wCountStmt->execute([$userId]);
     $summary['needWater'] = (int)$wCountStmt->fetchColumn();
 
     // Feeding
-    $fStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0');
+    $fStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0 AND (timer_type IS NULL OR timer_type != "feed" OR timer_end <= NOW())');
     $fStmt->execute([$userId]);
     $fSlots = $fStmt->fetchAll(PDO::FETCH_COLUMN);
     $maxFeeds = (int)$row['max_feeds'];
@@ -178,7 +178,7 @@ function process_helper_actions(int $userId): array {
     }
     $summary['feedUsed'] = $usedFeeds;
     $summary['feedLimit'] = $maxFeeds;
-    $fCountStmt = $db->prepare('SELECT COUNT(*) FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0');
+    $fCountStmt = $db->prepare('SELECT COUNT(*) FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0 AND (timer_type IS NULL OR timer_type != "feed" OR timer_end <= NOW())');
     $fCountStmt->execute([$userId]);
     $summary['needFeed'] = (int)$fCountStmt->fetchColumn();
 
