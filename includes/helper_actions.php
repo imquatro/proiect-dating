@@ -106,12 +106,12 @@ function auto_harvest(PDO $db, int $userId, int $slotId): bool {
 function process_helper_actions(int $userId): array {
     global $db;
     $summary = [
-        'watered' => 0,
-        'waterTotal' => 0,
-        'fed' => 0,
-        'feedTotal' => 0,
-        'harvested' => 0,
-        'harvestTotal' => 0,
+        'waterUsed' => 0,
+        'waterLimit' => 0,
+        'feedUsed' => 0,
+        'feedLimit' => 0,
+        'harvestUsed' => 0,
+        'harvestLimit' => 0,
         'helper' => null
     ];
 
@@ -142,53 +142,58 @@ function process_helper_actions(int $userId): array {
     $wStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND water_remaining > 0');
     $wStmt->execute([$userId]);
     $wSlots = $wStmt->fetchAll(PDO::FETCH_COLUMN);
-    $summary['waterTotal'] = count($wSlots);
-    $wLimit = min($summary['waterTotal'], max(0, $row['max_waters'] - $row['waters']));
+    $maxWaters = (int)$row['max_waters'];
+    $usedWaters = (int)$row['waters'];
+    $wLimit = min(count($wSlots), max(0, $maxWaters - $usedWaters));
     if ($wLimit > 0) {
         $upd = $db->prepare('UPDATE user_slot_states SET water_remaining = GREATEST(water_remaining-1,0), updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
         foreach (array_slice($wSlots, 0, $wLimit) as $slot) {
             $upd->execute([$userId, $slot]);
-            $summary['watered']++;
+            $usedWaters++;
         }
-        $db->prepare('UPDATE user_helpers SET waters = waters + ? WHERE user_id = ?')
-           ->execute([$summary['watered'], $userId]);
+        $db->prepare('UPDATE user_helpers SET waters = ? WHERE user_id = ?')
+           ->execute([$usedWaters, $userId]);
     }
+    $summary['waterUsed'] = $usedWaters;
+    $summary['waterLimit'] = $maxWaters;
 
     // Feeding
     $fStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0');
     $fStmt->execute([$userId]);
     $fSlots = $fStmt->fetchAll(PDO::FETCH_COLUMN);
-    $summary['feedTotal'] = count($fSlots);
-    $fLimit = min($summary['feedTotal'], max(0, $row['max_feeds'] - $row['feeds']));
+    $maxFeeds = (int)$row['max_feeds'];
+    $usedFeeds = (int)$row['feeds'];
+    $fLimit = min(count($fSlots), max(0, $maxFeeds - $usedFeeds));
     if ($fLimit > 0) {
         $updF = $db->prepare('UPDATE user_slot_states SET feed_remaining = GREATEST(feed_remaining-1,0), updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
         foreach (array_slice($fSlots, 0, $fLimit) as $slot) {
             $updF->execute([$userId, $slot]);
-            $summary['fed']++;
+            $usedFeeds++;
         }
-        $db->prepare('UPDATE user_helpers SET feeds = feeds + ? WHERE user_id = ?')
-           ->execute([$summary['fed'], $userId]);
+        $db->prepare('UPDATE user_helpers SET feeds = ? WHERE user_id = ?')
+           ->execute([$usedFeeds, $userId]);
     }
+    $summary['feedUsed'] = $usedFeeds;
+    $summary['feedLimit'] = $maxFeeds;
 
     // Harvesting
     $hStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND timer_type = "harvest" AND (timer_end IS NULL OR timer_end <= NOW())');
     $hStmt->execute([$userId]);
     $hSlots = $hStmt->fetchAll(PDO::FETCH_COLUMN);
-    $summary['harvestTotal'] = count($hSlots);
-    $hLimit = min($summary['harvestTotal'], max(0, $row['max_harvests'] - $row['harvests']));
+    $maxHarvests = (int)$row['max_harvests'];
+    $usedHarvests = (int)$row['harvests'];
+    $hLimit = min(count($hSlots), max(0, $maxHarvests - $usedHarvests));
     if ($hLimit > 0) {
-        $count = 0;
         foreach (array_slice($hSlots, 0, $hLimit) as $slot) {
             if (auto_harvest($db, $userId, (int)$slot)) {
-                $count++;
+                $usedHarvests++;
             }
         }
-        if ($count > 0) {
-            $summary['harvested'] = $count;
-            $db->prepare('UPDATE user_helpers SET harvests = harvests + ? WHERE user_id = ?')
-               ->execute([$count, $userId]);
-        }
+        $db->prepare('UPDATE user_helpers SET harvests = ? WHERE user_id = ?')
+           ->execute([$usedHarvests, $userId]);
     }
+    $summary['harvestUsed'] = $usedHarvests;
+    $summary['harvestLimit'] = $maxHarvests;
 
     return $summary;
 }

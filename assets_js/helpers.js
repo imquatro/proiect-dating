@@ -3,8 +3,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const settings = document.getElementById('helperSettings');
     if (!list || !settings) return;
 
-    // Remove any previous content inside settings
-    settings.innerHTML = '';
+    function refreshInfo() {
+        fetch('helper_info.php', { credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(info => {
+                if (info.helper) {
+                    settings.innerHTML = `
+                        <div class="applied-helper-card">
+                            <img src="${info.helper.image}" alt="${info.helper.name}">
+                            <div>
+                                <p>Water: ${info.waterUsed}/${info.waterLimit}</p>
+                                <p>Feed: ${info.feedUsed}/${info.feedLimit}</p>
+                                <p>Harvest: ${info.harvestUsed}/${info.harvestLimit}</p>
+                            </div>
+                        </div>`;
+                } else {
+                    settings.innerHTML = '';
+                }
+            })
+            .catch(() => { settings.innerHTML = ''; });
+    }
+
+    refreshInfo();
 
     fetch('helpers_list.php', { credentials: 'same-origin' })
         .then(res => res.json())
@@ -52,7 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 overlay.addEventListener('click', e => {
                                     if (e.target === overlay) overlay.remove();
                                 });
-                                settings.innerHTML = '';
+                                refreshInfo();
+                            } else {
+                                alert('A helper has already been applied today.');
                             }
                         });
                 });

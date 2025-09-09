@@ -32,14 +32,14 @@ if ($userId && isset($db)) {
     $helperSummary = process_helper_actions($userId);
 }
 ?>
-<?php if ($helperSummary && ($helperSummary['watered'] || $helperSummary['fed'] || $helperSummary['harvested'])): ?>
+<?php if ($helperSummary && ($helperSummary['waterUsed'] || $helperSummary['feedUsed'] || $helperSummary['harvestUsed'])): ?>
 <div id="helper-summary" class="helper-overlay">
     <div class="applied-helper-card">
         <img src="<?= htmlspecialchars($helperSummary['helper']['image']); ?>" alt="helper">
         <div>
-            <p>Watered <?= $helperSummary['watered']; ?> / <?= $helperSummary['waterTotal']; ?></p>
-            <p>Fed <?= $helperSummary['fed']; ?> / <?= $helperSummary['feedTotal']; ?></p>
-            <p>Harvested <?= $helperSummary['harvested']; ?> / <?= $helperSummary['harvestTotal']; ?></p>
+            <p>Watered <?= $helperSummary['waterUsed']; ?> / <?= $helperSummary['waterLimit']; ?></p>
+            <p>Fed <?= $helperSummary['feedUsed']; ?> / <?= $helperSummary['feedLimit']; ?></p>
+            <p>Harvested <?= $helperSummary['harvestUsed']; ?> / <?= $helperSummary['harvestLimit']; ?></p>
         </div>
     </div>
 </div>
