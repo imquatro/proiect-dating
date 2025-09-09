@@ -18,20 +18,33 @@
                         this.image = info.helper.image;
                         this.create();
                         this.ready = true;
-                        const queue = ['welcome'];
-                        if (info.needWater > 0) {
+                        const queue = [];
+                        if (!sessionStorage.getItem('welcomeShown')) {
+                            queue.push('welcome');
+                            sessionStorage.setItem('welcomeShown', '1');
+                        }
+                        const prev = JSON.parse(sessionStorage.getItem('lastNeeds') || '{}');
+                        const current = {
+                            water: info.needWater || 0,
+                            feed: info.needFeed || 0,
+                            harvest: info.needHarvest || 0
+                        };
+                        if ((prev.water || 0) === 0 && current.water > 0) {
                             queue.push('need_water');
-                        } else {
+                        } else if ((prev.water || 0) > 0 && current.water === 0) {
                             queue.push('all_watered');
                         }
-                        if (info.needFeed > 0) {
+                        if ((prev.feed || 0) === 0 && current.feed > 0) {
                             queue.push('need_feed');
-                        } else {
+                        } else if ((prev.feed || 0) > 0 && current.feed === 0) {
                             queue.push('all_fed');
                         }
-                        if (info.needHarvest > 0) {
+                        if ((prev.harvest || 0) === 0 && current.harvest > 0) {
                             queue.push('need_harvest');
+                        } else if ((prev.harvest || 0) > 0 && current.harvest === 0) {
+                            queue.push('all_harvested');
                         }
+                        sessionStorage.setItem('lastNeeds', JSON.stringify(current));
                         this.playQueue(queue);
                     }
                 })
@@ -68,4 +81,11 @@
     };
     window.helperBuddy = buddy;
     document.addEventListener('DOMContentLoaded', () => buddy.load());
+    window.addEventListener('offline', () => {
+        sessionStorage.removeItem('welcomeShown');
+        sessionStorage.removeItem('lastNeeds');
+    });
+    window.addEventListener('online', () => {
+        buddy.load();
+    });
 })();
