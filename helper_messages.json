@@ -1,0 +1,34 @@
+{
+  "welcome": [
+    "Salut, fermierule! Eu sunt aici să te ajut.",
+    "Bine ai revenit pe fermă! Să trecem la treabă.",
+    "Helperul e gata, spor la muncă!",
+    "Bun venit! Să udăm, să hrănim și să culegem!",
+    "Hei, bine că ai venit. Plantele te așteptau!",
+    "Salutări din partea helperului tău!"
+  ],
+  "water": [
+    "Toate plantele sunt udate, bună treabă!",
+    "Nu mai e sete pe aici, felicitări!",
+    "Plantele zâmbesc - ai terminat udatul!",
+    "Ai stins setea grădinii, bravo!",
+    "Nicio plantă însetată, super!",
+    "Udatul s-a încheiat, să trecem la restul!"
+  ],
+  "feed": [
+    "Toate animalele sunt sătule, mulțumesc!",
+    "Ai hrănit totul, fermă fericită!",
+    "Burțile sunt pline - misiune îndeplinită!",
+    "Hrănirea a fost un succes!",
+    "Nimeni nu mai roade frunza de foame!",
+    "Ai avut grijă de toți, excelent!"
+  ],
+  "harvest": [
+    "Recolta e strânsă, felicitări!",
+    "Ai cules totul, hambarul te așteaptă!",
+    "Niciun fruct rămas pe câmp, bravo!",
+    "Toate roadele sunt în hambar, minunat!",
+    "Recoltarea s-a terminat, bună treabă!",
+    "Fermă curată, gata pentru noi plantări!"
+  ]
+}
