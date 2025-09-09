@@ -43,7 +43,9 @@
 }
 #fa-item-form label,
 #fa-edit-form label,
-#fa-achievement-form label{
+#fa-achievement-form label,
+#fa-helper-form label,
+#fa-helper-edit-form label{
     display:block;
     margin-bottom:10px;
 }
@@ -52,7 +54,11 @@
 #fa-edit-form input,
 #fa-edit-form select,
 #fa-achievement-form input,
-#fa-achievement-form select{
+#fa-achievement-form select,
+#fa-helper-form input,
+#fa-helper-form select,
+#fa-helper-edit-form input,
+#fa-helper-edit-form select{
     width:100%;
     box-sizing:border-box;
     margin-top:4px;
@@ -138,9 +144,11 @@
 .fa-edit-item.selected,
 .fa-delete-item.selected{
     border-color:#4caf50;
+    box-shadow:0 0 10px #4caf50;
 }
 .fa-helper-item.selected{
     border-color:#4caf50;
+    box-shadow:0 0 10px #4caf50;
 }
 .fa-edit-item .qs-info,
 .fa-delete-item .qs-info{
