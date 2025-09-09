@@ -19,7 +19,11 @@
                         this.image = info.helper.image;
                         this.create();
                         this.ready = true;
-                        this.showMessage('welcome');
+                        const queue = ['welcome'];
+                        if (info.waterUsed > 0) queue.push('water');
+                        if (info.feedUsed > 0) queue.push('feed');
+                        if (info.harvestUsed > 0) queue.push('harvest');
+                        this.playQueue(queue);
                     }
                 })
                 .catch(()=>{});
@@ -32,6 +36,13 @@
             const parent = document.querySelector('.content') || document.body;
             parent.appendChild(div);
             this.container = div;
+        },
+        playQueue(queue){
+            if (!queue.length) return;
+            this.showMessage(queue.shift());
+            if (queue.length) {
+                setTimeout(() => this.playQueue(queue), 4000);
+            }
         },
         showMessage(type){
             if (!this.ready || !this.messages[type]) return;
