@@ -7,45 +7,61 @@
         hideTimer: null,
         load(){
             const base = window.baseUrl || '';
-            fetch(base + 'helper_messages.json')
-                .then(r => r.json())
-                .then(data => { this.messages = data; })
-                .catch(()=>{});
-            fetch(base + 'helper_info.php', { credentials: 'same-origin' })
-                .then(r => r.json())
-                .then(info => {
+            Promise.all([
+                fetch(base + 'helper_messages.json').then(r => r.json()).then(data => { this.messages = data; }),
+                fetch(base + 'helper_info.php', { credentials: 'same-origin' }).then(r => r.json())
+            ])
+                .then(([, info]) => {
                     if (info.helper && info.helper.image) {
                         this.image = info.helper.image;
                         this.create();
                         this.ready = true;
-                        const queue = [];
-                        if (!sessionStorage.getItem('welcomeShown')) {
-                            queue.push('welcome');
-                            sessionStorage.setItem('welcomeShown', '1');
-                        }
-                        const prev = JSON.parse(sessionStorage.getItem('lastNeeds') || '{}');
-                        const current = {
-                            water: info.needWater || 0,
-                            feed: info.needFeed || 0,
-                            harvest: info.needHarvest || 0
-                        };
-                        if ((prev.water || 0) === 0 && current.water > 0) {
-                            queue.push('need_water');
-                        } else if ((prev.water || 0) > 0 && current.water === 0) {
-                            queue.push('all_watered');
-                        }
-                        if ((prev.feed || 0) === 0 && current.feed > 0) {
-                            queue.push('need_feed');
-                        } else if ((prev.feed || 0) > 0 && current.feed === 0) {
-                            queue.push('all_fed');
-                        }
-                        if ((prev.harvest || 0) === 0 && current.harvest > 0) {
-                            queue.push('need_harvest');
-                        } else if ((prev.harvest || 0) > 0 && current.harvest === 0) {
-                            queue.push('all_harvested');
-                        }
-                        sessionStorage.setItem('lastNeeds', JSON.stringify(current));
-                        this.playQueue(queue);
+                        this.processInfo(info, true);
+                    }
+                })
+                .catch(()=>{});
+        },
+        processInfo(info, initial=false){
+            const queue = [];
+            if (initial && !sessionStorage.getItem('welcomeShown')) {
+                queue.push('welcome');
+                sessionStorage.setItem('welcomeShown', '1');
+            }
+            const prev = JSON.parse(sessionStorage.getItem('lastNeeds') || '{}');
+            const current = {
+                water: info.needWater || 0,
+                feed: info.needFeed || 0,
+                harvest: info.needHarvest || 0
+            };
+
+            if (current.water > 0) {
+                queue.push('need_water');
+            } else if ((prev.water || 0) > 0) {
+                queue.push('all_watered');
+            }
+
+            if (current.feed > 0) {
+                queue.push('need_feed');
+            } else if ((prev.feed || 0) > 0) {
+                queue.push('all_fed');
+            }
+
+            if (current.harvest > 0) {
+                queue.push('need_harvest');
+            } else if ((prev.harvest || 0) > 0) {
+                queue.push('all_harvested');
+            }
+
+            sessionStorage.setItem('lastNeeds', JSON.stringify(current));
+            this.playQueue(queue);
+        },
+        checkNeeds(){
+            const base = window.baseUrl || '';
+            fetch(base + 'helper_info.php', { credentials: 'same-origin' })
+                .then(r => r.json())
+                .then(info => {
+                    if (info.helper) {
+                        this.processInfo(info);
                     }
                 })
                 .catch(()=>{});
@@ -80,7 +96,11 @@
         }
     };
     window.helperBuddy = buddy;
-    document.addEventListener('DOMContentLoaded', () => buddy.load());
+    document.addEventListener('DOMContentLoaded', () => {
+        buddy.load();
+        setInterval(() => buddy.checkNeeds(), 30000);
+    });
+    document.addEventListener('slotUpdated', () => buddy.checkNeeds());
     window.addEventListener('offline', () => {
         sessionStorage.removeItem('welcomeShown');
         sessionStorage.removeItem('lastNeeds');
