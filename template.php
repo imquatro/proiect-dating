@@ -44,6 +44,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     <base href="<?= htmlspecialchars($baseHref) ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/template.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/message-notification.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets_css/nav-transition.css') ?>">
     <link rel="stylesheet" href="<?= asset('moneysistem/money.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/xp-float.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/level-up.css') ?>">
@@ -132,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="<?= asset('assets_js/xp-float.js') ?>"></script>
   <script src="<?= asset('assets_js/level-up.js') ?>"></script>
   <script src="<?= asset('assets_js/helper-buddy.js') ?>"></script>
+  <script src="<?= asset('assets_js/nav-transition.js') ?>"></script>
   <?php if (isset($_SESSION['user_id'])): ?>
   <script>window.userId = <?= (int)$_SESSION['user_id']; ?>; window.currentLevel = <?= $userLevel; ?>;</script>
   <?php endif; ?>

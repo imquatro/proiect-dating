@@ -1,0 +1,86 @@
+/* Page navigation transition effect */
+#page-transition {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+  overflow: hidden;
+}
+#page-transition .line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+  transform: translateY(-50%);
+}
+#page-transition .light {
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 2px;
+  transform: translateY(-50%);
+}
+#page-transition .light::after {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+}
+#page-transition .light.left {
+  left: -20px;
+  animation: light-left 0.7s forwards;
+}
+#page-transition .light.right {
+  right: -20px;
+  animation: light-right 0.7s forwards;
+}
+@keyframes light-left {
+  to { left: 50%; }
+}
+@keyframes light-right {
+  to { right: 50%; }
+}
+#page-transition .percent {
+  position: absolute;
+  top: calc(50% + 20px);
+  left: 50%;
+  transform: translate(-50%, 0);
+  color: #fff;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+.app-split {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 9999;
+}
+.app-split.top {
+  clip-path: inset(0 0 50% 0);
+}
+.app-split.bottom {
+  clip-path: inset(50% 0 0 0);
+}
+.app-split.animate.top {
+  animation: split-up 0.7s forwards;
+}
+.app-split.animate.bottom {
+  animation: split-down 0.7s forwards;
+}
+@keyframes split-up {
+  to { transform: translateY(-100%); }
+}
+@keyframes split-down {
+  to { transform: translateY(100%); }
+}

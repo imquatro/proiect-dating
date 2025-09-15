@@ -34,19 +34,19 @@
                 harvest: info.needHarvest || 0
             };
 
-            if (current.water > 0 && (prev.water || 0) === 0) {
+            if (current.water > 0) {
                 queue.push('need_water');
             } else if ((prev.water || 0) > 0 && current.water === 0) {
                 queue.push('all_watered');
             }
 
-            if (current.feed > 0 && (prev.feed || 0) === 0) {
+            if (current.feed > 0) {
                 queue.push('need_feed');
             } else if ((prev.feed || 0) > 0 && current.feed === 0) {
                 queue.push('all_fed');
             }
 
-            if (current.harvest > 0 && (prev.harvest || 0) === 0) {
+            if (current.harvest > 0) {
                 queue.push('need_harvest');
             } else if ((prev.harvest || 0) > 0 && current.harvest === 0) {
                 queue.push('all_harvested');
