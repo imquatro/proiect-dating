@@ -32,6 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => {});
     }
 
+    // Perform a single check on load instead of polling continuously
     checkUnread();
-    setInterval(checkUnread, 3000);
 });
