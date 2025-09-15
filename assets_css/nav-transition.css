@@ -75,6 +75,12 @@
 @keyframes light-right {
   to { right: 50%; }
 }
+#page-transition .light.fade-out {
+  animation: lightFade 0.2s forwards;
+}
+@keyframes lightFade {
+  to { opacity: 0; }
+}
 #page-transition .percent {
   position: absolute;
   top: calc(50% + 20px);

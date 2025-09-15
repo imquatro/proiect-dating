@@ -1,7 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const content = document.querySelector('.content');
   if (sessionStorage.getItem('navFading')) {
     sessionStorage.removeItem('navFading');
-    document.querySelector('.content')?.classList.add('nav-fade-show');
+    content?.classList.add('nav-fade-show');
+    content?.addEventListener('animationend', () => {
+      document.documentElement.classList.remove('nav-fade');
+      content.classList.remove('nav-fade-show');
+    }, { once: true });
+  } else {
+    document.documentElement.classList.remove('nav-fade');
+    content?.classList.remove('nav-fade-show');
   }
   document.querySelectorAll('a.nav-btn').forEach(link => {
     link.addEventListener('click', e => {
@@ -91,12 +99,15 @@ function startPageTransition(url) {
     const wait = Math.max(minDuration - elapsed, 0);
     setTimeout(() => {
       percentEl.textContent = '100%';
-      topClone.classList.add('animate');
-      bottomClone.classList.add('animate');
+      overlay.querySelectorAll('.light').forEach(l => l.classList.add('fade-out'));
       setTimeout(() => {
-        sessionStorage.setItem('navFading', '1');
-        window.location.href = url;
-      }, 700);
+        topClone.classList.add('animate');
+        bottomClone.classList.add('animate');
+        setTimeout(() => {
+          sessionStorage.setItem('navFading', '1');
+          window.location.href = url;
+        }, 700);
+      }, 200);
     }, wait);
   }
 }
