@@ -6,6 +6,82 @@ function initProfileComments(container) {
     const isVisitor = window.isVisitor || false;
     const visitId = window.visitId || null;
     const canInteract = typeof window.canInteract === 'undefined' ? true : window.canInteract;
+    const datasetOwner = container && container.dataset && container.dataset.userId
+        ? parseInt(container.dataset.userId, 10)
+        : null;
+    const profileOwnerId = (isVisitor && visitId)
+        ? visitId
+        : (window.profileOwnerId || datasetOwner || window.userId || null);
+    const deleteAllowed = Boolean(window.userId && profileOwnerId && window.userId === profileOwnerId);
+
+    const formatDate = (value) => {
+        if (!value) return '';
+        const parsed = new Date(value.replace(' ', 'T'));
+        if (Number.isNaN(parsed.getTime())) {
+            return value;
+        }
+        return parsed.toLocaleString();
+    };
+
+    const renderComments = (comments) => {
+        if (!commentsList) return;
+        commentsList.innerHTML = '';
+
+        if (!Array.isArray(comments) || !comments.length) {
+            const empty = document.createElement('div');
+            empty.className = 'comment-empty';
+            empty.textContent = 'Nu există comentarii încă.';
+            commentsList.appendChild(empty);
+            return;
+        }
+
+        comments.forEach(comment => {
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+            item.dataset.id = comment.id;
+
+            const header = document.createElement('div');
+            header.className = 'comment-header';
+
+            const author = document.createElement('span');
+            author.className = 'comment-author';
+            author.textContent = comment.author || 'Utilizator';
+            header.appendChild(author);
+
+            const time = document.createElement('span');
+            time.className = 'comment-time';
+            time.textContent = formatDate(comment.created_at);
+            header.appendChild(time);
+
+            if (deleteAllowed && comment.can_delete) {
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'delete';
+                delBtn.textContent = '×';
+                delBtn.addEventListener('click', () => {
+                    let url = 'comments_api.php?id=' + encodeURIComponent(comment.id);
+                    if (isVisitor && visitId) url += '&user_id=' + encodeURIComponent(visitId);
+                    fetch(url, {
+                        method: 'DELETE',
+                        credentials: 'same-origin'
+                    }).then(res => {
+                        if (!res.ok) throw new Error('delete_failed');
+                        return res.json();
+                    }).then(() => loadComments())
+                    .catch(() => {});
+                });
+                header.appendChild(delBtn);
+            }
+
+            const body = document.createElement('div');
+            body.className = 'comment-body';
+            body.textContent = comment.text || '';
+
+            item.appendChild(header);
+            item.appendChild(body);
+            commentsList.appendChild(item);
+        });
+    };
 
     const showHelperCard = (helper) => {
         const overlay = document.createElement('div');
@@ -153,18 +229,34 @@ function initProfileComments(container) {
         let url = 'comments_api.php';
         if (isVisitor && visitId) url += '?user_id=' + visitId;
         fetch(url, { credentials: 'same-origin' })
-            .then(res => res.json())
-            .then(renderComments);
+            .then(res => {
+                if (!res.ok) throw new Error('load_failed');
+                return res.json();
+            })
+            .then(renderComments)
+            .catch(() => renderComments([]));
     };
 
     if (commentForm) {
         const submitBtn = commentForm.querySelector('button');
-        if (isVisitor && !canInteract && submitBtn) {
-            submitBtn.disabled = true;
+        if (isVisitor && !canInteract) {
+            if (!container.querySelector('.comment-locked')) {
+                const lockMsg = document.createElement('div');
+                lockMsg.className = 'comment-locked';
+                lockMsg.textContent = 'Trebuie să fiți prieteni pentru a lăsa un comentariu.';
+                commentForm.parentNode.insertBefore(lockMsg, commentForm);
+            }
+            if (submitBtn) submitBtn.disabled = true;
+            if (commentInput) {
+                commentInput.disabled = true;
+                commentInput.placeholder = 'Comentariile sunt disponibile doar prietenilor.';
+            }
+            commentForm.classList.add('disabled');
         }
         commentForm.addEventListener('submit', e => {
             e.preventDefault();
             if (isVisitor && !canInteract) return;
+            if (!commentInput) return;
             const text = commentInput.value.trim();
             if (!text) return;
             let url = 'comments_api.php';
@@ -174,12 +266,16 @@ function initProfileComments(container) {
                 credentials: 'same-origin',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text })
+            }).then(res => {
+                if (!res.ok) throw new Error('submit_failed');
+                return res.json();
             }).then(() => {
                 commentInput.value = '';
                 loadComments();
-            });
+            }).catch(() => {});
         });
     }
+
 
     fetchHelpers();
     loadComments();

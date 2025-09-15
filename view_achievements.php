@@ -85,7 +85,7 @@ ob_start();
 <?php
 $content = ob_get_clean();
 $pageCss = 'assets_css/achievements.css';
-$extraJs = '<script>window.isVisitor = true; window.visitId = ' . $visitId . ';</script><script src="assets_js/achievements.js"></script>';
+$extraJs = '<script>window.isVisitor = true; window.visitId = ' . $visitId . '; window.profileOwnerId = ' . $visitId . ';</script><script src="assets_js/achievements.js"></script>';
 $activePage = '';
 include 'template.php';
 ?>

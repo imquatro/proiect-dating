@@ -5,6 +5,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $visitId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
+$panelUserId = $visitId > 0 ? $visitId : (int)$_SESSION['user_id'];
 $miniHtml = '';
 
 if ($visitId > 0 && $visitId !== (int)$_SESSION['user_id']) {
@@ -70,7 +71,7 @@ if ($miniHtml === '') {
 $miniHtml = str_replace('id="miniProfile"', 'id="panelMiniProfile"', $miniHtml);
 $miniHtml = preg_replace('#<script[^>]*mini-profile.js[^>]*></script>#', '', $miniHtml);
 ?>
-<div id="profile-comments-panel">
+<div id="profile-comments-panel" data-user-id="<?= (int)$panelUserId ?>">
     <?= $miniHtml ?>
     <div class="helpers-bar" id="helper-avatars"></div>
     <div class="comments-section">
