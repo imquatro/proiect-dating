@@ -1,8 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const avatar = document.querySelector('.mini-profile-avatar');
-    if (avatar) {
-        avatar.addEventListener('click', () => {
-            console.log('Mini profile avatar clicked');
+    const miniProfile = document.getElementById('miniProfile');
+    if (miniProfile) {
+        miniProfile.addEventListener('click', () => {
+            const overlay = document.getElementById('slot-panel-overlay');
+            const content = document.querySelector('.content');
+            const url = (window.baseUrl || '') + 'profile_comments_panel.php?ajax=1';
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    if (overlay) {
+                        overlay.innerHTML = html;
+                        overlay.classList.add('active');
+                    }
+                    if (content) content.classList.add('no-scroll');
+                    if (!document.getElementById('comments-panel-css')) {
+                        const link = document.createElement('link');
+                        link.id = 'comments-panel-css';
+                        link.rel = 'stylesheet';
+                        link.href = (window.baseUrl || '') + 'assets_css/profile-comments.css';
+                        document.head.appendChild(link);
+                    }
+                    const panel = document.getElementById('profile-comments-panel');
+                    const init = () => {
+                        if (window.initProfileComments && panel) {
+                            window.initProfileComments(panel);
+                        }
+                    };
+                    if (!window.initProfileComments) {
+                        const script = document.createElement('script');
+                        script.src = (window.baseUrl || '') + 'assets_js/profile-comments.js';
+                        script.onload = init;
+                        document.head.appendChild(script);
+                    } else {
+                        init();
+                    }
+                });
         });
     }
 

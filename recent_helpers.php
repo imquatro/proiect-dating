@@ -7,6 +7,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 require_once __DIR__ . '/includes/db.php';
 $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : (int)$_SESSION['user_id'];
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 6;
+$limit = max(1, min(10, $limit));
 
 // Ensure slot_helpers table exists
 $db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (
@@ -19,19 +21,18 @@ $db->exec('CREATE TABLE IF NOT EXISTS slot_helpers (
     PRIMARY KEY (owner_id, slot_number, helper_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
-$stmt = $db->prepare(
-    'SELECT sh.helper_id, u.username, u.gallery,
-            SUM(sh.water_clicks) AS water,
-            SUM(sh.feed_clicks) AS feed,
-            MAX(sh.last_action_at) AS last_action,
-            (SUM(sh.water_clicks) + SUM(sh.feed_clicks)) AS total
-     FROM slot_helpers sh
-     JOIN users u ON u.id = sh.helper_id
-     WHERE sh.owner_id = ?
-     GROUP BY sh.helper_id
-     ORDER BY last_action DESC, total DESC
-     LIMIT 6'
-);
+$sql = 'SELECT sh.helper_id, u.username, u.gallery,
+               SUM(sh.water_clicks) AS water,
+               SUM(sh.feed_clicks) AS feed,
+               MAX(sh.last_action_at) AS last_action,
+               (SUM(sh.water_clicks) + SUM(sh.feed_clicks)) AS total
+        FROM slot_helpers sh
+        JOIN users u ON u.id = sh.helper_id
+        WHERE sh.owner_id = ?
+        GROUP BY sh.helper_id
+        ORDER BY last_action DESC, total DESC
+        LIMIT ' . $limit;
+$stmt = $db->prepare($sql);
 $stmt->execute([$userId]);
 $helpers = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
