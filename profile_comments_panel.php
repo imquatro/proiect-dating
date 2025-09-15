@@ -9,7 +9,7 @@ $mini_profile_config = [
     'show_profile' => true,
     'show_achievements' => false,
     'show_helper_effect' => false,
-    'center_single' => true,
+    'center_single' => false,
 ];
 include 'mini_profile.php';
 $miniHtml = ob_get_clean();

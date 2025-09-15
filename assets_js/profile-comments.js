@@ -4,6 +4,87 @@ function initProfileComments(container) {
     const commentForm = container.querySelector('#comment-form');
     const commentInput = container.querySelector('#comment-input');
 
+    const ensureFriendsCss = () => {
+        if (!document.getElementById('friends-css')) {
+            const link = document.createElement('link');
+            link.id = 'friends-css';
+            link.rel = 'stylesheet';
+            link.href = (window.baseUrl || '') + 'assets_css/friends.css';
+            document.head.appendChild(link);
+        }
+    };
+
+    const showHelperCard = (helper) => {
+        ensureFriendsCss();
+        const overlay = document.createElement('div');
+        overlay.className = 'helper-card-overlay';
+        let statusClass = 'status-offline';
+        if (helper.status === 'online') statusClass = 'status-online';
+        else if (helper.status === 'idle') statusClass = 'status-idle';
+        let buttons = '';
+        if (helper.isFriend) {
+            buttons = `<a class="btn-farm" href="vizitfarm/vizitfarm.php?id=${helper.id}" title="Visit farm"><i class="fas fa-seedling"></i></a>` +
+                `<button class="btn-view" data-id="${helper.id}" title="View profile"><i class="fas fa-eye"></i></button>` +
+                `<button class="btn-msg" data-id="${helper.id}" title="Message"><i class="fas fa-envelope"></i></button>` +
+                `<button class="btn-del" data-id="${helper.id}" title="Delete"><i class="fas fa-trash"></i></button>` +
+                `<button class="btn-block" data-id="${helper.id}" title="Block"><i class="fas fa-ban"></i></button>`;
+        } else {
+            if (!helper.requestSent) {
+                buttons += `<button class="btn-add" data-id="${helper.id}" title="Add friend"><i class="fas fa-user-plus"></i></button>`;
+            }
+            buttons += `<button class="btn-view" data-id="${helper.id}" title="View profile"><i class="fas fa-eye"></i></button>` +
+                `<button class="btn-block" data-id="${helper.id}" title="Block"><i class="fas fa-ban"></i></button>`;
+        }
+        overlay.innerHTML = `<div class="user-card"><span class="status-dot ${statusClass}"></span><img src="${helper.photo}" class="user-card-avatar" alt=""><div class="user-card-text"><div class="user-card-name${helper.vip ? ' gold-shimmer' : ''}">${helper.username}</div></div><div class="user-card-buttons">${buttons}</div></div>`;
+        container.appendChild(overlay);
+        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+        const btnAdd = overlay.querySelector('.btn-add');
+        if (btnAdd) {
+            btnAdd.addEventListener('click', () => {
+                btnAdd.disabled = true;
+                fetch('friend_actions.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'send_request', user_id: helper.id })
+                }).then(r => r.json()).then(d => {
+                    if (d.success) {
+                        btnAdd.remove();
+                    } else {
+                        btnAdd.disabled = false;
+                    }
+                });
+            });
+        }
+
+        const btnDel = overlay.querySelector('.btn-del');
+        if (btnDel) {
+            btnDel.addEventListener('click', () => {
+                btnDel.disabled = true;
+                fetch('friend_actions.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'remove_friend', user_id: helper.id })
+                }).then(() => overlay.remove());
+            });
+        }
+
+        const btnView = overlay.querySelector('.btn-view');
+        if (btnView) btnView.addEventListener('click', () => {
+            window.location.href = 'view_profile.php?user_id=' + helper.id;
+        });
+        const btnMsg = overlay.querySelector('.btn-msg');
+        if (btnMsg) btnMsg.addEventListener('click', () => {
+            window.location.href = 'mesaje.php?id=' + helper.id;
+        });
+        const btnFarm = overlay.querySelector('.btn-farm');
+        if (btnFarm) btnFarm.addEventListener('click', () => {
+            window.location.href = 'vizitfarm/vizitfarm.php?id=' + helper.id;
+        });
+        const btnBlock = overlay.querySelector('.btn-block');
+        if (btnBlock) btnBlock.addEventListener('click', () => alert('Feature unavailable'));
+    };
+
     const fetchHelpers = () => {
         if (!helperContainer) return;
         let url = (window.baseUrl || '') + 'recent_helpers.php?limit=10';
@@ -21,22 +102,31 @@ function initProfileComments(container) {
                     img.alt = helper.username;
                     img.dataset.id = helper.id;
                     let timer;
+                    let longPress = false;
                     const openProfile = () => {
+                        longPress = true;
                         window.location.href = (window.baseUrl || '') + 'vizitfarm/vizitfarm.php?id=' + helper.id;
                     };
                     const clear = () => clearTimeout(timer);
                     img.addEventListener('mousedown', () => {
-                        timer = setTimeout(openProfile, 1000);
+                        longPress = false;
+                        timer = setTimeout(openProfile, 500);
                     });
                     img.addEventListener('touchstart', () => {
-                        timer = setTimeout(openProfile, 1000);
+                        longPress = false;
+                        timer = setTimeout(openProfile, 500);
                     });
                     ['mouseup', 'mouseleave'].forEach(ev => img.addEventListener(ev, clear));
                     ['touchend', 'touchcancel'].forEach(ev => img.addEventListener(ev, clear));
+                    img.addEventListener('click', () => {
+                        if (longPress) return;
+                        showHelperCard(helper);
+                    });
                     helperContainer.appendChild(img);
                 });
             });
     };
+
 
     const renderComments = comments => {
         commentsList.innerHTML = '';
