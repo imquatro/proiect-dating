@@ -30,7 +30,8 @@ function build_card($u) {
         'username' => $u['username'],
         'avatar' => $avatar,
         'status' => $status,
-        'vip' => !empty($u['vip'])
+        'vip' => !empty($u['vip']),
+        'last_active' => $last
     ];
 }
 

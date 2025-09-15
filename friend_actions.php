@@ -34,7 +34,8 @@ function build_user($row) {
         'username' => $row['username'],
         'avatar' => $avatar,
         'status' => $status,
-        'vip' => !empty($row['vip'])
+        'vip' => !empty($row['vip']),
+        'last_active' => $last
     ];
 }
 
