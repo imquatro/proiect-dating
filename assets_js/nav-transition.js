@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('navFading')) {
+    sessionStorage.removeItem('navFading');
+    document.body.classList.add('nav-fade-show');
+  }
   document.querySelectorAll('a.nav-btn').forEach(link => {
     link.addEventListener('click', e => {
       const href = link.getAttribute('href');
@@ -75,10 +79,10 @@ function startPageTransition(url) {
           percentEl.textContent = pct + '%';
         }
         read();
-      }).catch(finalize);
+      }).catch(() => finalize());
     }
     read();
-  }).catch(finalize);
+  }).catch(() => finalize());
 
   function finalize() {
     const elapsed = performance.now() - start;
@@ -88,6 +92,7 @@ function startPageTransition(url) {
       topClone.classList.add('animate');
       bottomClone.classList.add('animate');
       setTimeout(() => {
+        sessionStorage.setItem('navFading', '1');
         window.location.href = url;
       }, 700);
     }, wait);

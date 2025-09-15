@@ -39,6 +39,11 @@ require_once __DIR__ . '/includes/cache_buster.php';
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+    if (sessionStorage.getItem('navFading')) {
+        document.documentElement.classList.add('nav-fade');
+    }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <base href="<?= htmlspecialchars($baseHref) ?>">

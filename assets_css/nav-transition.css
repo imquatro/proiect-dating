@@ -10,31 +10,63 @@
   top: 50%;
   left: 0;
   width: 100%;
-  height: 2px;
-  background: #fff;
+  height: 4px;
+  background: linear-gradient(90deg, #ff00cc, #3333ff);
+  box-shadow: 0 0 10px rgba(255,0,204,0.6), 0 0 10px rgba(51,51,255,0.6);
   transform: translateY(-50%);
+}
+#page-transition .line::before,
+#page-transition .line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,0,204,0.4), rgba(51,51,255,0.4));
+}
+#page-transition .line::before {
+  top: -3px;
+}
+#page-transition .line::after {
+  bottom: -3px;
 }
 #page-transition .light {
   position: absolute;
   top: 50%;
-  width: 20px;
-  height: 2px;
+  width: 60px;
+  height: 4px;
   transform: translateY(-50%);
+  overflow: visible;
+}
+#page-transition .light::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(255,0,204,0), rgba(255,0,204,0.8), rgba(51,51,255,0.8), rgba(51,51,255,0));
+  transform: translate(-50%, -50%);
+  filter: blur(2px);
 }
 #page-transition .light::after {
   content: '';
-  display: block;
-  width: 20px;
-  height: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,0,204,0.4) 40%, rgba(51,51,255,0) 70%);
+  transform: translate(-50%, -50%);
+  filter: blur(4px);
 }
 #page-transition .light.left {
-  left: -20px;
+  left: -60px;
   animation: light-left 0.7s forwards;
 }
 #page-transition .light.right {
-  right: -20px;
+  right: -60px;
   animation: light-right 0.7s forwards;
 }
 @keyframes light-left {
@@ -58,6 +90,22 @@
   pointer-events: none;
   z-index: 9999;
 }
+.app-split.top::after,
+.app-split.bottom::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #ff00cc, #3333ff);
+  box-shadow: 0 0 10px rgba(255,0,204,0.5), 0 0 10px rgba(51,51,255,0.5);
+}
+.app-split.top::after {
+  bottom: -2px;
+}
+.app-split.bottom::before {
+  top: -2px;
+}
 .app-split.top {
   clip-path: inset(0 0 50% 0);
 }
@@ -75,4 +123,16 @@
 }
 @keyframes split-down {
   to { transform: translateY(100%); }
+}
+
+html.nav-fade body {
+  opacity: 0;
+}
+
+html.nav-fade body.nav-fade-show {
+  animation: navFadeIn 1s forwards;
+}
+
+@keyframes navFadeIn {
+  to { opacity: 1; }
 }
