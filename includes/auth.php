@@ -11,7 +11,7 @@ $publicPages = [
 
 $current = basename($_SERVER['PHP_SELF']);
 if (!in_array($current, $publicPages, true) && empty($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: index.php?login=1');
     exit;
 }
 ?>

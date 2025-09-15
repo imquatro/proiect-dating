@@ -1,5 +1,7 @@
 <?php
 $registered = isset($_GET['register']) && $_GET['register'] === 'success';
+$showLogin = isset($_GET['login']);
+$showAuth = $registered || $showLogin;
 ?>
 <!DOCTYPE html>
 <html lang="ro">
@@ -12,13 +14,13 @@ $registered = isset($_GET['register']) && $_GET['register'] === 'success';
 </head>
 <body>
     <div class="app-frame">
-        <?php if (!$registered): ?>
+        <?php if (!$showAuth): ?>
         <div id="welcome-frame">
             <p>WELCOME TO FARMING COMMUNITY!</p>
             <button id="start-button">Start</button>
         </div>
         <?php endif; ?>
-        <div id="auth-container" class="<?= $registered ? '' : 'hidden' ?>">
+        <div id="auth-container" class="<?= $showAuth ? '' : 'hidden' ?>">
             <div class="login-container">
                 <?php if ($registered): ?>
                 <div id="register-msg" class="register-msg">Cont creat cu succes!</div>
