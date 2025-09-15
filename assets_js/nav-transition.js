@@ -32,8 +32,9 @@ function startPageTransition(url) {
   overlay.id = 'page-transition';
   overlay.innerHTML = `
     <div class="line"></div>
-    <div class="light left"></div>
-    <div class="light right"></div>
+    <div class="bolt left"></div>
+    <div class="bolt right"></div>
+    <div class="flash"></div>
     <div class="percent">0%</div>
   `;
   Object.assign(overlay.style, {
@@ -99,15 +100,16 @@ function startPageTransition(url) {
     const wait = Math.max(minDuration - elapsed, 0);
     setTimeout(() => {
       percentEl.textContent = '100%';
-      overlay.querySelectorAll('.light').forEach(l => l.classList.add('fade-out'));
-      setTimeout(() => {
+      overlay.classList.add('flash');
+      const flashEl = overlay.querySelector('.flash');
+      flashEl.addEventListener('animationend', () => {
         topClone.classList.add('animate');
         bottomClone.classList.add('animate');
         setTimeout(() => {
           sessionStorage.setItem('navFading', '1');
           window.location.href = url;
         }, 700);
-      }, 200);
+      }, { once: true });
     }, wait);
   }
 }

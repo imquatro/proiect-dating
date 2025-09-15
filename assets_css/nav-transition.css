@@ -10,9 +10,9 @@
   top: 50%;
   left: 0;
   width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #ff00cc, #3333ff);
-  box-shadow: 0 0 10px rgba(255,0,204,0.6), 0 0 10px rgba(51,51,255,0.6);
+  height: 8px;
+  background: linear-gradient(90deg, #66ffff, #ff00cc, #66ffff);
+  box-shadow: 0 0 20px rgba(102,255,255,0.7), 0 0 25px rgba(255,0,204,0.7);
   transform: translateY(-50%);
 }
 #page-transition .line::before,
@@ -21,65 +21,63 @@
   position: absolute;
   left: 0;
   width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, rgba(255,0,204,0.4), rgba(51,51,255,0.4));
+  height: 3px;
+  background: linear-gradient(90deg, rgba(102,255,255,0.5), rgba(255,0,204,0.5), rgba(102,255,255,0.5));
 }
 #page-transition .line::before {
-  top: -3px;
+  top: -5px;
 }
 #page-transition .line::after {
-  bottom: -3px;
+  bottom: -5px;
 }
-#page-transition .light {
+
+#page-transition .bolt {
   position: absolute;
   top: 50%;
-  width: 60px;
-  height: 4px;
+  width: 80px;
+  height: 30px;
   transform: translateY(-50%);
-  overflow: visible;
+  background: linear-gradient(90deg, #fff, #66ffff, #fff);
+  filter: drop-shadow(0 0 8px #66ffff) drop-shadow(0 0 16px #fff);
+  clip-path: polygon(0 60%, 15% 80%, 10% 100%, 35% 100%, 25% 65%, 45% 85%, 55% 45%, 75% 65%, 70% 20%, 100% 0, 60% 10%, 65% 0, 35% 20%, 40% 0, 20% 10%, 25% 0);
 }
-#page-transition .light::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 60px;
-  height: 4px;
-  background: linear-gradient(90deg, rgba(255,0,204,0), rgba(255,0,204,0.8), rgba(51,51,255,0.8), rgba(51,51,255,0));
-  transform: translate(-50%, -50%);
-  filter: blur(2px);
+#page-transition .bolt.left {
+  left: -80px;
+  animation: bolt-left 0.7s forwards;
 }
-#page-transition .light::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,0,204,0.4) 40%, rgba(51,51,255,0) 70%);
-  transform: translate(-50%, -50%);
-  filter: blur(4px);
+#page-transition .bolt.right {
+  right: -80px;
+  animation: bolt-right 0.7s forwards;
+  transform: translateY(-50%) scaleX(-1);
 }
-#page-transition .light.left {
-  left: -60px;
-  animation: light-left 0.7s forwards;
-}
-#page-transition .light.right {
-  right: -60px;
-  animation: light-right 0.7s forwards;
-}
-@keyframes light-left {
+@keyframes bolt-left {
   to { left: 50%; }
 }
-@keyframes light-right {
+@keyframes bolt-right {
   to { right: 50%; }
 }
-#page-transition .light.fade-out {
-  animation: lightFade 0.2s forwards;
+
+#page-transition .flash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff, rgba(255,255,255,0));
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
 }
-@keyframes lightFade {
-  to { opacity: 0; }
+#page-transition.flash .bolt {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+#page-transition.flash .flash {
+  animation: flash-burst 0.4s forwards;
+}
+@keyframes flash-burst {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(20); opacity: 0; }
 }
 #page-transition .percent {
   position: absolute;
@@ -102,9 +100,9 @@
   position: absolute;
   left: 0;
   width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #ff00cc, #3333ff);
-  box-shadow: 0 0 10px rgba(255,0,204,0.5), 0 0 10px rgba(51,51,255,0.5);
+  height: 8px;
+  background: linear-gradient(90deg, #66ffff, #ff00cc, #66ffff);
+  box-shadow: 0 0 20px rgba(102,255,255,0.6), 0 0 20px rgba(255,0,204,0.6);
 }
 .app-split.top::after {
   bottom: -2px;
