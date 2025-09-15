@@ -70,14 +70,9 @@ try {
     }
 }
 
-$onlineUsers = [];
-$now = time();
+$allUsers = [];
 foreach ($rawUsers as $u) {
     if (in_array($u['id'], $excludeIds)) {
-        continue;
-    }
-    $last = strtotime($u['last_active']);
-    if ($now - $last > 1200) {
         continue;
     }
     $card = build_card($u);
@@ -87,8 +82,18 @@ foreach ($rawUsers as $u) {
     if (in_array($u['id'], $friendIds)) {
         $card['isFriend'] = true;
     }
-    $onlineUsers[] = $card;
+    $allUsers[] = $card;
 }
+
+$statusOrder = ['online' => 0, 'idle' => 1, 'offline' => 2];
+usort($allUsers, function ($a, $b) use ($statusOrder) {
+    $sa = $statusOrder[$a['status']] ?? 3;
+    $sb = $statusOrder[$b['status']] ?? 3;
+    if ($sa === $sb) {
+        return strcasecmp($a['username'], $b['username']);
+    }
+    return $sa <=> $sb;
+});
 
 $friendRequests = [];
 try {
@@ -138,6 +143,6 @@ ob_start();
 $content = ob_get_clean();
 $activePage = 'friends';
 $pageCss = 'assets_css/friends.css';
-$extraJs = "<script>var onlineUsers = " . json_encode($onlineUsers, JSON_UNESCAPED_UNICODE) . "; var friendRequests = " . json_encode($friendRequests, JSON_UNESCAPED_UNICODE) . "; var friends = " . json_encode($friends, JSON_UNESCAPED_UNICODE) . ";</script>\n<script src=\"assets_js/friends.js\"></script>";
+$extraJs = "<script>var allUsers = " . json_encode($allUsers, JSON_UNESCAPED_UNICODE) . "; var friendRequests = " . json_encode($friendRequests, JSON_UNESCAPED_UNICODE) . "; var friends = " . json_encode($friends, JSON_UNESCAPED_UNICODE) . ";</script>\n<script src=\"assets_js/friends.js\"></script>";
 include 'template.php';
 ?>

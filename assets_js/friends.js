@@ -7,10 +7,19 @@
 
     var currentTab = localStorage.getItem('friendsActiveTab') || 'online';
     var visibleCount = 10;
-    var online = Array.isArray(window.onlineUsers) ? window.onlineUsers : [];
+    var users = Array.isArray(window.allUsers) ? window.allUsers : [];
+    users.sort(function (a, b) {
+        var order = { online: 0, idle: 1, offline: 2 };
+        var sa = order[a.status] !== undefined ? order[a.status] : 3;
+        var sb = order[b.status] !== undefined ? order[b.status] : 3;
+        if (sa === sb) {
+            return a.username.localeCompare(b.username);
+        }
+        return sa - sb;
+    });
     var requests = Array.isArray(window.friendRequests) ? window.friendRequests : [];
     var friends = Array.isArray(window.friends) ? window.friends : [];
-    var currentList = online.slice();
+    var currentList = users.slice();
 
     function statusClass(status) {
         if (status === 'online') return 'status-online';
@@ -77,7 +86,7 @@
         searchInput.value = '';
         visibleCount = 10;
         if (tab === 'online') {
-            currentList = online.slice();
+            currentList = users.slice();
             searchInput.disabled = false;
         } else if (tab === 'requests') {
             currentList = requests.slice();
@@ -100,12 +109,15 @@
         if (currentTab !== 'online') return;
         var val = searchInput.value.toLowerCase();
         if (!val) {
-            currentList = online.slice();
+            currentList = users.slice();
         } else {
-            currentList = online.filter(function (u) {
+            currentList = users.filter(function (u) {
                 return u.username.toLowerCase().indexOf(val) !== -1;
             });
         }
+        currentList.sort(function (a, b) {
+            return a.username.localeCompare(b.username);
+        });
         visibleCount = currentList.length;
         render();
     });
@@ -120,7 +132,7 @@
         if (!searchInput.contains(e.target) && !cardContainer.contains(e.target)) {
             if (searchInput.value) {
                 searchInput.value = '';
-                currentList = online.slice();
+                currentList = users.slice();
                 visibleCount = 10;
                 render();
             }
@@ -167,14 +179,14 @@
             body: new URLSearchParams({ action: 'send_request', user_id: id })
         }).then(function (r) { return r.json(); }).then(function (d) {
             if (d.success) {
-                online = online.map(function (u) {
+                users = users.map(function (u) {
                     if (u.id == id) {
                         u.requestSent = true;
                     }
                     return u;
                 });
                 if (currentTab === 'online') {
-                    currentList = online.slice();
+                    currentList = users.slice();
                     render();
                 }
             } else {
@@ -193,21 +205,19 @@
                 requests = requests.filter(function (u) { return u.id != id; });
                 d.user.isFriend = true;
                 friends.push(d.user);
-                if (d.user.status !== 'offline') {
-                    online.push(d.user);
-                }
+                users.push(d.user);
                 if (currentTab === 'requests') {
                     currentList = requests.slice();
                 } else if (currentTab === 'friends') {
                     currentList = friends.slice();
                 } else if (currentTab === 'online') {
-                    currentList = online.slice();
+                    currentList = users.slice();
                 }
-                  render();
-                  if (window.updateFriendRequestIndicators) {
-                      window.updateFriendRequestIndicators(requests.length);
-                  }
-              } else {
+                render();
+                if (window.updateFriendRequestIndicators) {
+                    window.updateFriendRequestIndicators(requests.length);
+                }
+            } else {
                 alert(d.message || 'Error');
             }
         });
@@ -222,16 +232,16 @@
             if (d.success) {
                 requests = requests.filter(function (u) { return u.id != id; });
                 if (d.user) {
-                    online.push(d.user);
+                    users.push(d.user);
                 }
-                  if (currentTab === 'requests') {
-                      currentList = requests.slice();
-                      render();
-                  }
-                  if (window.updateFriendRequestIndicators) {
-                      window.updateFriendRequestIndicators(requests.length);
-                  }
-              } else {
+                if (currentTab === 'requests') {
+                    currentList = requests.slice();
+                    render();
+                }
+                if (window.updateFriendRequestIndicators) {
+                    window.updateFriendRequestIndicators(requests.length);
+                }
+            } else {
                 alert(d.message || 'Error');
             }
         });
@@ -245,7 +255,7 @@
         }).then(function (r) { return r.json(); }).then(function (d) {
             if (d.success) {
                 friends = friends.filter(function (u) { return u.id != id; });
-                online = online.map(function (u) {
+                users = users.map(function (u) {
                     if (u.id == id) {
                         delete u.isFriend;
                     }
@@ -254,7 +264,7 @@
                 if (currentTab === 'friends') {
                     currentList = friends.slice();
                 } else if (currentTab === 'online') {
-                    currentList = online.slice();
+                    currentList = users.slice();
                 }
                 render();
             } else {
