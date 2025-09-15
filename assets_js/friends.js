@@ -27,6 +27,17 @@
         return 'status-offline';
     }
 
+    function formatLastSeen(ts) {
+        var diff = Math.floor(Date.now() / 1000) - ts;
+        if (diff < 60) return 'Last seen just now';
+        var mins = Math.floor(diff / 60);
+        if (mins < 60) return 'Last seen ' + mins + ' min ago';
+        var hrs = Math.floor(mins / 60);
+        if (hrs < 24) return 'Last seen ' + hrs + ' h ago';
+        var days = Math.floor(hrs / 24);
+        return 'Last seen ' + days + ' d ago';
+    }
+
     function buttonsHtml(tab, id, requested, isFriend) {
         if (tab === 'online') {
             var html = '<a class="btn-farm" href="vizitfarm/vizitfarm.php?id=' + encodeURIComponent(id) + '" title="Visit farm"><i class="fas fa-seedling"></i></a>';
@@ -71,7 +82,10 @@
             div.innerHTML =
                 '<span class="status-dot ' + statusClass(u.status) + '"></span>' +
                 '<img src="' + u.avatar + '" class="user-card-avatar" alt="">' +
-                '<div class="user-card-name' + (u.vip ? ' gold-shimmer' : '') + '">' + u.username + '</div>' +
+                '<div class="user-card-text">' +
+                    '<div class="user-card-name' + (u.vip ? ' gold-shimmer' : '') + '">' + u.username + '</div>' +
+                    '<div class="user-card-last-seen">' + formatLastSeen(u.last_active) + '</div>' +
+                '</div>' +
                 '<div class="user-card-buttons">' + buttonsHtml(currentTab, u.id, u.requestSent, u.isFriend) + '</div>';
             cardContainer.appendChild(div);
         }
@@ -273,8 +287,8 @@
         });
     }
 
-      setTab(currentTab);
-      if (window.updateFriendRequestIndicators) {
-          window.updateFriendRequestIndicators(requests.length);
-      }
-  })();
+    setTab(currentTab);
+    if (window.updateFriendRequestIndicators) {
+        window.updateFriendRequestIndicators(requests.length);
+    }
+})();

@@ -61,10 +61,21 @@
     border: 2px solid #f6cf49;
     margin-right: 10px;
 }
-.user-card-name {
+.user-card-text {
     flex: 1;
-    font-weight: bold;
     color: #6c4e09;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.user-card-name {
+    font-weight: bold;
+}
+
+.user-card-last-seen {
+    font-size: 12px;
+    margin-top: 2px;
 }
 .user-card-buttons {
     display: flex;

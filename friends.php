@@ -75,7 +75,7 @@ $allUsers = [];
 foreach ($rawUsers as $u) {
     if (in_array($u['id'], $excludeIds)) {
         continue;
-    }
+       }
     $card = build_card($u);
     if (in_array($u['id'], $pendingSent)) {
         $card['requestSent'] = true;
