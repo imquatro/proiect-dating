@@ -1,6 +1,6 @@
 <?php
 $activePage = 'welcome';
-$mini_profile_config = ['show_helpers' => false];
+$mini_profile_config = ['show_helpers' => true];
 ob_start();
 include 'mini_profile.php';
 include_once 'includes/slot_helpers.php';

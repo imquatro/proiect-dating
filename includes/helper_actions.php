@@ -139,16 +139,17 @@ function process_helper_actions(int $userId): array {
     }
 
     // Watering
-    $wStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND water_remaining > 0 AND (timer_type IS NULL OR timer_type != "water" OR timer_end <= NOW())');
+    $wStmt = $db->prepare('SELECT slot_number, water_interval FROM user_slot_states WHERE user_id = ? AND water_remaining > 0 AND (timer_type IS NULL OR timer_type != "water" OR timer_end <= NOW())');
     $wStmt->execute([$userId]);
-    $wSlots = $wStmt->fetchAll(PDO::FETCH_COLUMN);
+    $wSlots = $wStmt->fetchAll(PDO::FETCH_ASSOC);
     $maxWaters = (int)$row['max_waters'];
     $usedWaters = (int)$row['waters'];
     $wLimit = min(count($wSlots), max(0, $maxWaters - $usedWaters));
     if ($wLimit > 0) {
-        $upd = $db->prepare('UPDATE user_slot_states SET water_remaining = GREATEST(water_remaining-1,0), updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
+        $upd = $db->prepare('UPDATE user_slot_states SET water_remaining = GREATEST(water_remaining-1,0), timer_type = "water", timer_end = DATE_ADD(NOW(), INTERVAL ? SECOND), updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
         foreach (array_slice($wSlots, 0, $wLimit) as $slot) {
-            $upd->execute([$userId, $slot]);
+            $interval = isset($slot['water_interval']) ? (int)$slot['water_interval'] : 0;
+            $upd->execute([$interval, $userId, (int)$slot['slot_number']]);
             $usedWaters++;
         }
         $db->prepare('UPDATE user_helpers SET waters = ? WHERE user_id = ?')
@@ -161,16 +162,17 @@ function process_helper_actions(int $userId): array {
     $summary['needWater'] = (int)$wCountStmt->fetchColumn();
 
     // Feeding
-    $fStmt = $db->prepare('SELECT slot_number FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0 AND (timer_type IS NULL OR timer_type != "feed" OR timer_end <= NOW())');
+    $fStmt = $db->prepare('SELECT slot_number, feed_interval FROM user_slot_states WHERE user_id = ? AND feed_remaining > 0 AND (timer_type IS NULL OR timer_type != "feed" OR timer_end <= NOW())');
     $fStmt->execute([$userId]);
-    $fSlots = $fStmt->fetchAll(PDO::FETCH_COLUMN);
+    $fSlots = $fStmt->fetchAll(PDO::FETCH_ASSOC);
     $maxFeeds = (int)$row['max_feeds'];
     $usedFeeds = (int)$row['feeds'];
     $fLimit = min(count($fSlots), max(0, $maxFeeds - $usedFeeds));
     if ($fLimit > 0) {
-        $updF = $db->prepare('UPDATE user_slot_states SET feed_remaining = GREATEST(feed_remaining-1,0), updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
+        $updF = $db->prepare('UPDATE user_slot_states SET feed_remaining = GREATEST(feed_remaining-1,0), timer_type = "feed", timer_end = DATE_ADD(NOW(), INTERVAL ? SECOND), updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
         foreach (array_slice($fSlots, 0, $fLimit) as $slot) {
-            $updF->execute([$userId, $slot]);
+            $interval = isset($slot['feed_interval']) ? (int)$slot['feed_interval'] : 0;
+            $updF->execute([$interval, $userId, (int)$slot['slot_number']]);
             $usedFeeds++;
         }
         $db->prepare('UPDATE user_helpers SET feeds = ? WHERE user_id = ?')
