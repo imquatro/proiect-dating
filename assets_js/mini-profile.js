@@ -4,7 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
         miniProfile.addEventListener('click', () => {
             const overlay = document.getElementById('slot-panel-overlay');
             const content = document.querySelector('.content');
-            const url = (window.baseUrl || '') + 'profile_comments_panel.php?ajax=1';
+            let url = (window.baseUrl || '') + 'profile_comments_panel.php?ajax=1';
+            if (window.isVisitor && window.visitId) {
+                url += '&user_id=' + window.visitId;
+            }
             fetch(url)
                 .then(res => res.text())
                 .then(html => {

@@ -149,24 +149,6 @@ function initProfileComments(container) {
     };
 
 
-    const renderComments = comments => {
-        commentsList.innerHTML = '';
-        comments.slice().reverse().forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'comment-item';
-            div.dataset.id = c.id;
-            div.innerHTML = `<span class="author">${c.user}</span>: <span class="text">${c.text}</span><span class="delete">✖</span>`;
-            const del = div.querySelector('.delete');
-            del.addEventListener('click', () => {
-                const delUrl = 'comments_api.php?id=' + c.id + (isVisitor && visitId ? '&user_id=' + visitId : '');
-                fetch(delUrl, { method: 'DELETE', credentials: 'same-origin' })
-                    .then(() => loadComments());
-            });
-            commentsList.appendChild(div);
-        });
-        commentsList.scrollTop = 0;
-    };
-
     const loadComments = () => {
         let url = 'comments_api.php';
         if (isVisitor && visitId) url += '?user_id=' + visitId;
@@ -176,12 +158,13 @@ function initProfileComments(container) {
     };
 
     if (commentForm) {
-        if (isVisitor && !canInteract) {
-            commentInput.disabled = true;
-            commentForm.querySelector('button').disabled = true;
+        const submitBtn = commentForm.querySelector('button');
+        if (isVisitor && !canInteract && submitBtn) {
+            submitBtn.disabled = true;
         }
         commentForm.addEventListener('submit', e => {
             e.preventDefault();
+            if (isVisitor && !canInteract) return;
             const text = commentInput.value.trim();
             if (!text) return;
             let url = 'comments_api.php';
