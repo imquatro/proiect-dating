@@ -33,8 +33,20 @@ if (!empty($gallery)) {
     }
 }
 
+$isFriend = false;
+$currentId = (int)$_SESSION['user_id'];
+$friendStmt = $db->prepare('SELECT 1 FROM friend_requests WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) AND status = \'accepted\'');
+$friendStmt->execute([$currentId, $profile_id, $profile_id, $currentId]);
+$isFriend = (bool)$friendStmt->fetchColumn();
+
 ob_start();
 ?>
+<script>
+window.isVisitor = true;
+window.visitId = <?= $profile_id ?>;
+window.canInteract = <?= $isFriend ? 'true' : 'false' ?>;
+</script>
+<?php include 'mini_profile.php'; ?>
 <div class="profile-container">
     <div class="profile-gallery">
         <?php if (!empty($gallery)): ?>

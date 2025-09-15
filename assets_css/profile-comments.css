@@ -11,6 +11,7 @@
     box-sizing: border-box;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
     background: url("../img/bg2.png") center/cover no-repeat;
+    overflow: hidden;
 }
 
 #profile-comments-panel .helpers-bar {
@@ -18,6 +19,8 @@
     overflow-x: auto;
     gap: 10px;
     padding: 10px 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 #profile-comments-panel .helpers-bar img {
@@ -37,6 +40,15 @@
 #profile-comments-panel .comments-list {
     flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#profile-comments-panel .helpers-bar::-webkit-scrollbar,
+#profile-comments-panel .comments-list::-webkit-scrollbar {
+    display: none;
 }
 
 #profile-comments-panel .comment-item {
