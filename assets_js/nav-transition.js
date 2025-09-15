@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function startPageTransition(url) {
+  const app = document.querySelector('.app-frame');
+  const rect = app.getBoundingClientRect();
+
   const overlay = document.createElement('div');
   overlay.id = 'page-transition';
   overlay.innerHTML = `
@@ -20,15 +23,27 @@ function startPageTransition(url) {
     <div class="light right"></div>
     <div class="percent">0%</div>
   `;
+  Object.assign(overlay.style, {
+    top: rect.top + 'px',
+    left: rect.left + 'px',
+    width: rect.width + 'px',
+    height: rect.height + 'px'
+  });
   document.body.appendChild(overlay);
 
-  const app = document.querySelector('.app-frame');
   const topClone = app.cloneNode(true);
   const bottomClone = app.cloneNode(true);
   topClone.classList.add('app-split', 'top');
   bottomClone.classList.add('app-split', 'bottom');
-  document.body.appendChild(topClone);
-  document.body.appendChild(bottomClone);
+  [topClone, bottomClone].forEach(clone => {
+    Object.assign(clone.style, {
+      top: rect.top + 'px',
+      left: rect.left + 'px',
+      width: rect.width + 'px',
+      height: rect.height + 'px'
+    });
+    document.body.appendChild(clone);
+  });
   app.style.visibility = 'hidden';
 
   const percentEl = overlay.querySelector('.percent');
