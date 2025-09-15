@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('navFading')) {
     sessionStorage.removeItem('navFading');
-    document.body.classList.add('nav-fade-show');
+    document.querySelector('.content')?.classList.add('nav-fade-show');
   }
   document.querySelectorAll('a.nav-btn').forEach(link => {
     link.addEventListener('click', e => {
@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function startPageTransition(url) {
   const app = document.querySelector('.app-frame');
-  const rect = app.getBoundingClientRect();
+  const content = app.querySelector('.content');
+  const rect = content.getBoundingClientRect();
 
   const overlay = document.createElement('div');
   overlay.id = 'page-transition';
@@ -35,11 +36,12 @@ function startPageTransition(url) {
   });
   document.body.appendChild(overlay);
 
-  const topClone = app.cloneNode(true);
-  const bottomClone = app.cloneNode(true);
+  const topClone = content.cloneNode(true);
+  const bottomClone = content.cloneNode(true);
   topClone.classList.add('app-split', 'top');
   bottomClone.classList.add('app-split', 'bottom');
   [topClone, bottomClone].forEach(clone => {
+    clone.style.background = 'none';
     Object.assign(clone.style, {
       top: rect.top + 'px',
       left: rect.left + 'px',
@@ -48,7 +50,7 @@ function startPageTransition(url) {
     });
     document.body.appendChild(clone);
   });
-  app.style.visibility = 'hidden';
+  content.style.visibility = 'hidden';
 
   const percentEl = overlay.querySelector('.percent');
   const minDuration = 1500;

@@ -125,11 +125,11 @@
   to { transform: translateY(100%); }
 }
 
-html.nav-fade body {
+html.nav-fade .content {
   opacity: 0;
 }
 
-html.nav-fade body.nav-fade-show {
+html.nav-fade .content.nav-fade-show {
   animation: navFadeIn 1s forwards;
 }
 
