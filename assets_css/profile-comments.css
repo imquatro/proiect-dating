@@ -21,6 +21,11 @@
     padding: 10px 0;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    cursor: grab;
+}
+
+#profile-comments-panel .helpers-bar:active {
+    cursor: grabbing;
 }
 
 #profile-comments-panel .helpers-bar img {
@@ -87,7 +92,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -97,3 +102,66 @@
 #profile-comments-panel .helper-card-overlay .user-card {
     margin-bottom: 0;
 }
+
+/* Helper minicard styles (copied from friends.css to avoid global effects) */
+#profile-comments-panel .user-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffe9a3;
+    padding: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px #0001;
+}
+
+#profile-comments-panel .user-card-avatar {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 2px solid #f6cf49;
+    margin-right: 10px;
+}
+
+#profile-comments-panel .user-card-text {
+    flex: 1;
+    color: #6c4e09;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#profile-comments-panel .user-card-name {
+    font-weight: bold;
+}
+
+#profile-comments-panel .user-card-buttons {
+    display: flex;
+}
+
+#profile-comments-panel .user-card-buttons button,
+#profile-comments-panel .user-card-buttons a {
+    width: 32px;
+    height: 32px;
+    border: none;
+    margin-left: 4px;
+    background: #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+#profile-comments-panel .status-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+#profile-comments-panel .status-online { background: #32cd32; }
+#profile-comments-panel .status-idle { background: #ffd700; }
+#profile-comments-panel .status-offline { background: #ff4500; }

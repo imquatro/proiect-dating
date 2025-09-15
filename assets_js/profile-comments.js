@@ -7,18 +7,7 @@ function initProfileComments(container) {
     const visitId = window.visitId || null;
     const canInteract = typeof window.canInteract === 'undefined' ? true : window.canInteract;
 
-    const ensureFriendsCss = () => {
-        if (!document.getElementById('friends-css')) {
-            const link = document.createElement('link');
-            link.id = 'friends-css';
-            link.rel = 'stylesheet';
-            link.href = (window.baseUrl || '') + 'assets_css/friends.css';
-            document.head.appendChild(link);
-        }
-    };
-
     const showHelperCard = (helper) => {
-        ensureFriendsCss();
         const overlay = document.createElement('div');
         overlay.className = 'helper-card-overlay';
         let statusClass = 'status-offline';
@@ -106,25 +95,54 @@ function initProfileComments(container) {
                     img.dataset.id = helper.id;
                     let timer;
                     let longPress = false;
+                    let isDragging = false;
+                    let startX;
+                    let scrollStart;
+
                     const openProfile = () => {
                         longPress = true;
                         window.location.href = (window.baseUrl || '') + 'vizitfarm/vizitfarm.php?id=' + helper.id;
                     };
-                    const clear = () => clearTimeout(timer);
-                    img.addEventListener('mousedown', () => {
+
+                    const onDown = (e) => {
                         longPress = false;
+                        isDragging = false;
+                        const point = e.touches ? e.touches[0] : e;
+                        startX = point.pageX;
+                        scrollStart = helperContainer.scrollLeft;
                         timer = setTimeout(openProfile, 500);
-                    });
-                    img.addEventListener('touchstart', () => {
-                        longPress = false;
-                        timer = setTimeout(openProfile, 500);
-                    });
-                    ['mouseup', 'mouseleave'].forEach(ev => img.addEventListener(ev, clear));
-                    ['touchend', 'touchcancel'].forEach(ev => img.addEventListener(ev, clear));
-                    img.addEventListener('click', () => {
-                        if (longPress) return;
-                        showHelperCard(helper);
-                    });
+
+                        const onMove = (ev) => {
+                            const p = ev.touches ? ev.touches[0] : ev;
+                            const walk = p.pageX - startX;
+                            if (Math.abs(walk) > 5) {
+                                isDragging = true;
+                                helperContainer.scrollLeft = scrollStart - walk;
+                                clearTimeout(timer);
+                                ev.preventDefault();
+                            }
+                        };
+
+                        const onUp = () => {
+                            clearTimeout(timer);
+                            document.removeEventListener('mousemove', onMove);
+                            document.removeEventListener('touchmove', onMove);
+                            document.removeEventListener('mouseup', onUp);
+                            document.removeEventListener('touchend', onUp);
+                            document.removeEventListener('touchcancel', onUp);
+                            if (isDragging || longPress) return;
+                            showHelperCard(helper);
+                        };
+
+                        document.addEventListener('mousemove', onMove);
+                        document.addEventListener('touchmove', onMove, { passive: false });
+                        document.addEventListener('mouseup', onUp);
+                        document.addEventListener('touchend', onUp);
+                        document.addEventListener('touchcancel', onUp);
+                    };
+
+                    img.addEventListener('mousedown', onDown);
+                    img.addEventListener('touchstart', onDown);
                     helperContainer.appendChild(img);
                 });
             });
