@@ -62,7 +62,7 @@ function startPageTransition(url) {
   content.style.visibility = 'hidden';
 
   const percentEl = overlay.querySelector('.percent');
-  const minDuration = 1500;
+  const minDuration = 150;
   const start = performance.now();
   let loaded = 0;
   let total = 0;
@@ -108,7 +108,7 @@ function startPageTransition(url) {
         setTimeout(() => {
           sessionStorage.setItem('navFading', '1');
           window.location.href = url;
-        }, 700);
+        }, 450);
       }, { once: true });
     }, wait);
   }

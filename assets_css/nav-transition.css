@@ -1,3 +1,9 @@
+:root {
+  --nav-bolt-duration: 0.24s;
+  --nav-flash-duration: 0.18s;
+  --nav-split-duration: 0.32s;
+}
+
 /* Page navigation transition effect */
 #page-transition {
   position: fixed;
@@ -43,11 +49,11 @@
 }
 #page-transition .bolt.left {
   left: -80px;
-  animation: bolt-left 0.7s forwards;
+  animation: bolt-left var(--nav-bolt-duration, 0.28s) forwards;
 }
 #page-transition .bolt.right {
   right: -80px;
-  animation: bolt-right 0.7s forwards;
+  animation: bolt-right var(--nav-bolt-duration, 0.28s) forwards;
   transform: translateY(-50%) scaleX(-1);
 }
 @keyframes bolt-left {
@@ -70,10 +76,10 @@
 }
 #page-transition.flash .bolt {
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity calc(var(--nav-bolt-duration, 0.28s) / 2);
 }
 #page-transition.flash .flash {
-  animation: flash-burst 0.4s forwards;
+  animation: flash-burst var(--nav-flash-duration, 0.22s) forwards;
 }
 @keyframes flash-burst {
   0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
@@ -117,10 +123,10 @@
   clip-path: inset(50% 0 0 0);
 }
 .app-split.animate.top {
-  animation: split-up 0.7s forwards;
+  animation: split-up var(--nav-split-duration, 0.36s) forwards;
 }
 .app-split.animate.bottom {
-  animation: split-down 0.7s forwards;
+  animation: split-down var(--nav-split-duration, 0.36s) forwards;
 }
 @keyframes split-up {
   to { transform: translateY(-100%); }
