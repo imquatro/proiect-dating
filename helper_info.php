@@ -8,7 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/includes/helper_actions.php';
 
 $userId = (int)$_SESSION['user_id'];
-$summary = process_helper_actions($userId);
+$force = isset($_GET['force']) && $_GET['force'] === '1';
+$summary = process_helper_actions($userId, $force);
 
 header('Content-Type: application/json');
 echo json_encode($summary);

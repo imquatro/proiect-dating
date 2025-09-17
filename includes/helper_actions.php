@@ -2,6 +2,26 @@
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/helper_images.php';
 
+function helper_user_is_online(PDO $db, int $userId, int $thresholdSeconds = 300): bool {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        $sessionUserId = $_SESSION['user_id'] ?? null;
+        if ($sessionUserId !== null && (int)$sessionUserId === $userId) {
+            return true;
+        }
+    }
+    $stmt = $db->prepare('SELECT last_active FROM users WHERE id = ?');
+    $stmt->execute([$userId]);
+    $lastActive = $stmt->fetchColumn();
+    if (!$lastActive) {
+        return false;
+    }
+    $lastActiveTs = strtotime($lastActive);
+    if ($lastActiveTs === false) {
+        return false;
+    }
+    return ($lastActiveTs >= time() - max(0, $thresholdSeconds));
+}
+
 function auto_harvest(PDO $db, int $userId, int $slotId): bool {
     try {
         $db->beginTransaction();
@@ -103,7 +123,7 @@ function auto_harvest(PDO $db, int $userId, int $slotId): bool {
     }
 }
 
-function process_helper_actions(int $userId): array {
+function process_helper_actions(int $userId, bool $forceProcess = false): array {
     global $db;
     $summary = [
         'waterUsed' => 0,
@@ -138,6 +158,8 @@ function process_helper_actions(int $userId): array {
         $row['waters'] = $row['feeds'] = $row['harvests'] = 0;
     }
 
+    $shouldProcess = $forceProcess ? true : !helper_user_is_online($db, $userId);
+
     // Watering
     $wStmt = $db->prepare('SELECT slot_number, water_interval FROM user_slot_states WHERE user_id = ? AND water_remaining > 0 AND (timer_end IS NULL OR timer_end <= NOW())');
     $wStmt->execute([$userId]);
@@ -145,7 +167,7 @@ function process_helper_actions(int $userId): array {
     $maxWaters = (int)$row['max_waters'];
     $usedWaters = (int)$row['waters'];
     $wLimit = min(count($wSlots), max(0, $maxWaters - $usedWaters));
-    if ($wLimit > 0) {
+    if ($shouldProcess && $wLimit > 0) {
         $upd = $db->prepare('UPDATE user_slot_states SET water_remaining = GREATEST(water_remaining-1,0), timer_type = "water", timer_end = DATE_ADD(NOW(), INTERVAL ? SECOND), updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
         foreach (array_slice($wSlots, 0, $wLimit) as $slot) {
             $interval = isset($slot['water_interval']) ? (int)$slot['water_interval'] : 0;
@@ -168,7 +190,7 @@ function process_helper_actions(int $userId): array {
     $maxFeeds = (int)$row['max_feeds'];
     $usedFeeds = (int)$row['feeds'];
     $fLimit = min(count($fSlots), max(0, $maxFeeds - $usedFeeds));
-    if ($fLimit > 0) {
+    if ($shouldProcess && $fLimit > 0) {
         $updF = $db->prepare('UPDATE user_slot_states SET feed_remaining = GREATEST(feed_remaining-1,0), timer_type = "feed", timer_end = DATE_ADD(NOW(), INTERVAL ? SECOND), updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
         foreach (array_slice($fSlots, 0, $fLimit) as $slot) {
             $interval = isset($slot['feed_interval']) ? (int)$slot['feed_interval'] : 0;
@@ -191,7 +213,7 @@ function process_helper_actions(int $userId): array {
     $maxHarvests = (int)$row['max_harvests'];
     $usedHarvests = (int)$row['harvests'];
     $hLimit = min(count($hSlots), max(0, $maxHarvests - $usedHarvests));
-    if ($hLimit > 0) {
+    if ($shouldProcess && $hLimit > 0) {
         foreach (array_slice($hSlots, 0, $hLimit) as $slot) {
             if (auto_harvest($db, $userId, (int)$slot)) {
                 $usedHarvests++;
