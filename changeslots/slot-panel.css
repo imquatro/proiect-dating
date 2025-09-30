@@ -1,0 +1,258 @@
+#slot-panel-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#slot-panel-overlay.active {
+    display: flex;
+}
+
+#cs-slot-panel {
+    width: 600px;
+    height: 570px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 20px 0;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    overflow: hidden;
+}
+
+.cs-image-wrapper {
+    position: relative;
+    max-width: 60%;
+    max-height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#cs-slot-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 250px;
+    display: block;
+}
+
+#cs-plant-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: auto;
+}
+
+#cs-slot-details {
+    margin-top: 10px;
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+}
+
+#cs-slot-details .cs-detail {
+    margin: 2px 0;
+}
+#cs-slot-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 20px;
+    padding-bottom: 20px;
+}
+.cs-slot-btn {
+    width: 70px;
+    height: 70px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+.cs-slot-btn i {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+#cs-helper-container {
+    margin-top: 10px;
+    width: 560px;
+    height: 70px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding: 0 10px;
+    scrollbar-width: none;
+}
+
+#cs-helper-container::-webkit-scrollbar {
+    display: none;
+}
+
+.cs-helper-entry {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.cs-helper-entry img {
+    width: 25px;
+    height: 25px;
+    object-fit: cover;
+}
+
+.cs-helper-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #f6cf49;
+    color: #6c4e09;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #6c4e09;
+}
+
+.barn-full-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+}
+
+.barn-full-card {
+    background: url('../img/bg2.png') center/cover no-repeat;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.confirm-card {
+    width: 220px;
+}
+
+.confirm-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.confirm-actions button {
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+.cs-vip-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 8px;
+    border-radius: 5px;
+}
+
+.cs-vip-badge img {
+    width: 24px;
+    height: 24px;
+}
+
+.cs-vip-badge span {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 1;
+}
+
+#cs-helper-container {
+    margin-top: 10px;
+    width: 560px;
+    height: 80px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding: 0 10px;
+    scrollbar-width: none;
+}
+
+#cs-helper-container::-webkit-scrollbar {
+    display: none;
+}
+
+.cs-helper-entry {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.cs-helper-entry img {
+    width: 25px;
+    height: 25px;
+    object-fit: cover;
+}
+
+.cs-helper-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #f6cf49;
+    color: #6c4e09;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #6c4e09;
+}

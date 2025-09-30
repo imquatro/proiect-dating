@@ -1,0 +1,15 @@
+Copyright (c) 2025 imquatro
+
+All rights reserved.
+
+This project is publicly available **only** for personal development and collaboration purposes. You are **not allowed** to copy, redistribute, modify, or use any part of this project — including source code, media files, or design — without **explicit written permission** from the author.
+
+The following are strictly prohibited:
+- Reuse of the source code or any files in other projects or platforms.
+- Partial or full publication of this project elsewhere.
+- Commercial or non-commercial use of this project or its derivatives.
+- Selling, licensing, or distributing this project in any form.
+
+**This is not an open-source project.** Public access does not imply permission to use or modify.
+
+For licensing inquiries or permission requests, please contact the author at: serverboost93@gmail.com]

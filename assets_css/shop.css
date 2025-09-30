@@ -1,0 +1,59 @@
+.shop-container {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.shop-panel {
+    width: 90%;
+    max-width: 600px;
+    height: 90vh;
+    max-height: 570px;
+    margin-top: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    background: url('../img/bg2.png') center/cover no-repeat;
+}
+
+.shop-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 6px 4px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #f6cf49;
+}
+
+.shop-tab-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-content {
+    display: none;
+    color: #fff;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@media (max-width: 480px) {
+    .tab-btn {
+        padding: 5px 2px;
+        font-size: 12px;
+    }
+}

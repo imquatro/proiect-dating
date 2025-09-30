@@ -1,0 +1,299 @@
+/* Container for helper, profile and achievement mini cards */
+.mini-cards-row {
+    position: relative;
+    width: calc(5 * var(--slot-size, 60px) + 4 * var(--slot-gap, 1px));
+    height: var(--slot-size, 60px);
+    margin: 0 auto var(--slot-gap, 1px);
+    box-sizing: border-box;
+}
+
+.mini-cards-row.single-achievement {
+    width: var(--slot-size, 60px);
+}
+
+.mini-profile {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: stretch;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    padding: 0;
+    box-shadow: none;
+    width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
+    height: var(--slot-size, 60px);
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.mini-profile-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.mini-profile-avatar, .profile-avatar {
+    width: var(--slot-size, 60px);
+    height: 100%;
+    object-fit: cover;
+    margin-right: 0;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    border: 1px solid #000;
+    box-shadow: none;
+    max-width: 120px;
+    max-height: 120px;
+    box-sizing: border-box;
+}
+
+.mini-profile-card,
+.mini-card {
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
+    background: url('../img/bg2.png') center/cover no-repeat;
+    border: 1px solid #000;
+    box-shadow: none;
+    max-width: 120px;
+    max-height: 120px;
+    box-sizing: border-box;
+}
+
+/* Place the level circle at the bottom-right and the username mid-left */
+.mini-profile-card {
+    position: relative;
+    padding: 4px;
+}
+
+.mini-profile-card .level-circle {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 0.7em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.mini-profile-card .username {
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    transform: translateY(-50%);
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #6c4e09;
+    margin: 0;
+}
+
+.mini-profile-card .divider {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(0,0,0,0.2);
+}
+.helpers-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
+    display: flex;
+    overflow: hidden;
+    gap: 5px;
+    padding: 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    cursor: grab;
+}
+
+.helpers-card:active {
+    cursor: grabbing;
+}
+
+
+.achievements-card {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c4e09;
+    font-size: 0.7em;
+}
+
+.mini-cards-row.single-achievement .achievements-card {
+    position: static;
+    margin: 0 auto;
+}
+
+.helpers-card::-webkit-scrollbar {
+    display: none;
+}
+
+.helper-item {
+    position: relative;
+    width: var(--slot-size, 60px);
+    height: 100%;
+    flex: 0 0 auto;
+}
+
+.helpers-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.helper-counts {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-size: 0.6em;
+    text-align: center;
+}
+
+.helper-total {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 0.6em;
+    padding: 1px 3px;
+}
+
+.avatar-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+.helper-effect {
+    position: fixed;
+    top: auto;
+    bottom: calc(60px + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--slot-size, 60px);
+    height: var(--slot-size, 60px);
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+    transition: opacity 0.5s;
+    z-index: 1000;
+}
+
+.helper-effect img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    border: 1px solid #000;
+    box-shadow: none;
+    box-sizing: border-box;
+}
+
+.helper-effect .combo-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.combo-count.pulse {
+    animation: comboPulse 0.3s;
+}
+
+@keyframes comboPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.helper-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.applied-helper-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    border: 1px solid #000;
+    color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.applied-helper-card img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 1px solid #000;
+}
+
+@media (max-width: 800px) {
+    .mini-cards-row {
+        margin: 0 auto;
+    }
+
+    .mini-profile {
+        width: calc(2 * var(--slot-size, 60px) + var(--slot-gap, 1px));
+    }
+
+    .mini-profile-card,
+    .mini-card,
+    .mini-profile-avatar,
+    .helper-item {
+        width: var(--slot-size, 60px);
+    }
+
+    .helpers-card,
+    .achievements-card {
+        width: var(--slot-size, 60px);
+        flex: 0 0 var(--slot-size, 60px);
+        padding: var(--slot-gap, 1px);
+        gap: 0;
+    }
+}
+
+.achievements-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}

@@ -1,0 +1,247 @@
+.achievements-container {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Enlarge top achievements mini-card to match panel icons */
+.mini-cards-row {
+    --slot-size: 120px;
+}
+
+.achievements-panel {
+    width: 90%;
+    max-width: 600px;
+    height: 90vh;
+    max-height: 570px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    background: url('../img/bg2.png') center/cover no-repeat;
+    color: #fff;
+    overflow: hidden;
+}
+
+.ach-columns {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+}
+
+.ach-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0; /* allow inner list to scroll instead of overflowing */
+}
+
+.ach-column + .ach-column {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 10px;
+}
+
+.ach-section-title {
+    text-align: center;
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+.ach-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    align-content: flex-start;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.ach-list::-webkit-scrollbar {
+    display: none;
+}
+
+.ach-item {
+    width: 120px;
+    text-align: center;
+    background: transparent;
+}
+
+.ach-item > img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.ach-img-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.ach-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ach-item .ach-name {
+    font-size: 16px;
+}
+
+.ach-item.achieved {
+    opacity: 0.5;
+}
+
+.ach-btn {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.ach-apply-btn {
+    top: 0;
+}
+
+.ach-remove-btn {
+    bottom: 0;
+}
+
+.achievements-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.achievements-content {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    min-height: 0;
+}
+
+.achievements-column {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    min-height: 0;
+}
+
+.achievements-column::-webkit-scrollbar {
+    display: none;
+}
+
+.achievements-column + .achievements-column {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 10px;
+}
+
+.achievement-item {
+    padding: 4px 0;
+}
+
+.achievements-close {
+    margin-top: 10px;
+    align-self: center;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+/* Detail overlay */
+.ach-detail-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.ach-detail-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    color: #333;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.ach-detail-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.ach-progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.ach-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #4caf50;
+    border-radius: inherit;
+}
+
+.ach-progress-text {
+    margin-top: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+.ach-detail-text {
+    margin-top: 12px;
+    line-height: 1.4;
+}
+
+.ach-detail-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.ach-detail-close:hover {
+    color: #000;
+}

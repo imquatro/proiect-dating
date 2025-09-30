@@ -1,0 +1,257 @@
+
+.barn-container {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.barn-panel {
+    width: min(570px, calc(100vw - 40px));
+    position: fixed;
+    top: 20px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    padding: 60px 20px 20px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.8);
+    background: url('../img/bg2.png') center/cover no-repeat;
+}
+
+.barn-settings-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 5px 0;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+
+.barn-settings {
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.barn-slots {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    justify-items: center;
+    align-content: start;
+    padding: 10px 0 20px;
+    scrollbar-width: none;
+}
+
+.barn-slots::-webkit-scrollbar {
+    display: none;
+}
+
+.barn-slot {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+@media (max-width: 480px) {
+    .barn-slots {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .barn-slot {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+.barn-slot.empty::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.barn-slot img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 50%;
+    height: 50%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.barn-slot .quantity {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    padding: 2px 4px;
+    font-size: 12px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.barn-slot::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    width: 50%;
+    height: 25%;
+    background: rgba(0,0,0,0.15);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    z-index: 0;
+}
+
+.barn-slot.empty img,
+.barn-slot.empty .quantity {
+    display: none;
+}
+
+.sell-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.sell-card {
+    background: url('../img/bg2.png') center/cover no-repeat;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.sell-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.sell-name {
+    font-weight: bold;
+    text-align: center;
+}
+
+.sell-qty {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sell-qty button {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    background: rgba(0,0,0,0.4);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+.sell-qty input {
+    width: 50px;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    -moz-appearance: textfield;
+}
+
+.sell-qty input::-webkit-outer-spin-button,
+.sell-qty input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.sell-btn {
+    background: rgba(0,0,0,0.4);
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.sell-total {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sell-total img {
+    width: 24px;
+    height: 24px;
+}
+
+.settings-card {
+    background: url('../img/bg2.png') center/cover no-repeat;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.settings-title {
+    font-weight: bold;
+}
+
+.buy-options {
+    display: flex;
+    gap: 8px;
+}
+
+.buy-options button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0,0,0,0.4);
+    border: none;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.buy-options img {
+    width: 24px;
+    height: 24px;

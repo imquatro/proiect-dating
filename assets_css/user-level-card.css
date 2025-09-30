@@ -1,0 +1,42 @@
+.user-level-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    width: calc(2 * var(--slot-size));
+    height: calc(2 * var(--slot-size));
+    background: #ffe9a3;
+    border: 2px solid #f6cf49;
+    box-shadow: 0 2px 8px #0001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.user-level-card .username {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #6c4e09;
+    width: 100%;
+}
+.user-level-card .divider {
+    width: 100%;
+    height: 2px;
+    background: #f6cf49;
+}
+.user-level-card .level {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #6c4e09;
+    width: 100%;
+}

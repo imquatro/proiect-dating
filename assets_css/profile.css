@@ -1,0 +1,397 @@
+body, html {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    color: #2e2151;
+    position: relative;
+    overflow-x: hidden;
+}
+.main-header {
+    width: 450px; /* cât containerul tău alb! */
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, #8e2de2 0%, #4a00e0 100%);
+    color: #fff;
+    font-size: 1.7rem;
+    font-weight: 600;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: 0 4px 16px rgba(155,92,255,0.10);
+    height: 62px;
+    position: relative;
+    margin-bottom: 16px;
+    z-index: 20;
+    padding: 0 16px;
+}
+
+/* Iconul de admin */
+.admin-btn {
+    color: #ffd700;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* Iconul de logout */
+.logout-btn {
+    color: #fff;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: color 0.13s, transform 0.12s;
+}
+.logout-btn:hover {
+    color: #ffd700;
+    transform: scale(1.11);
+}
+
+.header-title {
+    flex: 1;
+    text-align: center;
+    font-size: 1.25em;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    border-radius: 0px;
+    box-shadow: 0 4px 24px rgba(155,92,255,0.13);
+    padding: 20px 12px 80px 12px; /* spațiu mare jos */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0;
+    /* ATENȚIE: fără min-height, fără height! */
+    /* Fără overflow-y: auto pe profile-container! */
+}
+.profile-gallery {
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.photo-frame {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(124,77,255,0.35);
+    background: transparent;
+    position: relative;
+}
+
+.photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+.profile-photo-frame {
+    max-width: 350px;
+}
+
+.gallery-photo-frame {
+    max-width: 600px;
+}
+.profile-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #7c4dff, #e040fb);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.85;
+    z-index: 2;
+}
+.gallery-arrow.left { left: 8px; }
+.gallery-arrow.right { right: 8px; }
+.gallery-arrow:disabled { opacity: 0.2; cursor: default; }
+.profile-info-list {
+    width: 100%;
+    margin-bottom: 18px;
+}
+.profile-info-list .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.profile-info-list .info-row:last-child { border-bottom: none; }
+.profile-label {
+    color: #2e2151;
+    font-weight: 500;
+}
+.profile-value {
+    color: #2e2151;
+    font-weight: 600;
+}
+.desc-edit-wrap {
+    width: 100%;
+    margin-top: 16px;
+    box-sizing: border-box;
+}
+
+.desc-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+}
+
+.desc-action-btn,
+.profile-upload-btn {
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.13s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.desc-action-btn.edit {
+    background: #f6cf49;
+}
+
+.desc-action-btn:hover,
+.profile-upload-btn:hover {
+    background: #f6cf49;
+}
+
+
+.desc-field {
+    min-height: 36px;
+    font-size: 1.06rem;
+    background: #f3f3f9;
+    border-radius: 11px;
+    padding: 10px;
+    margin-bottom: 7px;
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+textarea.desc-field {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border: 1px solid #b682ff;
+    resize: none;
+    min-height: 60px;
+    font-size: 1.09rem;
+    outline: none;
+    border-radius: 11px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 470px; /* aceeași ca .profile-container */
+    background: linear-gradient(90deg, #a18fff 0%, #6e43e6 100%);
+    box-shadow: 0 8px 36px 0 rgba(124,77,255,0.20);
+    /* Fără border-radius! */
+    border-radius: 0;
+    height: 60px;
+    z-index: 50;
+    padding: 0;
+}
+
+.navbar .icon {
+    font-size: 2.3rem; /* MAI MARE */
+    color: #fff;
+    opacity: 0.94;
+    transition: color 0.18s, opacity 0.18s, transform 0.13s;
+    cursor: pointer;
+    margin: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.navbar .icon.active,
+.navbar .icon:hover {
+    color: #FFD700;
+    opacity: 1;
+    transform: scale(1.18);
+}
+
+body, .profile-container {
+    scrollbar-width: thin;
+    scrollbar-color: #b682ff #f2eaff;
+}
+body::-webkit-scrollbar, .profile-container::-webkit-scrollbar {
+    width: 8px;
+    background: #f2eaff;
+}
+body::-webkit-scrollbar-thumb, .profile-container::-webkit-scrollbar-thumb {
+    background: #b682ff;
+    border-radius: 12px;
+}
+@media (max-width: 500px) {
+  .navbar {
+      width: 100vw;
+      left: 0;
+      transform: none;
+      border-radius: 0;
+      min-width: unset;
+  }
+  .navbar .icon {
+      font-size: 2rem;
+      margin: 0 6px;
+  }
+}
+.profile-upload-card {
+    width: 100%;
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-upload-card form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.profile-upload-card a.profile-upload-btn {
+    display: inline-flex;
+    align-items: center;
+}
+/* --- EFECT POZA NEVALIDATĂ / PENDING --- */
+.photo-wrap {
+  display: inline-block;
+  position: relative;
+  margin: 10px 8px;
+  vertical-align: middle;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.photo-wrap.photo-pending img.profile-img {
+  filter: grayscale(1) blur(4.5px) brightness(0.45) opacity(0.55) !important;
+  pointer-events: none;
+  transition: filter 0.2s;
+}
+.photo-wrap.photo-pending::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #231a36 65%, #44206d 100%);
+  opacity: 0.77;
+  z-index: 3;
+  border-radius: 14px;
+  pointer-events: none;
+}
+.photo-badge {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(90deg,#4316a6 10%, #24202d 90%);
+  color: #fff;
+  font-weight: 700;
+  padding: 15px 44px;
+  border-radius: 100px;
+  font-size: 1.55rem;
+  letter-spacing: 2px;
+  box-shadow: 0 6px 28px #0e021a90, 0 2px 9px #0e021a60;
+  text-shadow: 0 2px 8px #000, 0 0 3px #7200ff;
+  border: 2.5px solid #bb67ff;
+  opacity: 0.97;
+  z-index: 10;
+  user-select: none;
+  pointer-events: none;
+  font-family: inherit;
+  text-transform: uppercase;
+  transition: background 0.2s, box-shadow 0.2s;
+  cursor: not-allowed;
+}
+
+.photo-badge:hover, .photo-badge:focus {
+  background: linear-gradient(90deg,#bb67ff 20%, #4c0b7b 80%);
+  box-shadow: 0 4px 28px #bb67ff90, 0 0 12px #f3e5ff80;
+}.profile-gallery {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 320px;
+}
+.photo-wrap {
+    display: none; /* default toate ascunse */
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.photo-wrap.active {
+    display: flex !important; /* doar una e activă */
+}
+.profile-img {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+    object-fit: fill;
+    display: block;
+}
+
+.content {
+    padding: 0;
+}

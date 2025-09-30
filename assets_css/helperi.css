@@ -1,0 +1,81 @@
+#helpersList {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.helper-card {
+    position: relative;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 5px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    border-radius: 4px;
+}
+
+.helper-card img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 4px;
+}
+
+.helper-card .helper-stats {
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.helper-card .helper-stats span {
+    display: block;
+}
+
+.helper-card .apply-helper-btn {
+    margin-top: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+.helper-card .apply-helper-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.helper-card.selected {
+    outline: 2px solid #ffd700;
+}
+
+.helper-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.applied-helper-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: url('../img/bg2.png') center/cover no-repeat;
+    border: 1px solid #000;
+    color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.applied-helper-card img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 1px solid #000;
+}

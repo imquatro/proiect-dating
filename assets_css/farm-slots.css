@@ -1,0 +1,167 @@
+/* Grid of farm slots */
+:root {
+    /* default values will be updated via JavaScript */
+    --slot-size: 20px;
+    --slot-gap: 1px;
+    --plant-size: 20px;
+}
+
+
+.farm-slots {
+    display: flex;
+    flex-direction: column;
+    gap: var(--slot-gap);
+    align-items: center;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    width: calc(3 * var(--slot-size) + 2 * var(--slot-gap));
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.farm-row {
+    display: flex;
+    gap: var(--slot-gap);
+    justify-content: center;
+}
+
+.farm-slot {
+    width: var(--slot-size);
+    height: var(--slot-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden; /* Keep images within square bounds */
+    position: relative;
+}
+
+.farm-slot.locked {
+    cursor: default;
+}
+
+.farm-slot img.slot-base {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.farm-slot img.slot-item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--plant-size);
+    height: var(--plant-size);
+    object-fit: contain;
+    pointer-events: none;
+    display: none;
+}
+
+.farm-slot .slot-action {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: flex-start;
+    justify-content: flex-start;
+    cursor: pointer;
+}
+
+.farm-slot .slot-action img {
+    width: 40px;
+    height: 40px;
+    margin: 2px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .farm-slot .slot-action img {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+.farm-slot .slot-action .action-icon {
+    width: 40px;
+    height: 40px;
+    margin: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.farm-slot .slot-action .water-icon { font-size: 32px; }
+.farm-slot .slot-action .feed-icon { font-size: 32px; }
+.farm-slot .slot-action .harvest-icon { font-size: 32px; }
+
+@media (max-width: 768px) {
+    .farm-slot .slot-action img {
+        width: 20px;
+        height: 20px;
+        margin: 1px;
+    }
+
+    .farm-slot .slot-action .action-icon {
+        width: 20px;
+        height: 20px;
+        margin: 1px;
+    }
+
+    .farm-slot .slot-action .water-icon,
+    .farm-slot .slot-action .feed-icon,
+    .farm-slot .slot-action .harvest-icon {
+        font-size: 20px;
+    }
+}
+
+.farm-slot .slot-action.harvest {
+    cursor: default;
+}
+
+.farm-slot .slot-timer {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    color: #fff;
+    padding: 1px 3px;
+    font-size: 17px;
+    font-weight: bold;
+    border-radius: 3px;
+    display: none;
+    text-shadow: 1px 1px 2px #000; /* umbră subțire neagră */
+}
+
+.slot-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.slot-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.farm-divider {
+    border: none;
+    border-top: 3px solid #ffd900;
+    margin: 2px 0;
+}

@@ -1,0 +1,217 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const slotsEl = document.getElementById('barn-slots');
+    const settingsBtn = document.getElementById('barn-settings');
+    let currentCapacity = 0;
+    const baseMoneyCost = 10000000;
+    const baseGoldCost = 50;
+    const defaultCapacity = 4;
+
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function openSettings() {
+        const overlay = document.createElement('div');
+        overlay.className = 'sell-overlay';
+
+        const slotsPurchased = Math.max(0, currentCapacity - defaultCapacity);
+        const moneyCost = baseMoneyCost * Math.pow(2, slotsPurchased);
+        const goldCost = baseGoldCost * Math.pow(2, slotsPurchased);
+
+        overlay.innerHTML = `
+            <div class="settings-card">
+                <div class="settings-title">Slots: <span class="settings-capacity">${currentCapacity}</span></div>
+                <div class="buy-options">
+                    <button class="buy-money"><img src="img/money.png" alt=""><span>${formatNumber(moneyCost)}</span></button>
+                    <button class="buy-gold"><img src="img/gold.png" alt=""><span>${goldCost}</span></button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) overlay.remove();
+        });
+
+        const capEl = overlay.querySelector('.settings-capacity');
+
+        function purchase(type) {
+            fetch('barn_buy_slot.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `type=${type}`
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        currentCapacity = data.capacity || currentCapacity;
+                        capEl.textContent = currentCapacity;
+                        overlay.remove();
+                        document.dispatchEvent(new Event('barnUpdated'));
+                    } else {
+                        let msg = 'Purchase failed';
+                        if (data.error === 'not_enough_money') msg = 'You do not have enough money.';
+                        else if (data.error === 'not_enough_gold') msg = 'You do not have enough gold.';
+                        alert(msg);
+                    }
+                })
+                .catch(() => alert('Purchase failed'));
+        }
+
+        overlay.querySelector('.buy-money').addEventListener('click', () => purchase('money'));
+        overlay.querySelector('.buy-gold').addEventListener('click', () => purchase('gold'));
+    }
+
+    function openSell(slot) {
+        const itemId = parseInt(slot.dataset.item, 10);
+        const slotNumber = parseInt(slot.dataset.slot, 10);
+        const name = slot.dataset.name || '';
+        const price = parseInt(slot.dataset.price, 10) || 0;
+        const qtyEl = slot.querySelector('.quantity');
+        const maxQty = qtyEl ? parseInt(qtyEl.textContent.replace(/\./g, ''), 10) : 1;
+        const imgSrc = slot.querySelector('img').src;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'sell-overlay';
+        overlay.innerHTML = `
+            <div class="sell-card">
+                <img src="${imgSrc}" alt="">
+                <div class="sell-name">${name}</div>
+                <div class="sell-qty">
+                    <button class="dec">-</button>
+                    <input type="number" min="1" max="${maxQty}" value="${maxQty}">
+                    <button class="inc">+</button>
+                </div>
+                <div class="sell-total"><img src="img/money.png" alt=""><span></span></div>
+                <button class="sell-btn">Sell</button>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        const input = overlay.querySelector('input');
+        const totalEl = overlay.querySelector('.sell-total span');
+
+        function updateTotal() {
+            let val = parseInt(input.value, 10);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > maxQty) val = maxQty;
+            input.value = val;
+            totalEl.textContent = formatNumber(price * val);
+        }
+        overlay.querySelector('.dec').addEventListener('click', () => {
+            input.value = Math.max(1, (parseInt(input.value, 10) || 1) - 1);
+            updateTotal();
+        });
+        overlay.querySelector('.inc').addEventListener('click', () => {
+            input.value = Math.min(maxQty, (parseInt(input.value, 10) || 1) + 1);
+            updateTotal();
+        });
+        input.addEventListener('input', updateTotal);
+
+        updateTotal();
+
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) overlay.remove();
+        });
+
+        overlay.querySelector('.sell-btn').addEventListener('click', async () => {
+            const qty = parseInt(input.value, 10) || 1;
+            try {
+                const res = await fetch('barn_sell.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `item_id=${itemId}&slot=${slotNumber}&quantity=${qty}`
+                });
+                const data = await res.json();
+                if (data.success) {
+                    overlay.remove();
+                    document.dispatchEvent(new Event('barnUpdated'));
+                    if (window.showFloatingText) {
+                        window.showFloatingText(slot, { money: data.moneyGain, xp: data.xpGain });
+                    }
+                    if (data.levelUp && window.showLevelUp) {
+                        window.showLevelUp(data.newLevel);
+                    }
+                }
+            } catch (err) {
+                console.error('Sell failed', err);
+            }
+        });
+    }
+
+    function renderSlots(capacity, items) {
+        const map = {};
+        for (const it of items) {
+            map[it.slot] = it;
+        }
+        slotsEl.innerHTML = '';
+        for (let i = 1; i <= capacity; i++) {
+            const slot = document.createElement('div');
+            const it = map[i];
+            slot.dataset.slot = i;
+            if (it) {
+                slot.className = 'barn-slot';
+                slot.dataset.item = it.item_id;
+                slot.dataset.name = it.name;
+                slot.dataset.price = it.sell_price;
+                slot.innerHTML = `<img src="${it.image}" alt=""><div class="quantity">${formatNumber(it.quantity)}</div>`;
+                slot.addEventListener('click', () => openSell(slot));
+            } else {
+                slot.className = 'barn-slot empty';
+            }
+            slotsEl.appendChild(slot);
+        }
+    }
+
+    async function loadBarn() {
+        try {
+            const res = await fetch('barn_items.php');
+            if (!res.ok) throw new Error('network');
+            const data = await res.json();
+            currentCapacity = data.capacity || defaultCapacity;
+            renderSlots(currentCapacity, data.items || []);
+        } catch (err) {
+            console.error('Failed to load barn data', err);
+            currentCapacity = defaultCapacity;
+            renderSlots(defaultCapacity, []);
+        }
+    }
+
+    function addItem(item) {
+        const slots = Array.from(slotsEl.querySelectorAll('.barn-slot'));
+        const maxPerSlot = item.quantity === 1 ? 1 : 1000;
+        let remaining = item.quantity;
+
+        if (maxPerSlot > 1) {
+            for (const slot of slots) {
+                if (parseInt(slot.dataset.item, 10) === item.item_id) {
+                    const qtyEl = slot.querySelector('.quantity');
+                    const current = qtyEl ? parseInt(qtyEl.textContent.replace(/\./g, ''), 10) : 0;
+                    const space = maxPerSlot - current;
+                    if (space > 0) {
+                        const add = Math.min(space, remaining);
+                        qtyEl.textContent = formatNumber(current + add);
+                        remaining -= add;
+                        if (remaining <= 0) return;
+                    }
+                }
+            }
+        }
+
+        while (remaining > 0) {
+            const empty = slotsEl.querySelector('.barn-slot.empty');
+            if (!empty) break;
+            const add = Math.min(maxPerSlot, remaining);
+            empty.classList.remove('empty');
+            empty.dataset.item = item.item_id;
+            empty.dataset.name = item.name || '';
+            empty.dataset.price = item.sell_price || 0;
+            empty.innerHTML = `<img src="${item.image}" alt=""><div class="quantity">${formatNumber(add)}</div>`;
+            remaining -= add;
+        }
+    }
+
+    if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
+
+    loadBarn();
+    document.addEventListener('barnUpdated', loadBarn);
+    document.addEventListener('barnAddItem', e => addItem(e.detail));
+});

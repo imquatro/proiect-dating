@@ -1,0 +1,89 @@
+.bank-header-img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 8px;
+}
+.bank-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+    margin: 10px 0;
+}
+.bank-btn {
+    padding: 6px 4px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+}
+.bank-btn.active {
+    background: #f6cf49;
+}
+.bank-tab {
+    display: none;
+    margin-top: 10px;
+    color: #fff;
+}
+.bank-tab.active {
+    display: block;
+}
+.deposit-form label {
+    display: block;
+    margin: 8px 0;
+}
+
+.loan-form label {
+    display: block;
+    margin: 8px 0;
+}
+.deposit-preview {
+    margin: 6px 0;
+    font-weight: bold;
+}
+.deposit-message {
+    margin-top: 6px;
+    color: #ff8080;
+}
+.active-deposit {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #f6cf49;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+}
+.active-deposit .countdown {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.deposit-limit {
+    margin-top: 4px;
+    color: #fff;
+}
+
+.cancel-btn {
+    margin-top: 6px;
+    padding: 4px 6px;
+    background: #ff8080;
+    border: 1px solid #ff4d4d;
+    color: #fff;
+    cursor: pointer;
+}
+
+.cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.money-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+.money-amount {
+    display: inline-flex;
+    align-items: center;
+}

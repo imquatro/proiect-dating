@@ -1,0 +1,221 @@
+#profile-comments-panel {
+    width: 80%;
+    max-width: 500px;
+    height: 90vh;
+    max-height: 570px;
+    margin: 20px auto 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    background: url("../img/bg2.png") center/cover no-repeat;
+    overflow: hidden;
+}
+
+#profile-comments-panel .helpers-bar {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    cursor: grab;
+}
+
+#profile-comments-panel .helpers-bar:active {
+    cursor: grabbing;
+}
+
+#profile-comments-panel .helpers-bar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+}
+
+#profile-comments-panel .comments-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+#profile-comments-panel .comments-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#profile-comments-panel .helpers-bar::-webkit-scrollbar,
+#profile-comments-panel .comments-list::-webkit-scrollbar {
+    display: none;
+}
+
+#profile-comments-panel .comment-item {
+    position: relative;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#profile-comments-panel .comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#profile-comments-panel .comment-author {
+    font-weight: 600;
+    color: #fff;
+}
+
+#profile-comments-panel .comment-time {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#profile-comments-panel .comment-body {
+    color: #fff;
+    font-size: 0.9rem;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+#profile-comments-panel .comment-item .delete {
+    margin-left: 6px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+#profile-comments-panel .comment-item .delete:hover {
+    color: #ff7979;
+}
+
+#profile-comments-panel .comment-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 12px 0;
+}
+
+#profile-comments-panel .comment-locked {
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+#profile-comments-panel #comment-form.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#profile-comments-panel #comment-form {
+    display: flex;
+    margin-top: 5px;
+}
+
+#profile-comments-panel #comment-input {
+    flex: 1;
+    padding: 5px;
+}
+
+#profile-comments-panel #comment-form button {
+    margin-left: 5px;
+    padding: 5px 10px;
+}
+
+#profile-comments-panel .helper-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+#profile-comments-panel .helper-card-overlay .user-card {
+    margin-bottom: 0;
+}
+
+/* Helper minicard styles (copied from friends.css to avoid global effects) */
+#profile-comments-panel .user-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffe9a3;
+    padding: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px #0001;
+}
+
+#profile-comments-panel .user-card-avatar {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 2px solid #f6cf49;
+    margin-right: 10px;
+}
+
+#profile-comments-panel .user-card-text {
+    flex: 1;
+    color: #6c4e09;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#profile-comments-panel .user-card-name {
+    font-weight: bold;
+}
+
+#profile-comments-panel .user-card-buttons {
+    display: flex;
+}
+
+#profile-comments-panel .user-card-buttons button,
+#profile-comments-panel .user-card-buttons a {
+    width: 32px;
+    height: 32px;
+    border: none;
+    margin-left: 4px;
+    background: #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+#profile-comments-panel .status-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+#profile-comments-panel .status-online { background: #32cd32; }
+#profile-comments-panel .status-idle { background: #ffd700; }
+#profile-comments-panel .status-offline { background: #ff4500; }

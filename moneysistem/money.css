@@ -1,0 +1,45 @@
+.wallet-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-right: 8px;
+}
+
+.wallet-display .currency {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.wallet-display .currency + .currency {
+    margin-top: 4px;
+}
+
+.wallet-display img {
+    width: 24px;
+    height: 24px;
+}
+
+.wallet-display img.pulse {
+    animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
