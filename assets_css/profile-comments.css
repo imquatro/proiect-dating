@@ -37,6 +37,9 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
     cursor: grab;
+    /* Visual frame without changing layout (no padding/margins added) */
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35);
+    border-radius: 6px;
 }
 
 #profile-comments-panel .helpers-bar:active {
@@ -55,6 +58,9 @@
     display: flex;
     flex-direction: column;
     margin-top: 10px;
+    /* Visual frame */
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35);
+    border-radius: 6px;
 }
 
 #profile-comments-panel .comments-list {
@@ -64,6 +70,9 @@
     flex-direction: column-reverse;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    /* Show roughly 3 items worth of space without altering item sizes */
+    /* Item min-height + gaps ≈ 3 * (64px + 6px) */
+    max-height: calc(3 * (64px + 6px));
 }
 
 #profile-comments-panel .helpers-bar::-webkit-scrollbar,
@@ -80,6 +89,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-height: 64px;
 }
 
 #profile-comments-panel .comment-header {
@@ -166,6 +176,9 @@
     align-items: center;
     justify-content: center;
     z-index: 100;
+    /* Visual frame */
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35);
+    border-radius: 6px;
 }
 
 #profile-comments-panel .helper-card-overlay .user-card {
