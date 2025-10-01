@@ -84,6 +84,9 @@ function initProfileComments(container) {
     };
 
     const showHelperCard = (helper) => {
+        if (window.userId && parseInt(window.userId, 10) === parseInt(helper.id, 10)) {
+            return; // Do not open card for self
+        }
         const overlay = document.createElement('div');
         overlay.className = 'helper-card-overlay';
         let statusClass = 'status-offline';
@@ -169,6 +172,7 @@ function initProfileComments(container) {
                     img.src = helper.photo;
                     img.alt = helper.username;
                     img.dataset.id = helper.id;
+                    const isSelf = window.userId && parseInt(window.userId, 10) === parseInt(helper.id, 10);
                     let timer;
                     let longPress = false;
                     let isDragging = false;
@@ -217,8 +221,13 @@ function initProfileComments(container) {
                         document.addEventListener('touchcancel', onUp);
                     };
 
-                    img.addEventListener('mousedown', onDown);
-                    img.addEventListener('touchstart', onDown);
+                    if (!isSelf) {
+                        img.addEventListener('mousedown', onDown);
+                        img.addEventListener('touchstart', onDown);
+                    } else {
+                        img.style.opacity = '0.8';
+                        img.style.cursor = 'default';
+                    }
                     helperContainer.appendChild(img);
                 });
             });
