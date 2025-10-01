@@ -72,6 +72,7 @@ $miniHtml = str_replace('id="miniProfile"', 'id="panelMiniProfile"', $miniHtml);
 $miniHtml = preg_replace('#<script[^>]*mini-profile.js[^>]*></script>#', '', $miniHtml);
 ?>
 <div id="profile-comments-panel" data-user-id="<?= (int)$panelUserId ?>">
+    <button type="button" class="panel-close" aria-label="Închide">×</button>
     <?= $miniHtml ?>
     <div class="helpers-bar" id="helper-avatars"></div>
     <div class="comments-section">

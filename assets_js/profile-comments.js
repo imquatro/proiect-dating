@@ -89,6 +89,9 @@ function initProfileComments(container) {
         }
         const overlay = document.createElement('div');
         overlay.className = 'helper-card-overlay';
+        // Mark open time to avoid immediate close-by-click from parent overlay
+        window.__helperOverlayOpenAt = Date.now();
+        window.__helperOverlay = overlay;
         let statusClass = 'status-offline';
         if (helper.status === 'online') statusClass = 'status-online';
         else if (helper.status === 'idle') statusClass = 'status-idle';
@@ -108,7 +111,13 @@ function initProfileComments(container) {
         }
         overlay.innerHTML = `<div class="user-card"><span class="status-dot ${statusClass}"></span><img src="${helper.photo}" class="user-card-avatar" alt=""><div class="user-card-text"><div class="user-card-name${helper.vip ? ' gold-shimmer' : ''}">${helper.username}</div></div><div class="user-card-buttons">${buttons}</div></div>`;
         container.appendChild(overlay);
-        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+        overlay.addEventListener('click', e => {
+            // Click inside card should not bubble to parent overlay close logic
+            if (e.target === overlay) overlay.remove();
+            if (e.cancelable) e.preventDefault();
+            e.stopPropagation();
+            if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+        }, { capture: true });
 
         const btnAdd = overlay.querySelector('.btn-add');
         if (btnAdd) {
@@ -285,6 +294,20 @@ function initProfileComments(container) {
         });
     }
 
+
+    // Close button for mobile reliability
+    const closeBtn = container.querySelector('.panel-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            const overlay = document.getElementById('slot-panel-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                overlay.innerHTML = '';
+                const content = document.querySelector('.content');
+                if (content) content.classList.remove('no-scroll');
+            }
+        });
+    }
 
     fetchHelpers();
     loadComments();

@@ -18,13 +18,41 @@ function initMiniProfileBehaviors() {
             if (content) content.classList.remove('no-scroll');
             document.removeEventListener('keydown', onEsc);
         };
-        const onEsc = (e) => { if (e.key === 'Escape') closeOverlay(); };
+        const onEsc = (e) => {
+            if (e.key !== 'Escape') return;
+            const helper = overlay.querySelector('#profile-comments-panel .helper-card-overlay');
+            if (helper) {
+                helper.remove();
+                return;
+            }
+            closeOverlay();
+        };
         // Show overlay instantly for feedback
         overlay.classList.add('active');
         overlay.innerHTML = '<div style="color:#fff;">Se încarcă...</div>';
-        // Close when clicking outside panel (any click not inside the panel)
+        // Guard a window so the initial tap/click that opened the overlay doesn't close it
+        overlay.dataset.openAt = String(Date.now());
+        overlay.style.pointerEvents = 'none';
+        setTimeout(() => { overlay.style.pointerEvents = ''; }, 800);
+        // Close logic on click: prefer closing helper minicard if open.
         overlay.addEventListener('click', (ev) => {
+            if (overlay.dataset.opening) {
+                return; // ignore the initial tap/click that opened the overlay
+            }
             const panel = overlay.querySelector('#profile-comments-panel');
+            const openedAt = parseInt(overlay.dataset.openAt || '0', 10);
+            if (openedAt && (Date.now() - openedAt) < 800) {
+                return; // still within open guard window
+            }
+            const helper = panel && panel.querySelector('.helper-card-overlay');
+            // If helper minicard just opened, ignore immediate parent click (mobile)
+            if (window.__helperOverlayOpenAt && Date.now() - window.__helperOverlayOpenAt < 600) {
+                return;
+            }
+            if (helper) {
+                helper.remove();
+                return;
+            }
             if (!panel || !panel.contains(ev.target)) {
                 closeOverlay();
             }
@@ -65,11 +93,16 @@ function initMiniProfileBehaviors() {
     };
 
     // Event delegation to capture clicks even if element is re-rendered
-    document.addEventListener('click', (e) => {
-        const target = e.target.closest('#miniProfile, #panelMiniProfile');
+    const onOpenFromEvent = (e) => {
+        const target = e.target.closest && e.target.closest('#miniProfile, #panelMiniProfile');
         if (!target) return;
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
         onOpenPanel();
-    });
+    };
+    document.addEventListener('click', onOpenFromEvent);
+    document.addEventListener('touchend', onOpenFromEvent, { passive: false });
 
     const helpersCard = document.getElementById('helpersCard');
     const helpersUrl = (window.baseUrl || '') + 'recent_helpers.php' +
