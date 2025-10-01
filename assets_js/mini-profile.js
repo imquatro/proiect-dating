@@ -12,17 +12,24 @@ function initMiniProfileBehaviors() {
     const onOpenPanel = () => {
         const overlay = ensureOverlay();
         const content = document.querySelector('.content');
+        const closeOverlay = () => {
+            overlay.classList.remove('active');
+            overlay.innerHTML = '';
+            if (content) content.classList.remove('no-scroll');
+            document.removeEventListener('keydown', onEsc);
+        };
+        const onEsc = (e) => { if (e.key === 'Escape') closeOverlay(); };
         // Show overlay instantly for feedback
         overlay.classList.add('active');
         overlay.innerHTML = '<div style="color:#fff;">Se încarcă...</div>';
-        // Close when clicking outside panel
+        // Close when clicking outside panel (any click not inside the panel)
         overlay.addEventListener('click', (ev) => {
-            if (ev.target === overlay) {
-                overlay.classList.remove('active');
-                overlay.innerHTML = '';
-                if (content) content.classList.remove('no-scroll');
+            const panel = overlay.querySelector('#profile-comments-panel');
+            if (!panel || !panel.contains(ev.target)) {
+                closeOverlay();
             }
-        }, { once: true });
+        });
+        document.addEventListener('keydown', onEsc);
         let url = (window.baseUrl || '') + 'profile_comments_panel.php?ajax=1';
         if (window.isVisitor && window.visitId) {
             url += '&user_id=' + window.visitId;
