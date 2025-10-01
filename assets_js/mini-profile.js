@@ -1,45 +1,68 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const miniProfile = document.getElementById('miniProfile');
-    if (miniProfile) {
-        miniProfile.addEventListener('click', () => {
-            const overlay = document.getElementById('slot-panel-overlay');
-            const content = document.querySelector('.content');
-            let url = (window.baseUrl || '') + 'profile_comments_panel.php?ajax=1';
-            if (window.isVisitor && window.visitId) {
-                url += '&user_id=' + window.visitId;
+function initMiniProfileBehaviors() {
+    const ensureOverlay = () => {
+        let overlay = document.getElementById('slot-panel-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'slot-panel-overlay';
+            document.body.appendChild(overlay);
+        }
+        return overlay;
+    };
+
+    const onOpenPanel = () => {
+        const overlay = ensureOverlay();
+        const content = document.querySelector('.content');
+        // Show overlay instantly for feedback
+        overlay.classList.add('active');
+        overlay.innerHTML = '<div style="color:#fff;">Se încarcă...</div>';
+        // Close when clicking outside panel
+        overlay.addEventListener('click', (ev) => {
+            if (ev.target === overlay) {
+                overlay.classList.remove('active');
+                overlay.innerHTML = '';
+                if (content) content.classList.remove('no-scroll');
             }
-            fetch(url)
-                .then(res => res.text())
-                .then(html => {
-                    if (overlay) {
-                        overlay.innerHTML = html;
-                        overlay.classList.add('active');
+        }, { once: true });
+        let url = (window.baseUrl || '') + 'profile_comments_panel.php?ajax=1';
+        if (window.isVisitor && window.visitId) {
+            url += '&user_id=' + window.visitId;
+        }
+        fetch(url)
+            .then(res => res.text())
+            .then(html => {
+                overlay.innerHTML = html;
+                overlay.classList.add('active');
+                if (content) content.classList.add('no-scroll');
+                if (!document.getElementById('comments-panel-css')) {
+                    const link = document.createElement('link');
+                    link.id = 'comments-panel-css';
+                    link.rel = 'stylesheet';
+                    link.href = (window.baseUrl || '') + 'assets_css/profile-comments.css';
+                    document.head.appendChild(link);
+                }
+                const panel = document.getElementById('profile-comments-panel');
+                const init = () => {
+                    if (window.initProfileComments && panel) {
+                        window.initProfileComments(panel);
                     }
-                    if (content) content.classList.add('no-scroll');
-                    if (!document.getElementById('comments-panel-css')) {
-                        const link = document.createElement('link');
-                        link.id = 'comments-panel-css';
-                        link.rel = 'stylesheet';
-                        link.href = (window.baseUrl || '') + 'assets_css/profile-comments.css';
-                        document.head.appendChild(link);
-                    }
-                    const panel = document.getElementById('profile-comments-panel');
-                    const init = () => {
-                        if (window.initProfileComments && panel) {
-                            window.initProfileComments(panel);
-                        }
-                    };
-                    if (!window.initProfileComments) {
-                        const script = document.createElement('script');
-                        script.src = (window.baseUrl || '') + 'assets_js/profile-comments.js';
-                        script.onload = init;
-                        document.head.appendChild(script);
-                    } else {
-                        init();
-                    }
-                });
-        });
-    }
+                };
+                if (!window.initProfileComments) {
+                    const script = document.createElement('script');
+                    script.src = (window.baseUrl || '') + 'assets_js/profile-comments.js';
+                    script.onload = init;
+                    document.head.appendChild(script);
+                } else {
+                    init();
+                }
+            });
+    };
+
+    // Event delegation to capture clicks even if element is re-rendered
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('#miniProfile, #panelMiniProfile');
+        if (!target) return;
+        onOpenPanel();
+    });
 
     const helpersCard = document.getElementById('helpersCard');
     const helpersUrl = (window.baseUrl || '') + 'recent_helpers.php' +
@@ -167,4 +190,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (helpersCard) {
         loadHelpers();
     }
-});
+}
+
+// Run immediately if the script loads after DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMiniProfileBehaviors);
+} else {
+    initMiniProfileBehaviors();
+}

@@ -87,6 +87,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     <?php endif; ?>
 </div>
 <div id="level-up-card"></div>
+<div id="slot-panel-overlay"></div>
 <?php if (!$noScroll): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
