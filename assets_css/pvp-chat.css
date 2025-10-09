@@ -1,0 +1,382 @@
+/* PvP Chat Live - Stiluri pentru chat în popup */
+
+/* Indicator PvP Chat în Top-Bar (ca messageIndicator) */
+.pvp-chat-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 18px;
+    height: 18px;
+    background: #4caf50;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    display: none;
+    animation: pvpChatPulse 2s ease-in-out infinite;
+    font-size: 10px;
+    color: #fff;
+    text-align: center;
+    line-height: 14px;
+    font-weight: bold;
+}
+
+.pvp-chat-indicator.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes pvpChatPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+/* Chat Container în Popup */
+.match-popup-chat {
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 15px;
+    max-height: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.chat-unread-badge {
+    background: #ff4444;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    animation: pvpChatPulse 2s ease-in-out infinite;
+}
+
+/* Messages Container */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-height: 150px;
+    scrollbar-width: thin;
+    scrollbar-color: #ffd700 rgba(0, 0, 0, 0.3);
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #ffd700;
+    border-radius: 4px;
+}
+
+.chat-empty {
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    padding: 20px 10px;
+}
+
+/* Message Bubble */
+.chat-message {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-message.own {
+    align-items: flex-end;
+}
+
+.chat-message.other {
+    align-items: flex-start;
+}
+
+.chat-message-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 3px;
+}
+
+.chat-message-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #ffd700;
+}
+
+.chat-message-name {
+    font-size: 11px;
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.chat-message-name.gold-shimmer {
+    background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #ff0000);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: goldShimmer 10s ease-in-out infinite alternate;
+}
+
+.chat-message-time {
+    font-size: 10px;
+    color: #999;
+}
+
+.chat-message-bubble {
+    max-width: 70%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    word-wrap: break-word;
+    font-size: 13px;
+}
+
+.chat-message.own .chat-message-bubble {
+    background: linear-gradient(135deg, #4caf50, #45a049);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message.other .chat-message-bubble {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+    color: #fff;
+    border-bottom-left-radius: 4px;
+}
+
+/* Input Container */
+.chat-input-container {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    position: relative;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ffd700;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 13px;
+    outline: none;
+}
+
+.chat-input:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
+.emoji-btn,
+.chat-send-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #ffd700;
+    color: #333;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.emoji-btn:hover,
+.chat-send-btn:hover {
+    background: #4caf50;
+    transform: scale(1.1);
+}
+
+.chat-send-btn {
+    background: #4caf50;
+}
+
+.chat-send-btn:hover {
+    background: #45a049;
+}
+
+/* Emoji Picker */
+.emoji-picker {
+    position: absolute;
+    bottom: 45px;
+    right: 45px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid #ffd700;
+    border-radius: 8px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    z-index: 1000;
+}
+
+.emoji-picker button {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.emoji-picker button:hover {
+    background: rgba(255, 215, 0, 0.3);
+    transform: scale(1.2);
+}
+
+/* Footer */
+.match-popup-footer {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Badge pe Match Card */
+.match-chat-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ff4444;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    animation: pvpChatPulse 2s ease-in-out infinite;
+    z-index: 10;
+}
+
+/* Badge pe Tabs Ligă */
+.pvp-tab-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4444;
+    color: #fff;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    animation: pvpChatPulse 2s ease-in-out infinite;
+}
+
+/* Badge pe Round Tabs */
+.pvp-round-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4444;
+    color: #fff;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    animation: pvpChatPulse 2s ease-in-out infinite;
+}
+
+/* Buton Vezi VS pe Match Card */
+.match-open-popup-btn {
+    background: linear-gradient(90deg, #8bc34a, #4caf50);
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    position: relative;
+}
+
+.match-open-popup-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.match-open-popup-btn i {
+    font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .match-popup-chat {
+        max-height: 200px;
+    }
+
+    .chat-messages {
+        max-height: 120px;
+    }
+
+    .chat-message-bubble {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .chat-input {
+        font-size: 12px;
+    }
+
+    .emoji-picker {
+        grid-template-columns: repeat(3, 1fr);
+        right: 5px;
+        bottom: 40px;
+    }
+
+    .emoji-picker button {
+        font-size: 20px;
+    }
+}
+

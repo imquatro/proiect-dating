@@ -102,6 +102,21 @@ body, html {
     position: relative;
 }
 
+/* Ascunde avatarul și elimină background-ul în settings */
+#profileContainer .profile-photo-frame {
+    display: none !important;
+}
+
+#profileContainer .profile-img {
+    display: none !important;
+}
+
+#profileContainer .profile-container {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
 .photo-frame img {
     width: 100%;
     height: 100%;

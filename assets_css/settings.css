@@ -1,19 +1,74 @@
+/* Previne scroll-ul pe pagina principală */
+body {
+    overflow: hidden;
+}
+
+/* Ascunde imaginea mare de fundal cu avatarul default pe pagina settings */
+html, body {
+    background: #848484 !important;
+    background-image: none !important;
+}
+
+.app-frame {
+    background: #848484 !important;
+    background-image: none !important;
+    background-attachment: fixed !important;
+}
+
+.content {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+* {
+    background-image: none !important;
+}
+
+/* Forțează eliminarea imaginii de fundal */
+.app-frame::before,
+.app-frame::after,
+.content::before,
+.content::after {
+    display: none !important;
+}
+
+/* Elimină complet profile din settings */
+.profile-container,
+.applied-helper-card,
+#profileContainer,
+#profileContainer *,
+.profile-photo-frame,
+.profile-img {
+    display: none !important;
+}
+
 .vip-container {
-    padding: 10px;
+    padding: 40px 15px 50px 15px;
     display: flex;
     justify-content: center;
+    height: calc(100vh - 180px);
+    max-height: calc(100vh - 180px);
+    overflow: hidden;
+    box-sizing: border-box;
+    margin-top: 30px;
 }
 
 .vip-panel {
-    width: 90%;
-    max-width: 600px;
-    margin-top: 20px;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 15px;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-    background: url('../img/bg2.png') center/cover no-repeat;
+    background: linear-gradient(135deg, #8bc34a, #4caf50);
+    overflow: hidden;
+    box-sizing: border-box;
+    border-radius: 10px;
+    z-index: 1;
 }
 
 .vip-tabs {
@@ -37,6 +92,28 @@
 
 .vip-tab-content {
     flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    max-height: calc(100vh - 270px);
+}
+
+/* Ascunde bara de scroll vizuală pentru tab content */
+.vip-tab-content::-webkit-scrollbar {
+    display: none !important;
+}
+
+.vip-tab-content::-webkit-scrollbar-track {
+    display: none !important;
+}
+
+.vip-tab-content::-webkit-scrollbar-thumb {
+    display: none !important;
+}
+
+.vip-tab-content {
+    -ms-overflow-style: none !important;  /* Internet Explorer 10+ */
+    scrollbar-width: none !important;  /* Firefox */
 }
 
 .tab-content {
@@ -77,6 +154,27 @@
 
 .vip-subtab-content {
     flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+}
+
+/* Ascunde bara de scroll vizuală pentru subtab content */
+.vip-subtab-content::-webkit-scrollbar {
+    display: none !important;
+}
+
+.vip-subtab-content::-webkit-scrollbar-track {
+    display: none !important;
+}
+
+.vip-subtab-content::-webkit-scrollbar-thumb {
+    display: none !important;
+}
+
+.vip-subtab-content {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
 }
 
 .subtab-content {
@@ -163,7 +261,41 @@
     margin: 0;
 }
 
+/* Responsive pentru tablet */
+@media (max-width: 768px) {
+    .vip-container {
+        padding: 35px 12px 45px 12px;
+        height: calc(100vh - 160px);
+        max-height: calc(100vh - 160px);
+        margin-top: 25px;
+    }
+    
+    .vip-panel {
+        padding: 12px;
+    }
+    
+    .vip-tab-content {
+        max-height: calc(100vh - 280px);
+    }
+}
+
+/* Responsive pentru telefon */
 @media (max-width: 480px) {
+    .vip-container {
+        padding: 30px 10px 40px 10px;
+        height: calc(100vh - 140px);
+        max-height: calc(100vh - 140px);
+        margin-top: 25px;
+    }
+    
+    .vip-panel {
+        padding: 10px;
+    }
+    
+    .vip-tab-content {
+        max-height: calc(100vh - 260px);
+    }
+    
     .tab-btn, .sub-tab-btn {
         padding: 5px 2px;
         font-size: 12px;

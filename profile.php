@@ -40,7 +40,9 @@ $ajax = isset($_GET['ajax']);
 
 ob_start();
 ?>
+<?php if (!$ajax): ?>
 <div class="profile-container">
+<?php endif; ?>
         <div class="photo-frame profile-photo-frame">
             <img src="<?= htmlspecialchars($profile_photo) ?>" class="profile-img" alt="Profile photo">
         </div>
@@ -83,7 +85,9 @@ ob_start();
     <div class="profile-upload-card">
         <a href="gallery.php" class="profile-upload-btn"><i class="fas fa-images"></i> View gallery</a>
     </div>
+<?php if (!$ajax): ?>
 </div>
+<?php endif; ?>
 <?php
 $content = ob_get_clean();
 if ($ajax) {

@@ -72,13 +72,17 @@ ob_start();
                             <input type="hidden" name="filename" value="<?= htmlspecialchars($photo) ?>">
                             <button type="submit" name="delete" class="profile-upload-btn"><i class="fas fa-trash"></i> Delete</button>
                         </form>
+                        <a href="settings_profile.php" class="profile-upload-btn"><i class="fas fa-arrow-left"></i> Back to Profile</a>
                     </div>
                 </div>
             <?php endforeach; ?>
             <button class="gallery-arrow left" onclick="prevSlide()" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
             <button class="gallery-arrow right" onclick="nextSlide()" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
         <?php else: ?>
-            <p style="text-align:center;">No photos in gallery.</p>
+            <p style="text-align:center; color: #fff; margin-bottom: 20px;">No photos in gallery.</p>
+            <div style="text-align: center;">
+                <a href="settings_profile.php" class="profile-upload-btn"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+            </div>
         <?php endif; ?>
     </div>
 </div>

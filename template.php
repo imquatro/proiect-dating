@@ -55,6 +55,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     <link rel="stylesheet" href="<?= asset('assets_css/level-up.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/user-level-card.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/helper-buddy.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets_css/pvp-chat.css') ?>">
     <?php if ($pageCss): ?>
     <link rel="stylesheet" href="<?= asset($pageCss) ?>">
     <?php endif; ?>
@@ -81,6 +82,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
         <a href="welcome.php" class="nav-btn <?php if($activePage==='welcome') echo 'active';?>"><i class="fas fa-seedling"></i></a>
         <a href="barn.php" class="nav-btn <?php if($activePage==='barn') echo 'active';?>"><i class="fas fa-warehouse"></i></a>
         <a href="friends.php" class="nav-btn <?php if($activePage==='friends') echo 'active';?>"><i class="fas fa-user-friends"></i><span id="friendIndicator" class="friend-indicator"></span></a>
+        <a href="pvp_battles.php" class="nav-btn <?php if($activePage==='pvp') echo 'active';?>"><i class="fas fa-trophy"></i></a>
         <a href="vip.php" class="nav-btn <?php if($activePage==='vip') echo 'active';?>"><i class="fas fa-crown"></i></a>
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>
@@ -88,6 +90,68 @@ require_once __DIR__ . '/includes/cache_buster.php';
 </div>
 <div id="level-up-card"></div>
 <div id="slot-panel-overlay"></div>
+<!-- PvP Match Popup - Apare la login și la 5 min înainte de final -->
+<div id="pvp-match-popup">
+    <div class="match-popup-card">
+        <div class="match-popup-header">
+            <h3 id="popupRoundTitle">Meciul tău</h3>
+            <button class="close-btn" onclick="closePvpPopup()">×</button>
+        </div>
+        <div class="match-popup-players">
+            <div class="player-left">
+                <img id="popupUserAvatar" src="default-avatar.png" class="player-avatar" alt="">
+                <p id="popupUserName" class="player-name">Tu</p>
+            </div>
+            <div class="vs-divider">VS</div>
+            <div class="player-right">
+                <img id="popupOpponentAvatar" src="default-avatar.png" class="player-avatar" alt="">
+                <p id="popupOpponentName" class="player-name">Adversar</p>
+            </div>
+        </div>
+        <div class="score-bar-container">
+            <div class="score-bar">
+                <div id="popupScoreLeft" class="score-left" style="width: 50%;">
+                    <span id="popupUserScore" class="score-value">0</span>
+                </div>
+                <div id="popupScoreRight" class="score-right" style="width: 50%;">
+                    <span id="popupOpponentScore" class="score-value">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="match-popup-message">
+            <p id="popupMessage">Meciul se desfășoară ACUM!</p>
+            <div id="popupTimer" class="match-timer" style="display: none;"></div>
+        </div>
+        <!-- Chat Live în Popup -->
+        <div class="match-popup-chat" id="popupChat">
+            <div class="chat-header">
+                <span>💬 Chat Live</span>
+                <span id="chatUnreadBadge" class="chat-unread-badge" style="display: none;">0</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-empty">Trimite primul mesaj!</div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Scrie mesaj..." maxlength="100">
+                <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+                <button class="chat-send-btn" onclick="sendChatMessage()">📤</button>
+            </div>
+            <div class="emoji-picker" id="emojiPicker" style="display: none;">
+                <button onclick="insertEmoji('😊')">😊</button>
+                <button onclick="insertEmoji('🔥')">🔥</button>
+                <button onclick="insertEmoji('💪')">💪</button>
+                <button onclick="insertEmoji('👏')">👏</button>
+                <button onclick="insertEmoji('😎')">😎</button>
+                <button onclick="insertEmoji('👍')">👍</button>
+                <button onclick="insertEmoji('❤️')">❤️</button>
+                <button onclick="insertEmoji('⚡')">⚡</button>
+            </div>
+        </div>
+        <div class="match-popup-footer">
+            <button class="goto-battle-btn" onclick="goToBattle()">Vezi Meciul în Bracket</button>
+        </div>
+    </div>
+</div>
 <?php if (!$noScroll): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -140,6 +204,8 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="<?= asset('assets_js/level-up.js') ?>"></script>
   <script src="<?= asset('assets_js/helper-buddy.js') ?>"></script>
   <script src="<?= asset('assets_js/nav-transition.js') ?>"></script>
+  <script src="<?= asset('assets_js/pvp-popup.js') ?>"></script>
+  <script src="<?= asset('assets_js/pvp-chat.js') ?>"></script>
   <?php if (isset($_SESSION['user_id'])): ?>
   <script>window.userId = <?= (int)$_SESSION['user_id']; ?>; window.currentLevel = <?= $userLevel; ?>;</script>
   <?php endif; ?>

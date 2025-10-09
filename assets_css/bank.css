@@ -1,7 +1,5 @@
 .bank-header-img {
-    width: 100%;
-    height: auto;
-    margin-bottom: 8px;
+    display: none !important;
 }
 .bank-buttons {
     display: grid;

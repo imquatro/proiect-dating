@@ -40,12 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const profileContainer = document.getElementById('profileContainer');
     if (profileContainer) {
-        fetch('profile.php?ajax=1')
-            .then(res => res.text())
-            .then(html => {
-                profileContainer.innerHTML = html;
-                if (typeof initProfile === 'function') initProfile();
-            });
+        profileContainer.innerHTML = '<p style="color:#fff;">Profile settings coming soon</p>';
     }
     const logoutBtn = document.getElementById('logoutBtn');
     const overlay = document.getElementById('logoutOverlay');
