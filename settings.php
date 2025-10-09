@@ -26,6 +26,9 @@ ob_start();
                     <button class="sub-tab-btn" data-subtab="leaderboard">Leaderboard</button>
                     <button class="sub-tab-btn" data-subtab="profile">Profile</button>
                     <button class="sub-tab-btn" data-subtab="helperi">Helperi</button>
+                    <button class="sub-tab-btn" data-subtab="loading">Loading Style</button>
+                </div>
+                <div class="logout-btn-container">
                     <button class="sub-tab-btn logout-init-btn" id="logoutBtn">Logout</button>
                 </div>
                 <div class="vip-subtab-content">
@@ -87,6 +90,18 @@ ob_start();
                     <div class="subtab-content" id="helperi">
                         <div id="helpersList"></div>
                         <div id="helperSettings"></div>
+                    </div>
+                    <div class="subtab-content" id="loading">
+                        <div class="loading-redirect-container">
+                            <div class="loading-redirect-icon">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                            <h3>Loading Style Preferences</h3>
+                            <p>Customize your navigation loading animation</p>
+                            <button class="loading-redirect-btn" onclick="window.location.href='loading_settings.php'">
+                                <i class="fas fa-palette"></i> Choose Loading Style
+                            </button>
+                        </div>
                     </div>
             </div>
         </div>

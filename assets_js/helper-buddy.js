@@ -1,26 +1,12 @@
 (function(){
+    // Helper Buddy popup disabled by request. Keep a no-op object to avoid runtime errors.
     const buddy = {
         messages: {},
         image: null,
         container: null,
         ready: false,
         hideTimer: null,
-        load(){
-            const base = window.baseUrl || '';
-            Promise.all([
-                fetch(base + 'helper_messages.json').then(r => r.json()).then(data => { this.messages = data; }),
-                fetch(base + 'helper_info.php', { credentials: 'same-origin' }).then(r => r.json())
-            ])
-                .then(([, info]) => {
-                    if (info.helper && info.helper.image) {
-                        this.image = info.helper.image;
-                        this.create();
-                        this.ready = true;
-                        this.processInfo(info, true);
-                    }
-                })
-                .catch(()=>{});
-        },
+        load(){ /* disabled */ },
         processInfo(info, initial=false){
             const queue = [];
             if (initial && !sessionStorage.getItem('welcomeShown')) {
@@ -60,26 +46,8 @@
             sessionStorage.setItem('lastNeeds', JSON.stringify(current));
             this.playQueue(queue);
         },
-        checkNeeds(){
-            const base = window.baseUrl || '';
-            fetch(base + 'helper_info.php', { credentials: 'same-origin' })
-                .then(r => r.json())
-                .then(info => {
-                    if (info.helper) {
-                        this.processInfo(info);
-                    }
-                })
-                .catch(()=>{});
-        },
-        create(){
-            if (this.container || !this.image) return;
-            const div = document.createElement('div');
-            div.id = 'helper-buddy';
-            div.innerHTML = `<div class="helper-text"></div><img src="${this.image}" alt="helper">`;
-            const parent = document.querySelector('.content') || document.body;
-            parent.appendChild(div);
-            this.container = div;
-        },
+        checkNeeds(){ /* disabled */ },
+        create(){ /* disabled */ },
         playQueue(queue){
             if (!queue.length) return;
             this.showMessage(queue.shift());
@@ -101,16 +69,5 @@
         }
     };
     window.helperBuddy = buddy;
-    document.addEventListener('DOMContentLoaded', () => {
-        buddy.load();
-        setInterval(() => buddy.checkNeeds(), 30000);
-    });
-    document.addEventListener('slotUpdated', () => buddy.checkNeeds());
-    window.addEventListener('offline', () => {
-        sessionStorage.removeItem('welcomeShown');
-        sessionStorage.removeItem('lastNeeds');
-    });
-    window.addEventListener('online', () => {
-        buddy.load();
-    });
+    // Do not auto-initialize; all listeners removed to fully disable popups.
 })();

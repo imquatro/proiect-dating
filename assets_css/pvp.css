@@ -1,0 +1,1411 @@
+/* PvP Battles - Consistent cu designul shop.css si vip.css */
+
+/* Previne scroll-ul pe pagina principala */
+body {
+    overflow: hidden;
+}
+
+.pvp-container {
+    padding: 40px 15px 50px 15px;
+    display: flex;
+    justify-content: center;
+    height: calc(100vh - 180px);
+    max-height: calc(100vh - 180px);
+    overflow: hidden;
+    box-sizing: border-box;
+    margin-top: 30px;
+}
+
+.pvp-panel {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    background: url('../img/bg2.png') center/cover no-repeat;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+/* Header cu Timer si Status */
+.pvp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.pvp-timer-container {
+    flex: 1;
+}
+
+.pvp-timer {
+    color: #ffd700;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.pvp-timer i {
+    margin-right: 5px;
+}
+
+.pvp-status {
+    color: #fff;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.pvp-user-league {
+    text-align: right;
+}
+
+.league-label {
+    color: #fff;
+    font-size: 12px;
+    opacity: 0.8;
+    display: block;
+}
+
+.league-name {
+    color: #ffd700;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Tabs Ligi */
+.pvp-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 6px 4px;
+    background: #ffe9a3;
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    background: #f6cf49;
+}
+
+.tab-btn.active {
+    background: #f6cf49;
+    font-weight: bold;
+}
+
+/* Tab Content */
+.pvp-tab-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    max-height: calc(100vh - 270px);
+}
+
+/* Ascunde bara de scroll vizuala pentru tab content */
+.pvp-tab-content::-webkit-scrollbar {
+    display: none !important;
+}
+
+.pvp-tab-content::-webkit-scrollbar-track {
+    display: none !important;
+}
+
+.pvp-tab-content::-webkit-scrollbar-thumb {
+    display: none !important;
+}
+
+.pvp-tab-content {
+    -ms-overflow-style: none !important;  /* Internet Explorer 10+ */
+    scrollbar-width: none !important;  /* Firefox */
+}
+
+.tab-content {
+    display: none;
+    color: #fff;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Sub-tabs pentru Runde */
+.pvp-round-tabs {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.round-btn {
+    flex: 1;
+    min-width: 60px;
+    padding: 6px 4px;
+    background: rgba(255, 233, 163, 0.6);
+    border: 1px solid #f6cf49;
+    color: #6c4e09;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.round-btn:hover {
+    background: rgba(246, 207, 73, 0.8);
+}
+
+.round-btn.active {
+    background: #f6cf49;
+    font-weight: bold;
+    transform: scale(1.05);
+}
+
+/* Loading */
+.bracket-loading {
+    text-align: center;
+    color: #fff;
+    padding: 40px 20px;
+    font-size: 16px;
+}
+
+.bracket-loading i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* No Battle Message */
+.no-battle-message {
+    text-align: center;
+    color: #fff;
+    padding: 40px 20px;
+}
+
+.no-battle-message i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    display: block;
+    color: #ffd700;
+}
+
+.no-battle-message p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.next-battle-info {
+    opacity: 0.8;
+    font-size: 14px;
+}
+
+/* Bracket Container */
+.bracket-container {
+    padding: 5px 0;
+    overflow-x: auto;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Ascunde bara de scroll vizuala */
+.bracket-container::-webkit-scrollbar {
+    display: none !important;
+}
+
+.bracket-container::-webkit-scrollbar-track {
+    display: none !important;
+}
+
+.bracket-container::-webkit-scrollbar-thumb {
+    display: none !important;
+}
+
+.bracket-container {
+    -ms-overflow-style: none !important;  /* Internet Explorer 10+ */
+    scrollbar-width: none !important;  /* Firefox */
+}
+
+/* Tournament Table Styles */
+.tournament-table-container {
+    width: 100%;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin: 5px 0;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+}
+
+.tournament-round-title {
+    background: linear-gradient(90deg, rgba(139, 69, 19, 0.9), rgba(160, 82, 45, 0.9));
+    color: #ffd700;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 25px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.tournament-table {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0;
+    min-height: 300px;
+    max-height: calc(100vh - 200px);
+    position: relative;
+    padding: 10px 0;
+    overflow-y: auto;
+}
+
+.tournament-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
+    padding: 0;
+    min-height: 350px;
+    max-width: 300px;
+}
+
+.left-group {
+    align-items: center;
+    padding-right: 15px;
+}
+
+.right-group {
+    align-items: center;
+    padding-left: 15px;
+}
+
+.tournament-slot-card {
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.tournament-slot-card:hover {
+    transform: scale(1.05);
+}
+
+.tournament-slot {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 3px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    background-image: url('default-avatar.png');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tournament-slot:hover {
+    transform: scale(1.1);
+    border-color: #ffd700;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
+}
+
+.tournament-slot.empty {
+    background: rgba(240, 240, 240, 0.9);
+    border-color: #bbb;
+    background-image: none;
+}
+
+.tournament-slot.empty::before {
+    content: '?';
+    font-size: 24px;
+    color: #888;
+    font-weight: bold;
+}
+
+.tournament-slot.winner {
+    border-color: #4caf50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+}
+
+.tournament-slot.active {
+    border-color: #ff9800;
+    animation: pulse-border 2s ease-in-out infinite;
+}
+
+/* Final Match Styles */
+.final-match-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background: transparent;
+    border-radius: 15px;
+    margin: 30px 0;
+}
+
+.final-vs-container {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    background: linear-gradient(90deg, rgba(255, 233, 163, 0.9), rgba(246, 207, 73, 0.8));
+    padding: 30px 50px;
+    border-radius: 25px;
+    border: 3px solid #f6cf49;
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+    transform: scale(1.2);
+}
+
+.final-player-slot {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 240, 240, 0.8));
+    border: 4px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    background-image: url('default-avatar.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.final-player-slot:hover {
+    transform: scale(1.1);
+    border-color: #ffd700;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
+}
+
+.final-player-slot.empty {
+    background: linear-gradient(135deg, rgba(200, 200, 200, 0.3), rgba(180, 180, 180, 0.2));
+    border-color: #ccc;
+    background-image: none;
+}
+
+.final-player-slot.empty::before {
+    content: '?';
+    font-size: 24px;
+    color: #999;
+    font-weight: bold;
+}
+
+.final-vs-button {
+    background: linear-gradient(135deg, #ff6b6b, #ff5252);
+    border: 3px solid #fff;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    font-size: 28px;
+    box-shadow: 0 6px 25px rgba(255, 107, 107, 0.6);
+}
+
+.final-vs-button:hover {
+    transform: scale(1.2);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+}
+
+/* Match Card */
+.match-card {
+    background: linear-gradient(135deg, rgba(255, 233, 163, 0.95), rgba(246, 207, 73, 0.85));
+    border: 2px solid #f6cf49;
+    border-radius: 10px;
+    padding: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.match-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.match-card.completed {
+    border-color: #4caf50;
+}
+
+.match-card.active {
+    border-color: #ff9800;
+    animation: pulse-border 2s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% {
+        border-color: #ff9800;
+        box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+    }
+    50% {
+        border-color: #ffd700;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+}
+
+.match-header {
+    text-align: center;
+    color: #6c4e09;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.match-players {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.match-player {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.match-player-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #f6cf49;
+    object-fit: cover;
+    margin-bottom: 5px;
+}
+
+.match-player.winner .match-player-avatar {
+    border-color: #4caf50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+}
+
+.match-player-name {
+    font-size: 13px;
+    color: #6c4e09;
+    font-weight: bold;
+    word-break: break-word;
+    max-width: 100px;
+}
+
+.match-player-name.gold-shimmer {
+    background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #ff0000);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: goldShimmer 10s ease-in-out infinite alternate;
+}
+
+.match-player-score {
+    font-size: 16px;
+    color: #6c4e09;
+    font-weight: bold;
+    margin-top: 3px;
+}
+
+.match-vs {
+    font-size: 18px;
+    font-weight: bold;
+    color: #6c4e09;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Match Status Badge */
+.match-status {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    background: #4caf50;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.match-status.pending {
+    background: #9e9e9e;
+}
+
+.match-status.active {
+    background: #ff9800;
+}
+
+/* Empty Slots */
+.match-player.empty {
+    opacity: 0.5;
+}
+
+.match-player.empty .match-player-avatar {
+    background: #ccc;
+    border-color: #999;
+}
+
+.match-player.empty .match-player-name {
+    color: #999;
+}
+
+.empty-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ddd;
+    border: 2px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #999;
+}
+
+.empty-avatar::before {
+    content: "?";
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pvp-container {
+        padding: 35px 12px 45px 12px;
+        height: calc(100vh - 160px);
+        max-height: calc(100vh - 160px);
+        margin-top: 25px;
+    }
+    
+    .pvp-panel {
+        height: 100%;
+        max-height: 100%;
+        padding: 12px;
+    }
+    
+    .pvp-tab-content {
+        max-height: calc(100vh - 280px);
+    }
+    
+    .tournament-table {
+        max-height: calc(100vh - 220px);
+        min-height: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pvp-container {
+        padding: 30px 10px 40px 10px;
+        height: calc(100vh - 140px);
+        max-height: calc(100vh - 140px);
+        margin-top: 25px;
+    }
+    
+    .pvp-panel {
+        height: 100%;
+        max-height: 100%;
+        padding: 10px;
+    }
+
+    .pvp-header {
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 5px;
+        padding: 6px;
+    }
+
+    .pvp-user-league {
+        text-align: center;
+    }
+
+    .tab-btn {
+        padding: 4px 2px;
+        font-size: 11px;
+    }
+
+    .round-btn {
+        font-size: 10px;
+        padding: 4px 2px;
+    }
+    
+    .pvp-tab-content {
+        max-height: calc(100vh - 120px);
+    }
+    
+    .tournament-table {
+        max-height: calc(100vh - 180px);
+        min-height: 250px;
+    }
+
+    .match-player-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .match-player-name {
+        font-size: 11px;
+    }
+
+    .match-player-score {
+        font-size: 14px;
+    }
+}
+
+/* Live Battle Popup Styles */
+.live-battle-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.live-battle-popup {
+    background: linear-gradient(135deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #8B4513 75%, #A0522D 100%);
+    border-radius: 25px;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    overflow: hidden;
+    position: relative;
+    animation: slideUp 0.4s ease-out;
+    border: 3px solid #DAA520;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.popup-header {
+    background: linear-gradient(90deg, #4caf50, #45a049);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 25px 25px 0 0;
+}
+
+.popup-title {
+    color: #fff;
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    flex: 1;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+    border-radius: 50%;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.match-players {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 25px 20px;
+    background: transparent;
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.player-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid #ffd700;
+    object-fit: cover;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    margin-bottom: 8px;
+}
+
+.player-name {
+    color: #2c1810;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    max-width: 100px;
+    word-wrap: break-word;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.vs-divider {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    margin: 0 15px;
+}
+
+.score-bar-container {
+    padding: 0 20px 20px;
+}
+
+.score-bar {
+    background: rgba(0, 0, 0, 0.3);
+    height: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+}
+
+.score-left {
+    background: linear-gradient(90deg, #4caf50, #45a049);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    transition: width 0.5s ease;
+}
+
+.score-right {
+    background: linear-gradient(90deg, #f44336, #d32f2f);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 10px;
+    transition: width 0.5s ease;
+}
+
+.score-value {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.match-info {
+    padding: 20px;
+    text-align: center;
+    background: transparent;
+}
+
+.match-message {
+    color: #2c1810;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.match-timer {
+    background: rgba(255, 255, 255, 0.3);
+    color: #2c1810;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    display: inline-block;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.goto-battle-btn {
+    background: linear-gradient(90deg, #4caf50, #45a049);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+}
+
+.goto-battle-btn:hover {
+    background: linear-gradient(90deg, #45a049, #3d8b40);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.chat-section {
+    background: transparent;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+.chat-header {
+    padding: 12px 20px;
+    background: rgba(139, 69, 19, 0.3);
+    color: #fff;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    border-radius: 0 0 15px 15px;
+}
+
+.chat-messages {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 15px 20px;
+    background: rgba(139, 69, 19, 0.2);
+    margin: 0 10px;
+    border-radius: 10px;
+}
+
+.chat-message {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.chat-message.own {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.message-bubble {
+    background: rgba(255, 255, 255, 0.9);
+    color: #2c1810;
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.chat-message.own .message-bubble {
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+}
+
+.chat-input-container {
+    padding: 15px 20px;
+    display: flex;
+    gap: 12px;
+    background: transparent;
+    align-items: center;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 12px 18px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #2c1810;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    outline: none;
+}
+
+.chat-input::placeholder {
+    color: rgba(44, 24, 16, 0.5);
+}
+
+.chat-send-btn {
+    background: #ffd700;
+    color: #333;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-send-btn:hover {
+    background: #ffed4e;
+    transform: scale(1.1);
+}
+
+.unread-badge {
+    background: #ff4444;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+/* ============================================ */
+/* MOBILE RESPONSIVE STYLES */
+/* ============================================ */
+
+@media (max-width: 768px) {
+    /* PVP Container */
+    .pvp-container {
+        padding: 5px;
+        margin: 0;
+    }
+    
+    .pvp-panel {
+        padding: 10px;
+        border-radius: 15px;
+    }
+    
+    /* Header Mobile */
+    .pvp-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px 10px;
+    }
+    
+    .pvp-timer-container {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .pvp-timer {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+    
+    .pvp-status {
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    
+    .pvp-user-league {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .league-label {
+        font-size: 12px;
+    }
+    
+    .league-name {
+        font-size: 14px;
+    }
+    
+    /* Tabs Mobile */
+    .pvp-tabs {
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 10px 5px;
+    }
+    
+    .tab-btn {
+        flex: 1;
+        min-width: calc(50% - 5px);
+        padding: 8px 4px;
+        font-size: 12px;
+    }
+    
+    /* Round Tabs Mobile */
+    .pvp-round-tabs {
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 10px 5px;
+    }
+    
+    .round-btn {
+        flex: 1;
+        min-width: calc(33.33% - 5px);
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+    
+    /* Tournament Container Mobile */
+    .tournament-table-container {
+        padding: 5px;
+        margin: 5px 0;
+    }
+    
+    .tournament-round-title {
+        font-size: 14px;
+        padding: 8px 15px;
+        margin-bottom: 10px;
+    }
+    
+    /* Match Cards Mobile */
+    .match-card {
+        padding: 8px;
+        margin: 3px 0;
+        border-radius: 8px;
+    }
+    
+    .match-players {
+        gap: 8px;
+    }
+    
+    .match-player-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .match-player-name {
+        font-size: 11px;
+        max-width: 60px;
+    }
+    
+    .match-vs {
+        font-size: 12px;
+    }
+    
+    .match-player-score {
+        font-size: 12px;
+    }
+    
+    /* Final Match Mobile */
+    .final-match-container {
+        padding: 20px 10px;
+        margin: 15px 0;
+    }
+    
+    .final-players {
+        gap: 20px;
+        padding: 20px 15px;
+    }
+    
+    .final-player-avatar {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .final-player-name {
+        font-size: 12px;
+    }
+    
+    .final-vs-button {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+    
+    /* Live Battle Popup Mobile */
+    .live-battle-popup {
+        max-width: 95%;
+        width: 95%;
+        max-height: 90vh;
+        margin: 10px;
+    }
+    
+    .popup-header {
+        padding: 12px 15px;
+    }
+    
+    .popup-title {
+        font-size: 16px;
+    }
+    
+    .close-btn {
+        width: 25px;
+        height: 25px;
+        font-size: 20px;
+    }
+    
+    .match-players {
+        padding: 20px 15px;
+        gap: 15px;
+    }
+    
+    .player-avatar {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .player-name {
+        font-size: 12px;
+        max-width: 80px;
+    }
+    
+    .vs-divider {
+        font-size: 24px;
+        margin: 0 10px;
+    }
+    
+    .score-bar-container {
+        padding: 0 15px 15px;
+    }
+    
+    .score-bar {
+        height: 30px;
+    }
+    
+    .score-value {
+        font-size: 12px;
+    }
+    
+    .match-info {
+        padding: 15px;
+    }
+    
+    .match-message {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .match-timer {
+        padding: 6px 12px;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    .goto-battle-btn {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+    
+    /* Chat Mobile */
+    .chat-section {
+        padding: 10px;
+    }
+    
+    .chat-header {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    
+    .chat-messages {
+        max-height: 120px;
+        padding: 10px;
+        margin: 0 5px;
+    }
+    
+    .message-avatar {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .message-bubble {
+        padding: 6px 10px;
+        font-size: 12px;
+        max-width: 75%;
+    }
+    
+    .chat-input-container {
+        padding: 10px 15px;
+        gap: 8px;
+    }
+    
+    .chat-input {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .chat-send-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra Small Mobile */
+    .pvp-container {
+        padding: 2px;
+    }
+    
+    .pvp-panel {
+        padding: 5px;
+    }
+    
+    .pvp-header {
+        padding: 10px 5px;
+    }
+    
+    .pvp-timer {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+    
+    .pvp-status {
+        font-size: 10px;
+    }
+    
+    .league-label {
+        font-size: 10px;
+    }
+    
+    .league-name {
+        font-size: 12px;
+    }
+    
+    .tab-btn {
+        padding: 6px 2px;
+        font-size: 10px;
+    }
+    
+    .round-btn {
+        padding: 4px 2px;
+        font-size: 9px;
+    }
+    
+    .tournament-round-title {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .match-card {
+        padding: 6px;
+    }
+    
+    .match-player-avatar {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .match-player-name {
+        font-size: 10px;
+        max-width: 50px;
+    }
+    
+    .match-vs {
+        font-size: 10px;
+    }
+    
+    .final-player-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .final-player-name {
+        font-size: 10px;
+    }
+    
+    .live-battle-popup {
+        max-width: 98%;
+        width: 98%;
+        margin: 5px;
+    }
+    
+    .popup-title {
+        font-size: 14px;
+    }
+    
+    .player-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .player-name {
+        font-size: 11px;
+        max-width: 70px;
+    }
+    
+    .vs-divider {
+        font-size: 20px;
+        margin: 0 8px;
+    }
+    
+    .score-bar {
+        height: 25px;
+    }
+    
+    .score-value {
+        font-size: 11px;
+    }
+    
+    .match-message {
+        font-size: 12px;
+    }
+    
+    .match-timer {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    
+    .goto-battle-btn {
+        padding: 8px 15px;
+        font-size: 11px;
+    }
+    
+    .chat-messages {
+        max-height: 100px;
+        padding: 8px;
+    }
+    
+    .message-bubble {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+    
+    .chat-input {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    
+    .chat-send-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+}

@@ -4,95 +4,161 @@
   --nav-split-duration: 0.32s;
 }
 
-/* Page navigation transition effect */
-#page-transition {
-  position: fixed;
-  pointer-events: none;
-  z-index: 10000;
-  overflow: hidden;
-}
-#page-transition .line {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 8px;
-  background: linear-gradient(90deg, #66ffff, #ff00cc, #66ffff);
-  box-shadow: 0 0 20px rgba(102,255,255,0.7), 0 0 25px rgba(255,0,204,0.7);
-  transform: translateY(-50%);
-}
-#page-transition .line::before,
-#page-transition .line::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, rgba(102,255,255,0.5), rgba(255,0,204,0.5), rgba(102,255,255,0.5));
-}
-#page-transition .line::before {
-  top: -5px;
-}
-#page-transition .line::after {
-  bottom: -5px;
+/* Page navigation overlay loader */
+#page-transition { 
+  position: fixed; 
+  inset: 0; 
+  z-index: 10000; 
+  pointer-events: none; 
 }
 
-#page-transition .bolt {
-  position: absolute;
-  top: 50%;
-  width: 80px;
-  height: 30px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, #fff, #66ffff, #fff);
-  filter: drop-shadow(0 0 8px #66ffff) drop-shadow(0 0 16px #fff);
-  clip-path: polygon(0 60%, 15% 80%, 10% 100%, 35% 100%, 25% 65%, 45% 85%, 55% 45%, 75% 65%, 70% 20%, 100% 0, 60% 10%, 65% 0, 35% 20%, 40% 0, 20% 10%, 25% 0);
-}
-#page-transition .bolt.left {
-  left: -80px;
-  animation: bolt-left var(--nav-bolt-duration, 0.28s) forwards;
-}
-#page-transition .bolt.right {
-  right: -80px;
-  animation: bolt-right var(--nav-bolt-duration, 0.28s) forwards;
-  transform: translateY(-50%) scaleX(-1);
-}
-@keyframes bolt-left {
-  to { left: 50%; }
-}
-@keyframes bolt-right {
-  to { right: 50%; }
+#page-transition .nav-overlay { 
+  position: absolute; 
+  inset: 0; 
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1));
+  backdrop-filter: blur(8px);
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
 }
 
-#page-transition .flash {
+#page-transition .nav-particles {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20px;
-  height: 20px;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 195, 74, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(102, 187, 106, 0.1) 0%, transparent 50%);
+  animation: particleFloat 6s ease-in-out infinite;
+}
+
+#page-transition .nav-card { 
+  pointer-events: auto; 
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  border-radius: 20px; 
+  padding: 24px 28px; 
+  width: clamp(280px, 65vw, 450px); 
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+}
+
+#page-transition .nav-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  position: relative;
+}
+
+#page-transition .nav-icon-inner {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
   border-radius: 50%;
-  background: radial-gradient(circle, #ffffff, rgba(255,255,255,0));
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 8px 16px rgba(76, 175, 80, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: iconPulse 2s ease-in-out infinite;
 }
-#page-transition.flash .bolt {
-  opacity: 0;
-  transition: opacity calc(var(--nav-bolt-duration, 0.28s) / 2);
+
+#page-transition .nav-icon-inner i {
+  font-size: 28px;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
-#page-transition.flash .flash {
-  animation: flash-burst var(--nav-flash-duration, 0.22s) forwards;
+
+#page-transition .nav-text { 
+  margin-bottom: 20px; 
+  font-weight: 600; 
+  color: #2e7d32; 
+  font-family: 'Poppins', Arial, sans-serif;
+  font-size: 18px;
 }
-@keyframes flash-burst {
-  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(20); opacity: 0; }
+
+#page-transition .nav-main-text {
+  display: inline-block;
 }
-#page-transition .percent {
+
+#page-transition .nav-dots {
+  animation: dotsBlink 1.5s infinite;
+}
+
+#page-transition .nav-progress-container {
+  width: 100%;
+}
+
+#page-transition .nav-progress { 
+  width: 100%; 
+  height: 12px; 
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 10px; 
+  overflow: hidden; 
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  position: relative;
+}
+
+#page-transition .nav-progress-bar { 
+  width: 0%; 
+  height: 100%; 
+  background: linear-gradient(90deg, #4caf50, #66bb6a, #4caf50);
+  background-size: 200% 100%;
+  animation: progressShimmer 2s linear infinite;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  color: #fff; 
+  font-size: 11px; 
+  font-weight: 700; 
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  transition: width 0.3s ease, box-shadow 0.3s ease;
+}
+
+#page-transition .nav-progress-glow {
   position: absolute;
-  top: calc(50% + 20px);
-  left: 50%;
-  transform: translate(-50%, 0);
-  color: #fff;
-  font-size: 14px;
-  font-family: Arial, sans-serif;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: glowMove 2s linear infinite;
+}
+
+#page-transition .nav-percent {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(180deg); }
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 8px 16px rgba(76, 175, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
+  50% { transform: scale(1.05); box-shadow: 0 12px 24px rgba(76, 175, 80, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+}
+
+@keyframes dotsBlink {
+  0%, 20% { opacity: 1; }
+  50% { opacity: 0.3; }
+  80%, 100% { opacity: 1; }
+}
+
+@keyframes progressShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glowMove {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 .app-split {
   position: fixed;

@@ -50,6 +50,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
     <link rel="stylesheet" href="<?= asset('assets_css/template.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/message-notification.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/nav-transition.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets_css/loading-variants.css') ?>">
     <link rel="stylesheet" href="<?= asset('moneysistem/money.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/xp-float.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets_css/level-up.css') ?>">
@@ -81,6 +82,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
         <a href="welcome.php" class="nav-btn <?php if($activePage==='welcome') echo 'active';?>"><i class="fas fa-seedling"></i></a>
         <a href="barn.php" class="nav-btn <?php if($activePage==='barn') echo 'active';?>"><i class="fas fa-warehouse"></i></a>
         <a href="friends.php" class="nav-btn <?php if($activePage==='friends') echo 'active';?>"><i class="fas fa-user-friends"></i><span id="friendIndicator" class="friend-indicator"></span></a>
+        <a href="pvp_battles.php" class="nav-btn <?php if($activePage==='pvp') echo 'active';?>"><i class="fas fa-trophy"></i></a>
         <a href="vip.php" class="nav-btn <?php if($activePage==='vip') echo 'active';?>"><i class="fas fa-crown"></i></a>
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>
@@ -88,6 +90,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
 </div>
 <div id="level-up-card"></div>
 <div id="slot-panel-overlay"></div>
+
 <?php if (!$noScroll): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -141,7 +144,26 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="<?= asset('assets_js/helper-buddy.js') ?>"></script>
   <script src="<?= asset('assets_js/nav-transition.js') ?>"></script>
   <?php if (isset($_SESSION['user_id'])): ?>
-  <script>window.userId = <?= (int)$_SESSION['user_id']; ?>; window.currentLevel = <?= $userLevel; ?>;</script>
+  <?php
+    // Load user's loading style preference from database
+    $userLoadingStyle = 'variant-1'; // default
+    try {
+        $stmt = $db->prepare('SELECT loading_style FROM user_preferences WHERE user_id = ?');
+        $stmt->execute([$_SESSION['user_id']]);
+        $savedStyle = $stmt->fetchColumn();
+        if ($savedStyle) {
+            $userLoadingStyle = $savedStyle;
+        }
+    } catch (Exception $e) {
+        // Use default if error
+    }
+  ?>
+  <script>
+    window.userId = <?= (int)$_SESSION['user_id']; ?>; 
+    window.currentLevel = <?= $userLevel; ?>;
+    // Set loading style preference from PHP (already loaded from database)
+    localStorage.setItem('loadingStyle', '<?= $userLoadingStyle; ?>');
+  </script>
   <?php endif; ?>
   <?php
   if ($extraJs) {

@@ -53,22 +53,49 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 4px;
     margin-bottom: 10px;
+    align-items: stretch;
+}
+
+/* Pentru admin (6 butoane) */
+.vip-sub-tabs:has(.sub-tab-btn[data-subtab="admin"]) {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* Pentru non-admin (5 butoane) */
+.vip-sub-tabs:not(:has(.sub-tab-btn[data-subtab="admin"])) {
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .logout-btn-container {
     margin-bottom: 10px;
+    grid-column: 1 / -1;
 }
 
 .logout-btn-container .sub-tab-btn {
     width: 100%;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.2;
 }
 
 .sub-tab-btn {
-    padding: 6px 4px;
+    padding: 8px 4px;
     background: #ffe9a3;
     border: 1px solid #f6cf49;
     color: #6c4e09;
     cursor: pointer;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.2;
+    word-wrap: break-word;
 }
 
 .sub-tab-btn.active {
@@ -161,6 +188,70 @@
 
 .logout-card p {
     margin: 0;
+}
+
+/* Loading redirect container */
+.loading-redirect-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.loading-redirect-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+}
+
+.loading-redirect-icon i {
+    font-size: 36px;
+    color: white;
+}
+
+.loading-redirect-container h3 {
+    color: #2e7d32;
+    margin: 0 0 10px 0;
+    font-size: 22px;
+}
+
+.loading-redirect-container p {
+    color: #546e7a;
+    margin: 0 0 24px 0;
+    font-size: 14px;
+}
+
+.loading-redirect-btn {
+    padding: 14px 28px;
+    background: linear-gradient(145deg, #4caf50, #66bb6a);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+}
+
+.loading-redirect-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+}
+
+.loading-redirect-btn i {
+    font-size: 18px;
 }
 
 @media (max-width: 480px) {
