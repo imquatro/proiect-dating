@@ -91,7 +91,12 @@ require_once __DIR__ . '/includes/cache_buster.php';
 <div id="level-up-card"></div>
 <div id="slot-panel-overlay"></div>
 
-<?php if (!$noScroll): ?>
+<?php 
+// Initialize $noScroll if not set
+if (!isset($noScroll)) {
+    $noScroll = false;
+}
+if (!$noScroll): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const content = document.querySelector('.content');

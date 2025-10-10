@@ -45,6 +45,16 @@ if ($action === 'send_request') {
         echo json_encode(['success' => false, 'message' => 'Invalid user']);
         exit;
     }
+    
+    // Verifică limita de 20 prieteni
+    $stmt = $db->prepare('SELECT COUNT(*) FROM friend_requests WHERE (sender_id = ? OR receiver_id = ?) AND status = "accepted"');
+    $stmt->execute([$currentId, $currentId]);
+    $friendCount = $stmt->fetchColumn();
+    
+    if ($friendCount >= 20) {
+        echo json_encode(['success' => false, 'message' => 'friend_limit_reached', 'friend_count' => $friendCount]);
+        exit;
+    }
     try {
         $stmt = $db->prepare('SELECT status FROM friend_requests WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)');
         $stmt->execute([$currentId, $receiver, $receiver, $currentId]);
@@ -67,6 +77,16 @@ if ($action === 'accept_request') {
     $sender = (int)($_POST['user_id'] ?? 0);
     if (!$sender || $sender == $currentId) {
         echo json_encode(['success' => false, 'message' => 'Invalid user']);
+        exit;
+    }
+    
+    // Verifică limita de 20 prieteni
+    $stmt = $db->prepare('SELECT COUNT(*) FROM friend_requests WHERE (sender_id = ? OR receiver_id = ?) AND status = "accepted"');
+    $stmt->execute([$currentId, $currentId]);
+    $friendCount = $stmt->fetchColumn();
+    
+    if ($friendCount >= 20) {
+        echo json_encode(['success' => false, 'message' => 'friend_limit_reached', 'friend_count' => $friendCount]);
         exit;
     }
     try {

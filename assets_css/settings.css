@@ -41,7 +41,7 @@
 
 .tab-content {
     display: none;
-    color: #fff;
+    color: #222;
 }
 
 .tab-content.active {
@@ -108,7 +108,7 @@
 
 .subtab-content {
     display: none;
-    color: #fff;
+    color: #222;
 }
 
 .subtab-content.active {
@@ -174,7 +174,7 @@
 
 .logout-card {
     background: url('../img/bg2.png') center/cover no-repeat;
-    color: #fff;
+    color: #222;
     padding: 10px;
     border-radius: 8px;
     width: 200px;
@@ -254,9 +254,291 @@
     font-size: 18px;
 }
 
+/* Leaderboard Styles for Settings */
+.leaderboard-container {
+    margin-top: 20px;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.leaderboard-header h3 {
+    color: #f6cf49;
+    margin: 0 0 8px 0;
+    font-size: 1.5em;
+}
+
+.leaderboard-header p {
+    color: #ddd;
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.leaderboard-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 5px;
+}
+
+.leaderboard-tab-btn {
+    flex: 1;
+    max-width: 120px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #f6cf49;
+    border-radius: 8px;
+    color: #f6cf49;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.leaderboard-tab-btn.active {
+    background: #f6cf49;
+    color: #6c4e09;
+}
+
+.leaderboard-tab-btn i {
+    font-size: 14px;
+}
+
+.leaderboard-tab-content {
+    display: none;
+}
+
+.leaderboard-tab-content.active {
+    display: block;
+}
+
+.leaderboard-list {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    border-left: 3px solid #f6cf49;
+}
+
+.leaderboard-item.current-user {
+    background: rgba(246, 207, 73, 0.2);
+    border-left-color: #ff6b6b;
+}
+
+.rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    margin-right: 15px;
+}
+
+.rank-number {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f6cf49;
+}
+
+.medal {
+    font-size: 24px;
+}
+
+.medal .gold {
+    color: #ffd700;
+}
+
+.medal .silver {
+    color: #c0c0c0;
+}
+
+.medal .bronze {
+    color: #cd7f32;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    margin-right: 15px;
+}
+
+.player-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #f6cf49;
+    object-fit: cover;
+    margin-right: 10px;
+    background: #ddd;
+}
+
+.current-user .player-avatar {
+    border-color: #ff6b6b;
+}
+
+.player-details {
+    flex: 1;
+}
+
+.player-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #f6cf49;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.player-name.vip {
+    background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #ff0000);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: goldShimmer 3s ease-in-out infinite alternate;
+}
+
+.vip-crown {
+    color: #ffd700;
+    font-size: 12px;
+}
+
+.player-level {
+    font-size: 12px;
+    color: #bbb;
+}
+
+.player-score {
+    text-align: right;
+}
+
+.score-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #f6cf49;
+    display: block;
+}
+
+.score-label {
+    font-size: 10px;
+    color: #bbb;
+}
+
+.current-user-stats {
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.current-user-stats h4 {
+    color: #f6cf49;
+    margin: 0 0 15px 0;
+    font-size: 1.1em;
+}
+
+.user-positions {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.position-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background: rgba(246, 207, 73, 0.1);
+    border-radius: 8px;
+    min-width: 100px;
+}
+
+.position-label {
+    font-size: 12px;
+    color: #bbb;
+    margin-bottom: 5px;
+}
+
+.position-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #f6cf49;
+}
+
+@keyframes goldShimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
 @media (max-width: 480px) {
     .tab-btn, .sub-tab-btn {
         padding: 5px 2px;
         font-size: 12px;
+    }
+    
+    .leaderboard-tabs {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .leaderboard-tab-btn {
+        max-width: none;
+        padding: 10px;
+    }
+    
+    .leaderboard-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px;
+    }
+    
+    .rank {
+        width: auto;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    
+    .player-info {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    
+    .player-score {
+        width: 100%;
+        text-align: left;
+    }
+    
+    .user-positions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .position-item {
+        min-width: 200px;
     }
 }

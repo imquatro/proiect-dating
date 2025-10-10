@@ -19,11 +19,27 @@ try {
         league_id INT NOT NULL,
         start_date DATETIME NOT NULL,
         current_round INT NOT NULL DEFAULT 1,
-        status ENUM('pending', 'active', 'completed', 'postponed') DEFAULT 'pending',
+        status ENUM('pending', 'active', 'completed', 'postponed', 'displaying_final') DEFAULT 'pending',
         is_active BOOLEAN DEFAULT 1,
+        completed_at DATETIME DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (league_id) REFERENCES pvp_leagues(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    
+    // Adaugam coloana completed_at daca nu exista
+    $stmt = $db->query("SHOW COLUMNS FROM pvp_battles LIKE 'completed_at'");
+    if ($stmt->rowCount() == 0) {
+        $db->exec("ALTER TABLE pvp_battles ADD COLUMN completed_at DATETIME DEFAULT NULL AFTER is_active");
+        error_log("PvP: Added column completed_at to pvp_battles");
+    }
+    
+    // Modificam ENUM pentru status daca nu contine 'displaying_final'
+    $stmt = $db->query("SHOW COLUMNS FROM pvp_battles LIKE 'status'");
+    $column = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($column && strpos($column['Type'], 'displaying_final') === false) {
+        $db->exec("ALTER TABLE pvp_battles MODIFY COLUMN status ENUM('pending', 'active', 'completed', 'postponed', 'displaying_final') DEFAULT 'pending'");
+        error_log("PvP: Updated status ENUM to include 'displaying_final'");
+    }
 
     // Tabela participanti
     $db->exec("CREATE TABLE IF NOT EXISTS pvp_participants (
@@ -58,12 +74,46 @@ try {
     $db->exec("CREATE TABLE IF NOT EXISTS user_league_status (
         user_id INT PRIMARY KEY,
         league_id INT NOT NULL DEFAULT 1,
+        qualified_for_league_id INT DEFAULT NULL,
         last_reset_date DATE DEFAULT NULL,
         total_wins INT NOT NULL DEFAULT 0,
         total_losses INT NOT NULL DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (league_id) REFERENCES pvp_leagues(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    
+    // Adaugam coloana qualified_for_league_id daca nu exista
+    $stmt = $db->query("SHOW COLUMNS FROM user_league_status LIKE 'qualified_for_league_id'");
+    if ($stmt->rowCount() == 0) {
+        $db->exec("ALTER TABLE user_league_status ADD COLUMN qualified_for_league_id INT DEFAULT NULL AFTER league_id");
+        error_log("PvP: Added column qualified_for_league_id to user_league_status");
+    }
+    
+    // Adaugam coloanele necesare pentru admin system in tabela users
+    $adminColumns = [
+        'auto_account' => 'BOOLEAN DEFAULT 0',
+        'is_banned' => 'BOOLEAN DEFAULT 0', 
+        'ban_reason' => 'TEXT DEFAULT NULL',
+        'ban_end_date' => 'DATETIME DEFAULT NULL',
+        'banned_by' => 'INT DEFAULT NULL',
+        'banned_at' => 'DATETIME DEFAULT NULL',
+        'is_active' => 'BOOLEAN DEFAULT 1'
+    ];
+    
+    foreach ($adminColumns as $column => $definition) {
+        $stmt = $db->query("SHOW COLUMNS FROM users LIKE '$column'");
+        if ($stmt->rowCount() == 0) {
+            $db->exec("ALTER TABLE users ADD COLUMN $column $definition");
+            error_log("PvP: Added column $column to users table");
+        }
+    }
+    
+    // Adaugam userii noi in user_league_status (Bronze league)
+    $db->exec("
+        INSERT IGNORE INTO user_league_status (user_id, league_id) 
+        SELECT id, 1 FROM users 
+        WHERE id NOT IN (SELECT user_id FROM user_league_status)
+    ");
 
     // Tabela chat meciuri (efemer - se sterge dupa finalizare)
     $db->exec("CREATE TABLE IF NOT EXISTS pvp_match_chat (
@@ -82,9 +132,24 @@ try {
     $count = $db->query("SELECT COUNT(*) FROM pvp_leagues")->fetchColumn();
     if ($count == 0) {
         $db->exec("INSERT INTO pvp_leagues (name, level, color, min_players) VALUES 
-            ('Bronz', 1, '#CD7F32', 64),
-            ('Argint', 2, '#C0C0C0', 64),
-            ('Platina', 3, '#E5E4E2', 64)");
+            ('Bronze', 1, '#CD7F32', 32),
+            ('Platinum', 2, '#E5E4E2', 32),
+            ('Gold', 3, '#FFD700', 32)");
+        error_log("PvP: Created default leagues (Bronze, Platinum, Gold)");
+    } else {
+        // Actualizam ligile existente la setarile de testare
+        $db->exec("UPDATE pvp_leagues SET name = 'Bronze', min_players = 32 WHERE level = 1");
+        $db->exec("UPDATE pvp_leagues SET name = 'Platinum', min_players = 32, color = '#E5E4E2' WHERE level = 2");
+        
+        // Verificam daca exista liga Gold (level 3)
+        $goldExists = $db->query("SELECT COUNT(*) FROM pvp_leagues WHERE level = 3")->fetchColumn();
+        if ($goldExists == 0) {
+            $db->exec("INSERT INTO pvp_leagues (name, level, color, min_players) VALUES ('Gold', 3, '#FFD700', 32)");
+            error_log("PvP: Added Gold league");
+        } else {
+            $db->exec("UPDATE pvp_leagues SET name = 'Gold', min_players = 32, color = '#FFD700' WHERE level = 3");
+        }
+        error_log("PvP: Updated existing leagues to testing settings (32 min_players)");
     }
 
 } catch (PDOException $e) {
@@ -98,29 +163,63 @@ function calculatePopularityScore($userId) {
     global $db;
     $score = 0;
     
-    // Vizite la ferma (2 puncte/vizita) - ultimele 7 zile
-    $stmt = $db->prepare("SELECT COUNT(*) FROM farm_visits WHERE visited_user_id = ? AND visit_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
-    $stmt->execute([$userId]);
-    $visits = $stmt->fetchColumn();
-    $score += $visits * 2;
+    // Check if help_records table exists
+    $stmt = $db->query("SHOW TABLES LIKE 'help_records'");
+    if ($stmt->rowCount() == 0) {
+        // Table doesn't exist, return random score for testing
+        $score = rand(0, 10);
+        error_log("PVP: help_records table not found, using random score: $score for user $userId");
+        return $score;
+    }
     
-    // Ajutoare primite (3 puncte/ajutor) - ultimele 7 zile
-    $stmt = $db->prepare("SELECT COUNT(*) FROM help_records WHERE helped_user_id = ? AND helped_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
-    $stmt->execute([$userId]);
-    $helps = $stmt->fetchColumn();
-    $score += $helps * 3;
-    
-    // Comentarii primite (2 puncte/comentariu) - ultimele 7 zile
-    $stmt = $db->prepare("SELECT COUNT(*) FROM comments WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
-    $stmt->execute([$userId]);
-    $comments = $stmt->fetchColumn();
-    $score += $comments * 2;
-    
-    // Interactiuni generale (1 punct) - mesaje trimise
-    $stmt = $db->prepare("SELECT COUNT(*) FROM messages WHERE sender_id = ? AND sent_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
-    $stmt->execute([$userId]);
-    $messages = $stmt->fetchColumn();
-    $score += $messages * 1;
+    try {
+        // Ajutoare oferite (1 punct per 100 ajutoare) - toate timpurile
+        $stmt = $db->prepare("SELECT COUNT(*) FROM help_records WHERE helper_user_id = ?");
+        $stmt->execute([$userId]);
+        $helpsGiven = $stmt->fetchColumn();
+        $score += intval($helpsGiven / 100); // 1 punct per 100 ajutoare
+        
+        // Ajutoare primite (1 punct per 300 ajutoare) - toate timpurile
+        $stmt = $db->prepare("SELECT COUNT(*) FROM help_records WHERE helped_user_id = ?");
+        $stmt->execute([$userId]);
+        $helpsReceived = $stmt->fetchColumn();
+        $score += intval($helpsReceived / 300); // 1 punct per 300 ajutoare
+        
+        // BONUS: Milestone-uri pentru persoane diferite ajutate
+        $stmt = $db->prepare("SELECT COUNT(DISTINCT helped_user_id) FROM help_records WHERE helper_user_id = ?");
+        $stmt->execute([$userId]);
+        $uniqueHelped = $stmt->fetchColumn();
+        
+        // Puncte pentru milestone-uri: 3, 5, 10, 15, 20 (se oprește la 20)
+        $milestones = [3, 5, 10, 15, 20];
+        foreach ($milestones as $milestone) {
+            if ($uniqueHelped >= $milestone) {
+                $score += 1; // 1 punct pentru fiecare milestone atins
+            }
+        }
+        
+        // BONUS: Persoane care au încredere în tine (1 punct per 5 persoane care te-au ajutat de 10+ ori)
+        $stmt = $db->prepare("
+            SELECT COUNT(DISTINCT helper_user_id) 
+            FROM help_records 
+            WHERE helped_user_id = ? 
+            AND helper_user_id IN (
+                SELECT helper_user_id 
+                FROM help_records 
+                WHERE helped_user_id = ? 
+                GROUP BY helper_user_id 
+                HAVING COUNT(*) >= 10
+            )
+        ");
+        $stmt->execute([$userId, $userId]);
+        $trustedHelpers = $stmt->fetchColumn();
+        $score += intval($trustedHelpers / 5); // 1 punct per 5 persoane de încredere
+        
+    } catch (Exception $e) {
+        // If any error, use random score for testing
+        $score = rand(0, 10);
+        error_log("PVP: Error calculating popularity score for user $userId: " . $e->getMessage() . ", using random score: $score");
+    }
     
     return $score;
 }
@@ -143,19 +242,19 @@ function checkMinimumPlayers($leagueId) {
 }
 
 /**
- * Aloca random 64 jucatori pentru un battle
+ * Aloca random 32 jucatori pentru un battle (din toți jucătorii disponibili)
  */
 function allocatePlayers($battleId, $leagueId) {
     global $db;
     
-    // Selectam 64 jucatori random din liga respectiva
+    // Selectam 32 jucatori random din liga respectiva (din toți cei disponibili)
     $stmt = $db->prepare("
         SELECT u.id, u.username 
         FROM users u
         JOIN user_league_status uls ON u.id = uls.user_id
         WHERE uls.league_id = ? AND u.is_active = 1
         ORDER BY RAND()
-        LIMIT 64
+        LIMIT 32
     ");
     $stmt->execute([$leagueId]);
     $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -167,11 +266,14 @@ function allocatePlayers($battleId, $leagueId) {
         $stmt->execute([$battleId, $player['id'], $score]);
     }
     
+    // Log pentru debugging
+    error_log("PVP: Allocated " . count($players) . " players for battle #$battleId in league #$leagueId");
+    
     return count($players);
 }
 
 /**
- * Creeaza meciurile pentru prima runda (1/32 - 64 jucatori)
+ * Creeaza meciurile pentru prima runda (1/16 - 32 jucatori)
  */
 function createFirstRoundMatches($battleId) {
     global $db;
@@ -181,7 +283,7 @@ function createFirstRoundMatches($battleId) {
     $stmt->execute([$battleId]);
     $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Cream 32 meciuri (64 jucatori / 2)
+    // Cream 16 meciuri (32 jucatori / 2) = Runda 1/16
     $stmt = $db->prepare("INSERT INTO pvp_matches (battle_id, round_number, user1_id, user2_id, user1_score, user2_score) VALUES (?, 1, ?, ?, ?, ?)");
     
     for ($i = 0; $i < count($participants); $i += 2) {
@@ -216,7 +318,15 @@ function processRoundResults($battleId, $roundNumber) {
     $eliminateStmt = $db->prepare("UPDATE pvp_participants SET eliminated_in_round = ? WHERE battle_id = ? AND user_id = ?");
     
     foreach ($matches as $match) {
-        $winnerId = $match['user1_score'] > $match['user2_score'] ? $match['user1_id'] : $match['user2_id'];
+        // Determină câștigătorul
+        if ($match['user1_score'] > $match['user2_score']) {
+            $winnerId = $match['user1_id'];
+        } elseif ($match['user2_score'] > $match['user1_score']) {
+            $winnerId = $match['user2_id'];
+        } else {
+            // EGALITATE - Alegeți random câștigătorul (50/50 șansă)
+            $winnerId = (rand(0, 1) === 0) ? $match['user1_id'] : $match['user2_id'];
+        }
         $loserId = $winnerId == $match['user1_id'] ? $match['user2_id'] : $match['user1_id'];
         
         $updateStmt->execute([$winnerId, $match['id']]);
@@ -251,7 +361,8 @@ function processRoundResults($battleId, $roundNumber) {
 }
 
 /**
- * Promoveaza top 4 jucatori (semifinalisti + finalisti) la liga superioara
+ * Marcheaza top 4 jucatori (semifinalisti) ca "qualified" pentru liga superioara
+ * NU ii promoveaza efectiv pana cand liga superioara are 32+ jucatori calificati
  */
 function promoteTopPlayers($battleId) {
     global $db;
@@ -263,7 +374,7 @@ function promoteTopPlayers($battleId) {
     
     $semifinalRound = $finalRound - 1;
     
-    // Top 4: participantii din semifinale
+    // Top 4: participantii din semifinale (cei care au ajuns in semifinala)
     $stmt = $db->prepare("
         SELECT DISTINCT user1_id as user_id FROM pvp_matches WHERE battle_id = ? AND round_number = ?
         UNION
@@ -277,11 +388,16 @@ function promoteTopPlayers($battleId) {
     $stmt->execute([$battleId]);
     $currentLeagueId = $stmt->fetchColumn();
     
-    // Liga urmatoare (max 3)
+    // Liga urmatoare (max 3 = Gold)
     $nextLeagueId = min($currentLeagueId + 1, 3);
     
     if ($nextLeagueId > $currentLeagueId) {
-        $updateStmt = $db->prepare("UPDATE user_league_status SET league_id = ? WHERE user_id = ?");
+        // NU ii mutam direct, doar ii marcam ca "qualified"
+        $updateStmt = $db->prepare("
+            UPDATE user_league_status 
+            SET qualified_for_league_id = ? 
+            WHERE user_id = ?
+        ");
         foreach ($top4 as $userId) {
             $updateStmt->execute([$nextLeagueId, $userId]);
         }
@@ -289,24 +405,56 @@ function promoteTopPlayers($battleId) {
 }
 
 /**
- * Reset lunar - redistribuie toti jucatorii
+ * Verifica si promoveaza efectiv jucatorii calificati daca sunt 32+
  */
-function monthlyLeagueReset() {
+function checkAndPromoteQualified($leagueId) {
     global $db;
-    $today = date('Y-m-01'); // Prima zi a lunii
     
-    // Verificam daca s-a facut deja reset luna asta
+    // Verifica cati jucatori sunt calificati pentru aceasta liga
+    $stmt = $db->prepare("SELECT COUNT(*) FROM user_league_status WHERE qualified_for_league_id = ?");
+    $stmt->execute([$leagueId]);
+    $qualifiedCount = $stmt->fetchColumn();
+    
+    // Daca sunt 32+, ii promovam efectiv
+    if ($qualifiedCount >= 32) {
+        $db->prepare("
+            UPDATE user_league_status 
+            SET league_id = qualified_for_league_id, qualified_for_league_id = NULL 
+            WHERE qualified_for_league_id = ?
+        ")->execute([$leagueId]);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Reset periodic - redistribuie toti jucatorii la Bronze (la fiecare LEAGUE_RESET_DAYS zile)
+ */
+function periodicLeagueReset() {
+    global $db;
+    
+    // Verificam daca s-a facut deja reset recent
     $stmt = $db->query("SELECT MAX(last_reset_date) FROM user_league_status");
     $lastReset = $stmt->fetchColumn();
     
-    if ($lastReset && $lastReset >= $today) {
-        return false; // Deja facut
+    if ($lastReset) {
+        $daysSince = (strtotime('now') - strtotime($lastReset)) / 86400;
+        if ($daysSince < LEAGUE_RESET_DAYS) {
+            return false; // Prea devreme pentru reset
+        }
     }
     
-    // Resetam toti userii la liga bronz
-    $db->exec("UPDATE user_league_status SET league_id = 1, last_reset_date = CURDATE()");
+    // Resetam toti userii la liga Bronze si stergem calificarile
+    $db->exec("UPDATE user_league_status SET league_id = 1, qualified_for_league_id = NULL, last_reset_date = CURDATE()");
     
     return true;
+}
+
+/**
+ * Reset lunar - redistribuie toti jucatorii (DEPRECATED - foloseste periodicLeagueReset)
+ */
+function monthlyLeagueReset() {
+    return periodicLeagueReset();
 }
 
 /**

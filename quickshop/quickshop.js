@@ -57,9 +57,11 @@ function initQuickShop(container) {
                         });
                         document.dispatchEvent(evt);
                     });
-                    if (overlay) {
-                        overlay.classList.remove('active');
-                        overlay.innerHTML = '';
+                    // Find the actual overlay (slot-panel-overlay)
+                    const actualOverlay = document.getElementById('slot-panel-overlay');
+                    if (actualOverlay) {
+                        actualOverlay.classList.remove('active');
+                        actualOverlay.innerHTML = '';
                     }
                     if (content) {
                         content.classList.remove('no-scroll');

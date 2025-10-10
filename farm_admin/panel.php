@@ -50,6 +50,8 @@ ob_start();
             <button data-tab="add-helper">Add Helper</button>
             <button data-tab="edit-helper">Edit Helper</button>
             <button data-tab="version">Update Version</button>
+            <button data-tab="add-users">Add Users</button>
+            <button data-tab="admin-grades">Admin Grades</button>
         </div>
         <div class="fa-tab-content active" id="fa-tab-add">
             <h2>Add Plants & Animals</h2>
@@ -367,18 +369,255 @@ ob_start();
             <p>Current version: <span id="fa-current-version"><?= htmlspecialchars($currentVersion); ?></span></p>
             <button id="fa-update-version">Update Version</button>
         </div>
+        <div class="fa-tab-content" id="fa-tab-add-users">
+            <h2>User Management</h2>
+            <div class="user-creation-tabs">
+                <button class="user-tab-btn active" data-usertab="auto">Auto Create</button>
+                <button class="user-tab-btn" data-usertab="manual">Manual Create</button>
+                <button class="user-tab-btn" data-usertab="password">Update Passwords</button>
+            </div>
+            
+            <!-- Auto Create Users -->
+            <div class="user-tab-content active" id="user-tab-auto">
+                <h3>Auto Create Users</h3>
+                <form id="fa-auto-users-form" action="farm_admin/create_users_auto.php" method="post">
+                    <label>Number of Users to Create
+                        <input type="number" name="user_count" min="1" value="1" required>
+                    </label>
+                    <label>Default Password for New Users
+                        <div class="password-input-container">
+                            <input type="password" id="default_password_input" name="default_password" value="password123" required>
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('default_password_input')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="current-password-indicator">
+                            <span class="current-password-label">Current Password:</span>
+                            <span class="current-password-text" id="current_password_display">password123</span>
+                        </div>
+                    </label>
+                    <div class="fa-form-actions">
+                        <button type="submit">Create Users</button>
+                    </div>
+                </form>
+                <div id="auto-users-result" class="users-result"></div>
+            </div>
+            
+            <!-- Manual Create User -->
+            <div class="user-tab-content" id="user-tab-manual">
+                <h3>Manual Create User</h3>
+                <form id="fa-manual-user-form" action="farm_admin/create_user_manual.php" method="post">
+                    <label>Email
+                        <input type="email" name="email" required>
+                    </label>
+                    <label>Username
+                        <input type="text" name="username" required>
+                    </label>
+                    <label>Password
+                        <input type="password" name="password" required>
+                    </label>
+                    <label>Age
+                        <input type="number" name="age" min="18" max="99" required>
+                    </label>
+                    <label>Country
+                        <input type="text" name="country" required>
+                    </label>
+                    <label>City
+                        <input type="text" name="city" required>
+                    </label>
+                    <label>Gender
+                        <select name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="masculin">Masculin</option>
+                            <option value="feminin">Feminin</option>
+                        </select>
+                    </label>
+                    <div class="fa-form-actions">
+                        <button type="submit">Create User</button>
+                    </div>
+                </form>
+                <div id="manual-user-result" class="users-result"></div>
+            </div>
+            
+            <!-- Update Passwords -->
+            <div class="user-tab-content" id="user-tab-password">
+                <h3>Update Auto-Created User Passwords</h3>
+                <p>This will update the password for ALL auto-created users (created from admin panel) to the new password below.</p>
+                <form id="fa-update-passwords-form" action="farm_admin/update_all_passwords.php" method="post">
+                    <label>New Password for All Users
+                        <div class="password-input-container">
+                            <input type="password" id="new_password_input" name="new_password" required>
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('new_password_input')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </label>
+                    <label>Confirm New Password
+                        <div class="password-input-container">
+                            <input type="password" id="confirm_password_input" name="confirm_password" required>
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirm_password_input')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </label>
+                    <div class="fa-form-actions">
+                        <button type="submit">Update All Passwords</button>
+                    </div>
+                </form>
+                <div id="update-passwords-result" class="users-result"></div>
+            </div>
+        </div>
+        <div class="fa-tab-content" id="fa-tab-admin-grades">
+            <h2>Admin Grade Management</h2>
+            <div class="admin-grades-tabs">
+                <button class="grades-tab-btn active" data-gradestab="manage">Manage Grades</button>
+                <button class="grades-tab-btn" data-gradestab="permissions">Permissions</button>
+                <button class="grades-tab-btn" data-gradestab="logs">Activity Logs</button>
+            </div>
+            
+            <!-- Manage Grades -->
+            <div class="grades-tab-content active" id="grades-tab-manage">
+                <h3>User Grade Management</h3>
+                <div class="grade-levels-info">
+                    <h4>Grade Levels:</h4>
+                    <ul>
+                        <li><strong>1 - SUPER_ADMIN:</strong> Full system access, can manage other admins</li>
+                        <li><strong>2 - ADMIN:</strong> Access to admin panel, can create test accounts</li>
+                        <li><strong>3 - MODERATOR:</strong> Can manage users, limited admin access</li>
+                        <li><strong>4 - HELPER:</strong> Can help users, view limited statistics</li>
+                        <li><strong>5 - USER:</strong> Normal user, no admin access</li>
+                    </ul>
+                </div>
+                
+                <div class="grade-search-section">
+                    <label>Search Users by Username or Email
+                        <input type="text" id="grade-search-input" placeholder="Enter username or email...">
+                    </label>
+                    <button id="search-users-btn">Search</button>
+                </div>
+                
+                <div id="users-list" class="users-list"></div>
+                
+                <div id="grade-change-form" class="grade-change-form" style="display: none;">
+                    <h4>Change User Grade</h4>
+                    <form id="fa-grade-change-form" action="farm_admin/change_user_grade.php" method="post">
+                        <input type="hidden" id="selected-user-id" name="user_id">
+                        <div class="user-info-display">
+                            <p><strong>User:</strong> <span id="selected-username"></span></p>
+                            <p><strong>Current Grade:</strong> <span id="selected-current-grade"></span></p>
+                        </div>
+                        <label>New Grade
+                            <select name="new_admin_level" id="new-admin-level" required>
+                                <option value="1">1 - SUPER_ADMIN</option>
+                                <option value="2">2 - ADMIN</option>
+                                <option value="3">3 - MODERATOR</option>
+                                <option value="4">4 - HELPER</option>
+                                <option value="5">5 - USER</option>
+                            </select>
+                        </label>
+                        <label>Reason for Change
+                            <input type="text" name="reason" placeholder="Enter reason for grade change..." required>
+                        </label>
+                        <div class="fa-form-actions">
+                            <button type="submit">Change Grade</button>
+                            <button type="button" id="cancel-grade-change">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div id="grade-change-result" class="users-result"></div>
+            </div>
+            
+            <!-- Permissions -->
+            <div class="grades-tab-content" id="grades-tab-permissions">
+                <h3>Permission System</h3>
+                <div class="permissions-grid">
+                    <div class="permission-level">
+                        <h4>SUPER_ADMIN (Level 1)</h4>
+                        <ul>
+                            <li>✅ Manage all other admins</li>
+                            <li>✅ Change any user grade</li>
+                            <li>✅ Full admin panel access</li>
+                            <li>✅ System configuration</li>
+                            <li>✅ View all logs</li>
+                        </ul>
+                    </div>
+                    <div class="permission-level">
+                        <h4>ADMIN (Level 2)</h4>
+                        <ul>
+                            <li>✅ Create test accounts</li>
+                            <li>✅ Manage items & achievements</li>
+                            <li>✅ Update auto account passwords</li>
+                            <li>✅ View statistics</li>
+                            <li>❌ Manage other admins</li>
+                        </ul>
+                    </div>
+                    <div class="permission-level">
+                        <h4>MODERATOR (Level 3)</h4>
+                        <ul>
+                            <li>✅ Manage normal users</li>
+                            <li>✅ View user reports</li>
+                            <li>✅ Limited statistics</li>
+                            <li>❌ Admin panel access</li>
+                            <li>❌ Create test accounts</li>
+                        </ul>
+                    </div>
+                    <div class="permission-level">
+                        <h4>HELPER (Level 4)</h4>
+                        <ul>
+                            <li>✅ Help users with questions</li>
+                            <li>✅ View basic statistics</li>
+                            <li>❌ Manage users</li>
+                            <li>❌ Admin functions</li>
+                            <li>❌ Access to admin panel</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Logs -->
+            <div class="grades-tab-content" id="grades-tab-logs">
+                <h3>Admin Activity Logs</h3>
+                <div class="logs-controls">
+                    <label>Filter by Action
+                        <select id="log-action-filter">
+                            <option value="">All Actions</option>
+                            <option value="grade_change">Grade Changes</option>
+                            <option value="user_creation">User Creation</option>
+                            <option value="password_update">Password Updates</option>
+                            <option value="admin_login">Admin Login</option>
+                        </select>
+                    </label>
+                    <label>Filter by Admin
+                        <select id="log-admin-filter">
+                            <option value="">All Admins</option>
+                        </select>
+                    </label>
+                    <button id="refresh-logs-btn">Refresh Logs</button>
+                </div>
+                <div id="activity-logs" class="activity-logs"></div>
+            </div>
+        </div>
     </div>
 </div>
+
 <?php
-$content = ob_get_clean();
-if ($ajax) {
-    echo $content;
-    exit;
-}
-$activePage = 'diverse';
-$pageCss = 'farm_admin/admin-panel.css';
-$extraJs = '<script src="farm_admin/admin-panel.js"></script><script src="farm_admin/achievements.js"></script>';
-$baseHref = '../';
-$hideNav = true;
-chdir('..');
-include 'template.php';
+// Don't use template.php for admin panel - output directly
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="../assets_css/layout.css">
+    <link rel="stylesheet" href="../farm_admin/admin-panel.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="admin-panel-container">
+        <?php echo ob_get_clean(); ?>
+    </div>
+    <script src="../farm_admin/admin-panel.js"></script>
+    <script src="../farm_admin/achievements.js"></script>
+</body>
+</html>

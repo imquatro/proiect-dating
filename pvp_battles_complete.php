@@ -1,0 +1,501 @@
+<?php
+$activePage = 'pvp';
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+
+require_once __DIR__ . '/includes/db.php';
+
+$userId = $_SESSION['user_id'];
+
+// Check user's league
+$stmt = $db->prepare("SELECT league_id FROM user_league_status WHERE user_id = ?");
+$stmt->execute([$userId]);
+$userLeagueId = $stmt->fetchColumn();
+
+if (!$userLeagueId) {
+    // If not in any league, put in bronze
+    $db->prepare("INSERT INTO user_league_status (user_id, league_id) VALUES (?, 1)")->execute([$userId]);
+    $userLeagueId = 1;
+}
+
+// Get all leagues
+$stmt = $db->query("SELECT * FROM pvp_leagues ORDER BY level ASC");
+$leagues = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get active battle for user's league
+$stmt = $db->prepare("SELECT * FROM pvp_battles WHERE league_id = ? AND is_active = 1 ORDER BY id DESC LIMIT 1");
+$stmt->execute([$userLeagueId]);
+$activeBattle = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Check if user is participant in active battle
+$userIsParticipant = false;
+$userCurrentRound = 0;
+$userIsEliminated = false;
+$userEliminationRound = 0;
+
+if ($activeBattle) {
+    $stmt = $db->prepare("SELECT COUNT(*) FROM pvp_matches WHERE battle_id = ? AND (user1_id = ? OR user2_id = ?)");
+    $stmt->execute([$activeBattle['id'], $userId, $userId]);
+    $userIsParticipant = $stmt->fetchColumn() > 0;
+    
+    if ($userIsParticipant) {
+        $userCurrentRound = $activeBattle['current_round'];
+    } else {
+        // Check if user was eliminated in this battle
+        $stmt = $db->prepare("SELECT round_number FROM pvp_matches WHERE battle_id = ? AND (user1_id = ? OR user2_id = ?) AND completed = 1 ORDER BY round_number DESC LIMIT 1");
+        $stmt->execute([$activeBattle['id'], $userId, $userId]);
+        $eliminationRound = $stmt->fetchColumn();
+        
+        if ($eliminationRound) {
+            $userIsEliminated = true;
+            $userEliminationRound = $eliminationRound;
+        }
+    }
+}
+
+ob_start();
+?>
+<div class="pvp-container">
+    <div id="pvpPanel" class="pvp-panel">
+        <!-- Header with Timer and Status -->
+        <div class="pvp-header">
+            <div class="pvp-timer-container">
+                <div id="pvpTimer" class="pvp-timer">
+                    <i class="fas fa-clock"></i> 
+                    <span id="timerText">
+                        <?php if ($activeBattle): ?>
+                            Battle Active - Round <?= $activeBattle['current_round'] ?>
+                            <?php if ($userIsEliminated): ?>
+                                - You were eliminated in Round <?= $userEliminationRound ?>
+                            <?php elseif ($userIsParticipant): ?>
+                                - You are in Round <?= $userCurrentRound ?>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            No Active Battle
+                        <?php endif; ?>
+                    </span>
+                </div>
+                <div id="pvpStatus" class="pvp-status">
+                    <?php if ($userIsEliminated): ?>
+                        ❌ You were eliminated in Round <?= $userEliminationRound ?>
+                    <?php elseif ($userIsParticipant): ?>
+                        🎮 You are participating in this battle!
+                    <?php elseif ($activeBattle): ?>
+                        👀 Watching battle in progress
+                    <?php else: ?>
+                        ⏳ Waiting for next battle
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="pvp-user-league">
+                <span class="league-label">Your League:</span>
+                <span id="userLeagueName" class="league-name" data-league-id="<?= $userLeagueId ?>">
+                    <?php 
+                    $userLeague = array_filter($leagues, fn($l) => $l['id'] == $userLeagueId);
+                    $userLeague = reset($userLeague);
+                    echo $userLeague ? $userLeague['name'] : 'Bronze';
+                    ?>
+                </span>
+            </div>
+        </div>
+        
+        <!-- Scoring Info Panel -->
+        <div class="pvp-scoring-info">
+            <button class="scoring-info-toggle" onclick="toggleScoringInfo()">
+                <i class="fas fa-info-circle"></i> How Points Are Calculated
+            </button>
+            <div class="scoring-info-content" id="scoringInfoContent" style="display: none;">
+                <h3><i class="fas fa-trophy"></i> Popularity Score System</h3>
+                <div class="scoring-rules">
+                    <div class="scoring-rule">
+                        <div class="rule-icon">🤝</div>
+                        <div class="rule-text">
+                            <strong>Help Given:</strong> 1 point per 100 helps
+                        </div>
+                    </div>
+                    <div class="scoring-rule">
+                        <div class="rule-icon">💝</div>
+                        <div class="rule-text">
+                            <strong>Help Received:</strong> 1 point per 300 helps
+                        </div>
+                    </div>
+                    <div class="scoring-rule">
+                        <div class="rule-icon">🌟</div>
+                        <div class="rule-text">
+                            <strong>Diversity Bonus:</strong> 1 point per 10 unique users helped
+                        </div>
+                    </div>
+                    <div class="scoring-rule">
+                        <div class="rule-icon">👥</div>
+                        <div class="rule-text">
+                            <strong>Trusted Helper Bonus:</strong> 1 point per 5 users who helped you 10+ times
+                        </div>
+                    </div>
+                </div>
+                <div class="scoring-note">
+                    <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> Be active, help others, and build friendships to increase your popularity score!
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs Ligi -->
+        <div class="pvp-tabs">
+            <?php foreach ($leagues as $index => $league): ?>
+            <button class="tab-btn <?= $league['id'] == $userLeagueId ? 'active' : '' ?>" 
+                    data-tab="league-<?= $league['id'] ?>"
+                    data-league-id="<?= $league['id'] ?>">
+                <?php if ($league['level'] == 1): ?>
+                    🥉
+                <?php elseif ($league['level'] == 2): ?>
+                    🥈
+                <?php else: ?>
+                    🥇
+                <?php endif; ?>
+                <?= htmlspecialchars($league['name']) ?>
+            </button>
+            <?php endforeach; ?>
+        </div>
+        
+        <!-- Continut Tabs -->
+        <div class="pvp-tab-content">
+            <?php foreach ($leagues as $index => $league): ?>
+            <div class="tab-content <?= $league['id'] == $userLeagueId ? 'active' : '' ?>" 
+                 id="league-<?= $league['id'] ?>"
+                 data-league-id="<?= $league['id'] ?>">
+                
+                <!-- Sub-tabs pentru Runde -->
+                <div class="pvp-round-tabs" id="roundTabs-<?= $league['id'] ?>">
+                    <button class="round-btn" data-round="1">1/32</button>
+                    <button class="round-btn" data-round="2">1/16</button>
+                    <button class="round-btn" data-round="3">1/8</button>
+                    <button class="round-btn" data-round="4">1/4 (Semifinal)</button>
+                    <button class="round-btn" data-round="5">Final</button>
+                </div>
+                
+                <!-- Bracket Container -->
+                <div class="bracket-container" id="bracket-<?= $league['id'] ?>">
+                    <?php
+                    // Get battle for this league
+                    $stmt = $db->prepare("SELECT * FROM pvp_battles WHERE league_id = ? AND is_active = 1 ORDER BY id DESC LIMIT 1");
+                    $stmt->execute([$league['id']]);
+                    $leagueBattle = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($leagueBattle) {
+                        // Show all rounds with matches
+                        for ($round = 1; $round <= 5; $round++) {
+                            $stmt = $db->prepare("
+                                SELECT m.*, 
+                                       u1.id as u1_id,
+                                       u1.username as user1_name, 
+                                       CASE 
+                                           WHEN u1.gallery IS NOT NULL AND u1.gallery != '' THEN CONCAT('uploads/', u1.id, '/', TRIM(SUBSTRING_INDEX(u1.gallery, ',', 1)))
+                                           ELSE 'default-avatar.png'
+                                       END as user1_photo,
+                                       u1.vip as user1_vip,
+                                       u2.id as u2_id,
+                                       u2.username as user2_name, 
+                                       CASE 
+                                           WHEN u2.gallery IS NOT NULL AND u2.gallery != '' THEN CONCAT('uploads/', u2.id, '/', TRIM(SUBSTRING_INDEX(u2.gallery, ',', 1)))
+                                           ELSE 'default-avatar.png'
+                                       END as u2_photo,
+                                       u2.vip as u2_vip
+                                FROM pvp_matches m
+                                LEFT JOIN users u1 ON m.user1_id = u1.id
+                                LEFT JOIN users u2 ON m.user2_id = u2.id
+                                WHERE m.battle_id = ? AND m.round_number = ?
+                                ORDER BY m.id
+                            ");
+                            $stmt->execute([$leagueBattle['id'], $round]);
+                            $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            
+                            if (!empty($matches)) {
+                                $roundName = '';
+                                switch($round) {
+                                    case 1: $roundName = '1/32 Finals'; break;
+                                    case 2: $roundName = '1/16 Finals'; break;
+                                    case 3: $roundName = '1/8 Finals'; break;
+                                    case 4: $roundName = '1/4 Finals (Semifinal)'; break;
+                                    case 5: $roundName = 'Final'; break;
+                                }
+                                
+                                echo '<div class="bracket-round" data-round="' . $round . '">';
+                                echo '<div class="bracket-round-title">' . $roundName . '</div>';
+                                echo '<div class="bracket-matches">';
+                                
+                                foreach ($matches as $match) {
+                                    // Determine winner/loser classes
+                                    $user1Class = '';
+                                    $user2Class = '';
+                                    $vsClass = '';
+                                    $matchClass = '';
+                                    
+                                    if ($match['completed']) {
+                                        $matchClass = ' completed';
+                                        if ($match['user1_score'] > $match['user2_score']) {
+                                            $user1Class = ' winner';
+                                            $user2Class = ' loser';
+                                        } elseif ($match['user2_score'] > $match['user1_score']) {
+                                            $user1Class = ' loser';
+                                            $user2Class = ' winner';
+                                        }
+                                    } else {
+                                        $vsClass = ' live';
+                                        $matchClass = ' live';
+                                    }
+                                    
+                                    // Check if user is in this match
+                                    $userInMatch = ($match['user1_id'] == $userId || $match['user2_id'] == $userId);
+                                    if ($userInMatch) {
+                                        $matchClass .= ' user-match';
+                                    }
+                                    
+                                    echo '<div class="match-card' . $matchClass . '">';
+                                    echo '<div class="match-header">Match #' . $match['id'] . '</div>';
+                                    echo '<div class="match-players">';
+                                    
+                                    // Player 1
+                                    echo '<div class="match-player' . $user1Class . '">';
+                                    echo '<img src="' . $match['user1_photo'] . '" class="match-player-avatar" alt="' . $match['user1_name'] . '">';
+                                    echo '<div class="match-player-name' . (!empty($match['user1_vip']) ? ' vip' : '') . '">' . $match['user1_name'] . '</div>';
+                                    echo '<div class="match-player-score">' . $match['user1_score'] . '</div>';
+                                    if (!empty($match['user1_vip'])) echo '<div class="vip-badge">👑 VIP</div>';
+                                    echo '</div>';
+                                    
+                                    echo '<div class="match-vs' . $vsClass . '">VS</div>';
+                                    
+                                    // Player 2
+                                    echo '<div class="match-player' . $user2Class . '">';
+                                    echo '<img src="' . $match['user2_photo'] . '" class="match-player-avatar" alt="' . $match['user2_name'] . '">';
+                                    echo '<div class="match-player-name' . (!empty($match['user2_vip']) ? ' vip' : '') . '">' . $match['user2_name'] . '</div>';
+                                    echo '<div class="match-player-score">' . $match['user2_score'] . '</div>';
+                                    if (!empty($match['user2_vip'])) echo '<div class="vip-badge">👑 VIP</div>';
+                                    echo '</div>';
+                                    
+                                    echo '</div>';
+                                    echo '<div class="match-status">' . ($match['completed'] ? 'Finished' : 'Active') . '</div>';
+                                    echo '</div>';
+                                }
+                                
+                                echo '</div>';
+                                echo '</div>';
+                            }
+                        }
+                    } else {
+                        // No battle for this league
+                        echo '<div class="no-battle-message">';
+                        echo '<i class="fas fa-info-circle"></i>';
+                        echo '<p>No active battle for this league at the moment.</p>';
+                        echo '<p class="next-battle-info">Battle will start automatically when there are enough players!</p>';
+                        echo '</div>';
+                    }
+                    ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data pentru JS -->
+<div id="pvpData" style="display: none;" 
+     data-user-id="<?= $userId ?>" 
+     data-user-league-id="<?= $userLeagueId ?>"
+     data-has-active-battle="<?= $activeBattle ? '1' : '0' ?>"
+     data-active-battle-id="<?= $activeBattle ? $activeBattle['id'] : '' ?>"
+     data-user-is-participant="<?= $userIsParticipant ? '1' : '0' ?>"
+     data-user-current-round="<?= $userCurrentRound ?>">
+</div>
+
+<script>
+// Complete bracket system with all rounds
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.dataset.tab;
+            
+            // Remove active from all tabs
+            tabButtons.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // Add active to clicked tab
+            btn.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+    
+    // Round tab switching with content display
+    const roundButtons = document.querySelectorAll('.round-btn');
+    roundButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const parentTabs = btn.closest('.pvp-round-tabs');
+            const allRoundBtns = parentTabs.querySelectorAll('.round-btn');
+            const targetRound = btn.dataset.round;
+            
+            // Remove active from all round buttons in this league
+            allRoundBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Show/hide bracket rounds
+            const bracketContainer = parentTabs.nextElementSibling;
+            const allRounds = bracketContainer.querySelectorAll('.bracket-round');
+            
+            allRounds.forEach(round => {
+                if (round.dataset.round === targetRound) {
+                    round.style.display = 'block';
+                } else {
+                    round.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Scoring info toggle
+    window.toggleScoringInfo = function() {
+        const content = document.getElementById('scoringInfoContent');
+        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    };
+    
+    // Auto-highlight current round if user is participant
+    const userIsParticipant = document.getElementById('pvpData').dataset.userIsParticipant === '1';
+    const userCurrentRound = parseInt(document.getElementById('pvpData').dataset.userCurrentRound);
+    
+    if (userIsParticipant && userCurrentRound > 0) {
+        // Find and activate the current round button
+        const activeTab = document.querySelector('.tab-content.active');
+        const roundBtn = activeTab.querySelector(`[data-round="${userCurrentRound}"]`);
+        if (roundBtn) {
+            roundBtn.classList.add('active');
+            roundBtn.click(); // Trigger the click to show the round
+        }
+    } else {
+        // Default to showing round 1
+        const activeTab = document.querySelector('.tab-content.active');
+        const roundBtn = activeTab.querySelector('[data-round="1"]');
+        if (roundBtn) {
+            roundBtn.classList.add('active');
+            roundBtn.click();
+        }
+    }
+    
+    // Initialize all rounds to be hidden except the active one
+    const allBracketRounds = document.querySelectorAll('.bracket-round');
+    allBracketRounds.forEach(round => {
+        round.style.display = 'none';
+    });
+    
+    // Show the active round
+    const activeRoundBtn = document.querySelector('.round-btn.active');
+    if (activeRoundBtn) {
+        const targetRound = activeRoundBtn.dataset.round;
+        const activeTab = document.querySelector('.tab-content.active');
+        const targetRoundEl = activeTab.querySelector(`[data-round="${targetRound}"]`);
+        if (targetRoundEl) {
+            targetRoundEl.style.display = 'block';
+        }
+    }
+});
+</script>
+
+<style>
+/* Additional styles for complete bracket system */
+.bracket-round {
+    margin-bottom: 30px;
+}
+
+.bracket-round-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.bracket-matches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.match-card.user-match {
+    border: 3px solid #ff6b6b;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.95), rgba(0, 0, 255, 0.95));
+}
+
+.match-card.user-match .match-header {
+    background: #ff6b6b;
+    color: white;
+    font-weight: bold;
+}
+
+.match-player.winner .match-player-avatar {
+    border-color: #f6cf49;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+    animation: pulseGoldenGlow 2s ease-in-out infinite;
+}
+
+.match-player.loser .match-player-avatar {
+    border-color: #2c2c2c;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 0, 0, 0.6);
+    filter: grayscale(20%);
+}
+
+.match-vs.live {
+    animation: pulsateVS 1.5s ease-in-out infinite;
+    color: #ff4444;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+}
+
+@keyframes pulseGoldenGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); }
+    50% { box-shadow: 0 0 30px rgba(76, 175, 80, 1), 0 0 40px rgba(76, 175, 80, 0.6); }
+}
+
+@keyframes pulsateVS {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.round-btn.active {
+    background: #f6cf49;
+    color: white;
+    transform: scale(1.05);
+}
+
+.round-btn {
+    transition: all 0.3s ease;
+}
+
+.round-btn:hover {
+    background: #e6c042;
+    color: white;
+    transform: scale(1.02);
+}
+</style>
+
+<?php
+$content = ob_get_clean();
+$pageTitle = 'PvP Battles';
+$pageCss = 'assets_css/pvp.css';
+$extraCss = ['assets_css/pvp-chat.css'];
+include 'template.php';
+?>

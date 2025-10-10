@@ -14,7 +14,7 @@ body, html {
     align-items: center;
     justify-content: space-between;
     background: linear-gradient(90deg, #8e2de2 0%, #4a00e0 100%);
-    color: #fff;
+    color: #222;
     font-size: 1.7rem;
     font-weight: 600;
     border-bottom-left-radius: 0;
@@ -41,7 +41,7 @@ body, html {
 
 /* Iconul de logout */
 .logout-btn {
-    color: #fff;
+    color: #222;
     font-size: 1.5rem;
     background: none;
     border: none;
@@ -128,7 +128,7 @@ body, html {
     top: 50%;
     transform: translateY(-50%);
     background: linear-gradient(135deg, #7c4dff, #e040fb);
-    color: #fff;
+    color: #222;
     border: none;
     border-radius: 50%;
     width: 44px;
@@ -251,7 +251,7 @@ textarea.desc-field {
 
 .navbar .icon {
     font-size: 2.3rem; /* MAI MARE */
-    color: #fff;
+    color: #222;
     opacity: 0.94;
     transition: color 0.18s, opacity 0.18s, transform 0.13s;
     cursor: pointer;

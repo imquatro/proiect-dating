@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt->fetch()) {
                 $mesaj = 'Există deja un cont cu acest email sau nume!';
             } else {
-                $stmt = $db->prepare("INSERT INTO users (email, username, password, age, country, city, gender) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $db->prepare("INSERT INTO users (email, username, password, age, country, city, gender, auto_account) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
                 if ($stmt->execute([$email, $username, $hash, $age, $country, $city, $gender])) {
                     $userId = $db->lastInsertId();
                     $defaults = $db->query("SELECT slot_number, slot_type, unlocked FROM default_slots");

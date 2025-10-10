@@ -63,4 +63,25 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = 'logout.php';
         });
     }
+    
+    // Initialize leaderboard tabs
+    const leaderboardTabs = document.querySelectorAll('.leaderboard-tab-btn');
+    const leaderboardContents = document.querySelectorAll('.leaderboard-tab-content');
+    
+    leaderboardTabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.leaderboardTab;
+            
+            // Remove active class from all tabs
+            leaderboardTabs.forEach(b => b.classList.remove('active'));
+            leaderboardContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            btn.classList.add('active');
+            const targetContent = document.getElementById(tabId + '-tab');
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    });
 });

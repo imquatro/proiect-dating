@@ -72,17 +72,27 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
         <button class="close-btn" onclick="closeLiveBattle()">&times;</button>
     </div>
 
-    <div class="match-players">
-        <div class="player">
-            <img src="default-avatar.png" alt="Tu" class="player-avatar">
-            <div class="player-name">Tu</div>
+        <div class="match-players">
+            <div class="player">
+                <div class="player-avatar-container">
+                    <img src="default-avatar.png" alt="Tu" class="player-avatar">
+                    <div class="eliminated-overlay" style="display: none;">
+                        <div class="eliminated-text">ELIMINATED</div>
+                    </div>
+                </div>
+                <div class="player-name">Tu</div>
+            </div>
+            <div class="vs-divider">VS</div>
+            <div class="player">
+                <div class="player-avatar-container">
+                    <img src="default-avatar.png" alt="<?= htmlspecialchars($opponentName) ?>" class="player-avatar">
+                    <div class="eliminated-overlay" style="display: none;">
+                        <div class="eliminated-text">ELIMINATED</div>
+                    </div>
+                </div>
+                <div class="player-name"><?= htmlspecialchars($opponentName) ?></div>
+            </div>
         </div>
-        <div class="vs-divider">VS</div>
-        <div class="player">
-            <img src="default-avatar.png" alt="<?= htmlspecialchars($opponentName) ?>" class="player-avatar">
-            <div class="player-name"><?= htmlspecialchars($opponentName) ?></div>
-        </div>
-    </div>
 
     <div class="score-bar-container">
         <div class="score-bar">
@@ -223,14 +233,54 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
             flex: 1;
         }
 
+        .player-avatar-container {
+            position: relative;
+            display: inline-block;
+        }
+
         .player-avatar {
-            width: 60px;
-            height: 60px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             border: 3px solid #ffd700;
             object-fit: cover;
             margin-bottom: 8px;
             background: #ddd;
+            position: relative;
+        }
+
+        .player-avatar.eliminated {
+            filter: grayscale(100%);
+            opacity: 0.7;
+        }
+
+        .eliminated-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .eliminated-text {
+            color: #ff4444;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            transform: rotate(-15deg);
+            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 2px solid #ff4444;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
         }
 
         .player-name {
@@ -250,41 +300,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
 
         .score-bar-container {
             padding: 0 20px 20px;
-        }
-
-        .score-bar {
-            background: rgba(0, 0, 0, 0.3);
-            height: 30px;
-            border-radius: 15px;
-            overflow: hidden;
-            display: flex;
-            position: relative;
-        }
-
-        .score-left {
-            background: linear-gradient(90deg, #4caf50, #45a049);
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            transition: width 0.5s ease;
-        }
-
-        .score-right {
-            background: linear-gradient(90deg, #f44336, #d32f2f);
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding-left: 10px;
-            transition: width 0.5s ease;
-        }
-
-        .score-value {
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
+            display: none;
         }
 
         .match-info {
@@ -404,7 +420,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
         }
 
         .chat-send-btn {
-            background: #4caf50;
+            background: #f6cf49;
             color: white;
             border: none;
             width: 40px;
@@ -418,7 +434,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
         }
 
         .chat-send-btn:hover {
-            background: #45a049;
+            background: #e6c042;
         }
 
         .unread-badge {
@@ -440,12 +456,22 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
 
         <div class="match-players">
             <div class="player">
-                <img src="default-avatar.png" alt="Tu" class="player-avatar">
+                <div class="player-avatar-container">
+                    <img src="default-avatar.png" alt="Tu" class="player-avatar">
+                    <div class="eliminated-overlay" style="display: none;">
+                        <div class="eliminated-text">ELIMINATED</div>
+                    </div>
+                </div>
                 <div class="player-name">Tu</div>
             </div>
             <div class="vs-divider">VS</div>
             <div class="player">
-                <img src="default-avatar.png" alt="<?= htmlspecialchars($opponentName) ?>" class="player-avatar">
+                <div class="player-avatar-container">
+                    <img src="default-avatar.png" alt="<?= htmlspecialchars($opponentName) ?>" class="player-avatar">
+                    <div class="eliminated-overlay" style="display: none;">
+                        <div class="eliminated-text">ELIMINATED</div>
+                    </div>
+                </div>
                 <div class="player-name"><?= htmlspecialchars($opponentName) ?></div>
             </div>
         </div>
@@ -499,6 +525,30 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
         const userId = <?= $userId ?>;
         let timerInterval;
         let timeLeft = 300; // 5 minute
+
+        // Function to show eliminated overlay for a player
+        function showEliminated(playerIndex) {
+            const players = document.querySelectorAll('.player');
+            const overlay = players[playerIndex].querySelector('.eliminated-overlay');
+            const avatar = players[playerIndex].querySelector('.player-avatar');
+            
+            if (overlay && avatar) {
+                overlay.style.display = 'flex';
+                avatar.classList.add('eliminated');
+            }
+        }
+
+        // Function to hide eliminated overlay for a player
+        function hideEliminated(playerIndex) {
+            const players = document.querySelectorAll('.player');
+            const overlay = players[playerIndex].querySelector('.eliminated-overlay');
+            const avatar = players[playerIndex].querySelector('.player-avatar');
+            
+            if (overlay && avatar) {
+                overlay.style.display = 'none';
+                avatar.classList.remove('eliminated');
+            }
+        }
 
         // Timer countdown
         function updateTimer() {

@@ -82,7 +82,263 @@ ob_start();
                         </div>
                     </div>
                     <div class="subtab-content" id="leaderboard">
-                        <p style="color:#fff;">Leaderboard coming soon</p>
+                        <?php
+                        // Leaderboard functionality
+                        $userId = $_SESSION['user_id'];
+                        
+                        // Obține top 10 jucători pentru fiecare categorie
+                        $leaderboards = [];
+                        
+                        // 1. Top 10 după nivel
+                        $stmt = $db->query('
+                            SELECT u.id, u.username, u.level, u.gallery, u.vip, 
+                                   COALESCE(u.harvests, 0) as total_score
+                            FROM users u
+                            ORDER BY u.level DESC, u.harvests DESC
+                            LIMIT 10
+                        ');
+                        $leaderboards['level'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        // 2. Top 10 după harvests
+                        $stmt = $db->query('
+                            SELECT u.id, u.username, u.level, u.gallery, u.vip,
+                                   COALESCE(u.harvests, 0) as total_score
+                            FROM users u
+                            ORDER BY u.harvests DESC, u.level DESC
+                            LIMIT 10
+                        ');
+                        $leaderboards['score'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        // 3. Top 10 după XP
+                        $stmt = $db->query('
+                            SELECT u.id, u.username, u.level, u.gallery, u.vip,
+                                   COALESCE(u.xp, 0) as activity_count
+                            FROM users u
+                            ORDER BY u.xp DESC, u.level DESC
+                            LIMIT 10
+                        ');
+                        $leaderboards['activity'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        // Funcție pentru a obține avatarul utilizatorului
+                        function getUserAvatar($user) {
+                            if (!empty($user['gallery'])) {
+                                $gallery = array_filter(explode(',', $user['gallery']));
+                                if (!empty($gallery)) {
+                                    $avatarPath = 'uploads/' . $user['id'] . '/' . trim($gallery[0]);
+                                    if (is_file(__DIR__ . '/' . $avatarPath)) {
+                                        return $avatarPath;
+                                    }
+                                }
+                            }
+                            return 'default-avatar.png';
+                        }
+                        
+                        // Funcție pentru a obține poziția utilizatorului curent
+                        function getUserPosition($leaderboards, $userId, $category) {
+                            foreach ($leaderboards[$category] as $index => $user) {
+                                if ($user['id'] == $userId) {
+                                    return $index + 1;
+                                }
+                            }
+                            return null;
+                        }
+                        ?>
+                        
+                        <div class="leaderboard-container">
+                            <div class="leaderboard-header">
+                                <h3><i class="fas fa-trophy"></i> Leaderboard</h3>
+                                <p>Top 10 jucători în diferite categorii</p>
+                            </div>
+
+                            <div class="leaderboard-tabs">
+                                <button class="leaderboard-tab-btn active" data-leaderboard-tab="level">
+                                    <i class="fas fa-star"></i>
+                                    <span>Top Nivel</span>
+                                </button>
+                                <button class="leaderboard-tab-btn" data-leaderboard-tab="score">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Top Harvests</span>
+                                </button>
+                                <button class="leaderboard-tab-btn" data-leaderboard-tab="activity">
+                                    <i class="fas fa-fire"></i>
+                                    <span>Top XP</span>
+                                </button>
+                            </div>
+
+                            <div class="leaderboard-content">
+                                <!-- Tab Level -->
+                                <div class="leaderboard-tab-content active" id="level-tab">
+                                    <div class="leaderboard-list">
+                                        <?php foreach ($leaderboards['level'] as $index => $user): ?>
+                                            <?php $isCurrentUser = $user['id'] == $userId; ?>
+                                            <div class="leaderboard-item <?= $isCurrentUser ? 'current-user' : '' ?>">
+                                                <div class="rank">
+                                                    <?php if ($index < 3): ?>
+                                                        <div class="medal">
+                                                            <?php if ($index == 0): ?>
+                                                                <i class="fas fa-medal gold"></i>
+                                                            <?php elseif ($index == 1): ?>
+                                                                <i class="fas fa-medal silver"></i>
+                                                            <?php else: ?>
+                                                                <i class="fas fa-medal bronze"></i>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="rank-number"><?= $index + 1 ?></span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                
+                                                <div class="player-info">
+                                                    <img src="<?= htmlspecialchars(getUserAvatar($user)) ?>" 
+                                                         alt="<?= htmlspecialchars($user['username']) ?>" 
+                                                         class="player-avatar">
+                                                    <div class="player-details">
+                                                        <div class="player-name <?= $user['vip'] ? 'vip' : '' ?>">
+                                                            <?= htmlspecialchars($user['username']) ?>
+                                                            <?php if ($user['vip']): ?>
+                                                                <i class="fas fa-crown vip-crown"></i>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <div class="player-level">Nivel <?= $user['level'] ?></div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="player-score">
+                                                    <span class="score-value"><?= number_format($user['total_score']) ?></span>
+                                                    <span class="score-label">puncte</span>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Score -->
+                                <div class="leaderboard-tab-content" id="score-tab">
+                                    <div class="leaderboard-list">
+                                        <?php foreach ($leaderboards['score'] as $index => $user): ?>
+                                            <?php $isCurrentUser = $user['id'] == $userId; ?>
+                                            <div class="leaderboard-item <?= $isCurrentUser ? 'current-user' : '' ?>">
+                                                <div class="rank">
+                                                    <?php if ($index < 3): ?>
+                                                        <div class="medal">
+                                                            <?php if ($index == 0): ?>
+                                                                <i class="fas fa-medal gold"></i>
+                                                            <?php elseif ($index == 1): ?>
+                                                                <i class="fas fa-medal silver"></i>
+                                                            <?php else: ?>
+                                                                <i class="fas fa-medal bronze"></i>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="rank-number"><?= $index + 1 ?></span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                
+                                                <div class="player-info">
+                                                    <img src="<?= htmlspecialchars(getUserAvatar($user)) ?>" 
+                                                         alt="<?= htmlspecialchars($user['username']) ?>" 
+                                                         class="player-avatar">
+                                                    <div class="player-details">
+                                                        <div class="player-name <?= $user['vip'] ? 'vip' : '' ?>">
+                                                            <?= htmlspecialchars($user['username']) ?>
+                                                            <?php if ($user['vip']): ?>
+                                                                <i class="fas fa-crown vip-crown"></i>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <div class="player-level">Nivel <?= $user['level'] ?></div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="player-score">
+                                                    <span class="score-value"><?= number_format($user['total_score']) ?></span>
+                                                    <span class="score-label">puncte</span>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Activity -->
+                                <div class="leaderboard-tab-content" id="activity-tab">
+                                    <div class="leaderboard-list">
+                                        <?php foreach ($leaderboards['activity'] as $index => $user): ?>
+                                            <?php $isCurrentUser = $user['id'] == $userId; ?>
+                                            <div class="leaderboard-item <?= $isCurrentUser ? 'current-user' : '' ?>">
+                                                <div class="rank">
+                                                    <?php if ($index < 3): ?>
+                                                        <div class="medal">
+                                                            <?php if ($index == 0): ?>
+                                                                <i class="fas fa-medal gold"></i>
+                                                            <?php elseif ($index == 1): ?>
+                                                                <i class="fas fa-medal silver"></i>
+                                                            <?php else: ?>
+                                                                <i class="fas fa-medal bronze"></i>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="rank-number"><?= $index + 1 ?></span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                
+                                                <div class="player-info">
+                                                    <img src="<?= htmlspecialchars(getUserAvatar($user)) ?>" 
+                                                         alt="<?= htmlspecialchars($user['username']) ?>" 
+                                                         class="player-avatar">
+                                                    <div class="player-details">
+                                                        <div class="player-name <?= $user['vip'] ? 'vip' : '' ?>">
+                                                            <?= htmlspecialchars($user['username']) ?>
+                                                            <?php if ($user['vip']): ?>
+                                                                <i class="fas fa-crown vip-crown"></i>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <div class="player-level">Nivel <?= $user['level'] ?></div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="player-score">
+                                                    <span class="score-value"><?= $user['activity_count'] ?></span>
+                                                    <span class="score-label">acțiuni</span>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Poziția utilizatorului curent -->
+                            <div class="current-user-stats">
+                                <h4>Poziția ta în leaderboard:</h4>
+                                <div class="user-positions">
+                                    <div class="position-item">
+                                        <span class="position-label">Nivel:</span>
+                                        <span class="position-value">
+                                            <?php 
+                                            $levelPos = getUserPosition($leaderboards, $userId, 'level');
+                                            echo $levelPos ? "#$levelPos" : "Nu în top 10";
+                                            ?>
+                                        </span>
+                                    </div>
+                                    <div class="position-item">
+                                        <span class="position-label">Harvests:</span>
+                                        <span class="position-value">
+                                            <?php 
+                                            $scorePos = getUserPosition($leaderboards, $userId, 'score');
+                                            echo $scorePos ? "#$scorePos" : "Nu în top 10";
+                                            ?>
+                                        </span>
+                                    </div>
+                                    <div class="position-item">
+                                        <span class="position-label">XP:</span>
+                                        <span class="position-value">
+                                            <?php 
+                                            $activityPos = getUserPosition($leaderboards, $userId, 'activity');
+                                            echo $activityPos ? "#$activityPos" : "Nu în top 10";
+                                            ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="subtab-content" id="profile">
                         <div id="profileContainer"></div>

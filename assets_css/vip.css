@@ -54,7 +54,7 @@
 
 .tab-content {
     display: none;
-    color: #fff;
+    color: #222;
 }
 
 .tab-content.active {
@@ -86,7 +86,7 @@
 
 .subtab-content {
     display: none;
-    color: #fff;
+    color: #222;
 }
 
 .subtab-content.active {

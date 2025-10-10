@@ -44,7 +44,7 @@
 
 .tab-content {
     display: none;
-    color: #fff;
+    color: #222;
 }
 
 .tab-content.active {

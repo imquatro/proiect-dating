@@ -22,7 +22,7 @@
 .bank-tab {
     display: none;
     margin-top: 10px;
-    color: #fff;
+    color: #222;
 }
 .bank-tab.active {
     display: block;
@@ -59,7 +59,7 @@
 
 .deposit-limit {
     margin-top: 4px;
-    color: #fff;
+    color: #222;
 }
 
 .cancel-btn {
@@ -67,7 +67,7 @@
     padding: 4px 6px;
     background: #ff8080;
     border: 1px solid #ff4d4d;
-    color: #fff;
+    color: #222;
     cursor: pointer;
 }
 

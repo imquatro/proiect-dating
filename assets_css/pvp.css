@@ -100,12 +100,12 @@ body {
     color: #6c4e09;
     cursor: pointer;
     font-size: 13px;
-    transition: all 0.2s;
+    /* transition: all 0.2s; */
 }
 
-.tab-btn:hover {
+/* .tab-btn:hover {
     background: #f6cf49;
-}
+} */
 
 .tab-btn.active {
     background: #f6cf49;
@@ -155,29 +155,33 @@ body {
     margin-bottom: 8px;
     flex-wrap: wrap;
     flex-shrink: 0;
+    position: sticky; /* keep visible on scroll */
+    top: 0;
+    z-index: 1000;
+    background: url('../img/bg2.png') center/cover no-repeat; /* same background as medal buttons container */
+    padding: 6px 4px;
+    border-bottom: 1px solid #f6cf49;
 }
 
 .round-btn {
     flex: 1;
-    min-width: 60px;
     padding: 6px 4px;
-    background: rgba(255, 233, 163, 0.6);
+    background: #ffe9a3; /* settings button style */
     border: 1px solid #f6cf49;
     color: #6c4e09;
     cursor: pointer;
     font-size: 12px;
-    border-radius: 4px;
-    transition: all 0.2s;
+    text-align: center;
 }
 
-.round-btn:hover {
-    background: rgba(246, 207, 73, 0.8);
-}
+/* .round-btn:hover {
+    background: #f6cf49;
+} */
 
 .round-btn.active {
     background: #f6cf49;
+    color: #6c4e09;
     font-weight: bold;
-    transform: scale(1.05);
 }
 
 /* Loading */
@@ -305,12 +309,12 @@ body {
 
 .tournament-slot-card {
     margin-bottom: 8px;
-    transition: all 0.3s ease;
+    /* transition: all 0.3s ease; */
 }
 
-.tournament-slot-card:hover {
+/* .tournament-slot-card:hover {
     transform: scale(1.05);
-}
+} */
 
 .tournament-slot {
     width: 60px;
@@ -322,7 +326,7 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s;
+    /* transition: all 0.3s; */
     position: relative;
     overflow: hidden;
     background-image: url('default-avatar.png');
@@ -331,11 +335,11 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.tournament-slot:hover {
+/* .tournament-slot:hover {
     transform: scale(1.1);
     border-color: #ffd700;
     box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
-}
+} */
 
 .tournament-slot.empty {
     background: rgba(240, 240, 240, 0.9);
@@ -351,8 +355,8 @@ body {
 }
 
 .tournament-slot.winner {
-    border-color: #4caf50;
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+    border-color: #f6cf49;
+    box-shadow: 0 0 15px rgba(246, 207, 73, 0.6);
 }
 
 .tournament-slot.active {
@@ -393,7 +397,7 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s;
+    /* transition: all 0.3s; */
     position: relative;
     overflow: hidden;
     background-image: url('default-avatar.png');
@@ -401,11 +405,11 @@ body {
     background-position: center;
 }
 
-.final-player-slot:hover {
+/* .final-player-slot:hover {
     transform: scale(1.1);
     border-color: #ffd700;
     box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
-}
+} */
 
 .final-player-slot.empty {
     background: linear-gradient(135deg, rgba(200, 200, 200, 0.3), rgba(180, 180, 180, 0.2));
@@ -429,7 +433,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s;
+    /* transition: all 0.3s; */
     border-radius: 50%;
     width: 80px;
     height: 80px;
@@ -437,29 +441,29 @@ body {
     box-shadow: 0 6px 25px rgba(255, 107, 107, 0.6);
 }
 
-.final-vs-button:hover {
+/* .final-vs-button:hover {
     transform: scale(1.2);
     box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
-}
+} */
 
 /* Match Card */
 .match-card {
-    background: linear-gradient(135deg, rgba(255, 233, 163, 0.95), rgba(246, 207, 73, 0.85));
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.95), rgba(0, 0, 255, 0.95));
     border: 2px solid #f6cf49;
-    border-radius: 10px;
+    border-radius: 0px;
     padding: 12px;
     position: relative;
     cursor: pointer;
-    transition: all 0.3s;
+    /* transition: all 0.3s; */
 }
 
-.match-card:hover {
+/* .match-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-}
+} */
 
 .match-card.completed {
-    border-color: #4caf50;
+    border-color: #f6cf49;
 }
 
 .match-card.active {
@@ -479,9 +483,7 @@ body {
 }
 
 .match-header {
-    text-align: center;
-    color: #6c4e09;
-    font-size: 12px;
+    display: none; /* Hide match numbers as requested */
     font-weight: bold;
     margin-bottom: 10px;
     opacity: 0.8;
@@ -503,17 +505,80 @@ body {
 }
 
 .match-player-avatar {
-    width: 50px;
-    height: 50px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    border: 2px solid #f6cf49;
+    border: 3px solid #f6cf49;
     object-fit: cover;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    position: relative;
 }
 
+.match-player-avatar.eliminated {
+    filter: grayscale(100%);
+    opacity: 0.7;
+}
+
+.eliminated-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.eliminated-text {
+    color: #ff4444;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    transform: rotate(-15deg);
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 2px solid #ff4444;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+}
+
+/* Winner - Golden Pulsating Glow */
 .match-player.winner .match-player-avatar {
-    border-color: #4caf50;
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+    border-color: transparent;
+    box-shadow: 0 0 100px rgba(255, 215, 0, 1), 0 0 150px rgba(255, 215, 0, 0.9), 0 0 200px rgba(255, 215, 0, 0.7), 0 0 250px rgba(255, 215, 0, 0.5);
+    animation: pulseGoldenGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGoldenGlow {
+    0%, 100% {
+        box-shadow: 0 0 120px rgba(255, 215, 0, 1), 0 0 180px rgba(255, 215, 0, 0.9), 0 0 240px rgba(255, 215, 0, 0.7), 0 0 300px rgba(255, 215, 0, 0.5), 0 0 360px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 180px rgba(255, 215, 0, 1), 0 0 240px rgba(255, 215, 0, 0.9), 0 0 300px rgba(255, 215, 0, 0.7), 0 0 360px rgba(255, 215, 0, 0.5), 0 0 420px rgba(255, 215, 0, 0.3), 0 0 480px rgba(255, 215, 0, 0.2);
+    }
+}
+
+/* Loser - Black Pulsating Glow */
+.match-player.loser .match-player-avatar {
+    border-color: transparent;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 1), 0 0 100px rgba(0, 0, 0, 0.9), 0 0 140px rgba(0, 0, 0, 0.7);
+    filter: grayscale(20%);
+    animation: pulseBlackGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseBlackGlow {
+    0%, 100% {
+        box-shadow: 0 0 80px rgba(0, 0, 0, 1), 0 0 120px rgba(0, 0, 0, 0.9), 0 0 160px rgba(0, 0, 0, 0.7), 0 0 200px rgba(0, 0, 0, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 120px rgba(0, 0, 0, 1), 0 0 160px rgba(0, 0, 0, 0.9), 0 0 200px rgba(0, 0, 0, 0.7), 0 0 240px rgba(0, 0, 0, 0.5), 0 0 280px rgba(0, 0, 0, 0.3);
+    }
 }
 
 .match-player-name {
@@ -522,6 +587,50 @@ body {
     font-weight: bold;
     word-break: break-word;
     max-width: 100px;
+}
+
+.match-player-name.vip {
+    background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #ff0000);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: goldShimmer 10s ease-in-out infinite alternate;
+}
+
+.match-player-name.xp-fade {
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+    font-weight: bold;
+    animation: xpFadeGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes xpFadeGlow {
+    0% {
+        text-shadow: 1px 1px 2px #000, 0 0 5px rgba(255, 255, 255, 0.3);
+    }
+    100% {
+        text-shadow: 1px 1px 2px #000, 0 0 10px rgba(255, 255, 255, 0.6), 0 0 15px rgba(255, 255, 255, 0.4);
+    }
+}
+
+@keyframes vipShimmer {
+    0%, 100% {
+        background-position: 0% 50%;
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 25px rgba(255, 215, 0, 0.6);
+    }
+    50% {
+        background-position: 100% 50%;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 35px rgba(255, 215, 0, 0.8), 0 0 50px rgba(255, 215, 0, 0.6);
+    }
+}
+
+@keyframes goldShimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
 }
 
 .match-player-name.gold-shimmer {
@@ -537,6 +646,7 @@ body {
     color: #6c4e09;
     font-weight: bold;
     margin-top: 3px;
+    display: none;
 }
 
 .match-vs {
@@ -546,12 +656,140 @@ body {
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
 }
 
+/* VS Pulsating effect pentru meciuri LIVE */
+.match-card.live .match-vs {
+    animation: pulsateVS 1.5s ease-in-out infinite;
+    color: #ff4444;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+}
+
+@keyframes pulsateVS {
+    0%, 100% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+    }
+    50% {
+        transform: scale(1.2);
+        text-shadow: 0 0 20px rgba(255, 68, 68, 1), 0 0 30px rgba(255, 68, 68, 0.6);
+    }
+}
+
+/* Scoring Info Panel */
+.pvp-scoring-info {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.scoring-info-toggle {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    /* transition: all 0.3s ease; */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* .scoring-info-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+} */
+
+.scoring-info-toggle i {
+    margin-right: 8px;
+}
+
+.scoring-info-content {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #f6cf49;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.scoring-info-content h3 {
+    color: #6c4e09;
+    font-size: 18px;
+    margin: 0 0 15px 0;
+    text-align: center;
+}
+
+.scoring-info-content h3 i {
+    color: #ffd700;
+    margin-right: 8px;
+}
+
+.scoring-rules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.scoring-rule {
+    background: rgba(255, 249, 219, 0.5);
+    border: 1px solid #f6cf49;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rule-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.rule-text {
+    text-align: left;
+    color: #333;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.rule-text strong {
+    display: block;
+    color: #6c4e09;
+    margin-bottom: 4px;
+}
+
+.scoring-note {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    border-radius: 8px;
+    padding: 12px;
+    color: #6c4e09;
+    font-size: 13px;
+    text-align: center;
+}
+
+.scoring-note i {
+    color: #ff8c00;
+    margin-right: 6px;
+}
+
 /* Match Status Badge */
 .match-status {
     position: absolute;
     top: -8px;
     right: 10px;
-    background: #4caf50;
+    background: #f6cf49;
     color: #fff;
     padding: 3px 10px;
     border-radius: 12px;
@@ -669,8 +907,8 @@ body {
     }
 
     .match-player-avatar {
-        width: 40px;
-        height: 40px;
+        width: 80px;
+        height: 80px;
     }
 
     .match-player-name {
@@ -679,6 +917,7 @@ body {
 
     .match-player-score {
         font-size: 14px;
+        display: none;
     }
 }
 
@@ -726,7 +965,7 @@ body {
 }
 
 .popup-header {
-    background: linear-gradient(90deg, #4caf50, #45a049);
+    background: linear-gradient(90deg, #f6cf49, #e6c042);
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
@@ -756,14 +995,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s;
+    /* transition: transform 0.2s; */
     border-radius: 50%;
 }
 
-.close-btn:hover {
+/* .close-btn:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.1);
-}
+} */
 
 .match-players {
     display: flex;
@@ -822,23 +1061,23 @@ body {
 }
 
 .score-left {
-    background: linear-gradient(90deg, #4caf50, #45a049);
+    background: linear-gradient(90deg, #3498db, #2980b9);
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     padding-right: 10px;
-    transition: width 0.5s ease;
+    /* transition: width 0.5s ease; */
 }
 
 .score-right {
-    background: linear-gradient(90deg, #f44336, #d32f2f);
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding-left: 10px;
-    transition: width 0.5s ease;
+    /* transition: width 0.5s ease; */
 }
 
 .score-value {
@@ -872,7 +1111,7 @@ body {
 }
 
 .goto-battle-btn {
-    background: linear-gradient(90deg, #4caf50, #45a049);
+    background: linear-gradient(90deg, #f6cf49, #e6c042);
     color: #fff;
     border: none;
     padding: 12px 30px;
@@ -880,16 +1119,16 @@ body {
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;
-    transition: all 0.3s ease;
+    /* transition: all 0.3s ease; */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     margin: 0 auto;
 }
 
-.goto-battle-btn:hover {
-    background: linear-gradient(90deg, #45a049, #3d8b40);
+/* .goto-battle-btn:hover {
+    background: linear-gradient(90deg, #e6c042, #d4b03a);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
+} */
 
 .chat-section {
     background: transparent;
@@ -947,7 +1186,7 @@ body {
 }
 
 .chat-message.own .message-bubble {
-    background: rgba(76, 175, 80, 0.9);
+    background: rgba(246, 207, 73, 0.9);
     color: white;
 }
 
@@ -985,16 +1224,16 @@ body {
     cursor: pointer;
     font-size: 18px;
     font-weight: bold;
-    transition: all 0.3s ease;
+    /* transition: all 0.3s ease; */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.chat-send-btn:hover {
+/* .chat-send-btn:hover {
     background: #ffed4e;
     transform: scale(1.1);
-}
+} */
 
 .unread-badge {
     background: #ff4444;
@@ -1108,8 +1347,8 @@ body {
     }
     
     .match-player-avatar {
-        width: 40px;
-        height: 40px;
+        width: 80px;
+        height: 80px;
     }
     
     .match-player-name {
@@ -1123,6 +1362,7 @@ body {
     
     .match-player-score {
         font-size: 12px;
+        display: none;
     }
     
     /* Final Match Mobile */
@@ -1319,8 +1559,8 @@ body {
     }
     
     .match-player-avatar {
-        width: 35px;
-        height: 35px;
+        width: 60px;
+        height: 60px;
     }
     
     .match-player-name {

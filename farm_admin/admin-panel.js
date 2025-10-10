@@ -19,82 +19,138 @@ function initAdminPanel(panel){
         });
     });
 
+
     // add-item form behaviour
     const typeSel = panel.querySelector('select[name="item_type"]');
     if (typeSel) {
         const waterFields = panel.querySelectorAll('.water-field');
         const feedFields = panel.querySelectorAll('.feed-field');
         const updateFields = () => {
-            if(typeSel.value === 'plant'){
-                waterFields.forEach(el => el.style.display = 'block');
-                feedFields.forEach(el => el.style.display = 'none');
-            }else{
-                waterFields.forEach(el => el.style.display = 'none');
-                feedFields.forEach(el => el.style.display = 'block');
-            }
+            const isPlant = typeSel.value === 'plant';
+            waterFields.forEach(f => f.style.display = isPlant ? 'block' : 'none');
+            feedFields.forEach(f => f.style.display = isPlant ? 'none' : 'block');
         };
-        typeSel.addEventListener('change', updateFields);
         updateFields();
+        typeSel.addEventListener('change', updateFields);
     }
 
-    // AJAX add item
-    const addForm = panel.querySelector('#fa-item-form');
-    if (addForm) {
-        addForm.addEventListener('submit', e => {
-            e.preventDefault();
-            const formData = new FormData(addForm);
-            fetch('farm_admin/save_item.php', {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin'
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const item = data.item;
-                    const create = cls => {
-                        const div = document.createElement('div');
-                        div.className = cls;
-                        div.dataset.id = item.id;
-                        div.innerHTML = `<img src="${imgPrefix}${item.image_plant}" alt="${item.name}"><div class="qs-info"><span class="qs-price">${item.price}</span></div>`;
-                        return div;
-                    };
-                    const editGrid = panel.querySelector('.fa-edit-grid');
-                    const deleteGrid = panel.querySelector('.fa-delete-grid');
-                    if (editGrid) editGrid.appendChild(create('fa-edit-item'));
-                    if (deleteGrid) deleteGrid.appendChild(create('fa-delete-item'));
-
-                    const qsPanel = document.getElementById('quickshop-panel');
-                    if (qsPanel && qsPanel.dataset.slotType === item.slot_type) {
-                        const qsGrid = qsPanel.querySelector('.quickshop-grid');
-                        if (qsGrid) {
-                            const qsPrefix = qsPanel.dataset.prefix || '';
-                            const qsImg = normalizeImg(item.image_plant);
-                            const qs = document.createElement('div');
-                            qs.className = 'quickshop-item';
-                            qs.dataset.itemId = item.id;
-                            qs.dataset.price = item.price;
-                            qs.dataset.water = item.water_interval;
-                            qs.dataset.feed = item.feed_interval;
-                            qs.dataset.waterTimes = item.water_times;
-                            qs.dataset.feedTimes = item.feed_times;
-                            qs.dataset.production = item.production;
-                            qs.innerHTML = `<img src="${qsPrefix}${qsImg}" alt="${item.name}"><div class="qs-info"><span class="qs-price">${item.price}</span><button class="qs-buy">BUY/USE</button></div>`;
-                            qsGrid.appendChild(qs);
-                            if (typeof initQuickShop === 'function') {
-                                initQuickShop(qsPanel);
-                            }
+    // edit-item form behaviour
+    const editForm = panel.querySelector('#fa-edit-form');
+    if (editForm) {
+        const editItems = panel.querySelectorAll('.fa-edit-item');
+        editItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Elimină selecția de pe toate items
+                editItems.forEach(i => i.classList.remove('selected'));
+                // Adaugă selecție pe item-ul curent
+                item.classList.add('selected');
+                
+                const id = item.dataset.id;
+                fetch(`farm_admin/get_item.php?id=${id}`, {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // get_item.php returnează direct item-ul, nu { success: true, item: {...} }
+                    if (data && data.id) {
+                        // Populează formularul cu datele
+                        editForm.querySelector('[name="id"]').value = data.id;
+                        editForm.querySelector('[name="name"]').value = data.name;
+                        editForm.querySelector('[name="item_type"]').value = data.item_type;
+                        editForm.querySelector('[name="slot_type"]').value = data.slot_type;
+                        editForm.querySelector('[name="image_name"]').value = data.image_plant;
+                        
+                        // Calculează ore, minute, secunde pentru water
+                        editForm.querySelector('[name="water_hours"]').value = Math.floor(data.water_interval / 3600);
+                        editForm.querySelector('[name="water_minutes"]').value = Math.floor((data.water_interval % 3600) / 60);
+                        editForm.querySelector('[name="water_seconds"]').value = data.water_interval % 60;
+                        
+                        // Calculează ore, minute, secunde pentru feed
+                        editForm.querySelector('[name="feed_hours"]').value = Math.floor(data.feed_interval / 3600);
+                        editForm.querySelector('[name="feed_minutes"]').value = Math.floor((data.feed_interval % 3600) / 60);
+                        editForm.querySelector('[name="feed_seconds"]').value = data.feed_interval % 60;
+                        
+                        editForm.querySelector('[name="water_times"]').value = data.water_times;
+                        editForm.querySelector('[name="feed_times"]').value = data.feed_times;
+                        editForm.querySelector('[name="price"]').value = data.price;
+                        editForm.querySelector('[name="sell_price"]').value = data.sell_price;
+                        editForm.querySelector('[name="production"]').value = data.production;
+                        editForm.querySelector('[name="barn_capacity"]').value = data.barn_capacity;
+                        
+                        // Trigger change event pentru a afișa/ascunde câmpurile corecte
+                        const typeSelect = editForm.querySelector('[name="item_type"]');
+                        if (typeSelect) {
+                            typeSelect.dispatchEvent(new Event('change'));
                         }
+                        
+                        editForm.style.display = 'block';
+                        editForm.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        alert('Error loading item data');
                     }
+                })
+                .catch(err => {
+                    console.error('Error fetching item:', err);
+                    alert('Error loading item');
+                });
+            });
+        });
+    }
+    
+    // Edit form type change behaviour
+    if (editForm) {
+        const editTypeSel = editForm.querySelector('[name="item_type"]');
+        if (editTypeSel) {
+            const updateEditFields = () => {
+                const isPlant = editTypeSel.value === 'plant';
+                const waterFields = editForm.querySelectorAll('.water-field');
+                const feedFields = editForm.querySelectorAll('.feed-field');
+                waterFields.forEach(f => f.style.display = isPlant ? 'block' : 'none');
+                feedFields.forEach(f => f.style.display = isPlant ? 'none' : 'block');
+            };
+            editTypeSel.addEventListener('change', updateEditFields);
+        }
+    }
 
-                    addForm.reset();
-                    panel.remove();
-                }
-            })
-            .catch(err => console.error(err));
+    // delete-item form behaviour
+    const deleteItems = panel.querySelectorAll('.fa-delete-item');
+    const deleteBtn = panel.querySelector('#fa-delete-item-btn');
+    let selectedDeleteId = null;
+    
+    deleteItems.forEach(item => {
+        item.addEventListener('click', () => {
+            deleteItems.forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            selectedDeleteId = item.dataset.id;
+            deleteBtn.disabled = false;
+        });
+    });
+    
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+            if (!selectedDeleteId) return;
+            
+            if (confirm('Are you sure you want to delete this item?')) {
+                fetch('farm_admin/delete_item.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: selectedDeleteId }),
+                    credentials: 'same-origin'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+            }
         });
     }
 
+    // VIP form
     const vipForm = panel.querySelector('#fa-vip-form');
     if (vipForm) {
         vipForm.addEventListener('submit', e => {
@@ -108,15 +164,17 @@ function initAdminPanel(panel){
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert('VIP item added');
+                    alert('VIP item saved successfully!');
                     vipForm.reset();
+                } else {
+                    alert('Error: ' + data.message);
                 }
             })
             .catch(err => console.error(err));
         });
     }
 
-    const achForm = panel.querySelector('#fa-achievement-form');
+    const achForm = document.querySelector('#fa-ach-form');
     if (achForm) {
         achForm.addEventListener('submit', e => {
             e.preventDefault();
@@ -129,27 +187,23 @@ function initAdminPanel(panel){
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert('Achievement added');
-                    const idInput = achForm.querySelector('input[name="id"]');
-                    const next = parseInt(idInput.value, 10) + 1;
+                    alert('Achievement saved successfully!');
                     achForm.reset();
-                    idInput.value = next;
-                    idInput.defaultValue = next;
+                } else {
+                    alert('Error: ' + data.message);
                 }
             })
             .catch(err => console.error(err));
         });
     }
 
-    if (typeof initAchievementDelete === 'function') {
-        initAchievementDelete(panel);
-    }
-
-    panel.querySelectorAll('.fa-delete-vip-form').forEach(delVipForm => {
-        delVipForm.addEventListener('submit', e => {
+    // Helper form behaviour
+    const helperForm = panel.querySelector('#fa-helper-form');
+    if (helperForm) {
+        helperForm.addEventListener('submit', e => {
             e.preventDefault();
-            const formData = new FormData(delVipForm);
-            fetch('farm_admin/delete_vip.php', {
+            const formData = new FormData(helperForm);
+            fetch('farm_admin/save_helper.php', {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin'
@@ -157,281 +211,346 @@ function initAdminPanel(panel){
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert('VIP item deleted');
-                    const select = delVipForm.querySelector('select[name="vip_name"]');
-                    const val = formData.get('vip_name');
-                    const opt = select.querySelector(`option[value="${val}"]`);
-                    if (opt) opt.remove();
+                    alert('Helper saved successfully!');
+                    helperForm.reset();
+                } else {
+                    alert('Error: ' + (data.message || 'Unknown error'));
                 }
             })
-            .catch(err => console.error(err));
-        });
-    });
-    const versionBtn = panel.querySelector('#fa-update-version');
-    if (versionBtn) {
-        versionBtn.addEventListener('click', () => {
-            fetch('farm_admin/bump_version.php', { credentials: 'same-origin' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const span = panel.querySelector('#fa-current-version');
-                        if (span) span.textContent = data.version;
-                    }
-                })
-                .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+                alert('Error saving helper');
+            });
         });
     }
-    initDeleteItems(panel);
-    initEditItems(panel);
-    initEditHelpers(panel);
-}
 
-function initEditItems(panel){
-    const grid = panel.querySelector('.fa-edit-grid');
-    if (!grid) return;
-    const form = panel.querySelector('#fa-edit-form');
-    const typeSel = form.querySelector('select[name="item_type"]');
-    const imgPrefix = panel.dataset.prefix || '';
-    const waterFields = form.querySelectorAll('.water-field');
-    const feedFields = form.querySelectorAll('.feed-field');
-
-    const toggleFields = () => {
-        if (typeSel.value === 'plant') {
-            waterFields.forEach(el => el.style.display = 'block');
-            feedFields.forEach(el => el.style.display = 'none');
-        } else {
-            waterFields.forEach(el => el.style.display = 'none');
-            feedFields.forEach(el => el.style.display = 'block');
-        }
-    };
-
-    typeSel.addEventListener('change', toggleFields);
-
-    grid.addEventListener('click', e => {
-        let it = e.target;
-        while (it && it !== grid && !it.classList.contains('fa-edit-item')) {
-            it = it.parentElement;
-        }
-        if (!it || it === grid) return;
-        const items = grid.querySelectorAll('.fa-edit-item');
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove('selected');
-        }
-        it.classList.add('selected');
-        const id = it.dataset.id;
-        fetch(`farm_admin/get_item.php?id=${id}`, { credentials: 'same-origin' })
-            .then(res => {
-                if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
-                return res.json();
-            })
-            .then(item => {
-                form.style.display = 'block';
-                form.querySelector('input[name="id"]').value = item.id;
-                form.querySelector('input[name="name"]').value = item.name;
-                typeSel.value = item.item_type;
-                form.querySelector('select[name="slot_type"]').value = item.slot_type;
-                form.querySelector('input[name="water_hours"]').value = Math.floor(item.water_interval / 3600);
-                form.querySelector('input[name="water_minutes"]').value = Math.floor(item.water_interval % 3600 / 60);
-                form.querySelector('input[name="water_seconds"]').value = item.water_interval % 60;
-                form.querySelector('input[name="feed_hours"]').value = Math.floor(item.feed_interval / 3600);
-                form.querySelector('input[name="feed_minutes"]').value = Math.floor(item.feed_interval % 3600 / 60);
-                form.querySelector('input[name="feed_seconds"]').value = item.feed_interval % 60;
-                form.querySelector('input[name="water_times"]').value = item.water_times;
-                form.querySelector('input[name="feed_times"]').value = item.feed_times;
-                form.querySelector('input[name="price"]').value = item.price;
-                form.querySelector('input[name="sell_price"]').value = item.sell_price;
-                form.querySelector('input[name="production"]').value = item.production;
-                form.querySelector('input[name="image_name"]').value = normalizeImg(item.image_plant).replace(/^img\//, '');
-                form.querySelector('input[name="barn_capacity"]').value = item.barn_capacity;
-                toggleFields();
-                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                const nameInput = form.querySelector('input[name="name"]');
-                if (nameInput) nameInput.focus();
-            })
-            .catch(err => console.error(err));
-    });
-
-    toggleFields();
-
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        fetch('farm_admin/update_item.php', {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
-        })
-        .then(res => {
-            if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
-            return res.json();
-        })
-        .then(data => {
-            if (data.success) {
-                const item = data.item;
-                const editItem = grid.querySelector(`.fa-edit-item[data-id="${item.id}"]`);
-                if (editItem) {
-                    editItem.querySelector('img').src = imgPrefix + normalizeImg(item.image_plant);
-                    editItem.querySelector('.qs-price').textContent = item.price;
-                }
-                const delItem = panel.querySelector(`#fa-tab-delete .fa-delete-item[data-id="${item.id}"]`);
-                if (delItem) {
-                    delItem.querySelector('img').src = imgPrefix + normalizeImg(item.image_plant);
-                    delItem.querySelector('.qs-price').textContent = item.price;
-                }
-                 const qsPanel = document.getElementById('quickshop-panel');
-                if (qsPanel) {
-                    const qsItem = qsPanel.querySelector(`.quickshop-item[data-item-id="${item.id}"]`);
-                    if (qsItem) {
-                        const qsPrefix = qsPanel.dataset.prefix || '';
-                        qsItem.dataset.price = item.price;
-                        qsItem.querySelector('img').src = qsPrefix + normalizeImg(item.image_plant);
-                        qsItem.querySelector('.qs-price').textContent = item.price;
-                    }
-                }
-                form.reset();
-                form.style.display = 'none';
+    // Edit Helper form behaviour
+    const helperEditGrid = panel.querySelector('.fa-edit-helper-grid');
+    const helperEditForm = panel.querySelector('#fa-helper-edit-form');
+    if (helperEditGrid && helperEditForm) {
+        helperEditGrid.addEventListener('click', e => {
+            const helperEl = e.target.closest('.fa-helper-item');
+            if (helperEl) {
+                // Elimină selecția de pe toate helpers
+                const allHelpers = panel.querySelectorAll('.fa-helper-item');
+                allHelpers.forEach(h => h.classList.remove('selected'));
+                // Adaugă selecție pe helper-ul curent
+                helperEl.classList.add('selected');
+                
+                helperEditForm.querySelector('[name="id"]').value = helperEl.dataset.id;
+                helperEditForm.querySelector('[name="name"]').value = helperEl.dataset.name;
+                helperEditForm.querySelector('[name="image"]').value = helperEl.dataset.image;
+                helperEditForm.querySelector('[name="message_file"]').value = helperEl.dataset.message;
+                helperEditForm.querySelector('[name="waters"]').value = helperEl.dataset.waters;
+                helperEditForm.querySelector('[name="feeds"]').value = helperEl.dataset.feeds;
+                helperEditForm.querySelector('[name="harvests"]').value = helperEl.dataset.harvests;
+                helperEditForm.style.display = 'block';
+                helperEditForm.scrollIntoView({ behavior: 'smooth' });
             }
-        })
-        .catch(err => console.error(err));
-    });
+        });
+
+        helperEditForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const formData = new FormData(helperEditForm);
+            fetch('farm_admin/update_helper.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Helper updated successfully!');
+                    helperEditForm.style.display = 'none';
+                    // Optionally refresh the helper list or reload
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error updating helper');
+            });
+        });
+    }
+
+    // Add Users functionality
+    initUserCreation(panel);
+    
+    // Admin Grades functionality  
+    initAdminGrades(panel);
 }
 
-function initEditHelpers(panel){
-    const grid = panel.querySelector('.fa-edit-helper-grid');
-    if (!grid) return;
-    const form = panel.querySelector('#fa-helper-edit-form');
-    const imgPrefix = panel.dataset.prefix || '';
-    const helperImg = name => {
-        if (!name) return '';
-        name = name.replace(/^img\//, '');
-        if (!/\.(png|gif|jpe?g)$/i.test(name)) {
-            name += '.png';
-        }
-        return imgPrefix + 'img/' + name;
-    };
-
-    grid.querySelectorAll('.fa-helper-item').forEach(item => {
-        item.addEventListener('click', () => {
-            grid.querySelectorAll('.fa-helper-item').forEach(i => i.classList.remove('selected'));
-            item.classList.add('selected');
-            form.style.display = 'block';
-            form.querySelector('input[name="id"]').value = item.dataset.id;
-            form.querySelector('input[name="name"]').value = item.dataset.name;
-            form.querySelector('input[name="image"]').value = item.dataset.image;
-            form.querySelector('input[name="message_file"]').value = item.dataset.message;
-            form.querySelector('input[name="waters"]').value = item.dataset.waters || 0;
-            form.querySelector('input[name="feeds"]').value = item.dataset.feeds || 0;
-            form.querySelector('input[name="harvests"]').value = item.dataset.harvests || 0;
-            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            const nameInput = form.querySelector('input[name="name"]');
-            if (nameInput) nameInput.focus();
+function initUserCreation(panel) {
+    // User creation tab switching
+    const userTabs = panel.querySelectorAll('.user-tab-btn');
+    const userContents = panel.querySelectorAll('.user-tab-content');
+    
+    userTabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            userTabs.forEach(b => b.classList.remove('active'));
+            userContents.forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            const target = panel.querySelector(`#user-tab-${btn.dataset.usertab}`);
+            if (target) target.classList.add('active');
         });
     });
-    const addForm = panel.querySelector('#fa-helper-form');
-    if (addForm) {
-        addForm.addEventListener('submit', e => {
+    
+    // Auto create users form
+    const autoForm = panel.querySelector('#fa-auto-users-form');
+    if (autoForm) {
+        autoForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const fd = new FormData(addForm);
-            fetch('farm_admin/save_helper.php', { method: 'POST', body: fd, credentials: 'same-origin' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const h = data.helper;
-                        const div = document.createElement('div');
-                        div.className = 'fa-helper-item';
-                        div.dataset.id = h.id;
-                        div.dataset.name = h.name;
-                        div.dataset.image = h.image;
-                        div.dataset.message = h.message_file;
-                        div.dataset.waters = h.waters;
-                        div.dataset.feeds = h.feeds;
-                        div.dataset.harvests = h.harvests;
-                        div.innerHTML = `<img src="${helperImg(h.image)}" alt="${h.name}"><span>${h.name}</span>`;
-                        grid.appendChild(div);
-                        addForm.reset();
-                        initEditHelpers(panel);
+            const formData = new FormData(this);
+            
+            fetch('farm_admin/create_users_auto.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = panel.querySelector('#auto-users-result');
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="success">${data.message}</div>`;
+                    // Update current password display
+                    const currentPasswordDisplay = panel.querySelector('#current_password_display');
+                    if (currentPasswordDisplay) {
+                        currentPasswordDisplay.textContent = data.current_password || 'password123';
                     }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                const resultDiv = panel.querySelector('#auto-users-result');
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        });
+    });
+    }
+    
+    // Manual create user form
+    const manualForm = panel.querySelector('#fa-manual-user-form');
+    if (manualForm) {
+        manualForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('farm_admin/create_user_manual.php', {
+            method: 'POST',
+                body: formData
+        })
+            .then(response => response.json())
+        .then(data => {
+                const resultDiv = panel.querySelector('#manual-user-result');
+            if (data.success) {
+                    resultDiv.innerHTML = `<div class="success">${data.message}</div>`;
+                    this.reset();
+                } else {
+                    resultDiv.innerHTML = `<div class="error">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                const resultDiv = panel.querySelector('#manual-user-result');
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            });
+        });
+    }
+    
+    // Update passwords form
+    const passwordForm = panel.querySelector('#fa-update-passwords-form');
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newPassword = this.querySelector('#new_password_input').value;
+            const confirmPassword = this.querySelector('#confirm_password_input').value;
+            
+            if (newPassword !== confirmPassword) {
+                const resultDiv = panel.querySelector('#update-passwords-result');
+                resultDiv.innerHTML = `<div class="error">Passwords do not match!</div>`;
+                return;
+            }
+            
+            const formData = new FormData(this);
+            
+            fetch('farm_admin/update_all_passwords.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+                .then(data => {
+                const resultDiv = panel.querySelector('#update-passwords-result');
+                    if (data.success) {
+                    resultDiv.innerHTML = `<div class="success">${data.message}</div>`;
+                    this.reset();
+                } else {
+                    resultDiv.innerHTML = `<div class="error">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                const resultDiv = panel.querySelector('#update-passwords-result');
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
                 });
         });
     }
 
-    if (form) {
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            const fd = new FormData(form);
-            fetch('farm_admin/update_helper.php', { method: 'POST', body: fd, credentials: 'same-origin' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const item = grid.querySelector(`.fa-helper-item[data-id="${fd.get('id')}"]`);
-                        if (item) {
-                            item.dataset.name = fd.get('name');
-                            item.dataset.image = fd.get('image');
-                            item.dataset.message = fd.get('message_file');
-                            item.dataset.waters = fd.get('waters');
-                            item.dataset.feeds = fd.get('feeds');
-                            item.dataset.harvests = fd.get('harvests');
-                            item.querySelector('img').src = helperImg(fd.get('image'));
-                            item.querySelector('span').textContent = fd.get('name');
-                        }
-                        form.style.display = 'none';
-                    }
-                });
+    // Password visibility toggle
+    const passwordInputs = panel.querySelectorAll('.password-input-container input[type="password"]');
+    passwordInputs.forEach(input => {
+        const toggleBtn = input.parentElement.querySelector('.password-toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                const icon = toggleBtn.querySelector('i');
+                if (icon) {
+                    icon.className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
+                }
+            });
+        }
+    });
+    
+    // Update current password display when default password changes
+    const defaultPasswordInput = panel.querySelector('#default_password_input');
+    const currentPasswordDisplay = panel.querySelector('#current_password_display');
+    if (defaultPasswordInput && currentPasswordDisplay) {
+        defaultPasswordInput.addEventListener('input', () => {
+            currentPasswordDisplay.textContent = defaultPasswordInput.value;
         });
     }
 }
 
-function initDeleteItems(panel){
-    const grid = panel.querySelector('.fa-delete-grid');
-    const btn = panel.querySelector('#fa-delete-item-btn');
-    if (!grid || !btn) return;
-
-    let selectedId = null;
-
-    grid.addEventListener('click', e => {
-        let it = e.target;
-        while (it && it !== grid && !it.classList.contains('fa-delete-item')) {
-            it = it.parentElement;
-        }
-        if (!it || it === grid) return;
-        const items = grid.querySelectorAll('.fa-delete-item');
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove('selected');
-        }
-        it.classList.add('selected');
-        selectedId = it.dataset.id;
-        btn.disabled = false;
+function initAdminGrades(panel) {
+    // Admin grades tab switching
+    const gradesTabs = panel.querySelectorAll('.grades-tab-btn');
+    const gradesContents = panel.querySelectorAll('.grades-tab-content');
+    
+    gradesTabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            gradesTabs.forEach(b => b.classList.remove('active'));
+            gradesContents.forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            const target = panel.querySelector(`#grades-tab-${btn.dataset.gradestab}`);
+            if (target) target.classList.add('active');
+        });
     });
-
-    btn.addEventListener('click', () => {
-        if (!selectedId) return;
-        fetch('farm_admin/delete_item.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ id: selectedId }),
-            credentials: 'same-origin'
-        })
-        .then(res => {
-            if (!res.ok) return res.json().then(err => Promise.reject(err.error || 'Error'));
-            return res.json();
-        })
+    
+    // Search users for grade management
+    const searchBtn = panel.querySelector('#search-users-btn');
+    const searchInput = panel.querySelector('#grade-search-input');
+    
+    if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', searchUsers);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchUsers();
+        });
+    }
+    
+    function searchUsers() {
+        const query = searchInput.value.trim();
+        if (!query) {
+            alert('Please enter a username or email to search');
+            return;
+        }
+        
+        fetch(`farm_admin/search_users.php?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                const item = grid.querySelector(`.fa-delete-item[data-id="${selectedId}"]`);
-                if (item) item.remove();
-                btn.disabled = true;
-                selectedId = null;
+            const usersList = panel.querySelector('#users-list');
+            if (data.success && data.users.length > 0) {
+                let html = '<h4>Search Results:</h4>';
+                data.users.forEach(user => {
+                    const gradeNames = {1: 'SUPER_ADMIN', 2: 'ADMIN', 3: 'MODERATOR', 4: 'HELPER', 5: 'USER'};
+                    html += `
+                        <div class="user-item" data-user-id="${user.id}" data-username="${user.username}" data-current-grade="${user.admin_level}">
+                            <div class="user-info">
+                                <strong>${user.username}</strong> (${user.email})
+                            </div>
+                            <div class="user-grade grade-${user.admin_level}">
+                                ${gradeNames[user.admin_level] || 'UNKNOWN'} (Level ${user.admin_level})
+                            </div>
+                            <button class="management-btn" onclick="selectUserForGradeChange(${user.id}, '${user.username}', ${user.admin_level})">
+                                Change Grade
+                            </button>
+                        </div>
+                    `;
+                });
+                usersList.innerHTML = html;
+            } else {
+                usersList.innerHTML = '<div class="error">No users found matching your search.</div>';
             }
         })
-        .catch(err => console.error(err));
-    });
+        .catch(error => {
+            const usersList = panel.querySelector('#users-list');
+            usersList.innerHTML = `<div class="error">Error searching users: ${error.message}</div>`;
+        });
+    }
+    
+    // Grade change form
+    const gradeChangeForm = panel.querySelector('#fa-grade-change-form');
+    if (gradeChangeForm) {
+        gradeChangeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('farm_admin/change_user_grade.php', {
+            method: 'POST',
+                body: formData
+        })
+            .then(response => response.json())
+        .then(data => {
+                const resultDiv = panel.querySelector('#grade-change-result');
+            if (data.success) {
+                    resultDiv.innerHTML = `<div class="success">${data.message}</div>`;
+                    this.style.display = 'none';
+                    // Refresh the users list
+                    searchUsers();
+                } else {
+                    resultDiv.innerHTML = `<div class="error">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                const resultDiv = panel.querySelector('#grade-change-result');
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            });
+        });
+    }
+    
+    // Cancel grade change
+    const cancelBtn = panel.querySelector('#cancel-grade-change');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            const form = panel.querySelector('#grade-change-form');
+            if (form) form.style.display = 'none';
+        });
+    }
 }
 
-window.initAdminPanel = initAdminPanel;
-window.initEditItems = initEditItems;
-window.initDeleteItems = initDeleteItems;
+// Global function for selecting user for grade change
+window.selectUserForGradeChange = function(userId, username, currentGrade) {
+    const form = document.querySelector('#grade-change-form');
+    const userIdInput = document.querySelector('#selected-user-id');
+    const usernameSpan = document.querySelector('#selected-username');
+    const currentGradeSpan = document.querySelector('#selected-current-grade');
+    const newGradeSelect = document.querySelector('#new-admin-level');
+    
+    if (form && userIdInput && usernameSpan && currentGradeSpan && newGradeSelect) {
+        userIdInput.value = userId;
+        usernameSpan.textContent = username;
+        currentGradeSpan.textContent = `${getGradeName(currentGrade)} (Level ${currentGrade})`;
+        newGradeSelect.value = currentGrade;
+        form.style.display = 'block';
+    }
+};
 
-document.addEventListener('DOMContentLoaded', () => {
+function getGradeName(level) {
+    const gradeNames = {1: 'SUPER_ADMIN', 2: 'ADMIN', 3: 'MODERATOR', 4: 'HELPER', 5: 'USER'};
+    return gradeNames[level] || 'UNKNOWN';
+}
+
+// Admin panel initialization
+document.addEventListener('DOMContentLoaded', function() {
     const btn = document.getElementById('open-admin-panel');
     if (btn) {
         btn.addEventListener('click', () => {
@@ -440,28 +559,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(html => {
                     const temp = document.createElement('div');
                     temp.innerHTML = html.trim();
-                    const panel = temp.firstElementChild;
-                    if (!panel) {
-                        alert(html.trim());
-                        return;
-                    }
-                    panel.addEventListener('click', e => {
-                        if (e.target === panel) {
-                            panel.remove();
-                        }
-                    });
+                    const panel = temp.firstChild;
                     document.body.appendChild(panel);
                     initAdminPanel(panel);
                 });
         });
-    }
-    const panel = document.getElementById('fa-admin-panel');
-    if (panel) {
-        panel.addEventListener('click', e => {
-            if (e.target === panel) {
-                panel.remove();
-            }
-        });
-        initAdminPanel(panel);
     }
 });

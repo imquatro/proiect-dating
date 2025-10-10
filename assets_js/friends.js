@@ -204,7 +204,11 @@
                     render();
                 }
             } else {
-                alert(d.message || 'Error');
+                if (d.message === 'friend_limit_reached') {
+                    showFriendLimitPopup(d.friend_count);
+                } else {
+                    alert(d.message || 'Error');
+                }
             }
         });
     }
@@ -232,7 +236,11 @@
                     window.updateFriendRequestIndicators(requests.length);
                 }
             } else {
-                alert(d.message || 'Error');
+                if (d.message === 'friend_limit_reached') {
+                    showFriendLimitPopup(d.friend_count);
+                } else {
+                    alert(d.message || 'Error');
+                }
             }
         });
     }
@@ -283,6 +291,111 @@
                 render();
             } else {
                 alert(d.message || 'Error');
+            }
+        });
+    }
+
+    // Funcție pentru afișarea pop-up-ului de limită de prieteni
+    function showFriendLimitPopup(friendCount) {
+        const popup = document.createElement('div');
+        popup.className = 'friend-limit-popup';
+        popup.innerHTML = `
+            <div class="popup-content">
+                <div class="popup-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Limita de Prieteni Atinsă</h3>
+                <p>Ai deja <strong>${friendCount}/20</strong> prieteni.</p>
+                <p>Pentru a adăuga prieteni noi, trebuie să elimini unii dintre prietenii actuali.</p>
+                <button onclick="this.parentElement.parentElement.remove()" class="popup-btn">
+                    <i class="fas fa-check"></i> Înțeleg
+                </button>
+            </div>
+        `;
+        
+        // Adaugă stilurile
+        const style = document.createElement('style');
+        style.textContent = `
+            .friend-limit-popup {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            }
+            
+            .popup-content {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                color: white;
+                max-width: 400px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease;
+            }
+            
+            .popup-icon {
+                font-size: 48px;
+                margin-bottom: 20px;
+                color: #ffd700;
+            }
+            
+            .popup-content h3 {
+                margin: 0 0 15px 0;
+                font-size: 24px;
+                font-weight: bold;
+            }
+            
+            .popup-content p {
+                margin: 10px 0;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+            
+            .popup-btn {
+                background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+                color: white;
+                border: none;
+                padding: 12px 30px;
+                border-radius: 25px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                margin-top: 20px;
+                transition: transform 0.2s ease;
+            }
+            
+            .popup-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes slideIn {
+                from { transform: translateY(-50px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        
+        document.head.appendChild(style);
+        document.body.appendChild(popup);
+        
+        // Elimină stilurile când se închide popup-ul
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                popup.remove();
+                style.remove();
             }
         });
     }
