@@ -319,18 +319,28 @@ function processRoundResults($battleId, $roundNumber) {
     
     foreach ($matches as $match) {
         // Determină câștigătorul
+        $isTie = false;
         if ($match['user1_score'] > $match['user2_score']) {
             $winnerId = $match['user1_id'];
+            error_log("PVP Match #{$match['id']}: User {$match['user1_id']} wins with score {$match['user1_score']} vs {$match['user2_score']}");
         } elseif ($match['user2_score'] > $match['user1_score']) {
             $winnerId = $match['user2_id'];
+            error_log("PVP Match #{$match['id']}: User {$match['user2_id']} wins with score {$match['user2_score']} vs {$match['user1_score']}");
         } else {
             // EGALITATE - Alegeți random câștigătorul (50/50 șansă)
+            $isTie = true;
             $winnerId = (rand(0, 1) === 0) ? $match['user1_id'] : $match['user2_id'];
+            error_log("PVP Match #{$match['id']}: TIE at {$match['user1_score']} - Random winner chosen: User {$winnerId}");
         }
         $loserId = $winnerId == $match['user1_id'] ? $match['user2_id'] : $match['user1_id'];
         
+        // Update match with winner
         $updateStmt->execute([$winnerId, $match['id']]);
+        
+        // Mark loser as eliminated in this round
         $eliminateStmt->execute([$roundNumber, $battleId, $loserId]);
+        
+        error_log("PVP Match #{$match['id']}: Winner={$winnerId}, Loser={$loserId}, Round={$roundNumber}");
         
         $winners[] = [
             'user_id' => $winnerId,
@@ -358,6 +368,64 @@ function processRoundResults($battleId, $roundNumber) {
     }
     
     return $winners;
+}
+
+/**
+ * Salvează câștigătorul turneului în tabela pentru achievements
+ */
+function saveTournamentWinner($battleId, $leagueId) {
+    global $db;
+    
+    try {
+        // Găsește câștigătorul din finală
+        $stmt = $db->prepare("
+            SELECT m.*, u.username, l.name as league_name
+            FROM pvp_matches m
+            JOIN users u ON m.winner_id = u.id
+            JOIN pvp_leagues l ON l.id = ?
+            WHERE m.battle_id = ? AND m.round_number = 5 AND m.completed = 1 AND m.winner_id IS NOT NULL
+        ");
+        $stmt->execute([$leagueId, $battleId]);
+        $finalMatch = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$finalMatch) {
+            error_log("PvP: No winner found for battle #$battleId");
+            return false;
+        }
+        
+        // Numără participanții totali
+        $stmt = $db->prepare("SELECT COUNT(*) FROM pvp_participants WHERE battle_id = ?");
+        $stmt->execute([$battleId]);
+        $totalParticipants = $stmt->fetchColumn();
+        
+        // Salvează câștigătorul
+        $stmt = $db->prepare("
+            INSERT INTO pvp_tournament_winners 
+            (user_id, username, league_id, league_name, battle_id, tournament_date, final_score, opponent_score, total_participants)
+            VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?)
+        ");
+        
+        $winnerScore = $finalMatch['user1_id'] == $finalMatch['winner_id'] ? $finalMatch['user1_score'] : $finalMatch['user2_score'];
+        $opponentScore = $finalMatch['user1_id'] == $finalMatch['winner_id'] ? $finalMatch['user2_score'] : $finalMatch['user1_score'];
+        
+        $stmt->execute([
+            $finalMatch['winner_id'],
+            $finalMatch['username'],
+            $leagueId,
+            $finalMatch['league_name'],
+            $battleId,
+            $winnerScore,
+            $opponentScore,
+            $totalParticipants
+        ]);
+        
+        error_log("PvP: Saved tournament winner - {$finalMatch['username']} won battle #$battleId in {$finalMatch['league_name']} league");
+        return true;
+        
+    } catch (Exception $e) {
+        error_log("PvP: Error saving tournament winner: " . $e->getMessage());
+        return false;
+    }
 }
 
 /**

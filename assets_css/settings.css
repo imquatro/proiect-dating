@@ -14,6 +14,7 @@
     padding: 20px;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
     background: url('../img/bg2.png') center/cover no-repeat;
+    padding-bottom: 96px; /* ensure content clears bottom nav */
 }
 
 .vip-tabs {
@@ -37,6 +38,7 @@
 
 .vip-tab-content {
     flex: 1;
+    padding-bottom: 24px;
 }
 
 .tab-content {
@@ -113,6 +115,7 @@
 
 .subtab-content.active {
     display: block;
+    padding-bottom: 72px; /* extra space for inner sections */
 }
 
 #adminPanelContainer #fa-admin-panel {

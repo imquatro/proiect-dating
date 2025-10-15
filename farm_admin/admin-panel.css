@@ -17,10 +17,12 @@
     position:relative;
     display:flex;
     flex-direction:column;
+    max-height: 90vh;
+    overflow-y: auto; /* ensure full panel content is scrollable and visible */
 }
 #fa-admin-panel .fa-tab-header{
     display:grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap:4px;
     margin-bottom:10px;
 }
@@ -1101,4 +1103,239 @@
     font-size: 24px;
     font-weight: bold;
     color: #4a3a07;
+}
+
+/* PVP Admin Panel Styles */
+.pvp-admin-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pvp-admin-section h3 {
+    color: #f6cf49;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.pvp-admin-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pvp-admin-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.pvp-admin-btn.cleanup {
+    background: #ff6b6b;
+    color: white;
+}
+
+.pvp-admin-btn.cleanup:hover {
+    background: #ff5252;
+}
+
+.pvp-admin-btn.start {
+    background: #4ecdc4;
+    color: white;
+}
+
+.pvp-admin-btn.start:hover {
+    background: #45b7aa;
+}
+
+.pvp-admin-btn.save {
+    background: #95e1d3;
+    color: #333;
+}
+
+.pvp-admin-btn.save:hover {
+    background: #85d4c5;
+}
+
+.pvp-admin-btn.restart {
+    background: #ff9a56;
+    color: #333;
+}
+
+.pvp-admin-btn.restart:hover {
+    background: #ff6b35;
+}
+
+.pvp-admin-btn.complete-reset {
+    background: linear-gradient(135deg, #ff6b35, #f44336);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 15px 20px;
+    width: 100%;
+}
+
+.pvp-admin-btn.complete-reset:hover {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    transform: scale(1.02);
+}
+
+.pvp-admin-btn.start-event {
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 15px 25px;
+    min-width: 200px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pvp-admin-btn.start-event:hover {
+    background: linear-gradient(135deg, #44a08d, #3d8f7d);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
+}
+
+.pvp-admin-btn.stop-event {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 15px 25px;
+    min-width: 200px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pvp-admin-btn.stop-event:hover {
+    background: linear-gradient(135deg, #ee5a6f, #d32f2f);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
+/* Toggle Switch Container */
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+/* Toggle Switch Design - Clean toggle without text */
+.toggle-switch {
+    position: relative;
+    width: 80px;
+    height: 40px;
+    background: #d2b48c; /* Tan/brown background for OFF - SOLID, not transparent */
+    border-radius: 20px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.toggle-switch input[type="checkbox"] {
+    display: none;
+}
+
+.toggle-knob {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: bold;
+    color: #666;
+}
+
+.toggle-knob::after {
+    content: "OFF";
+}
+
+/* OFF State - Brown background (solid) */
+.toggle-switch {
+    background: #d2b48c !important;
+}
+
+/* ON State - Green background (solid) */
+.toggle-switch input[type="checkbox"]:checked ~ * {
+    background: #51cf66 !important;
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-knob {
+    transform: translateX(40px); /* Move to right side */
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-knob::after {
+    content: "ON";
+    color: #51cf66;
+}
+
+.toggle-switch input[type="checkbox"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.toggle-switch input[type="checkbox"]:disabled + .toggle-knob {
+    opacity: 0.6;
+}
+
+.pvp-admin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#pvp-status-display {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    min-height: 50px;
+    color: #f6cf49;
+}
+
+.pvp-admin-section label {
+    display: block;
+    margin-bottom: 10px;
+    color: #f6cf49;
+}
+
+.pvp-admin-section input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #000;
+    border-radius: 2px;
+    background: #fff;
+    color: #333;
+    margin-top: 5px;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.pvp-admin-section input[type="number"]:focus {
+    outline: none;
+    border-color: #f6cf49;
+    box-shadow: 0 0 3px rgba(246, 207, 73, 0.3);
 }

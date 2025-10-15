@@ -23,6 +23,7 @@
     display: none;
     margin-top: 10px;
     color: #222;
+    padding-bottom: 96px; /* keep bottom content above bottom nav */
 }
 .bank-tab.active {
     display: block;

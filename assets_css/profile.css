@@ -392,6 +392,4 @@ body::-webkit-scrollbar-thumb, .profile-container::-webkit-scrollbar-thumb {
     display: block;
 }
 
-.content {
-    padding: 0;
-}
+/* Removed global .content padding override to preserve shared bottom spacing */

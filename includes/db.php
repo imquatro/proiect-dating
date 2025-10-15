@@ -9,8 +9,12 @@ try {
         DB_PASS
     );
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Sync MySQL timezone with PHP timezone for PvP time calculations
+    $offset = date('P');
+    $db->exec("SET time_zone = '{$offset}'");
 } catch (PDOException $e) {
-    exit('Eroare conexiune DB: ' . $e->getMessage());
+    exit('Database connection error: ' . $e->getMessage());
 }
 
 // Ensure `level` column exists in `users` table
@@ -99,6 +103,61 @@ try {
         UNIQUE KEY unique_user (user_id),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+} catch (PDOException $e) {
+    // ignore if insufficient privileges or other errors
+}
+
+// Ensure dbd_screenshots table exists
+try {
+    $db->exec("CREATE TABLE IF NOT EXISTS dbd_screenshots (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        filename VARCHAR(255) NOT NULL,
+        imgbb_url TEXT NOT NULL,
+        imgbb_display_url TEXT NOT NULL,
+        imgbb_delete_url TEXT,
+        file_size INT,
+        file_created_date DATETIME,
+        upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        processed BOOLEAN DEFAULT TRUE,
+        UNIQUE KEY unique_filename (filename),
+        INDEX idx_upload_date (upload_date),
+        INDEX idx_file_created_date (file_created_date)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    
+    // Add file_created_date column if it doesn't exist (for existing tables)
+    $db->exec("ALTER TABLE dbd_screenshots ADD COLUMN IF NOT EXISTS file_created_date DATETIME AFTER file_size");
+    $db->exec("ALTER TABLE dbd_screenshots ADD INDEX IF NOT EXISTS idx_file_created_date (file_created_date)");
+    
+    // Add hidden column if it doesn't exist (for existing tables)
+    $db->exec("ALTER TABLE dbd_screenshots ADD COLUMN IF NOT EXISTS hidden TINYINT DEFAULT 0 AFTER upload_date");
+    $db->exec("ALTER TABLE dbd_screenshots ADD INDEX IF NOT EXISTS idx_hidden (hidden)");
+} catch (PDOException $e) {
+    // ignore if insufficient privileges or other errors
+}
+
+// Ensure dbd_users table exists
+try {
+    $db->exec("CREATE TABLE IF NOT EXISTS dbd_users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        email VARCHAR(100),
+        full_name VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_login TIMESTAMP NULL,
+        is_active BOOLEAN DEFAULT TRUE,
+        INDEX idx_username (username),
+        INDEX idx_is_active (is_active)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    
+    // Insert default user if not exists
+    $stmt = $db->prepare("SELECT COUNT(*) FROM dbd_users WHERE username = ?");
+    $stmt->execute(['IM QUATRO']);
+    if ($stmt->fetchColumn() == 0) {
+        $hashedPassword = password_hash('112romanialovE', PASSWORD_DEFAULT);
+        $stmt = $db->prepare("INSERT INTO dbd_users (username, password, email, full_name) VALUES (?, ?, ?, ?)");
+        $stmt->execute(['IM QUATRO', $hashedPassword, 'imquatro@example.com', 'IM QUATRO']);
+    }
 } catch (PDOException $e) {
     // ignore if insufficient privileges or other errors
 }

@@ -280,6 +280,9 @@ function initAdminPanel(panel){
     
     // Admin Grades functionality  
     initAdminGrades(panel);
+    
+    // PVP System functionality
+    initPvpSystem(panel);
 }
 
 function initUserCreation(panel) {
@@ -566,3 +569,198 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+        function initPvpSystem(panel) {
+            const startEventBtn = panel.querySelector('#startPvpEvent');
+            const stopEventBtn = panel.querySelector('#stopPvpEvent');
+            const loopToggleInput = panel.querySelector('#pvp-loop-toggle-input');
+            const settingsForm = panel.querySelector('#pvp-settings-form');
+            const statusDisplay = panel.querySelector('#pvp-status-display');
+    
+    // Load current loop state
+    loadLoopState();
+    
+    // Load timer settings
+    loadTimerSettings();
+    
+    // START Event button
+    if (startEventBtn) {
+        startEventBtn.addEventListener('click', async () => {
+            if (!confirm('START PVP EVENT?\n\nThis will:\n• Clean ALL existing battles\n• Enable auto-start system\n• Start new tournaments when 32+ players available\n\nContinue?')) {
+                return;
+            }
+            
+            startEventBtn.disabled = true;
+            startEventBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
+            
+            try {
+                const response = await fetch('farm_admin/pvp_start_event.php', {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDisplay.innerHTML = `<div style="color: #4ecdc4; font-weight: bold;">✅ ${result.message}</div>`;
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    statusDisplay.innerHTML = `<div style="color: #ff6b6b;">❌ ${result.error}</div>`;
+                }
+            } catch (error) {
+                statusDisplay.innerHTML = `<div style="color: #ff6b6b;">❌ Network error: ${error.message}</div>`;
+            }
+            
+            startEventBtn.disabled = false;
+            startEventBtn.innerHTML = '<i class="fas fa-play"></i> START EVENT';
+        });
+    }
+    
+    // STOP Event button
+    if (stopEventBtn) {
+        stopEventBtn.addEventListener('click', async () => {
+            if (!confirm('STOP PVP EVENT?\n\nThis will:\n• Clean ALL existing battles\n• Disable auto-start system\n• Stop all tournaments\n\nContinue?')) {
+                return;
+            }
+            
+            stopEventBtn.disabled = true;
+            stopEventBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Stopping...';
+            
+            try {
+                const response = await fetch('farm_admin/pvp_stop_event.php', {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDisplay.innerHTML = `<div style="color: #4ecdc4; font-weight: bold;">✅ ${result.message}</div>`;
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    statusDisplay.innerHTML = `<div style="color: #ff6b6b;">❌ ${result.error}</div>`;
+                }
+            } catch (error) {
+                statusDisplay.innerHTML = `<div style="color: #ff6b6b;">❌ Network error: ${error.message}</div>`;
+            }
+            
+            stopEventBtn.disabled = false;
+            stopEventBtn.innerHTML = '<i class="fas fa-stop"></i> STOP EVENT';
+        });
+    }
+    
+    // Save timer settings
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(settingsForm);
+            const submitBtn = settingsForm.querySelector('button[type="submit"]');
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '💾 Saving...';
+            }
+            
+            try {
+                const response = await fetch('farm_admin/pvp_save_settings.php', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDisplay.innerHTML = `<div style="color: #4ecdc4; font-weight: bold;">✅ ${result.message}</div>`;
+                } else {
+                    statusDisplay.innerHTML = `<div style="color: #ff6b6b;">❌ ${result.error}</div>`;
+                }
+            } catch (error) {
+                statusDisplay.innerHTML = `<div style="color: #ff6b6b;">❌ Network error: ${error.message}</div>`;
+            }
+            
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '💾 Save & Apply Now';
+            }
+        });
+    }
+    
+    // Loop toggle control
+    if (loopToggleInput) {
+        loopToggleInput.addEventListener('change', async () => {
+            const isChecked = loopToggleInput.checked;
+            const newState = isChecked ? 'enabled' : 'disabled';
+            
+            loopToggleInput.disabled = true;
+            
+            try {
+                const response = await fetch('farm_admin/pvp_loop_toggle.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: newState }),
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDisplay.innerHTML = `<div style="color: #4ecdc4;">✅ ${result.message}</div>`;
+                    loopToggleInput.dataset.state = newState;
+                } else {
+                    statusDisplay.innerHTML = `<div style="color: #ff6b6b;">❌ ${result.error}</div>`;
+                    // Revert toggle state
+                    loopToggleInput.checked = !isChecked;
+                }
+            } catch (error) {
+                statusDisplay.innerHTML = `<div style="color: #ff6b6b;">❌ Network error: ${error.message}</div>`;
+                // Revert toggle state
+                loopToggleInput.checked = !isChecked;
+            }
+            
+            loopToggleInput.disabled = false;
+        });
+    }
+    
+    // Function to load current loop state from database
+    async function loadLoopState() {
+        try {
+            const response = await fetch('farm_admin/pvp_get_loop_state.php', {
+                method: 'GET',
+                credentials: 'same-origin'
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                loopToggleInput.checked = result.loop_enabled;
+                loopToggleInput.dataset.state = result.loop_enabled ? 'enabled' : 'disabled';
+            }
+        } catch (error) {
+            console.error('Error loading loop state:', error);
+        }
+    }
+    
+    // Function to load timer settings from database
+    async function loadTimerSettings() {
+        try {
+            const response = await fetch('farm_admin/pvp_get_settings.php', {
+                method: 'GET',
+                credentials: 'same-origin'
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                const battleDurationInput = document.getElementById('battle_duration');
+                const finalDisplayInput = document.getElementById('final_display');
+                
+                if (battleDurationInput) {
+                    battleDurationInput.value = result.battle_duration;
+                }
+                if (finalDisplayInput) {
+                    finalDisplayInput.value = result.final_display;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading timer settings:', error);
+        }
+    }
+    
+}

@@ -5,6 +5,7 @@
 .matches-container {
     width: 100%;
     padding: 10px;
+    padding-bottom: 80px; /* keep last items above bottom nav */
 }
 .matches-tabs {
     display: flex;
@@ -43,7 +44,7 @@
     cursor: pointer;
 }
 .card-container {
-    padding-bottom: 10px;
+    padding-bottom: 88px; /* additional space to avoid overlap with bottom nav */
 }
 .user-card {
     position: relative;

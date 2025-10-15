@@ -1,5 +1,6 @@
 .message-indicator,
-.friend-indicator {
+.friend-indicator,
+.pvp-indicator {
     position: absolute;
     top: -2px;
     right: -2px;
@@ -10,6 +11,10 @@
     display: none;
     animation: message-blink 1s infinite;
     pointer-events: none;
+}
+
+.pvp-indicator {
+    background-color: #ff6b6b;
 }
 
 @keyframes message-blink {

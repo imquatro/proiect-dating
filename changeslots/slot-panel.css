@@ -16,8 +16,8 @@
 }
 
 #cs-slot-panel {
-    width: 600px;
-    height: 570px;
+    width: min(92vw, 600px);
+    height: min(90vh, 570px);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -26,24 +26,29 @@
     box-sizing: border-box;
     padding: 20px 0;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto; /* allow scroll if content taller than panel */
 }
 
 .cs-image-wrapper {
     position: relative;
-    max-width: 60%;
-    max-height: 250px;
+    width: 100%;
+    max-width: 80%;
+    max-height: clamp(160px, 35vh, 240px);
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 8px;
+    overflow: hidden; /* keep images inside wrapper */
 }
 
 
 #cs-slot-image {
     max-width: 100%;
     height: auto;
-    max-height: 250px;
+    max-height: clamp(160px, 35vh, 240px);
     display: block;
+    object-fit: contain;
 }
 
 #cs-plant-image {
@@ -255,4 +260,42 @@
     align-items: center;
     justify-content: center;
     border: 1px solid #6c4e09;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    #cs-slot-panel {
+        width: calc(100vw - 16px);
+        height: calc(100vh - 140px);
+        padding: 12px 0;
+    }
+    .cs-image-wrapper {
+        max-width: 80%;
+        max-height: clamp(140px, 32vh, 200px);
+    }
+    #cs-slot-image {
+        max-height: clamp(140px, 32vh, 200px);
+    }
+    #cs-plant-image {
+        width: 55%;
+    }
+    #cs-slot-details {
+        font-size: 16px;
+    }
+    #cs-slot-actions {
+        gap: 12px;
+        padding-bottom: 12px;
+    }
+    .cs-slot-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 12px;
+    }
+    .cs-slot-btn i {
+        font-size: 18px;
+    }
+    #cs-helper-container {
+        width: calc(100% - 24px);
+        height: 70px;
+    }
 }

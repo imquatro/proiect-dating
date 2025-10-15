@@ -11,7 +11,7 @@ body {
     justify-content: center;
     height: calc(100vh - 180px);
     max-height: calc(100vh - 180px);
-    overflow: hidden;
+    overflow-y: auto;
     box-sizing: border-box;
     margin-top: 30px;
 }
@@ -34,10 +34,10 @@ body {
     z-index: 1;
 }
 
-/* Header cu Timer si Status */
+/* Header cu Status si League */
 .pvp-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 8px;
     padding: 8px;
@@ -46,20 +46,14 @@ body {
     flex-shrink: 0;
 }
 
-.pvp-timer-container {
-    flex: 1;
+.pvp-status-league-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
 }
 
-.pvp-timer {
-    color: #ffd700;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.pvp-timer i {
-    margin-right: 5px;
-}
 
 .pvp-status {
     color: #fff;
@@ -148,6 +142,167 @@ body {
     display: block;
 }
 
+/* Global Timer Wrapper - positioned between scoring info and league tabs */
+.pvp-global-timer-wrapper {
+    margin: 15px 0 10px 0;
+    flex-shrink: 0;
+}
+
+/* Group Timer - always visible, updates based on active round */
+.pvp-group-timer {
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.95), rgba(160, 82, 45, 0.95));
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+    display: block !important;
+    visibility: visible !important;
+    position: relative;
+}
+
+.group-timer-title {
+    color: #ffd700;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.group-timer-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.timer-block {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 215, 0, 0.7);
+    border-radius: 6px;
+    padding: 8px 12px;
+    min-width: 55px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timer-value {
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    display: block;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.timer-label {
+    color: #ffd700;
+    font-size: 10px;
+    text-transform: uppercase;
+    display: block;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.timer-separator {
+    color: #ffd700;
+    font-size: 22px;
+    font-weight: bold;
+    margin: 0 4px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.group-timer-status {
+    color: #fff;
+    font-size: 11px;
+    opacity: 0.9;
+    font-style: italic;
+}
+
+/* Timer states */
+.pvp-group-timer.warning .timer-value {
+    color: #ff9800;
+    animation: timerPulse 1s ease-in-out infinite;
+}
+
+.pvp-group-timer.critical .timer-value {
+    color: #ff4444;
+    animation: timerPulse 0.5s ease-in-out infinite;
+}
+
+/* Completed round state - like in the image */
+.pvp-group-timer.completed {
+    background: linear-gradient(135deg, rgba(34, 139, 34, 0.9), rgba(0, 100, 0, 0.9));
+    border: 2px solid #32cd32;
+    box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
+}
+
+.pvp-group-timer.completed .group-timer-title {
+    color: #90ee90;
+}
+
+.pvp-group-timer.completed .timer-value {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Pending round state */
+.pvp-group-timer.pending {
+    background: linear-gradient(135deg, rgba(105, 105, 105, 0.9), rgba(128, 128, 128, 0.9));
+    border: 2px solid #a0a0a0;
+    box-shadow: 0 4px 15px rgba(160, 160, 160, 0.3);
+}
+
+.pvp-group-timer.pending .group-timer-title {
+    color: #d3d3d3;
+}
+
+.pvp-group-timer.pending .timer-value {
+    color: #c0c0c0;
+    font-size: 20px;
+}
+
+/* Phase-based styling */
+.pvp-group-timer.battle {
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.9), rgba(160, 82, 45, 0.9));
+    border: 2px solid #ffd700;
+}
+
+.pvp-group-timer.pause {
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.9), rgba(255, 140, 0, 0.9));
+    border: 2px solid #ffa500;
+}
+
+.pvp-group-timer.final_display {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+    border: 2px solid #ffd700;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+}
+
+@keyframes timerPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
 /* Sub-tabs pentru Runde */
 .pvp-round-tabs {
     display: flex;
@@ -155,12 +310,18 @@ body {
     margin-bottom: 8px;
     flex-wrap: wrap;
     flex-shrink: 0;
-    position: sticky; /* keep visible on scroll */
-    top: 0;
-    z-index: 1000;
-    background: url('../img/bg2.png') center/cover no-repeat; /* same background as medal buttons container */
+    background: rgba(0, 0, 0, 0.2);
     padding: 6px 4px;
     border-bottom: 1px solid #f6cf49;
+    border-radius: 4px;
+}
+
+/* Sticky round tabs */
+.pvp-sticky-round-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: url('../img/bg2.png') center/cover no-repeat;
 }
 
 .round-btn {
@@ -232,19 +393,23 @@ body {
 }
 
 /* Ascunde bara de scroll vizuala */
-.bracket-container::-webkit-scrollbar {
+.bracket-container::-webkit-scrollbar,
+.pvp-container::-webkit-scrollbar {
     display: none !important;
 }
 
-.bracket-container::-webkit-scrollbar-track {
+.bracket-container::-webkit-scrollbar-track,
+.pvp-container::-webkit-scrollbar-track {
     display: none !important;
 }
 
-.bracket-container::-webkit-scrollbar-thumb {
+.bracket-container::-webkit-scrollbar-thumb,
+.pvp-container::-webkit-scrollbar-thumb {
     display: none !important;
 }
 
-.bracket-container {
+.bracket-container,
+.pvp-container {
     -ms-overflow-style: none !important;  /* Internet Explorer 10+ */
     scrollbar-width: none !important;  /* Firefox */
 }
@@ -595,6 +760,33 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: goldShimmer 10s ease-in-out infinite alternate;
+}
+
+.vip-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    color: #000;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    animation: vipBadgeGlow 2s ease-in-out infinite alternate;
+    z-index: 10;
+}
+
+@keyframes vipBadgeGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 1);
+        transform: scale(1.05);
+    }
 }
 
 .match-player-name.xp-fade {
@@ -1260,6 +1452,38 @@ body {
         border-radius: 15px;
     }
     
+    /* Group Timer Mobile */
+    .pvp-group-timer {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+    }
+    
+    .group-timer-title {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    
+    .timer-block {
+        padding: 4px 8px;
+        min-width: 40px;
+    }
+    
+    .timer-value {
+        font-size: 16px;
+    }
+    
+    .timer-label {
+        font-size: 9px;
+    }
+    
+    .timer-separator {
+        font-size: 16px;
+    }
+    
+    .group-timer-status {
+        font-size: 10px;
+    }
+    
     /* Header Mobile */
     .pvp-header {
         flex-direction: column;
@@ -1267,15 +1491,6 @@ body {
         padding: 15px 10px;
     }
     
-    .pvp-timer-container {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .pvp-timer {
-        font-size: 14px;
-        padding: 8px 12px;
-    }
     
     .pvp-status {
         font-size: 12px;
@@ -1518,14 +1733,42 @@ body {
         padding: 5px;
     }
     
+    /* Group Timer Extra Small Mobile */
+    .pvp-group-timer {
+        padding: 6px 10px;
+        margin-bottom: 6px;
+    }
+    
+    .group-timer-title {
+        font-size: 10px;
+        margin-bottom: 3px;
+    }
+    
+    .timer-block {
+        padding: 3px 6px;
+        min-width: 35px;
+    }
+    
+    .timer-value {
+        font-size: 14px;
+    }
+    
+    .timer-label {
+        font-size: 8px;
+    }
+    
+    .timer-separator {
+        font-size: 14px;
+    }
+    
+    .group-timer-status {
+        font-size: 9px;
+    }
+    
     .pvp-header {
         padding: 10px 5px;
     }
     
-    .pvp-timer {
-        font-size: 12px;
-        padding: 6px 8px;
-    }
     
     .pvp-status {
         font-size: 10px;

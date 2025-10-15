@@ -11,6 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchUrl = isVisitor && visitId
         ? `${(window.baseUrl || '')}slot_states.php?user_id=${visitId}`
         : (window.baseUrl || '') + 'slot_states.php';
+    
+    // Broadcast Channel for instant sync between tabs on same device
+    let broadcastChannel = null;
+    try {
+        const channelName = isVisitor && visitId ? `farm_${visitId}` : `farm_${window.userId || 'guest'}`;
+        broadcastChannel = new BroadcastChannel(channelName);
+        broadcastChannel.onmessage = (e) => {
+            if (e.data && e.data.type === 'slot_update') {
+                updateSlotFromStream(e.data.data);
+            }
+        };
+    } catch (e) {
+        // BroadcastChannel not supported, ignore
+    }
 
     function saveStates(slotId = null) {
         if (isVisitor && !canInteract) return Promise.resolve();
@@ -162,6 +176,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateTimer(id);
             }
         });
+        
+        // Check all slots for harvest-ready state (even those without active timers)
+        Object.keys(slotStates).forEach(id => {
+            const state = slotStates[id];
+            if (state && state.image && state.waterRemaining === 0 && state.feedRemaining === 0) {
+                const slot = document.getElementById(`slot-${id}`);
+                if (slot) {
+                    const actionEl = slot.querySelector('.slot-action');
+                    if (actionEl && actionEl.dataset.action !== 'harvest') {
+                        checkNextAction(id);
+                    }
+                }
+            }
+        });
     }
     setInterval(tickTimers, 1000);
 
@@ -200,32 +228,152 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (action === 'water') {
             if (state.waterRemaining > 0) {
+                // Server-side watering with optimistic UI update
+                const ownerId = (isVisitor && visitId) ? visitId : (window.userId || null);
+                if (!ownerId) return;
+                
+                // Optimistic update
+                const prevWater = state.waterRemaining;
                 state.waterRemaining--;
                 if (state.waterRemaining > 0 && state.waterInterval > 0) {
                     startTimer(slotId, 'water');
                 } else {
                     checkNextAction(slotId);
                 }
-                saveStates(slotId);
-                recordHelp(slotId, 'water').then(data => {
-                    if (window.showFloatingText && data.xpGain) {
-                        window.showFloatingText(slot, { xp: data.xpGain });
+                
+                // Broadcast instant update to other tabs on same device
+                if (broadcastChannel) {
+                    try {
+                        broadcastChannel.postMessage({
+                            type: 'slot_update',
+                            data: {
+                                slotId: parseInt(slotId),
+                                waterTimes: state.waterRemaining,
+                                feedTimes: state.feedRemaining,
+                                timerType: state.timerType,
+                                timerEnd: state.timerEnd,
+                                image: state.image,
+                                waterInterval: state.waterInterval,
+                                feedInterval: state.feedInterval
+                            }
+                        });
+                    } catch (e) {
+                        // Ignore broadcast errors
                     }
+                }
+                
+                fetch(`${(window.baseUrl || '')}serverside/water_slot.php`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({slot_id: parseInt(slotId), owner_id: parseInt(ownerId)})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Apply server response immediately
+                        state.waterRemaining = data.waterRemaining;
+                        state.feedRemaining = data.feedRemaining;
+                        state.timerType = data.timerType;
+                        state.timerEnd = data.timerEnd;
+                        
+                        if (data.timerEnd && data.timerEnd > Date.now()) {
+                            startTimer(slotId, data.timerType, true);
+                        } else {
+                            checkNextAction(slotId);
+                        }
+                        
+                        // Force immediate state reload for all slots to catch harvest-ready
+                        loadStates().catch(() => {});
+                        
+                        if (window.showFloatingText && data.xpGain) {
+                            window.showFloatingText(slot, {xp: data.xpGain});
+                        }
+                        if (data.levelUp && window.showLevelUp) {
+                            window.showLevelUp(data.newLevel);
+                        }
+                    } else {
+                        state.waterRemaining = prevWater;
+                        checkNextAction(slotId);
+                    }
+                })
+                .catch(() => {
+                    state.waterRemaining = prevWater;
+                    checkNextAction(slotId);
                 });
             }
         } else if (action === 'feed') {
             if (state.feedRemaining > 0) {
+                // Server-side feeding with optimistic UI update
+                const ownerId = (isVisitor && visitId) ? visitId : (window.userId || null);
+                if (!ownerId) return;
+                
+                // Optimistic update
+                const prevFeed = state.feedRemaining;
                 state.feedRemaining--;
                 if (state.feedRemaining > 0 && state.feedInterval > 0) {
                     startTimer(slotId, 'feed');
                 } else {
                     checkNextAction(slotId);
                 }
-                saveStates(slotId);
-                recordHelp(slotId, 'feed').then(data => {
-                    if (window.showFloatingText && data.xpGain) {
-                        window.showFloatingText(slot, { xp: data.xpGain });
+                
+                // Broadcast instant update to other tabs on same device
+                if (broadcastChannel) {
+                    try {
+                        broadcastChannel.postMessage({
+                            type: 'slot_update',
+                            data: {
+                                slotId: parseInt(slotId),
+                                waterTimes: state.waterRemaining,
+                                feedTimes: state.feedRemaining,
+                                timerType: state.timerType,
+                                timerEnd: state.timerEnd,
+                                image: state.image,
+                                waterInterval: state.waterInterval,
+                                feedInterval: state.feedInterval
+                            }
+                        });
+                    } catch (e) {
+                        // Ignore broadcast errors
                     }
+                }
+                
+                fetch(`${(window.baseUrl || '')}serverside/feed_slot.php`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({slot_id: parseInt(slotId), owner_id: parseInt(ownerId)})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Apply server response immediately
+                        state.waterRemaining = data.waterRemaining;
+                        state.feedRemaining = data.feedRemaining;
+                        state.timerType = data.timerType;
+                        state.timerEnd = data.timerEnd;
+                        
+                        if (data.timerEnd && data.timerEnd > Date.now()) {
+                            startTimer(slotId, data.timerType, true);
+                        } else {
+                            checkNextAction(slotId);
+                        }
+                        
+                        // Force immediate state reload for all slots to catch harvest-ready
+                        loadStates().catch(() => {});
+                        
+                        if (window.showFloatingText && data.xpGain) {
+                            window.showFloatingText(slot, {xp: data.xpGain});
+                        }
+                        if (data.levelUp && window.showLevelUp) {
+                            window.showLevelUp(data.newLevel);
+                        }
+                    } else {
+                        state.feedRemaining = prevFeed;
+                        checkNextAction(slotId);
+                    }
+                })
+                .catch(() => {
+                    state.feedRemaining = prevFeed;
+                    checkNextAction(slotId);
                 });
             }
         } else if (action === 'harvest') {
@@ -369,16 +517,117 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initial load and periodic refresh for live updates
+    // Function to update slot from SSE stream
+    function updateSlotFromStream(data) {
+        const slotId = String(data.slotId);
+        if (dirtySlots.has(slotId)) return; // Skip if we just modified it
+        
+        const slot = document.getElementById(`slot-${slotId}`);
+        if (!slot) return;
+        
+        const itemImg = slot.querySelector('.slot-item');
+        const actionEl = slot.querySelector('.slot-action');
+        const timerEl = slot.querySelector('.slot-timer');
+        
+        const existing = slotStates[slotId] || {};
+        slotStates[slotId] = {
+            image: data.image || existing.image,
+            waterInterval: parseInt(data.waterInterval) || existing.waterInterval || 0,
+            feedInterval: parseInt(data.feedInterval) || existing.feedInterval || 0,
+            waterRemaining: parseInt(data.waterTimes) !== undefined ? parseInt(data.waterTimes) : existing.waterRemaining || 0,
+            feedRemaining: parseInt(data.feedTimes) !== undefined ? parseInt(data.feedTimes) : existing.feedRemaining || 0,
+            timerType: data.timerType !== undefined ? data.timerType : existing.timerType,
+            timerEnd: data.timerEnd !== undefined ? data.timerEnd : existing.timerEnd,
+            timeLeft: existing.timeLeft || 0
+        };
+        
+        if (itemImg && data.image) {
+            itemImg.src = data.image;
+            itemImg.style.display = 'block';
+        }
+        
+        if (actionEl) {
+            bindActionHandler(actionEl);
+        }
+        
+        if (slotStates[slotId].timerEnd && slotStates[slotId].timerEnd > Date.now()) {
+            slotStates[slotId].timeLeft = Math.round((slotStates[slotId].timerEnd - Date.now()) / 1000);
+            if (timerEl) timerEl.style.display = 'block';
+            if (actionEl) actionEl.style.display = 'none';
+            updateTimer(slotId);
+            activeTimers.add(slotId);
+        } else {
+            slotStates[slotId].timerEnd = null;
+            slotStates[slotId].timeLeft = 0;
+            if (timerEl) timerEl.style.display = 'none';
+            activeTimers.delete(slotId);
+            checkNextAction(slotId);
+        }
+    }
+
+    // Initial load
     loadStates();
-    let pollInterval = setInterval(loadStates, 5000);
+    
+    // Real-time updates via Server-Sent Events (EventSource)
+    const streamUrl = isVisitor && visitId 
+        ? `${(window.baseUrl || '')}slot_stream.php?user_id=${visitId}`
+        : `${(window.baseUrl || '')}slot_stream.php`;
+    
+    let eventSource = null;
+    let reconnectTimeout = null;
+    
+    function connectEventSource() {
+        if (eventSource) {
+            eventSource.close();
+        }
+        
+        eventSource = new EventSource(streamUrl);
+        
+        eventSource.onmessage = (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                updateSlotFromStream(data);
+            } catch (err) {
+                console.error('SSE parse error:', err);
+            }
+        };
+        
+        eventSource.onerror = () => {
+            eventSource.close();
+            // Reconnect after 3 seconds
+            if (!reconnectTimeout) {
+                reconnectTimeout = setTimeout(() => {
+                    reconnectTimeout = null;
+                    connectEventSource();
+                }, 3000);
+            }
+        };
+    }
+    
+    connectEventSource();
+    
+    // Aggressive fallback polling every 3 seconds for near-instant updates
+    setInterval(loadStates, 3000);
+    
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-            clearInterval(pollInterval);
+            if (eventSource) {
+                eventSource.close();
+            }
         } else {
             loadStates();
-            pollInterval = setInterval(loadStates, 5000);
+            connectEventSource();
         }
     });
-    window.addEventListener('beforeunload', () => saveStates());
+    
+    window.addEventListener('beforeunload', () => {
+        if (eventSource) {
+            eventSource.close();
+        }
+        if (broadcastChannel) {
+            broadcastChannel.close();
+        }
+        saveStates();
+    });
 });
+

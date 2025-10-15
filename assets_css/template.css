@@ -100,7 +100,7 @@ img {
     right: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 0 12px;
+    padding: 0 12px 96px; /* extra bottom padding to clear bottom nav */
     scrollbar-width: none; /* hide scrollbar for Firefox */
     -ms-overflow-style: none; /* hide scrollbar for IE and Edge */
 }

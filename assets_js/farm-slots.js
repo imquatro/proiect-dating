@@ -6,9 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const content     = document.querySelector('.content');
     const divider     = document.querySelector('.farm-divider');
     const farmSlots   = document.querySelector('.farm-slots');
-    const overlay     = document.createElement('div');
-    overlay.id = 'slot-panel-overlay';
-    document.body.appendChild(overlay);
+    // Reuse existing overlay from template to avoid duplicate IDs
+    let overlay = document.getElementById('slot-panel-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'slot-panel-overlay';
+        document.body.appendChild(overlay);
+    }
 
     overlay.addEventListener('click', e => {
         if (e.target === overlay) {

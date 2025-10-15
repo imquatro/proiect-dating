@@ -1,7 +1,7 @@
 #quickshop-panel {
-    width: 90%;
+    width: min(92vw, 600px);
     max-width: 600px;
-    height: 90vh;
+    height: min(90vh, 570px);
     max-height: 570px;
     margin: 20px auto 0;
     position: relative;
@@ -11,6 +11,7 @@
     box-sizing: border-box;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
     background: url("../img/bg2.png") center/cover no-repeat;
+    overflow: hidden; /* avoid horizontal overflow on small screens */
 }
 
 .quickshop-grid {
@@ -78,6 +79,31 @@
 .qs-count {
     margin-bottom: 4px;
     font-size: 12px;
+}
+.qs-buy {
+    padding: 4px 8px;
+    background: #0066cc;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    #quickshop-panel {
+        width: calc(100vw - 16px);
+        height: calc(100vh - 140px);
+        margin: 12px auto 0;
+        padding: 12px;
+    }
+    .quickshop-grid {
+        gap: 8px;
+    }
+    .qs-price { font-size: 11px; }
+    .qs-details { font-size: 9px; }
+    .qs-buy { font-size: 12px; padding: 6px 10px; }
 }
 .qs-buy {
     padding: 4px 8px;

@@ -82,7 +82,7 @@ require_once __DIR__ . '/includes/cache_buster.php';
         <a href="welcome.php" class="nav-btn <?php if($activePage==='welcome') echo 'active';?>"><i class="fas fa-seedling"></i></a>
         <a href="barn.php" class="nav-btn <?php if($activePage==='barn') echo 'active';?>"><i class="fas fa-warehouse"></i></a>
         <a href="friends.php" class="nav-btn <?php if($activePage==='friends') echo 'active';?>"><i class="fas fa-user-friends"></i><span id="friendIndicator" class="friend-indicator"></span></a>
-        <a href="pvp_battles.php" class="nav-btn <?php if($activePage==='pvp') echo 'active';?>"><i class="fas fa-trophy"></i></a>
+        <a href="pvp_battles.php" class="nav-btn <?php if($activePage==='pvp') echo 'active';?>"><i class="fas fa-trophy"></i><span id="pvpIndicator" class="pvp-indicator"></span></a>
         <a href="vip.php" class="nav-btn <?php if($activePage==='vip') echo 'active';?>"><i class="fas fa-crown"></i></a>
         <a href="settings.php" class="nav-btn <?php if($activePage==='settings') echo 'active';?>"><i class="fas fa-cog"></i></a>
     </nav>
@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="<?= asset('assets_js/base-url.js') ?>"></script>
   <script src="<?= asset('assets_js/message-notification.js') ?>"></script>
   <script src="<?= asset('assets_js/friend-request-notification.js') ?>"></script>
+  <script src="<?= asset('assets_js/pvp-notification.js') ?>"></script>
   <script src="<?= asset('moneysistem/money.js') ?>"></script>
   <script src="<?= asset('assets_js/interaction-blocker.js') ?>"></script>
   <script src="<?= asset('assets_js/xp-float.js') ?>"></script>

@@ -40,7 +40,9 @@ $cards = array_map('basename', array_filter(glob($cardDir.'/*.{png,gif,jpg,jpeg}
                         <ul class="vip-benefit-list">
                             <li>Gain 5 extra farming slots available only to VIPs</li>
                             <li>Plant multiple crops at once for faster progress</li>
-                            <li>Harvest several plots in one action and earn 8 XP per plot</li>
+                            <li>Earn 4x more XP: 4 XP for watering/feeding (vs 1 XP for regular users)</li>
+                            <li>Earn 4x more XP: 8 XP per harvest (vs 2 XP for regular users)</li>
+                            <li>Harvest several plots in one action for maximum efficiency</li>
                             <li>Remove items from multiple plots simultaneously</li>
                             <li>Receive 10 XP for each bulk sale of 1,000 items</li>
                             <li>Hold up to 5 simultaneous bank deposits</li>

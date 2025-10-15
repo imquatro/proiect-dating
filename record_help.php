@@ -45,7 +45,6 @@ $db->exec('CREATE TABLE IF NOT EXISTS user_last_helpers (
     clicks INT NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
 
-// Ensure clicks column exists for older installations
 @$db->exec('ALTER TABLE user_last_helpers ADD COLUMN IF NOT EXISTS clicks INT NOT NULL DEFAULT 1');
 
 $stmt = $db->prepare(
@@ -83,5 +82,85 @@ if ($action === 'water') {
 }
 $hstmt->execute([$ownerId, $slotId, $userId]);
 
+// Actually perform the action on the server
+$actionSuccess = false;
+try {
+    if ($action === 'water') {
+        $checkStmt = $db->prepare('SELECT water_remaining FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
+        $checkStmt->execute([$ownerId, $slotId]);
+        $waterRemaining = (int)$checkStmt->fetchColumn();
+        
+        if ($waterRemaining > 0) {
+            $newWaterRemaining = $waterRemaining - 1;
+            $intervalStmt = $db->prepare('SELECT water_interval FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
+            $intervalStmt->execute([$ownerId, $slotId]);
+            $waterInterval = (int)$intervalStmt->fetchColumn();
+            
+            if ($newWaterRemaining > 0 && $waterInterval > 0) {
+                $timerEnd = date('Y-m-d H:i:s', time() + $waterInterval);
+                $updStmt = $db->prepare('UPDATE user_slot_states SET water_remaining = ?, timer_type = \'water\', timer_end = ?, updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
+                $updStmt->execute([$newWaterRemaining, $timerEnd, $ownerId, $slotId]);
+            } else {
+                $feedCheck = $db->prepare('SELECT feed_remaining FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
+                $feedCheck->execute([$ownerId, $slotId]);
+                $feedRemaining = (int)$feedCheck->fetchColumn();
+                
+                if ($feedRemaining > 0) {
+                    $updStmt = $db->prepare('UPDATE user_slot_states SET water_remaining = 0, timer_type = NULL, timer_end = NULL, updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
+                } else {
+                    $updStmt = $db->prepare('UPDATE user_slot_states SET water_remaining = 0, timer_type = \'harvest\', timer_end = NULL, updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
+                }
+                $updStmt->execute([$ownerId, $slotId]);
+            }
+            $actionSuccess = true;
+        }
+    } elseif ($action === 'feed') {
+        $checkStmt = $db->prepare('SELECT feed_remaining FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
+        $checkStmt->execute([$ownerId, $slotId]);
+        $feedRemaining = (int)$checkStmt->fetchColumn();
+        
+        if ($feedRemaining > 0) {
+            $newFeedRemaining = $feedRemaining - 1;
+            $intervalStmt = $db->prepare('SELECT feed_interval FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
+            $intervalStmt->execute([$ownerId, $slotId]);
+            $feedInterval = (int)$intervalStmt->fetchColumn();
+            
+            if ($newFeedRemaining > 0 && $feedInterval > 0) {
+                $timerEnd = date('Y-m-d H:i:s', time() + $feedInterval);
+                $updStmt = $db->prepare('UPDATE user_slot_states SET feed_remaining = ?, timer_type = \'feed\', timer_end = ?, updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
+                $updStmt->execute([$newFeedRemaining, $timerEnd, $ownerId, $slotId]);
+            } else {
+                $updStmt = $db->prepare('UPDATE user_slot_states SET feed_remaining = 0, timer_type = \'harvest\', timer_end = NULL, updated_at = NOW() WHERE user_id = ? AND slot_number = ?');
+                $updStmt->execute([$ownerId, $slotId]);
+            }
+            $actionSuccess = true;
+        }
+    }
+} catch (Exception $e) {
+    // Action failed, but still award XP for the attempt
+}
+
 $result = add_xp($db, $userId, $xpPerAction);
-echo json_encode(array_merge(['status' => 'ok'], $result));
+
+// Return complete slot state for instant UI update
+$slotState = null;
+if ($actionSuccess) {
+    try {
+        $stateStmt = $db->prepare('SELECT water_remaining, feed_remaining, timer_type, timer_end FROM user_slot_states WHERE user_id = ? AND slot_number = ?');
+        $stateStmt->execute([$ownerId, $slotId]);
+        $stateRow = $stateStmt->fetch(PDO::FETCH_ASSOC);
+        if ($stateRow) {
+            $slotState = [
+                'slotId' => $slotId,
+                'waterRemaining' => (int)$stateRow['water_remaining'],
+                'feedRemaining' => (int)$stateRow['feed_remaining'],
+                'timerType' => $stateRow['timer_type'],
+                'timerEnd' => $stateRow['timer_end'] ? strtotime($stateRow['timer_end']) * 1000 : null
+            ];
+        }
+    } catch (Exception $e) {
+        // Ignore error
+    }
+}
+
+echo json_encode(array_merge(['status' => 'ok', 'actionPerformed' => $actionSuccess, 'slotState' => $slotState], $result));

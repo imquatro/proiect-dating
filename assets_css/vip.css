@@ -176,7 +176,7 @@
         flex: none;
         width: 100%;
         max-width: none;
-        height: 45vh;
+        height: 45vh;            /* smaller, so preview stays stable */
         max-height: 45vh;
         margin-top: 0;
         overflow: hidden;
@@ -185,7 +185,7 @@
     }
 
     .vip-panel.benefits-active {
-        height: 55vh;
+        height: 55vh;            /* keep Benefits a bit taller but not too big */
         max-height: 55vh;
     }
 
@@ -198,6 +198,9 @@
 
     .vip-preview {
         margin-top: 5px;
+        position: sticky;       /* keep preview visually stable while scrolling */
+        top: 68px;              /* below top bar */
+        z-index: 9;
     }
 
     .vip-preview .mini-cards-row {

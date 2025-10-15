@@ -24,7 +24,7 @@ $userId    = $_SESSION['user_id'];
 $slotCount = count($slots);
 
 // Verify item and price from database
-$stmt = $db->prepare('SELECT price, image_plant FROM farm_items WHERE id = ?');
+$stmt = $db->prepare('SELECT price, image_plant, water_times, feed_times, water_interval, feed_interval FROM farm_items WHERE id = ?');
 $stmt->execute([$itemId]);
 $item = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$item) {
@@ -66,8 +66,34 @@ try {
     $ins = $db->prepare('INSERT INTO user_plants (user_id, slot_number, item_id, planted_at)
                   VALUES (?, ?, ?, NOW())
                   ON DUPLICATE KEY UPDATE item_id = VALUES(item_id), planted_at = NOW()');
+    
+    // Initialize slot states for real-time sync
+    $stateIns = $db->prepare(
+        'INSERT INTO user_slot_states 
+         (user_id, slot_number, image, water_interval, feed_interval, water_remaining, feed_remaining, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+         ON DUPLICATE KEY UPDATE 
+         image = VALUES(image), 
+         water_interval = VALUES(water_interval), 
+         feed_interval = VALUES(feed_interval), 
+         water_remaining = VALUES(water_remaining), 
+         feed_remaining = VALUES(feed_remaining),
+         timer_type = NULL,
+         timer_end = NULL,
+         updated_at = NOW()'
+    );
+    
     foreach ($slots as $slotId) {
         $ins->execute([$userId, $slotId, $itemId]);
+        $stateIns->execute([
+            $userId, 
+            $slotId, 
+            $image, 
+            (int)$item['water_interval'], 
+            (int)$item['feed_interval'], 
+            (int)$item['water_times'], 
+            (int)$item['feed_times']
+        ]);
     }
     $db->commit();
 

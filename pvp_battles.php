@@ -2,14 +2,23 @@
 $activePage = 'pvp';
 session_start();
 
+// Prevent caching
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/pvp_server_heartbeat.php';
 
 $userId = $_SESSION['user_id'];
+
+// Verifică și curăță automat battle-urile întrerupte dacă serverul nu rulează
+checkAndCleanupPvpBattles();
 
 // Check user's league
 $stmt = $db->prepare("SELECT league_id FROM user_league_status WHERE user_id = ?");
@@ -26,10 +35,33 @@ if (!$userLeagueId) {
 $stmt = $db->query("SELECT * FROM pvp_leagues ORDER BY level ASC");
 $leagues = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Check loop status
+$stmt = $db->query("SELECT setting_value FROM pvp_settings WHERE setting_name = 'loop_enabled'");
+$loopEnabled = $stmt->fetchColumn();
+$loopEnabled = ($loopEnabled === '1' || $loopEnabled === 1);
+
 // Get active battle for user's league
 $stmt = $db->prepare("SELECT * FROM pvp_battles WHERE league_id = ? AND is_active = 1 ORDER BY id DESC LIMIT 1");
 $stmt->execute([$userLeagueId]);
 $activeBattle = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Check if final display time has expired and loop is disabled
+if ($activeBattle && $activeBattle['status'] === 'displaying_final' && !$loopEnabled) {
+    // Get timer settings
+    $stmt = $db->query("SELECT setting_value FROM pvp_settings WHERE setting_name = 'final_display_minutes'");
+    $finalDisplayMinutes = $stmt->fetchColumn();
+    $finalDisplayMinutes = $finalDisplayMinutes ? (int)$finalDisplayMinutes : 5;
+    
+    // Check if time expired
+    $completedAt = new DateTime($activeBattle['completed_at']);
+    $now = new DateTime();
+    $minutesSince = floor(($now->getTimestamp() - $completedAt->getTimestamp()) / 60);
+    
+    if ($minutesSince >= $finalDisplayMinutes) {
+        // Time expired and loop disabled - treat as no active battle
+        $activeBattle = null;
+    }
+}
 
 // Check if user is participant in active battle
 $userIsParticipant = false;
@@ -63,22 +95,7 @@ ob_start();
     <div id="pvpPanel" class="pvp-panel">
         <!-- Header with Timer and Status -->
         <div class="pvp-header">
-            <div class="pvp-timer-container">
-                <div id="pvpTimer" class="pvp-timer">
-                    <i class="fas fa-clock"></i> 
-                    <span id="timerText">
-                        <?php if ($activeBattle): ?>
-                            Battle Active - Round <?= $activeBattle['current_round'] ?>
-                            <?php if ($userIsEliminated): ?>
-                                - You were eliminated in Round <?= $userEliminationRound ?>
-                            <?php elseif ($userIsParticipant): ?>
-                                - You are in Round <?= $userCurrentRound ?>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            No Active Battle
-                        <?php endif; ?>
-                    </span>
-                </div>
+            <div class="pvp-status-league-container">
                 <div id="pvpStatus" class="pvp-status">
                     <?php if ($userIsEliminated): ?>
                         ❌ You were eliminated in Round <?= $userEliminationRound ?>
@@ -90,16 +107,16 @@ ob_start();
                         ⏳ Waiting for next battle
                     <?php endif; ?>
                 </div>
-            </div>
-            <div class="pvp-user-league">
-                <span class="league-label">Your League:</span>
-                <span id="userLeagueName" class="league-name" data-league-id="<?= $userLeagueId ?>">
-                    <?php 
-                    $userLeague = array_filter($leagues, fn($l) => $l['id'] == $userLeagueId);
-                    $userLeague = reset($userLeague);
-                    echo $userLeague ? $userLeague['name'] : 'Bronze';
-                    ?>
-                </span>
+                <div class="pvp-user-league">
+                    <span class="league-label">Your League:</span>
+                    <span id="userLeagueName" class="league-name" data-league-id="<?= $userLeagueId ?>">
+                        <?php 
+                        $userLeague = array_filter($leagues, fn($l) => $l['id'] == $userLeagueId);
+                        $userLeague = reset($userLeague);
+                        echo $userLeague ? $userLeague['name'] : 'Bronze';
+                        ?>
+                    </span>
+                </div>
             </div>
         </div>
         
@@ -142,6 +159,27 @@ ob_start();
             </div>
         </div>
         
+        <!-- Global Timer - positioned between scoring info and league tabs -->
+        <div class="pvp-global-timer-wrapper">
+            <div class="pvp-group-timer" id="pvpGlobalTimer">
+                <div class="group-timer-title">
+                    <i class="fas fa-trophy"></i> ROUND TIME REMAINING
+                </div>
+                <div class="group-timer-display">
+                    <div class="timer-block">
+                        <span class="timer-value timer-minutes">--</span>
+                        <span class="timer-label">MIN</span>
+                    </div>
+                    <span class="timer-separator">:</span>
+                    <div class="timer-block">
+                        <span class="timer-value timer-seconds">--</span>
+                        <span class="timer-label">SEC</span>
+                    </div>
+                </div>
+                <div class="group-timer-status" id="timerRoundLabel">Select a league to view tournament</div>
+            </div>
+        </div>
+        
         <!-- Tabs Ligi -->
         <div class="pvp-tabs">
             <?php foreach ($leagues as $index => $league): ?>
@@ -167,8 +205,8 @@ ob_start();
                  id="league-<?= $league['id'] ?>"
                  data-league-id="<?= $league['id'] ?>">
                 
-                <!-- Sub-tabs pentru Runde -->
-                <div class="pvp-round-tabs" id="roundTabs-<?= $league['id'] ?>">
+                <!-- Sub-tabs pentru Runde (Sticky) -->
+                <div class="pvp-round-tabs pvp-sticky-round-tabs" id="roundTabs-<?= $league['id'] ?>">
                     <button class="round-btn" data-round="1">1/32</button>
                     <button class="round-btn" data-round="2">1/16</button>
                     <button class="round-btn" data-round="3">1/8</button>
@@ -179,14 +217,16 @@ ob_start();
                 <!-- Bracket Container -->
                 <div class="bracket-container" id="bracket-<?= $league['id'] ?>">
                     <?php
-                    // Get battle for this league
-                    $stmt = $db->prepare("SELECT * FROM pvp_battles WHERE league_id = ? AND is_active = 1 ORDER BY id DESC LIMIT 1");
+                    // Get battle for this league - only if truly active (not interrupted)
+                    $stmt = $db->prepare("SELECT * FROM pvp_battles WHERE league_id = ? AND is_active = 1 AND status = 'active' ORDER BY id DESC LIMIT 1");
                     $stmt->execute([$league['id']]);
                     $leagueBattle = $stmt->fetch(PDO::FETCH_ASSOC);
                     
-                    if ($leagueBattle) {
-                        // Show all rounds with matches
+                    if ($leagueBattle && $leagueBattle['is_active'] == 1) {
+                        // Show rounds with matches - only for current and completed rounds
                         for ($round = 1; $round <= 5; $round++) {
+                            // Only show matches for rounds that have started (current or completed)
+                            if ($round <= $leagueBattle['current_round']) {
                             $stmt = $db->prepare("
                                 SELECT m.*, 
                                        u1.id as u1_id,
@@ -236,7 +276,7 @@ ob_start();
                                 echo '<div class="bracket-matches">';
                                 
                                 foreach ($matches as $match) {
-                                    // Determine winner/loser classes
+                                    // Determine winner/loser classes with visual effects
                                     $user1Class = '';
                                     $user2Class = '';
                                     $vsClass = '';
@@ -244,12 +284,15 @@ ob_start();
                                     
                                     if ($match['completed']) {
                                         $matchClass = ' completed';
-                                        if ($match['user1_score'] > $match['user2_score']) {
-                                            $user1Class = ' winner';
-                                            $user2Class = ' loser';
-                                        } elseif ($match['user2_score'] > $match['user1_score']) {
-                                            $user1Class = ' loser';
-                                            $user2Class = ' winner';
+                                        // Use winner_id to determine winner/loser (handles ties correctly)
+                                        if (!empty($match['winner_id'])) {
+                                            if ($match['winner_id'] == $match['user1_id']) {
+                                                $user1Class = ' winner';
+                                                $user2Class = ' loser';
+                                            } else {
+                                                $user1Class = ' loser';
+                                                $user2Class = ' winner';
+                                            }
                                         }
                                     } else {
                                         $vsClass = ' live';
@@ -298,10 +341,18 @@ ob_start();
                                 
                                 echo '</div>';
                                 echo '</div>';
+                            } else {
+                                // No matches for this round yet
+                                echo '<div class="no-battle-message">';
+                                echo '<i class="fas fa-info-circle"></i>';
+                                echo '<p>No matches found for this round</p>';
+                                echo '<p class="next-battle-info">Matches will appear when the round begins!</p>';
+                                echo '</div>';
+                            }
                             }
                         }
                     } else {
-                        // No battle for this league
+                        // No active battle for this league
                         echo '<div class="no-battle-message">';
                         echo '<i class="fas fa-info-circle"></i>';
                         echo '<p>No active battle for this league at the moment.</p>';
@@ -581,7 +632,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php
 $content = ob_get_clean();
 $pageTitle = 'PvP Battles';
-$pageCss = 'assets_css/pvp.css';
+$pageCss = 'assets_css/pvp.css?v=' . time();
 $extraCss = ['assets_css/pvp-chat.css'];
+$extraJs = '<script src="assets_js/pvp.js?v=' . rand(1000000, 9999999) . '"></script>';
 include 'template.php';
 ?>

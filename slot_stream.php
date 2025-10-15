@@ -61,5 +61,5 @@ while (!connection_aborted()) {
         @flush();
         $lastPing = time();
     }
-    sleep(1);
+    usleep(50000); // 0.05 seconds (50ms) for near-instant updates
 }

@@ -52,6 +52,7 @@ ob_start();
             <button data-tab="version">Update Version</button>
             <button data-tab="add-users">Add Users</button>
             <button data-tab="admin-grades">Admin Grades</button>
+            <button data-tab="pvp-system">PVP SYSTEM</button>
         </div>
         <div class="fa-tab-content active" id="fa-tab-add">
             <h2>Add Plants & Animals</h2>
@@ -595,6 +596,59 @@ ob_start();
                     <button id="refresh-logs-btn">Refresh Logs</button>
                 </div>
                 <div id="activity-logs" class="activity-logs"></div>
+            </div>
+        </div>
+        
+        <!-- PVP System Tab -->
+        <div class="fa-tab-content" id="fa-tab-pvp-system">
+            <h2>PVP System Management</h2>
+            
+            <!-- Event Control Section -->
+        <div class="pvp-admin-section">
+            <h3>Event Control</h3>
+            <div class="pvp-admin-buttons">
+                <button id="startPvpEvent" class="pvp-admin-btn start-event">
+                    <i class="fas fa-play"></i> START EVENT
+                </button>
+                <button id="stopPvpEvent" class="pvp-admin-btn stop-event">
+                    <i class="fas fa-stop"></i> STOP EVENT
+                </button>
+            </div>
+            <p style="color: #888; font-size: 12px; margin-top: 10px;">
+                ⚠️ START: Cleans all battles + Enables system + Starts tournaments<br>
+                ⚠️ STOP: Cleans all battles + Stops system
+            </p>
+        </div>
+            
+            <!-- Tournament Loop Control Section -->
+            <div class="pvp-admin-section">
+                <h3>Tournament Loop</h3>
+                <div class="toggle-switch-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pvp-loop-toggle-input" data-state="disabled">
+                        <span class="toggle-knob"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Timer Settings Section -->
+            <div class="pvp-admin-section">
+                <h3>Timer Settings</h3>
+                <form id="pvp-settings-form">
+                    <label>Battle Duration (minutes)
+                        <input type="number" name="battle_duration" id="battle_duration" min="1" max="60">
+                    </label>
+                    <label>Final Display Duration (minutes)
+                        <input type="number" name="final_display" id="final_display" min="1" max="60">
+                    </label>
+                    <button type="submit" class="pvp-admin-btn save">💾 Save & Apply Now</button>
+                </form>
+            </div>
+            
+            <!-- Status Display -->
+            <div class="pvp-admin-section">
+                <h3>System Status</h3>
+                <div id="pvp-status-display">Ready for commands...</div>
             </div>
         </div>
     </div>
