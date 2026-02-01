@@ -1,0 +1,1202 @@
+import tkinter as tk
+import time
+import json
+import threading
+import sys
+import os
+import colorsys
+import webbrowser
+from pynput import mouse, keyboard
+
+# =========================
+#  Hide console (Windows)
+# =========================
+if sys.platform == "win32":
+    try:
+        import ctypes
+        hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+        if hwnd:
+            ctypes.windll.user32.ShowWindow(hwnd, 0)
+    except Exception:
+        pass
+
+# =========================
+#  Macro recorder
+# =========================
+FILENAME = "catapulte_clicks.json"
+SETTINGS_FILE = "im_quatro_settings.json"
+
+click_positions = []
+recording = False
+mouse_controller = mouse.Controller()
+
+STEAM_URL = "https://steamcommunity.com/profiles/76561199438588468/"
+
+
+def save_clicks():
+    with open(FILENAME, "w", encoding="utf-8") as f:
+        json.dump(click_positions, f)
+
+
+def load_clicks():
+    with open(FILENAME, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def clamp(v, a, b):
+    return max(a, min(b, v))
+
+
+def rgb_to_hex(r, g, b):
+    return "#{:02x}{:02x}{:02x}".format(int(r), int(g), int(b))
+
+
+def hex_to_rgb(h):
+    h = h.lstrip("#")
+    return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+
+# =========================
+#  Settings persistence (NO THEME COLORS)
+# =========================
+def key_to_store(k):
+    # store as string for json
+    try:
+        if isinstance(k, keyboard.Key):
+            return f"KEY:{str(k).replace('Key.', '')}"  # e.g. KEY:f8
+        if isinstance(k, keyboard.KeyCode):
+            # num0
+            if k.vk == 96:
+                return "NUM0"
+            if k.char:
+                return f"CHAR:{k.char}"
+            if k.vk is not None:
+                return f"VK:{k.vk}"
+    except Exception:
+        pass
+    return "UNKNOWN"
+
+
+def store_to_key(s):
+    # parse stored string back to pynput key
+    try:
+        if s == "NUM0":
+            return keyboard.KeyCode.from_vk(96)
+        if s.startswith("KEY:"):
+            name = s.split(":", 1)[1].strip().lower()
+            return getattr(keyboard.Key, name)
+        if s.startswith("CHAR:"):
+            ch = s.split(":", 1)[1]
+            return keyboard.KeyCode.from_char(ch)
+        if s.startswith("VK:"):
+            vk = int(s.split(":", 1)[1])
+            return keyboard.KeyCode.from_vk(vk)
+    except Exception:
+        pass
+    # fallback
+    return keyboard.KeyCode.from_char('`')
+
+
+def default_settings():
+    return {
+        "delay_ms": 200,
+        "xbutton_delay_ms": 120,
+        "mbutton_delay_ms": 120,
+        "relative": True,
+        "active_tab": "Commands",
+        "hotkeys": {
+            "start": "CHAR:[",
+            "stop": "CHAR:]",
+            "play": "CHAR:`",
+            "quit": "NUM0",
+            "toggle_topmost": "KEY:f10",
+            "toggle_visible": "KEY:f11",
+        },
+        "menu_pos": [140, 120],
+        "eye_pos": [20, 20],
+    }
+
+
+def load_settings_file():
+    if not os.path.exists(SETTINGS_FILE):
+        return default_settings()
+    try:
+        with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        # merge defaults for missing keys
+        d = default_settings()
+        d.update({k: data.get(k, d[k]) for k in d.keys()})
+        # hotkeys merge
+        hk = d["hotkeys"].copy()
+        if isinstance(data.get("hotkeys"), dict):
+            hk.update(data["hotkeys"])
+        d["hotkeys"] = hk
+        # ensure types
+        if not isinstance(d.get("menu_pos"), list) or len(d["menu_pos"]) != 2:
+            d["menu_pos"] = default_settings()["menu_pos"]
+        if not isinstance(d.get("eye_pos"), list) or len(d["eye_pos"]) != 2:
+            d["eye_pos"] = default_settings()["eye_pos"]
+        if d.get("active_tab") not in ("Commands", "Theme", "About me"):
+            d["active_tab"] = "Commands"
+        d["delay_ms"] = int(d.get("delay_ms", 200))
+        d["xbutton_delay_ms"] = int(d.get("xbutton_delay_ms", 120))
+        d["mbutton_delay_ms"] = int(d.get("mbutton_delay_ms", 120))
+        d["relative"] = bool(d.get("relative", True))
+        return d
+    except Exception:
+        return default_settings()
+
+
+def save_settings_file(payload):
+    try:
+        with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
+    except Exception:
+        pass
+
+
+# =========================
+#  ImGui-like App (Canvas)
+# =========================
+class ImGuiApp:
+    def __init__(self):
+        self.settings = load_settings_file()
+
+        self.root = tk.Tk()
+        self.root.title("IM QUATRO MACROS")
+        self.root.geometry("560x380")
+        self.root.minsize(560, 380)
+        self.root.overrideredirect(True)
+
+        # Always on top so it doesn't "disappear"
+        self.topmost = True
+        self.root.attributes("-topmost", True)
+
+        # restore window pos
+        try:
+            mx, my = self.settings["menu_pos"]
+            self.root.geometry(f"+{int(mx)}+{int(my)}")
+        except Exception:
+            pass
+
+        self.canvas = tk.Canvas(self.root, highlightthickness=0, bd=0)
+        self.canvas.pack(fill="both", expand=True)
+
+        # ----- state (theme NOT persisted) -----
+        self.state = {
+            "bg": "#1b1f24",
+            "title": "#111418",
+            "panel": "#151a20",
+            "accent": "#2d78ff",
+            "text": "#e6e6e6",
+            "muted": "#9aa3ad",
+            "alpha": 0.96,
+
+            # Delay in ms
+            "delay_ms": int(self.settings.get("delay_ms", 200)),
+            "xbutton_delay_ms": int(self.settings.get("xbutton_delay_ms", 120)),
+            "mbutton_delay_ms": int(self.settings.get("mbutton_delay_ms", 120)),
+            "delay_max": 1500,
+
+            # Modes
+            "relative": bool(self.settings.get("relative", True)),
+        }
+        self.root.attributes("-alpha", self.state["alpha"])
+
+        # Tabs
+        self.active_tab = self.settings.get("active_tab", "Commands")
+        if self.active_tab not in ("Commands", "Theme", "About me"):
+            self.active_tab = "Commands"
+
+        # Hotkeys (persisted)
+        self.hotkeys = {
+            "start": store_to_key(self.settings["hotkeys"].get("start", "CHAR:[")),
+            "stop": store_to_key(self.settings["hotkeys"].get("stop", "CHAR:]")),
+            "play": store_to_key(self.settings["hotkeys"].get("play", "CHAR:`")),
+            "quit": store_to_key(self.settings["hotkeys"].get("quit", "NUM0")),
+            "toggle_topmost": store_to_key(self.settings["hotkeys"].get("toggle_topmost", "KEY:f10")),
+            "toggle_visible": store_to_key(self.settings["hotkeys"].get("toggle_visible", "KEY:f11")),
+        }
+
+        # UI layout
+        self.pad = 14
+        self.title_h = 34
+        self.left_w = 270
+
+        self.drag = {"active": False, "x": 0, "y": 0}
+        self.hit = {}
+        self.hover = None
+        self.active_slider = None
+        self.slider_map = {}
+
+        # Logs
+        self.logs = []
+        self.max_logs = 6
+
+        # Color picker docked
+        self.color_dock = None
+
+        # Keybind edit overlay
+        self.bind_edit = None
+
+        # Delay Entry (real Tk widget)
+        self.delay_var = tk.StringVar(value=str(self.state["delay_ms"]))
+        self.delay_entry = tk.Entry(
+            self.root,
+            textvariable=self.delay_var,
+            width=8,
+            bg="#0f1216",
+            fg="white",
+            insertbackground="white",
+            relief="flat"
+        )
+        self.delay_entry.bind("<Return>", self.apply_delay_entry)
+        self.delay_entry.bind("<FocusOut>", self.apply_delay_entry)
+
+        self.xbutton_delay_var = tk.StringVar(value=str(self.state["xbutton_delay_ms"]))
+        self.xbutton_delay_entry = tk.Entry(
+            self.root,
+            textvariable=self.xbutton_delay_var,
+            width=8,
+            bg="#0f1216",
+            fg="white",
+            insertbackground="white",
+            relief="flat"
+        )
+        self.xbutton_delay_entry.bind("<Return>", self.apply_xbutton_delay_entry)
+        self.xbutton_delay_entry.bind("<FocusOut>", self.apply_xbutton_delay_entry)
+
+        self.mbutton_delay_var = tk.StringVar(value=str(self.state["mbutton_delay_ms"]))
+        self.mbutton_delay_entry = tk.Entry(
+            self.root,
+            textvariable=self.mbutton_delay_var,
+            width=8,
+            bg="#0f1216",
+            fg="white",
+            insertbackground="white",
+            relief="flat"
+        )
+        self.mbutton_delay_entry.bind("<Return>", self.apply_mbutton_delay_entry)
+        self.mbutton_delay_entry.bind("<FocusOut>", self.apply_mbutton_delay_entry)
+
+        # Playback control
+        self.play_running = False
+        self.play_stop_event = threading.Event()
+
+        # Autoclicker control
+        self.xbutton_stop_event = threading.Event()
+        self.xbutton_thread = None
+
+        # MButton sequence control
+        self.mbutton_running = threading.Event()
+        self.mbutton_stop_event = threading.Event()
+        self.keyboard_controller = keyboard.Controller()
+
+        # Eye widget (draggable)
+        self.eye = tk.Toplevel(self.root)
+        self.eye.overrideredirect(True)
+        self.eye.attributes("-topmost", True)
+        self.eye.attributes("-alpha", self.state["alpha"])
+        self.eye_canvas = tk.Canvas(self.eye, width=34, height=34, highlightthickness=0, bd=0, bg=self.state["title"])
+        self.eye_canvas.pack(fill="both", expand=True)
+        self.eye_canvas.create_text(17, 17, text="👁", fill=self.state["text"], font=("Segoe UI", 14, "bold"))
+        self.eye.withdraw()
+
+        self.eye_drag = {"active": False, "x": 0, "y": 0}
+        try:
+            ex, ey = self.settings["eye_pos"]
+            self.eye.geometry(f"+{int(ex)}+{int(ey)}")
+        except Exception:
+            self.eye.geometry("+20+20")
+
+        self.eye_canvas.bind("<Button-1>", self.on_eye_down)
+        self.eye_canvas.bind("<ButtonRelease-1>", self.on_eye_up)
+        self.eye_canvas.bind("<B1-Motion>", self.on_eye_drag)
+        self.eye_canvas.bind("<Double-Button-1>", lambda e: self.show_menu())
+
+        # Mouse listener
+        self.mouse_listener = mouse.Listener(on_click=self.on_click)
+        self.mouse_listener.start()
+
+        # Canvas events
+        self.canvas.bind("<Motion>", self.on_motion)
+        self.canvas.bind("<Button-1>", self.on_down)
+        self.canvas.bind("<ButtonRelease-1>", self.on_up)
+        self.canvas.bind("<B1-Motion>", self.on_drag)
+        self.canvas.bind("<Configure>", lambda e: self.draw())
+
+        self.root.bind("<Escape>", lambda e: self.quit())
+
+        # Global keyboard listener
+        self.k_listener = keyboard.Listener(on_press=self.on_key_press_global)
+        self.k_listener.start()
+
+        self.draw()
+        self.root.mainloop()
+
+    # =========================
+    # Persistence
+    # =========================
+    def persist(self):
+        payload = default_settings()
+        payload["delay_ms"] = int(self.state["delay_ms"])
+        payload["xbutton_delay_ms"] = int(self.state["xbutton_delay_ms"])
+        payload["mbutton_delay_ms"] = int(self.state["mbutton_delay_ms"])
+        payload["relative"] = bool(self.state["relative"])
+        payload["active_tab"] = self.active_tab
+
+        # positions
+        try:
+            payload["menu_pos"] = [int(self.root.winfo_x()), int(self.root.winfo_y())]
+        except Exception:
+            pass
+        try:
+            payload["eye_pos"] = [int(self.eye.winfo_x()), int(self.eye.winfo_y())]
+        except Exception:
+            pass
+
+        # hotkeys
+        hk = {}
+        for k, v in self.hotkeys.items():
+            hk[k] = key_to_store(v)
+        payload["hotkeys"] = hk
+
+        save_settings_file(payload)
+
+    # =========================
+    # Logging
+    # =========================
+    def log(self, msg):
+        self.logs.append(msg)
+        if len(self.logs) > self.max_logs:
+            self.logs = self.logs[-self.max_logs:]
+        self.draw()
+
+    # =========================
+    # Macro recording
+    # =========================
+    def on_click(self, x, y, button, pressed):
+        global recording
+        if recording and pressed:
+            click_positions.append((x, y))
+            self.log(f"Click: {x}, {y}")
+
+        if button == mouse.Button.x1:
+            if pressed:
+                self.start_xbutton_autoclicker()
+            else:
+                self.stop_xbutton_autoclicker()
+
+        if button == mouse.Button.middle and pressed:
+            self.start_mbutton_sequence()
+
+    # =========================
+    # Drawing helpers
+    # =========================
+    def shade(self, hex_color, factor):
+        r, g, b = hex_to_rgb(hex_color)
+        r = clamp(r * factor, 0, 255)
+        g = clamp(g * factor, 0, 255)
+        b = clamp(b * factor, 0, 255)
+        return rgb_to_hex(r, g, b)
+
+    def rect(self, x1, y1, x2, y2, fill, outline=None, width=1, r=10):
+        if r <= 0:
+            return self.canvas.create_rectangle(x1, y1, x2, y2, fill=fill, outline=outline, width=width)
+        pts = [
+            x1+r, y1, x2-r, y1, x2, y1, x2, y1+r,
+            x2, y2-r, x2, y2, x2-r, y2, x1+r, y2,
+            x1, y2, x1, y2-r, x1, y1+r, x1, y1
+        ]
+        return self.canvas.create_polygon(pts, fill=fill, outline=outline, width=width, smooth=True)
+
+    def text(self, x, y, s, fill, anchor="w", size=10, weight="normal"):
+        return self.canvas.create_text(
+            x, y, text=s, fill=fill, anchor=anchor,
+            font=("Segoe UI", size, weight)
+        )
+
+    def hitbox(self, name, x1, y1, x2, y2, cb=None, kind="button"):
+        self.hit[name] = {"x1": x1, "y1": y1, "x2": x2, "y2": y2, "cb": cb, "kind": kind}
+
+    def inside(self, x, y, box):
+        return box["x1"] <= x <= box["x2"] and box["y1"] <= y <= box["y2"]
+
+    # =========================
+    # Widgets
+    # =========================
+    def draw_button(self, name, x, y, w, h, label, cb, fill_override=None, accent=False):
+        if fill_override is not None:
+            base = fill_override
+        else:
+            base = self.state["accent"] if accent else self.shade(self.state["panel"], 1.12)
+        hover = self.shade(base, 1.12)
+        fill = hover if self.hover == name else base
+        self.rect(x, y, x+w, y+h, fill=fill, outline=self.shade(fill, 0.72), width=1, r=10)
+        self.text(x+w/2, y+h/2, label, fill=self.state["text"], anchor="c", size=10,
+                  weight="bold" if accent else "normal")
+        self.hitbox(name, x, y, x+w, y+h, cb=cb, kind="button")
+
+    def draw_checkbox(self, name, x, y, label, key):
+        box = 16
+        fill = self.shade(self.state["panel"], 1.10)
+        self.rect(x, y, x+box, y+box, fill=fill, outline=self.shade(fill, 0.72), width=1, r=4)
+
+        if self.state[key]:
+            self.canvas.create_line(x+4, y+9, x+7, y+12, x+13, y+4, fill=self.state["accent"], width=2)
+
+        self.text(x+box+10, y+box/2, label, fill=self.state["text"], anchor="w", size=10)
+        self.hitbox(name, x, y, x+box+10+240, y+box, cb=lambda: self.toggle(key), kind="checkbox")
+
+    def toggle(self, key):
+        self.state[key] = not self.state[key]
+        self.persist()
+        self.draw()
+
+    def draw_slider_ms(self, name, x, y, w, label, key):
+        h = 18
+        self.text(x, y-12, label, fill=self.state["muted"], anchor="w", size=9)
+
+        track = self.shade(self.state["panel"], 1.08)
+        self.rect(x, y, x+w, y+h, fill=track, outline=self.shade(track, 0.7), width=1, r=10)
+
+        vmax = self.state["delay_max"]
+        value = self.state[key]
+        t = (value / vmax) if vmax else 0.0
+        t = clamp(t, 0.0, 1.0)
+        fw = w * t
+
+        self.rect(x, y, x+fw, y+h, fill=self.state["accent"], outline=None, width=0, r=10)
+        kx = x + fw
+        self.canvas.create_oval(kx-7, y+h/2-7, kx+7, y+h/2+7,
+                                fill=self.shade(self.state["panel"], 1.25),
+                                outline=self.shade(self.state["panel"], 0.7), width=1)
+        self.text(x+w+10, y+h/2, f'{value} ms', fill=self.state["text"], anchor="w", size=9)
+        self.hitbox(name, x, y, x+w, y+h, cb=None, kind="slider_ms")
+        self.slider_map[name] = key
+
+    def set_slider_ms_from_x(self, name, mx):
+        box = self.hit[name]
+        x1, x2 = box["x1"], box["x2"]
+        t = clamp((mx - x1) / (x2 - x1), 0.0, 1.0)
+        key = self.slider_map.get(name)
+        if not key:
+            return
+        self.state[key] = int(round(t * self.state["delay_max"]))
+        if key == "delay_ms":
+            self.delay_var.set(str(self.state[key]))
+        elif key == "xbutton_delay_ms":
+            self.xbutton_delay_var.set(str(self.state[key]))
+        elif key == "mbutton_delay_ms":
+            self.mbutton_delay_var.set(str(self.state[key]))
+        self.persist()
+
+    # =========================
+    # Color picker (docked) - NOT persisted
+    # =========================
+    def open_color_dock(self, key, title, panel_bounds):
+        r, g, b = hex_to_rgb(self.state[key])
+        h, s, v = colorsys.rgb_to_hsv(r/255, g/255, b/255)
+        self.color_dock = {"key": key, "title": title, "h": h, "s": s, "v": v, "drag": None, "panel": panel_bounds}
+        self.draw()
+
+    def hsv_to_hex(self, h, s, v):
+        r, g, b = colorsys.hsv_to_rgb(h, s, v)
+        return rgb_to_hex(r*255, g*255, b*255)
+
+    def close_color_dock(self):
+        self.color_dock = None
+        self.draw()
+
+    def apply_color(self, hex_color):
+        self.state[self.color_dock["key"]] = hex_color
+        self.close_color_dock()
+
+    def update_dock_from_mouse(self, kind, mx, my):
+        if not self.color_dock:
+            return
+        if kind == "dock_sv":
+            box = self.hit["dock_sv"]
+            s = (mx - box["x1"]) / (box["x2"] - box["x1"])
+            v = 1.0 - (my - box["y1"]) / (box["y2"] - box["y1"])
+            self.color_dock["s"] = clamp(s, 0.0, 1.0)
+            self.color_dock["v"] = clamp(v, 0.0, 1.0)
+        elif kind == "dock_hue":
+            box = self.hit["dock_hue"]
+            h = (my - box["y1"]) / (box["y2"] - box["y1"])
+            self.color_dock["h"] = clamp(h, 0.0, 1.0)
+        self.draw()
+
+    def draw_color_dock(self):
+        if not self.color_dock:
+            return
+
+        px1, py1, px2, py2 = self.color_dock["panel"]
+        dock_w, dock_h = 320, 220
+
+        dx1 = clamp(px2 - dock_w - 14, px1 + 14, px2 - 14 - dock_w)
+        dy1 = clamp(py1 + 70, py1 + 14, py2 - 14 - dock_h)
+        dx2, dy2 = dx1 + dock_w, dy1 + dock_h
+
+        card = self.shade(self.state["panel"], 1.06)
+        self.rect(dx1, dy1, dx2, dy2, fill=card, outline=self.shade(card, 0.72), width=1, r=14)
+        self.text(dx1+14, dy1+16, f'{self.color_dock["title"]} Color', fill=self.state["text"],
+                  anchor="w", size=11, weight="bold")
+
+        self.draw_button("dock_close", dx2-46, dy1+10, 32, 22, "X", self.close_color_dock, accent=False)
+
+        svx, svy = dx1+14, dy1+44
+        svw, svh = 190, 150
+        steps = 36
+        h = self.color_dock["h"]
+
+        for iy in range(steps):
+            vv = 1.0 - (iy/(steps-1))
+            for ix in range(steps):
+                ss = ix/(steps-1)
+                col = self.hsv_to_hex(h, ss, vv)
+                x1 = svx + ix*(svw/steps)
+                y1 = svy + iy*(svh/steps)
+                x2 = svx + (ix+1)*(svw/steps)
+                y2 = svy + (iy+1)*(svh/steps)
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill=col, outline="")
+
+        self.canvas.create_rectangle(svx, svy, svx+svw, svy+svh,
+                                     outline=self.shade(self.state["panel"], 0.65), width=1)
+
+        cx = svx + self.color_dock["s"]*svw
+        cy = svy + (1.0-self.color_dock["v"])*svh
+        self.canvas.create_oval(cx-6, cy-6, cx+6, cy+6, outline="#ffffff", width=2)
+
+        self.hitbox("dock_sv", svx, svy, svx+svw, svy+svh, cb=None, kind="dock_sv")
+
+        hx = svx+svw+12
+        hy = svy
+        hw = 22
+        hh = svh
+
+        for iy in range(steps*2):
+            hhue = iy/(steps*2-1)
+            col = self.hsv_to_hex(hhue, 1.0, 1.0)
+            y1 = hy + iy*(hh/(steps*2))
+            y2 = hy + (iy+1)*(hh/(steps*2))
+            self.canvas.create_rectangle(hx, y1, hx+hw, y2, fill=col, outline="")
+
+        self.canvas.create_rectangle(hx, hy, hx+hw, hy+hh,
+                                     outline=self.shade(self.state["panel"], 0.65), width=1)
+
+        hm = hy + self.color_dock["h"]*hh
+        self.canvas.create_rectangle(hx-2, hm-2, hx+hw+2, hm+2, outline="#ffffff", width=1)
+
+        self.hitbox("dock_hue", hx, hy, hx+hw, hy+hh, cb=None, kind="dock_hue")
+
+        cur_hex = self.hsv_to_hex(self.color_dock["h"], self.color_dock["s"], self.color_dock["v"])
+        px = hx+hw+12
+        py = svy
+        self.text(px, py, "Preview", fill=self.state["muted"], anchor="w", size=9)
+        self.rect(px, py+16, px+86, py+56, fill=cur_hex,
+                  outline=self.shade(self.state["panel"], 0.65), width=1, r=10)
+        self.text(px, py+68, cur_hex.upper(), fill=self.state["text"], anchor="w", size=9)
+        self.draw_button("dock_apply", px, py+98, 100, 28, "Apply", lambda: self.apply_color(cur_hex), accent=True)
+
+    # =========================
+    # Keybind edit
+    # =========================
+    def start_edit_bind(self, action_name):
+        self.bind_edit = {"action": action_name}
+        self.log(f'Edit bind "{action_name}" -> apasă o tastă...')
+        self.draw()
+
+    def set_bind_from_key(self, key):
+        if not self.bind_edit:
+            return
+        action = self.bind_edit["action"]
+        self.hotkeys[action] = key
+        self.bind_edit = None
+        self.persist()
+        self.log(f'Bind set pentru "{action}"')
+        self.draw()
+
+    def key_to_label(self, key):
+        try:
+            if isinstance(key, keyboard.Key):
+                return str(key).replace("Key.", "").upper()
+            if isinstance(key, keyboard.KeyCode):
+                # FIX: show NUM0, not VK96
+                if key.vk == 96:
+                    return "NUM0"
+                if key.char:
+                    return key.char.upper()
+                if key.vk:
+                    return f"VK{key.vk}"
+        except Exception:
+            pass
+        return "?"
+
+    # =========================
+    # Macro actions
+    # =========================
+    def start_record(self):
+        global recording, click_positions
+        recording = True
+        click_positions = []
+        self.log("Înregistrare începută...")
+
+    def stop_record(self):
+        global recording
+        recording = False
+        save_clicks()
+        self.log(f"Salvat: {len(click_positions)} click-uri.")
+
+    def play(self):
+        if self.play_running:
+            self.log("Play deja rulează (nu pornesc încă o dată).")
+            return
+
+        def _run():
+            self.play_running = True
+            self.play_stop_event.clear()
+            try:
+                positions = load_clicks()
+            except FileNotFoundError:
+                self.log("Nu există fișierul de click-uri.")
+                return
+            except Exception as e:
+                self.log(f"Eroare la citire: {e}")
+                return
+
+            if not positions:
+                self.log("Nu ai click-uri salvate.")
+                return
+
+            delay_sec = max(0, int(self.state["delay_ms"])) / 1000.0
+
+            # SINGLE RUN ONLY (no loop)
+            if self.state["relative"]:
+                start_x, start_y = mouse_controller.position
+                base_x, base_y = positions[0]
+                for x, y in positions:
+                    if self.play_stop_event.is_set():
+                        self.log("Play oprit.")
+                        return
+                    nx = start_x + (x - base_x)
+                    ny = start_y + (y - base_y)
+                    mouse_controller.position = (nx, ny)
+                    mouse_controller.click(mouse.Button.left)
+                    if self.play_stop_event.wait(delay_sec):
+                        self.log("Play oprit.")
+                        return
+            else:
+                for x, y in positions:
+                    if self.play_stop_event.is_set():
+                        self.log("Play oprit.")
+                        return
+                    mouse_controller.position = (x, y)
+                    mouse_controller.click(mouse.Button.left)
+                    if self.play_stop_event.wait(delay_sec):
+                        self.log("Play oprit.")
+                        return
+
+            self.log("Play gata.")
+        
+        def _runner():
+            try:
+                _run()
+            finally:
+                self.play_running = False
+                self.play_stop_event.clear()
+
+        threading.Thread(target=_runner, daemon=True).start()
+
+    def start_xbutton_autoclicker(self):
+        if self.xbutton_thread and self.xbutton_thread.is_alive():
+            return
+
+        self.xbutton_stop_event.clear()
+
+        def _run():
+            while not self.xbutton_stop_event.is_set():
+                mouse_controller.click(mouse.Button.left)
+                delay_sec = max(0, int(self.state["xbutton_delay_ms"])) / 1000.0
+                if self.xbutton_stop_event.wait(delay_sec):
+                    break
+
+        self.xbutton_thread = threading.Thread(target=_run, daemon=True)
+        self.xbutton_thread.start()
+
+    def stop_xbutton_autoclicker(self):
+        self.xbutton_stop_event.set()
+
+    def start_mbutton_sequence(self):
+        if self.mbutton_running.is_set():
+            return
+
+        self.mbutton_running.set()
+        self.mbutton_stop_event.clear()
+
+        def _run():
+            try:
+                delay_sec = max(0, int(self.state["mbutton_delay_ms"])) / 1000.0
+                for key_char in ("1", "2", "3", "4"):
+                    if self.mbutton_stop_event.is_set():
+                        return
+                    self.keyboard_controller.press(key_char)
+                    self.keyboard_controller.release(key_char)
+                    mouse_controller.click(mouse.Button.left)
+                    if self.mbutton_stop_event.wait(delay_sec):
+                        return
+            finally:
+                self.mbutton_running.clear()
+                self.mbutton_stop_event.clear()
+
+        threading.Thread(target=_run, daemon=True).start()
+
+    def soft_restart(self):
+        global recording
+        self.play_stop_event.set()
+        self.xbutton_stop_event.set()
+        self.mbutton_stop_event.set()
+        recording = False
+        self.play_running = False
+        self.mbutton_running.clear()
+        self.bind_edit = None
+        self.active_slider = None
+        self.logs = []
+        self.draw()
+
+    def toggle_topmost(self):
+        self.topmost = not self.topmost
+        self.root.attributes("-topmost", self.topmost)
+        self.log(f"Topmost: {'ON' if self.topmost else 'OFF'}")
+
+    def toggle_visible(self):
+        # Hide/show without killing the macro
+        if self.root.state() == "withdrawn":
+            self.show_menu()
+        else:
+            self.hide_menu()
+
+    def hide_menu(self):
+        # save positions + state
+        self.persist()
+        self.root.withdraw()
+        self.eye.deiconify()
+        self.eye.attributes("-topmost", True)
+
+    def show_menu(self):
+        self.eye.withdraw()
+        self.root.deiconify()
+        self.root.attributes("-topmost", self.topmost)
+        self.persist()
+
+    def quit(self):
+        self.persist()
+        self.play_stop_event.set()
+        self.xbutton_stop_event.set()
+        self.mbutton_stop_event.set()
+        try:
+            self.mouse_listener.stop()
+        except Exception:
+            pass
+        try:
+            self.k_listener.stop()
+        except Exception:
+            pass
+        try:
+            self.eye.destroy()
+        except Exception:
+            pass
+        try:
+            self.root.destroy()
+        except Exception:
+            pass
+
+    # =========================
+    # Delay entry
+    # =========================
+    def apply_delay_entry(self, _event=None):
+        try:
+            v = int(self.delay_var.get().strip())
+            v = clamp(v, 0, self.state["delay_max"])
+            self.state["delay_ms"] = v
+            self.delay_var.set(str(v))
+            self.persist()
+            self.draw()
+        except Exception:
+            self.delay_var.set(str(self.state["delay_ms"]))
+
+    def apply_xbutton_delay_entry(self, _event=None):
+        try:
+            v = int(self.xbutton_delay_var.get().strip())
+            v = clamp(v, 0, self.state["delay_max"])
+            self.state["xbutton_delay_ms"] = v
+            self.xbutton_delay_var.set(str(v))
+            self.persist()
+            self.draw()
+        except Exception:
+            self.xbutton_delay_var.set(str(self.state["xbutton_delay_ms"]))
+
+    def apply_mbutton_delay_entry(self, _event=None):
+        try:
+            v = int(self.mbutton_delay_var.get().strip())
+            v = clamp(v, 0, self.state["delay_max"])
+            self.state["mbutton_delay_ms"] = v
+            self.mbutton_delay_var.set(str(v))
+            self.persist()
+            self.draw()
+        except Exception:
+            self.mbutton_delay_var.set(str(self.state["mbutton_delay_ms"]))
+
+    # =========================
+    # Global key handler
+    # =========================
+    def on_key_press_global(self, key):
+        # edit bind capture
+        if self.bind_edit is not None:
+            if key == keyboard.Key.esc:
+                self.bind_edit = None
+                self.log("Edit bind anulată.")
+                self.draw()
+                return
+            self.set_bind_from_key(key)
+            return
+
+        try:
+            if key == self.hotkeys["start"]:
+                self.start_record()
+            elif key == self.hotkeys["stop"]:
+                self.stop_record()
+            elif key == self.hotkeys["play"]:
+                self.play()
+            elif key == self.hotkeys["quit"]:
+                self.quit()
+            elif key == self.hotkeys["toggle_topmost"]:
+                self.toggle_topmost()
+            elif key == self.hotkeys["toggle_visible"]:
+                self.toggle_visible()
+        except Exception:
+            pass
+
+    # =========================
+    # Eye drag
+    # =========================
+    def on_eye_down(self, e):
+        self.eye_drag["active"] = True
+        self.eye_drag["x"] = e.x
+        self.eye_drag["y"] = e.y
+
+    def on_eye_up(self, e):
+        # click on eye = show menu
+        self.eye_drag["active"] = False
+        self.persist()
+        # If it was a simple click (tiny movement), show menu
+        # (Tk doesn't give delta clean here; keep it simple: always show on release)
+        self.show_menu()
+
+    def on_eye_drag(self, e):
+        if not self.eye_drag["active"]:
+            return
+        x = self.eye.winfo_x() + (e.x - self.eye_drag["x"])
+        y = self.eye.winfo_y() + (e.y - self.eye_drag["y"])
+        self.eye.geometry(f"+{x}+{y}")
+
+    # =========================
+    # Mouse events
+    # =========================
+    def find_hover(self, x, y):
+        for k, box in self.hit.items():
+            if self.inside(x, y, box):
+                return k
+        return None
+
+    def on_motion(self, e):
+        self.hover = self.find_hover(e.x, e.y)
+        self.draw()
+
+    def on_down(self, e):
+        # title drag
+        if e.y <= self.title_h and self.hover not in ("win_close", "win_hide", "win_restart"):
+            self.drag["active"] = True
+            self.drag["x"] = e.x
+            self.drag["y"] = e.y
+            return
+
+        # bind overlay ignores clicks
+        if self.bind_edit is not None:
+            return
+
+        hid = self.find_hover(e.x, e.y)
+        if not hid:
+            return
+        box = self.hit[hid]
+        kind = box["kind"]
+
+        if kind in ("dock_sv", "dock_hue"):
+            if kind == "dock_sv":
+                self.color_dock["drag"] = "sv"
+                self.update_dock_from_mouse("dock_sv", e.x, e.y)
+            else:
+                self.color_dock["drag"] = "hue"
+                self.update_dock_from_mouse("dock_hue", e.x, e.y)
+            return
+
+        if kind in ("button", "checkbox", "tab", "link"):
+            if box["cb"]:
+                box["cb"]()
+            return
+
+        if kind == "slider_ms":
+            self.active_slider = hid
+            self.set_slider_ms_from_x(hid, e.x)
+            self.draw()
+
+    def on_up(self, e):
+        if self.drag["active"]:
+            self.persist()
+        self.drag["active"] = False
+        self.active_slider = None
+        if self.color_dock:
+            self.color_dock["drag"] = None
+
+    def on_drag(self, e):
+        if self.drag["active"]:
+            x = self.root.winfo_x() + (e.x - self.drag["x"])
+            y = self.root.winfo_y() + (e.y - self.drag["y"])
+            self.root.geometry(f"+{x}+{y}")
+            return
+
+        if self.active_slider:
+            self.set_slider_ms_from_x(self.active_slider, e.x)
+            self.draw()
+            return
+
+        if self.color_dock and self.color_dock.get("drag"):
+            if self.color_dock["drag"] == "sv":
+                self.update_dock_from_mouse("dock_sv", e.x, e.y)
+            else:
+                self.update_dock_from_mouse("dock_hue", e.x, e.y)
+
+    # =========================
+    # Tabs
+    # =========================
+    def set_tab(self, name):
+        self.active_tab = name
+        self.persist()
+        self.draw()
+
+    def draw_tabs(self, x, y, w):
+        # three tabs, same style
+        tabs = ["Commands", "Theme", "About me"]
+        tw = int((w - 20) / 3)
+        th = 26
+        gap = 8
+        cx = x
+        for t in tabs:
+            active = (t == self.active_tab)
+            base = self.state["accent"] if active else self.shade(self.state["panel"], 1.06)
+            self.rect(cx, y, cx+tw, y+th, fill=base, outline=self.shade(base, 0.72), width=1, r=10)
+            self.text(cx+tw/2, y+th/2, t, fill=self.state["text"], anchor="c", size=9,
+                      weight="bold" if active else "normal")
+            self.hitbox(f"tab_{t}", cx, y, cx+tw, y+th, cb=lambda tt=t: self.set_tab(tt), kind="tab")
+            cx += tw + gap
+
+    # =========================
+    # Main draw
+    # =========================
+    def draw(self):
+        self.canvas.delete("all")
+        self.hit = {}
+        self.slider_map = {}
+
+        W = self.canvas.winfo_width()
+        H = self.canvas.winfo_height()
+
+        # Background + title
+        self.canvas.create_rectangle(0, 0, W, H, fill=self.state["bg"], outline="")
+        self.canvas.create_rectangle(0, 0, W, self.title_h, fill=self.state["title"], outline="")
+        self.text(self.pad, self.title_h/2, "IM QUATRO MACROS", fill=self.state["text"], anchor="w", size=10, weight="bold")
+
+        # Restart button
+        self.draw_button("win_restart", W-140, 6, 36, self.title_h-12, "⟳", self.soft_restart, accent=False)
+
+        # Hide button (👁) in titlebar
+        self.draw_button("win_hide", W-96, 6, 40, self.title_h-12, "👁", self.hide_menu, accent=False)
+
+        # Close button
+        self.draw_button("win_close", W-52, 6, 44, self.title_h-12, "✕", self.quit, accent=False)
+
+        # Main panel
+        x = self.pad
+        y = self.title_h + self.pad
+        w = W - self.pad*2
+        h = H - y - self.pad
+
+        self.rect(x, y, x+w, y+h, fill=self.state["panel"], outline=self.shade(self.state["panel"], 0.72), width=1, r=14)
+
+        # Tabs
+        self.draw_tabs(x+14, y+14, w-28)
+
+        # Content area
+        content_x = x + 14
+        content_y = y + 14 + 34
+        content_w = w - 28
+        content_h = h - (14 + 34 + 14)
+
+        # Per tab draw
+        if self.active_tab == "Commands":
+            self.draw_tab_commands(content_x, content_y, content_w, content_h)
+        elif self.active_tab == "Theme":
+            self.draw_tab_theme(content_x, content_y, content_w, content_h, (x, y, x+w, y+h))
+        else:
+            self.draw_tab_about(content_x, content_y, content_w, content_h)
+
+        # Docked color picker (theme tab only, but ok to keep if open)
+        self.draw_color_dock()
+
+        # Bind overlay
+        if self.bind_edit is not None:
+            self.draw_bind_overlay()
+
+    def draw_tab_commands(self, x, y, w, h):
+        # Left area: commands + hotkeys
+        lx = x
+        ly = y
+
+        # Fixed button colors
+        BTN_START = "#2d78ff"   # blue
+        BTN_STOP = "#d63a3a"   # red
+        BTN_PLAY = "#2fd06f"   # green
+        BTN_QUIT = "#7a1f1f"   # dark red
+
+        self.text(lx, ly, "Commands", fill=self.state["text"], anchor="w", size=10, weight="bold")
+        ly += 22
+
+        ly = self.draw_command_row(lx, ly, "Start Record", "start", self.start_record, fill_override=BTN_START)
+        ly = self.draw_command_row(lx, ly, "Stop Record", "stop", self.stop_record, fill_override=BTN_STOP)
+        ly = self.draw_command_row(lx, ly, "Play", "play", self.play, fill_override=BTN_PLAY)
+        ly = self.draw_command_row(lx, ly, "Quit", "quit", self.quit, fill_override=BTN_QUIT)
+
+        ly += 10
+        self.draw_checkbox("chk_relative", lx, ly, "Relative mode (play from mouse)", "relative")
+        ly += 44
+
+        # Delay ms slider + entry (synced)
+        self.draw_slider_ms("slider_delay_ms", lx, ly+18, 220, "Delay between clicks", "delay_ms")
+        entry_x = lx + 230
+        entry_y = ly + 14
+        self.delay_entry.place(x=entry_x, y=entry_y, width=64, height=22)
+        self.text(entry_x + 70, entry_y+11, "ms", fill=self.state["muted"], anchor="w", size=9)
+        self.text(lx, ly+52, "1000 ms = 1 second", fill=self.state["muted"], anchor="w", size=9)
+
+        ly += 72
+
+        # XButton1 autoclicker delay
+        self.draw_slider_ms("slider_xbutton_delay", lx, ly+18, 220, "XButton1 autoclicker delay", "xbutton_delay_ms")
+        entry_x = lx + 230
+        entry_y = ly + 14
+        self.xbutton_delay_entry.place(x=entry_x, y=entry_y, width=64, height=22)
+        self.text(entry_x + 70, entry_y+11, "ms", fill=self.state["muted"], anchor="w", size=9)
+
+        ly += 54
+
+        # MButton sequence delay
+        self.draw_slider_ms("slider_mbutton_delay", lx, ly+18, 220, "MButton 1..4 sequence delay", "mbutton_delay_ms")
+        entry_x = lx + 230
+        entry_y = ly + 14
+        self.mbutton_delay_entry.place(x=entry_x, y=entry_y, width=64, height=22)
+        self.text(entry_x + 70, entry_y+11, "ms", fill=self.state["muted"], anchor="w", size=9)
+
+        # Hints
+        self.text(lx, y+h-16, "F10: Topmost  |  F11: Hide/Show", fill=self.state["muted"], anchor="w", size=9)
+
+        # Right side logs
+        rx = x + int(w*0.55)
+        box_h = 140
+        self.text(rx, y, "Console", fill=self.state["muted"], anchor="w", size=9)
+        self.rect(rx, y+14, x+w, y+14+box_h,
+                  fill=self.shade(self.state["panel"], 1.08),
+                  outline=self.shade(self.state["panel"], 0.72), width=1, r=12)
+
+        ly2 = y + 26
+        for line in self.logs[-self.max_logs:]:
+            self.text(rx+10, ly2, line, fill=self.state["text"], anchor="w", size=9)
+            ly2 += 18
+
+    def draw_tab_theme(self, x, y, w, h, panel_bounds):
+        self.text(x, y, "Theme", fill=self.state["text"], anchor="w", size=10, weight="bold")
+        y += 18
+
+        y = self.draw_color_row(x, y, "Background", "bg", panel_bounds)
+        y = self.draw_color_row(x, y, "Title bar", "title", panel_bounds)
+        y = self.draw_color_row(x, y, "Panel", "panel", panel_bounds)
+        y = self.draw_color_row(x, y, "Accent", "accent", panel_bounds)
+        y = self.draw_color_row(x, y, "Text", "text", panel_bounds)
+        y = self.draw_color_row(x, y, "Muted", "muted", panel_bounds)
+
+        self.text(x, y+10, "Note: theme colors are NOT saved on restart (default on relaunch).",
+                  fill=self.state["muted"], anchor="w", size=9)
+
+        self.delay_entry.place_forget()
+        self.xbutton_delay_entry.place_forget()
+        self.mbutton_delay_entry.place_forget()
+
+    def draw_tab_about(self, x, y, w, h):
+        self.text(x, y, "About me", fill=self.state["text"], anchor="w", size=10, weight="bold")
+        y += 26
+
+        self.text(x, y, "IM QUATRO MACROS - macro click tool.", fill=self.state["text"], anchor="w", size=10)
+        y += 22
+        self.text(x, y, "Steam:", fill=self.state["muted"], anchor="w", size=9)
+        y += 18
+
+        # clickable link
+        link_w = 360
+        link_h = 26
+        self.rect(x, y, x+link_w, y+link_h, fill=self.shade(self.state["panel"], 1.10),
+                  outline=self.shade(self.state["panel"], 0.72), width=1, r=10)
+        self.text(x+12, y+link_h/2, STEAM_URL, fill=self.state["accent"], anchor="w", size=9, weight="bold")
+        self.hitbox("about_link", x, y, x+link_w, y+link_h, cb=lambda: webbrowser.open(STEAM_URL), kind="link")
+
+        y += 44
+        self.text(x, y, "Script: records mouse clicks and replays them with delay.", fill=self.state["text"], anchor="w", size=10)
+        y += 18
+        self.text(x, y, "Use responsibly.", fill=self.state["muted"], anchor="w", size=9)
+
+        self.delay_entry.place_forget()
+        self.xbutton_delay_entry.place_forget()
+        self.mbutton_delay_entry.place_forget()
+
+    def draw_command_row(self, x, y, label, action_key, cb, fill_override=None):
+        key_label = self.key_to_label(self.hotkeys[action_key])
+        self.draw_button(f"cmd_{action_key}", x, y, 170, 28, f"{label}", cb, fill_override=fill_override, accent=False)
+        self.text(x+180, y+14, f"[{key_label}]", fill=self.state["muted"], anchor="w", size=9)
+        self.draw_button(f"edit_{action_key}", x+220, y, 60, 28, "Edit",
+                         lambda ak=action_key: self.start_edit_bind(ak), accent=False)
+        return y + 36
+
+    def draw_color_row(self, x, y, label, key, panel_bounds):
+        self.text(x, y+12, label, fill=self.state["text"], anchor="w", size=10)
+        sx1 = x + 160
+        sy1 = y + 2
+        sx2 = sx1 + 44
+        sy2 = sy1 + 22
+        self.rect(sx1, sy1, sx2, sy2, fill=self.state[key], outline=self.shade(self.state["panel"], 0.72), width=1, r=8)
+        self.draw_button(f"pick_{key}", sx2+10, y, 70, 26, "Pick",
+                         lambda k=key, t=label, pb=panel_bounds: self.open_color_dock(k, t, pb),
+                         accent=False)
+        return y + 34
+
+    def draw_bind_overlay(self):
+        W = self.canvas.winfo_width()
+        H = self.canvas.winfo_height()
+        self.canvas.create_rectangle(0, 0, W, H, fill="#000000", stipple="gray25", outline="")
+        self.rect(W/2-180, H/2-60, W/2+180, H/2+60, fill=self.shade(self.state["panel"], 1.10),
+                  outline=self.shade(self.state["panel"], 0.72), width=1, r=14)
+        self.text(W/2, H/2-10, "Apasă tasta pentru bind...", fill=self.state["text"], anchor="c", size=12, weight="bold")
+        self.text(W/2, H/2+18, "(ESC ca să anulezi)", fill=self.state["muted"], anchor="c", size=10)
+
+
+# =========================
+# Run
+# =========================
+app = ImGuiApp()
